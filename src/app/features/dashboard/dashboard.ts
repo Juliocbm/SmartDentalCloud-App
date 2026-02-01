@@ -1,13 +1,13 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DashboardService } from '../../core/services/dashboard.service';
+import { DashboardService } from './services/dashboard.service';
 import {
   DashboardStats,
   UpcomingAppointment,
   QuickStat,
   LowStockProduct,
   MonthlyRevenueData
-} from '../../core/models/dashboard.models';
+} from './models/dashboard.models';
 
 @Component({
   selector: 'app-dashboard',

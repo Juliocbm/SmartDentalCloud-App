@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -10,8 +11,14 @@ import { ThemeToggleComponent } from '../theme-toggle/theme-toggle';
   styleUrls: ['./header.scss']
 })
 export class HeaderComponent {
+  private authService = inject(AuthService);
+
   showNotifications = false;
   showUserMenu = false;
+
+  currentUser = this.authService.currentUser;
+  userName = computed(() => this.currentUser()?.name || 'Usuario');
+  userEmail = computed(() => this.currentUser()?.email || '');
 
   notifications = [
     { id: 1, message: 'Nueva cita programada', time: 'Hace 5 min', unread: true },
@@ -34,6 +41,16 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    console.log('Logout');
+    this.authService.logout().subscribe({
+      next: () => {
+        // Navegación al login se maneja en el servicio
+      },
+      error: (error) => {
+        console.error('Error during logout:', error);
+        // Aún así limpiar sesión local
+        localStorage.clear();
+        window.location.href = '/login';
+      }
+    });
   }
 }

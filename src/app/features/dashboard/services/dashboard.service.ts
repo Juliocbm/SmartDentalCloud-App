@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, forkJoin, of } from 'rxjs';
-import { ApiService } from './api.service';
+import { ApiService } from '../../../core/services/api.service';
 import {
   DashboardStats,
   UpcomingAppointment,
@@ -11,9 +11,7 @@ import {
   AppointmentStats
 } from '../models/dashboard.models';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class DashboardService {
   private apiService = inject(ApiService);
 
