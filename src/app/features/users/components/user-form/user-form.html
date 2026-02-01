@@ -2,7 +2,8 @@
   <!-- Header -->
   <div class="form-header">
     <h1 class="page-title">
-      {{ isEditMode() ? '✏️ Editar Usuario' : '➕ Nuevo Usuario' }}
+      <i class="fa-solid" [class.fa-user-pen]="isEditMode()" [class.fa-user-plus]="!isEditMode()"></i>
+      {{ isEditMode() ? 'Editar Usuario' : 'Nuevo Usuario' }}
     </h1>
     <p class="page-subtitle">
       {{ isEditMode() ? 'Modifica la información del usuario' : 'Registra un nuevo usuario del consultorio' }}
@@ -20,9 +21,11 @@
   <!-- Error Alert -->
   @if (error()) {
     <div class="alert alert-danger">
-      <span class="alert-icon">⚠️</span>
+      <i class="fa-solid fa-circle-exclamation alert-icon"></i>
       <span class="alert-message">{{ error() }}</span>
-      <button class="alert-close" (click)="error.set(null)">✕</button>
+      <button class="alert-close" (click)="error.set(null)">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
   }
 
@@ -33,11 +36,11 @@
       <!-- Basic Information Section -->
       <div class="form-section">
         <h2 class="section-title">
-          <span class="section-icon">📋</span>
+          <i class="fa-solid fa-id-card section-icon"></i>
           Información Básica
         </h2>
 
-        <div class="form-row">
+        <div class="form-row form-row-inline">
           <div class="form-group">
             <label for="name" class="form-label">
               Nombre Completo <span class="required">*</span>
@@ -105,8 +108,9 @@
                 type="button"
                 class="password-toggle"
                 (click)="togglePasswordVisibility()"
+                [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
               >
-                {{ showPassword() ? '🙈' : '👁️' }}
+                <i class="fa-solid" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
               </button>
             </div>
             @if (passwordControl?.invalid && passwordControl?.touched) {
@@ -120,7 +124,8 @@
               </span>
             }
             <p class="field-hint">
-              💡 El usuario deberá cambiarla en su primer inicio de sesión
+              <i class="fa-solid fa-lightbulb"></i>
+              El usuario deberá cambiarla en su primer inicio de sesión
             </p>
           </div>
         }
@@ -129,7 +134,7 @@
       <!-- Roles Section -->
       <div class="form-section">
         <h2 class="section-title">
-          <span class="section-icon">🔑</span>
+          <i class="fa-solid fa-user-shield section-icon"></i>
           Asignación de Roles
           <span class="required">*</span>
         </h2>
@@ -158,7 +163,7 @@
                     (change)="toggleRole(role.id)"
                     (click)="$event.stopPropagation()"
                   />
-                  <span class="role-icon">{{ getRoleIcon(role.name) }}</span>
+                  <i class="fa-solid role-icon" [ngClass]="getRoleIcon(role.name)"></i>
                   <span class="role-name">{{ role.name }}</span>
                 </div>
                 @if (role.description) {
@@ -166,7 +171,8 @@
                 }
                 <div class="role-meta">
                   <span class="role-permissions-count">
-                    🔐 {{ role.permissions?.length || 0 }} permisos
+                    <i class="fa-solid fa-key"></i>
+                    {{ role.permissions?.length || 0 }} permisos
                   </span>
                 </div>
               </div>
@@ -175,7 +181,8 @@
 
           @if (selectedRoles().size === 0) {
             <p class="warning-message">
-              ⚠️ Debes seleccionar al menos un rol
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              Debes seleccionar al menos un rol
             </p>
           }
         }
@@ -184,7 +191,7 @@
       <!-- Professional Profile Section (Optional) -->
       <div class="form-section">
         <h2 class="section-title">
-          <span class="section-icon">💼</span>
+          <i class="fa-solid fa-briefcase section-icon"></i>
           Perfil Profesional
           <span class="optional-badge">Opcional</span>
         </h2>
@@ -248,7 +255,8 @@
             <span class="btn-spinner"></span>
             Guardando...
           } @else {
-            {{ isEditMode() ? '💾 Guardar Cambios' : '➕ Crear Usuario' }}
+            <i class="fa-solid" [class.fa-floppy-disk]="isEditMode()" [class.fa-user-plus]="!isEditMode()"></i>
+            {{ isEditMode() ? 'Guardar Cambios' : 'Crear Usuario' }}
           }
         </button>
       </div>

@@ -250,11 +250,11 @@ export class UserFormComponent implements OnInit {
 
   getRoleIcon(roleName: string): string {
     const iconMap: Record<string, string> = {
-      'Administrador': '👨‍💼',
-      'Odontólogo': '🩺',
-      'Recepcionista': '📋',
-      'Asistente': '🤝'
+      'Administrador': 'fa-user-tie',
+      'Odontólogo': 'fa-user-doctor',
+      'Recepcionista': 'fa-clipboard-user',
+      'Asistente': 'fa-hands-helping'
     };
-    return iconMap[roleName] || '👤';
+    return iconMap[roleName] || 'fa-user';
   }
 }
