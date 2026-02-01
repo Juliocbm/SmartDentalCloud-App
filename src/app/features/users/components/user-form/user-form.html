@@ -155,6 +155,7 @@
                     type="checkbox"
                     [checked]="isRoleSelected(role.id)"
                     class="role-checkbox"
+                    (change)="toggleRole(role.id)"
                     (click)="$event.stopPropagation()"
                   />
                   <span class="role-icon">{{ getRoleIcon(role.name) }}</span>
