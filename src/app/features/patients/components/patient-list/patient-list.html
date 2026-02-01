@@ -1,0 +1,215 @@
+<div class="patient-list-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fa-solid fa-users"></i>
+        Pacientes
+      </h1>
+      <p class="page-subtitle">Gestión de pacientes del consultorio</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" routerLink="/patients/new">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Paciente
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por nombre, email o teléfono..."
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="onSearch()"
+      />
+      <button class="btn-search" (click)="onSearch()" [disabled]="loading()">
+        Buscar
+      </button>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn btn-outline" routerLink="/patients/search">
+        <i class="fa-solid fa-filter"></i>
+        Búsqueda Avanzada
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-state">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <p>Cargando pacientes...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error()" class="error-state">
+    <i class="fa-solid fa-exclamation-circle"></i>
+    <p>{{ error() }}</p>
+    <button class="btn btn-primary" (click)="loadPatients()">Reintentar</button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && !error() && patients().length === 0" class="empty-state">
+    <i class="fa-solid fa-user-plus"></i>
+    <h3>No hay pacientes registrados</h3>
+    <p>Comienza agregando tu primer paciente</p>
+    <button class="btn btn-primary" routerLink="/patients/new">
+      <i class="fa-solid fa-plus"></i>
+      Crear Primer Paciente
+    </button>
+  </div>
+
+  <!-- Patients Table -->
+  <div *ngIf="!loading() && !error() && patients().length > 0" class="table-container">
+    <table class="patients-table">
+      <thead>
+        <tr>
+          <th>Paciente</th>
+          <th>Contacto</th>
+          <th>Edad</th>
+          <th>Última Visita</th>
+          <th>Estado</th>
+          <th>Indicadores</th>
+          <th class="actions-column">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let patient of patients()" [class.inactive]="!patient.isActive">
+          <!-- Paciente -->
+          <td class="patient-info">
+            <div class="patient-name">{{ getFullName(patient) }}</div>
+            <div class="patient-id">#{{ patient.id.substring(0, 8) }}</div>
+          </td>
+
+          <!-- Contacto -->
+          <td class="contact-info">
+            <div class="contact-item" *ngIf="patient.phoneNumber">
+              <i class="fa-solid fa-phone"></i>
+              {{ patient.phoneNumber }}
+            </div>
+            <div class="contact-item" *ngIf="patient.email">
+              <i class="fa-solid fa-envelope"></i>
+              {{ patient.email }}
+            </div>
+            <div class="contact-empty" *ngIf="!patient.phoneNumber && !patient.email">
+              <span class="text-muted">Sin contacto</span>
+            </div>
+          </td>
+
+          <!-- Edad -->
+          <td class="age-info">
+            {{ getAge(patient) }}
+          </td>
+
+          <!-- Última Visita -->
+          <td class="last-visit">
+            {{ formatDate(patient.updatedAt) }}
+          </td>
+
+          <!-- Estado -->
+          <td class="status-column">
+            <span class="badge" [class.badge-success]="patient.isActive" [class.badge-inactive]="!patient.isActive">
+              {{ patient.isActive ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+
+          <!-- Indicadores -->
+          <td class="indicators">
+            <div class="indicator-badges">
+              <span 
+                *ngIf="hasAllergies(patient)" 
+                class="indicator-badge badge-warning"
+                title="Tiene alergias registradas"
+              >
+                <i class="fa-solid fa-exclamation-triangle"></i>
+              </span>
+              <span 
+                *ngIf="hasMedicalHistory(patient)" 
+                class="indicator-badge badge-info"
+                title="Tiene historia médica"
+              >
+                <i class="fa-solid fa-heartbeat"></i>
+              </span>
+            </div>
+          </td>
+
+          <!-- Acciones -->
+          <td class="actions-column">
+            <div class="action-buttons">
+              <button 
+                class="btn-icon btn-view" 
+                [routerLink]="['/patients', patient.id]"
+                title="Ver detalles"
+              >
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              <button 
+                class="btn-icon btn-edit" 
+                [routerLink]="['/patients', patient.id, 'edit']"
+                title="Editar"
+              >
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button 
+                class="btn-icon btn-toggle"
+                [class.btn-deactivate]="patient.isActive"
+                [class.btn-activate]="!patient.isActive"
+                (click)="toggleActive(patient)"
+                [title]="patient.isActive ? 'Desactivar' : 'Activar'"
+              >
+                <i class="fa-solid" [class.fa-toggle-on]="patient.isActive" [class.fa-toggle-off]="!patient.isActive"></i>
+              </button>
+              <button 
+                class="btn-icon btn-delete" 
+                (click)="deletePatient(patient)"
+                title="Eliminar"
+              >
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading() && patients().length > 0" class="pagination-container">
+    <div class="pagination-info">
+      Mostrando {{ (currentPage() - 1) * pageSize() + 1 }} - 
+      {{ Math.min(currentPage() * pageSize(), totalItems()) }} de {{ totalItems() }} pacientes
+    </div>
+
+    <div class="pagination-controls">
+      <button 
+        class="btn-page" 
+        (click)="onPageChange(currentPage() - 1)"
+        [disabled]="currentPage() === 1"
+      >
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <button 
+        *ngFor="let page of getPaginationPages()"
+        class="btn-page"
+        [class.active]="page === currentPage()"
+        (click)="onPageChange(page)"
+      >
+        {{ page }}
+      </button>
+
+      <button 
+        class="btn-page" 
+        (click)="onPageChange(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages()"
+      >
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

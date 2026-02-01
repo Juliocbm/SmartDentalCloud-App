@@ -1,0 +1,106 @@
+.select-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.select-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  .required {
+    color: var(--error-500);
+  }
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-right: var(--spacing-4xl);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+  }
+
+  &:disabled {
+    background-color: var(--surface-secondary);
+    color: var(--text-disabled);
+    cursor: not-allowed;
+  }
+
+  &.error {
+    border-color: var(--error-500);
+
+    &:focus {
+      box-shadow: 0 0 0 3px var(--error-100);
+    }
+  }
+
+  option {
+    color: var(--text-primary);
+    background-color: var(--surface-primary);
+    padding: var(--spacing-sm);
+
+    &:disabled {
+      color: var(--text-tertiary);
+    }
+  }
+}
+
+.select-icon {
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  pointer-events: none;
+  transition: var(--transition-fast);
+
+  .select-input:focus ~ & {
+    color: var(--primary-500);
+  }
+}
+
+.select-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+
+  i {
+    font-size: var(--font-size-lg);
+    color: var(--primary-500);
+  }
+}
+
+.error-message {
+  font-size: var(--font-size-sm);
+  color: var(--error-500);
+  margin-top: var(--spacing-xs);
+}

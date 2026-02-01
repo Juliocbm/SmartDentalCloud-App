@@ -1,0 +1,348 @@
+.user-detail-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  text-align: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border-primary);
+  border-top-color: var(--primary-500);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-icon {
+  font-size: 64px;
+  margin-bottom: var(--spacing-md);
+}
+
+.error-message {
+  color: var(--color-danger);
+  margin-bottom: var(--spacing-md);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+
+  .header-nav {
+    .back-link {
+      color: #337ab7;
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.2s ease-in-out;
+
+      &:hover {
+        color: #23527c;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.info-card {
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  overflow: hidden;
+
+  &.main-info {
+    .card-header {
+      background: linear-gradient(135deg, #f7f7f7 0%, #337ab7 100%);
+      padding: 32px;
+      color: white;
+    }
+  }
+
+  .card-header {
+    padding: 24px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .user-avatar {
+      font-size: 64px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-title {
+      flex: 1;
+      
+      .user-name {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0 0 8px 0;
+      }
+
+      .user-email {
+        font-size: 16px;
+        opacity: 0.9;
+        margin: 0;
+      }
+    }
+
+    .user-status-badge {
+      .status-badge {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+
+        &.status-active {
+          background: #28a745;
+          color: white;
+        }
+
+        &.status-inactive {
+          background: #dc3545;
+          color: white;
+        }
+      }
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #337ab7;
+      margin: 0;
+      flex: 1;
+
+      .card-icon {
+        font-size: 24px;
+      }
+
+      .permissions-count {
+        font-size: 16px;
+        font-weight: normal;
+        padding: 8px 16px;
+        background: #337ab7;
+        color: #23527c;
+        border-radius: 8px;
+        margin-left: 16px;
+      }
+    }
+  }
+
+  .card-body {
+    padding: 24px;
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .info-label {
+      font-size: 14px;
+      color: #666;
+      font-weight: medium;
+    }
+
+    .info-value {
+      font-size: 16px;
+      color: #337ab7;
+      font-weight: medium;
+    }
+  }
+}
+
+.roles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .role-item {
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+
+      .role-icon {
+        font-size: 20px;
+      }
+
+      &.badge-admin {
+        background: #337ab7;
+        color: #23527c;
+      }
+
+      &.badge-doctor {
+        background: #dc3545;
+        color: #fff;
+      }
+
+      &.badge-receptionist {
+        background: #ffc107;
+        color: #fff;
+      }
+
+      &.badge-assistant {
+        background: var(--success-100);
+        color: var(--color-success-dark);
+      }
+
+      &.badge-default {
+        background: var(--surface-tertiary);
+        color: var(--text-secondary);
+      }
+    }
+
+    .role-description {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: var(--spacing-xs) 0 0 0;
+      padding-left: calc(var(--font-size-lg) + var(--spacing-xs) + var(--spacing-sm));
+    }
+  }
+}
+
+.permissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+
+  .permission-group {
+    .group-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin: 0 0 var(--spacing-sm) 0;
+      padding-bottom: var(--spacing-xs);
+      border-bottom: 2px solid var(--primary-500);
+    }
+
+    .permissions-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+
+      .permission-chip {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        padding: var(--spacing-xs) 0;
+      }
+    }
+  }
+}
+
+.additional-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+
+  .info-block {
+    .info-block-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin: 0 0 var(--spacing-xs) 0;
+    }
+
+    .info-block-content {
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.6;
+    }
+  }
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--text-tertiary);
+  font-style: italic;
+  margin: var(--spacing-md) 0;
+}
+
+@media (max-width: 768px) {
+  .user-detail-container {
+    padding: var(--spacing-md);
+  }
+
+  .detail-header {
+    flex-direction: column;
+    align-items: stretch;
+
+    .header-actions {
+      width: 100%;
+      
+      .btn {
+        flex: 1;
+      }
+    }
+  }
+
+  .info-card {
+    &.main-info {
+      .card-header {
+        flex-direction: column;
+        text-align: center;
+
+        .user-status-badge {
+          align-self: stretch;
+
+          .status-badge {
+            display: block;
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .permissions-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -22,7 +22,7 @@ export const routes: Routes = [
       },
       {
         path: 'patients',
-        loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
+        loadChildren: () => import('./features/patients/patients.routes').then(m => m.PATIENTS_ROUTES)
       },
       {
         path: 'appointments',
@@ -43,6 +43,10 @@ export const routes: Routes = [
       {
         path: 'reports',
         loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
+      },
+      {
+        path: 'users',
+        loadChildren: () => import('./features/users/users.routes').then(m => m.USERS_ROUTES)
       },
       {
         path: 'settings',

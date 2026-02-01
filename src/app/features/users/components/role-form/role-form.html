@@ -1,0 +1,122 @@
+<div class="role-form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <h1 class="page-title">
+      {{ isEditMode() ? '✏️ Editar Rol' : '➕ Nuevo Rol' }}
+    </h1>
+    <p class="page-subtitle">
+      {{ isEditMode() ? 'Modifica el rol y sus permisos' : 'Crea un rol personalizado para tu consultorio' }}
+    </p>
+  </div>
+
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="alert alert-danger">
+      <span class="alert-icon">⚠️</span>
+      <span class="alert-message">{{ error() }}</span>
+      <button class="alert-close" (click)="error.set(null)">✕</button>
+    </div>
+  }
+
+  <!-- Form -->
+  <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="role-form">
+    
+    <!-- Basic Information Section -->
+    <div class="form-section">
+      <h2 class="section-title">
+        <span class="section-icon">📋</span>
+        Información del Rol
+      </h2>
+
+      <div class="form-group">
+        <label for="name" class="form-label">
+          Nombre del Rol <span class="required">*</span>
+        </label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          class="form-input"
+          [class.input-error]="nameControl?.invalid && nameControl?.touched"
+          placeholder="Ej: Auxiliar de Ortodoncia"
+        />
+        @if (nameControl?.invalid && nameControl?.touched) {
+          <span class="error-message">
+            @if (nameControl?.errors?.['required']) {
+              El nombre es requerido
+            }
+            @if (nameControl?.errors?.['minlength']) {
+              Mínimo 3 caracteres
+            }
+          </span>
+        }
+        <p class="field-hint">
+          💡 Elige un nombre descriptivo que refleje la función en el consultorio
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="form-label">
+          Descripción
+        </label>
+        <textarea
+          id="description"
+          formControlName="description"
+          class="form-textarea"
+          rows="3"
+          placeholder="Ej: Asistente especializado en procedimientos de ortodoncia"
+        ></textarea>
+        <p class="field-hint">
+          Describe brevemente las responsabilidades de este rol
+        </p>
+      </div>
+    </div>
+
+    <!-- Permissions Section -->
+    <div class="form-section">
+      <h2 class="section-title">
+        <span class="section-icon">🔐</span>
+        Permisos del Rol
+        <span class="required">*</span>
+      </h2>
+      <p class="section-description">
+        Selecciona los permisos que tendrá este rol. Los usuarios con este rol podrán realizar únicamente las acciones marcadas.
+      </p>
+
+      <app-permission-selector
+        [selectedPermissions]="selectedPermissions()"
+        (permissionsChange)="onPermissionsChange($event)"
+      ></app-permission-selector>
+
+      @if (selectedPermissions().length === 0) {
+        <p class="warning-message">
+          ⚠️ Debes seleccionar al menos un permiso
+        </p>
+      }
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="cancel()"
+        [disabled]="loading()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loading()"
+      >
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          {{ isEditMode() ? '💾 Guardar Cambios' : '➕ Crear Rol' }}
+        }
+      </button>
+    </div>
+  </form>
+</div>

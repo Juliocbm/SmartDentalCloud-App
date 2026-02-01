@@ -1,0 +1,256 @@
+<div class="user-form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <h1 class="page-title">
+      {{ isEditMode() ? '✏️ Editar Usuario' : '➕ Nuevo Usuario' }}
+    </h1>
+    <p class="page-subtitle">
+      {{ isEditMode() ? 'Modifica la información del usuario' : 'Registra un nuevo usuario del consultorio' }}
+    </p>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading() && isEditMode()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando usuario...</p>
+    </div>
+  }
+
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="alert alert-danger">
+      <span class="alert-icon">⚠️</span>
+      <span class="alert-message">{{ error() }}</span>
+      <button class="alert-close" (click)="error.set(null)">✕</button>
+    </div>
+  }
+
+  <!-- Form -->
+  @if (!loading() || !isEditMode()) {
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
+      
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h2 class="section-title">
+          <span class="section-icon">📋</span>
+          Información Básica
+        </h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name" class="form-label">
+              Nombre Completo <span class="required">*</span>
+            </label>
+            <input
+              id="name"
+              type="text"
+              formControlName="name"
+              class="form-input"
+              [class.input-error]="nameControl?.invalid && nameControl?.touched"
+              placeholder="Ej: Dr. Juan Pérez"
+            />
+            @if (nameControl?.invalid && nameControl?.touched) {
+              <span class="error-message">
+                @if (nameControl?.errors?.['required']) {
+                  El nombre es requerido
+                }
+                @if (nameControl?.errors?.['minlength']) {
+                  Mínimo 3 caracteres
+                }
+              </span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">
+              Email <span class="required">*</span>
+            </label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              class="form-input"
+              [class.input-error]="emailControl?.invalid && emailControl?.touched"
+              placeholder="ejemplo@clinica.com"
+            />
+            @if (emailControl?.invalid && emailControl?.touched) {
+              <span class="error-message">
+                @if (emailControl?.errors?.['required']) {
+                  El email es requerido
+                }
+                @if (emailControl?.errors?.['email']) {
+                  Email inválido
+                }
+              </span>
+            }
+          </div>
+        </div>
+
+        @if (!isEditMode()) {
+          <div class="form-group">
+            <label for="password" class="form-label">
+              Contraseña Temporal <span class="required">*</span>
+            </label>
+            <div class="password-input-wrapper">
+              <input
+                id="password"
+                [type]="showPassword() ? 'text' : 'password'"
+                formControlName="password"
+                class="form-input"
+                [class.input-error]="passwordControl?.invalid && passwordControl?.touched"
+                placeholder="Mínimo 8 caracteres"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="togglePasswordVisibility()"
+              >
+                {{ showPassword() ? '🙈' : '👁️' }}
+              </button>
+            </div>
+            @if (passwordControl?.invalid && passwordControl?.touched) {
+              <span class="error-message">
+                @if (passwordControl?.errors?.['required']) {
+                  La contraseña es requerida
+                }
+                @if (passwordControl?.errors?.['minlength']) {
+                  Mínimo 8 caracteres
+                }
+              </span>
+            }
+            <p class="field-hint">
+              💡 El usuario deberá cambiarla en su primer inicio de sesión
+            </p>
+          </div>
+        }
+      </div>
+
+      <!-- Roles Section -->
+      <div class="form-section">
+        <h2 class="section-title">
+          <span class="section-icon">🔑</span>
+          Asignación de Roles
+          <span class="required">*</span>
+        </h2>
+        <p class="section-description">
+          Selecciona uno o más roles. Los permisos del usuario serán la unión de todos sus roles.
+        </p>
+
+        @if (loadingRoles()) {
+          <div class="loading-small">
+            <div class="spinner-small"></div>
+            <span>Cargando roles...</span>
+          </div>
+        } @else {
+          <div class="roles-grid">
+            @for (role of roles(); track role.id) {
+              <div
+                class="role-card"
+                [class.role-selected]="isRoleSelected(role.id)"
+                (click)="toggleRole(role.id)"
+              >
+                <div class="role-card-header">
+                  <input
+                    type="checkbox"
+                    [checked]="isRoleSelected(role.id)"
+                    class="role-checkbox"
+                    (click)="$event.stopPropagation()"
+                  />
+                  <span class="role-icon">{{ getRoleIcon(role.name) }}</span>
+                  <span class="role-name">{{ role.name }}</span>
+                </div>
+                @if (role.description) {
+                  <p class="role-description">{{ role.description }}</p>
+                }
+                <div class="role-meta">
+                  <span class="role-permissions-count">
+                    🔐 {{ role.permissions?.length || 0 }} permisos
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (selectedRoles().size === 0) {
+            <p class="warning-message">
+              ⚠️ Debes seleccionar al menos un rol
+            </p>
+          }
+        }
+      </div>
+
+      <!-- Professional Profile Section (Optional) -->
+      <div class="form-section">
+        <h2 class="section-title">
+          <span class="section-icon">💼</span>
+          Perfil Profesional
+          <span class="optional-badge">Opcional</span>
+        </h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phoneNumber" class="form-label">Teléfono</label>
+            <input
+              id="phoneNumber"
+              type="tel"
+              formControlName="phoneNumber"
+              class="form-input"
+              placeholder="555-1234"
+            />
+          </div>
+
+          @if (hasRoleDoctor()) {
+            <div class="form-group">
+              <label for="specialty" class="form-label">Especialidad</label>
+              <input
+                id="specialty"
+                type="text"
+                formControlName="specialty"
+                class="form-input"
+                placeholder="Ej: Ortodoncia"
+              />
+            </div>
+          }
+        </div>
+
+        @if (hasRoleDoctor()) {
+          <div class="form-group">
+            <label for="professionalLicense" class="form-label">Cédula Profesional</label>
+            <input
+              id="professionalLicense"
+              type="text"
+              formControlName="professionalLicense"
+              class="form-input"
+              placeholder="Número de cédula"
+            />
+          </div>
+        }
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancel()"
+          [disabled]="loading()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="loading() || loadingRoles()"
+        >
+          @if (loading()) {
+            <span class="btn-spinner"></span>
+            Guardando...
+          } @else {
+            {{ isEditMode() ? '💾 Guardar Cambios' : '➕ Crear Usuario' }}
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>

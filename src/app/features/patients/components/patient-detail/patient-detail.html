@@ -1,0 +1,230 @@
+<div class="patient-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-state">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <p>Cargando información del paciente...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error()" class="error-state">
+    <i class="fa-solid fa-exclamation-circle"></i>
+    <p>{{ error() }}</p>
+    <button class="btn btn-primary" routerLink="/patients">Volver a la lista</button>
+  </div>
+
+  <!-- Patient Detail -->
+  <div *ngIf="!loading() && !error() && patient()" class="patient-detail">
+    <!-- Header -->
+    <div class="detail-header">
+      <div class="header-info">
+        <h1 class="patient-name">{{ getFullName() }}</h1>
+        <div class="patient-meta">
+          <span class="meta-item">
+            <i class="fa-solid fa-calendar"></i>
+            {{ getAge() }}
+          </span>
+          <span class="meta-item">
+            <i class="fa-solid fa-clock"></i>
+            Registrado: {{ formatDate(patient()!.createdAt) }}
+          </span>
+          <span class="badge" [class.badge-active]="patient()!.isActive" [class.badge-inactive]="!patient()!.isActive">
+            {{ patient()!.isActive ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" (click)="editPatient()">
+          <i class="fa-solid fa-pen"></i>
+          Editar
+        </button>
+        <button 
+          class="btn btn-warning" 
+          *ngIf="patient()!.isActive"
+          (click)="toggleActive()"
+        >
+          <i class="fa-solid fa-toggle-off"></i>
+          Desactivar
+        </button>
+        <button 
+          class="btn btn-success" 
+          *ngIf="!patient()!.isActive"
+          (click)="toggleActive()"
+        >
+          <i class="fa-solid fa-toggle-on"></i>
+          Activar
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-container">
+      <div class="tabs-nav">
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'info'"
+          (click)="setActiveTab('info')"
+        >
+          <i class="fa-solid fa-user"></i>
+          Información General
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'medical'"
+          (click)="setActiveTab('medical')"
+        >
+          <i class="fa-solid fa-heartbeat"></i>
+          Historia Médica
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Info Tab -->
+        <div *ngIf="activeTab() === 'info'" class="tab-panel">
+          <div class="info-grid">
+            <!-- Datos Personales Card -->
+            <div class="info-card">
+              <h3 class="card-title">
+                <i class="fa-solid fa-user"></i>
+                Datos Personales
+              </h3>
+              <div class="card-content">
+                <div class="info-row">
+                  <span class="info-label">Nombre Completo:</span>
+                  <span class="info-value">{{ getFullName() }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Fecha de Nacimiento:</span>
+                  <span class="info-value">{{ formatDate(patient()!.dateOfBirth) }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Edad:</span>
+                  <span class="info-value">{{ getAge() }}</span>
+                </div>
+                <div class="info-row" *ngIf="patient()!.gender">
+                  <span class="info-label">Género:</span>
+                  <span class="info-value">{{ patient()!.gender }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Datos de Contacto Card -->
+            <div class="info-card">
+              <h3 class="card-title">
+                <i class="fa-solid fa-address-book"></i>
+                Información de Contacto
+              </h3>
+              <div class="card-content">
+                <div class="info-row" *ngIf="patient()!.phoneNumber">
+                  <span class="info-label">
+                    <i class="fa-solid fa-phone"></i>
+                    Teléfono:
+                  </span>
+                  <span class="info-value">{{ patient()!.phoneNumber }}</span>
+                </div>
+                <div class="info-row" *ngIf="patient()!.email">
+                  <span class="info-label">
+                    <i class="fa-solid fa-envelope"></i>
+                    Email:
+                  </span>
+                  <span class="info-value">{{ patient()!.email }}</span>
+                </div>
+                <div class="info-row" *ngIf="patient()!.address">
+                  <span class="info-label">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Dirección:
+                  </span>
+                  <span class="info-value">{{ patient()!.address }}</span>
+                </div>
+                <div class="info-empty" *ngIf="!patient()!.phoneNumber && !patient()!.email && !patient()!.address">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Sin información de contacto registrada
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medical Tab -->
+        <div *ngIf="activeTab() === 'medical'" class="tab-panel">
+          <!-- Allergies Alert -->
+          <div class="medical-alert" *ngIf="hasAllergies()">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            <div>
+              <strong>⚠️ ALERGIAS</strong>
+              <p>{{ patient()!.allergies }}</p>
+            </div>
+          </div>
+
+          <div class="medical-grid">
+            <!-- Blood Type -->
+            <div class="info-card" *ngIf="patient()!.bloodType">
+              <h3 class="card-title">
+                <i class="fa-solid fa-droplet"></i>
+                Tipo de Sangre
+              </h3>
+              <div class="card-content">
+                <div class="blood-type-badge">{{ patient()!.bloodType }}</div>
+              </div>
+            </div>
+
+            <!-- Chronic Diseases -->
+            <div class="info-card" *ngIf="patient()!.chronicDiseases">
+              <h3 class="card-title">
+                <i class="fa-solid fa-notes-medical"></i>
+                Enfermedades Crónicas
+              </h3>
+              <div class="card-content">
+                <p>{{ patient()!.chronicDiseases }}</p>
+              </div>
+            </div>
+
+            <!-- Current Medications -->
+            <div class="info-card" *ngIf="patient()!.currentMedications">
+              <h3 class="card-title">
+                <i class="fa-solid fa-pills"></i>
+                Medicamentos Actuales
+              </h3>
+              <div class="card-content">
+                <p>{{ patient()!.currentMedications }}</p>
+              </div>
+            </div>
+
+            <!-- Smoking Status -->
+            <div class="info-card" *ngIf="patient()!.smokingStatus">
+              <h3 class="card-title">
+                <i class="fa-solid fa-smoking"></i>
+                Estado Fumador
+              </h3>
+              <div class="card-content">
+                <p>{{ patient()!.smokingStatus }}</p>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="info-card full-width" *ngIf="patient()!.notes">
+              <h3 class="card-title">
+                <i class="fa-solid fa-file-lines"></i>
+                Notas Médicas
+              </h3>
+              <div class="card-content">
+                <p>{{ patient()!.notes }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-medical" *ngIf="!hasMedicalHistory()">
+            <i class="fa-solid fa-heartbeat"></i>
+            <h3>Sin Historia Médica</h3>
+            <p>Este paciente no tiene información médica registrada</p>
+            <button class="btn btn-primary" (click)="editPatient()">
+              <i class="fa-solid fa-plus"></i>
+              Agregar Historia Médica
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

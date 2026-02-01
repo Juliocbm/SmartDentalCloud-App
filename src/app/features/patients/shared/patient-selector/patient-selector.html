@@ -1,0 +1,77 @@
+<div class="patient-selector" [class.disabled]="disabled" [class.has-error]="error">
+  <!-- Input Container -->
+  <div class="selector-input-container">
+    <!-- Search Icon -->
+    <i class="fa-solid fa-user selector-icon"></i>
+
+    <!-- Input Field -->
+    <input
+      type="text"
+      class="selector-input"
+      [formControl]="searchControl"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [attr.required]="required"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      autocomplete="off"
+    />
+
+    <!-- Loading Indicator -->
+    <i *ngIf="loading()" class="fa-solid fa-spinner fa-spin selector-spinner"></i>
+
+    <!-- Clear Button -->
+    <button
+      *ngIf="selectedPatient() && !disabled"
+      type="button"
+      class="selector-clear"
+      (click)="clearSelection()"
+      title="Limpiar selección"
+    >
+      <i class="fa-solid fa-times"></i>
+    </button>
+  </div>
+
+  <!-- Dropdown -->
+  <div class="selector-dropdown" *ngIf="showDropdown() && !disabled">
+    <div *ngIf="patients().length === 0 && !loading()" class="dropdown-empty">
+      <i class="fa-solid fa-search"></i>
+      <span>No se encontraron pacientes</span>
+    </div>
+
+    <div class="dropdown-list" *ngIf="patients().length > 0">
+      <button
+        type="button"
+        class="dropdown-item"
+        *ngFor="let patient of patients()"
+        (click)="selectPatient(patient)"
+        [class.selected]="selectedPatient()?.id === patient.id"
+      >
+        <div class="patient-info">
+          <div class="patient-name">
+            {{ getPatientDisplayName(patient) }}
+            <span class="patient-age" *ngIf="patient.age">{{ getPatientAge(patient) }}</span>
+          </div>
+          <div class="patient-contact">
+            <i class="fa-solid fa-phone" *ngIf="patient.phoneNumber"></i>
+            <i class="fa-solid fa-envelope" *ngIf="!patient.phoneNumber && patient.email"></i>
+            {{ getPatientContact(patient) }}
+          </div>
+        </div>
+        <i class="fa-solid fa-check check-icon" *ngIf="selectedPatient()?.id === patient.id"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="selector-error" *ngIf="error">
+    <i class="fa-solid fa-exclamation-circle"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Required Indicator -->
+  <div class="selector-hint" *ngIf="required && !selectedPatient()">
+    <i class="fa-solid fa-asterisk"></i>
+    <span>Campo requerido</span>
+  </div>
+</div>

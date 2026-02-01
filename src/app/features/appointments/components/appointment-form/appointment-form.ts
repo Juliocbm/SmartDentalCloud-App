@@ -3,11 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppointmentsService } from '../../services/appointments.service';
+import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
+import { DoctorSelectComponent } from '../../../../shared/components/doctor-select/doctor-select';
+import { PatientSearchResult } from '../../../patients/models/patient.models';
+import { DoctorListItem } from '../../../../core/models/user.models';
 
 @Component({
   selector: 'app-appointment-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    PatientAutocompleteComponent,
+    DoctorSelectComponent
+  ],
   templateUrl: './appointment-form.html',
   styleUrls: ['./appointment-form.scss']
 })
@@ -22,6 +31,9 @@ export class AppointmentFormComponent implements OnInit {
   error = signal<string | null>(null);
   isEditMode = signal(false);
   appointmentId = signal<string | null>(null);
+  
+  selectedPatient = signal<PatientSearchResult | null>(null);
+  selectedDoctor = signal<DoctorListItem | null>(null);
 
   ngOnInit(): void {
     this.initForm();
@@ -35,9 +47,7 @@ export class AppointmentFormComponent implements OnInit {
 
     this.appointmentForm = this.fb.group({
       patientId: ['', Validators.required],
-      patientName: ['', Validators.required],
       userId: ['', Validators.required],
-      doctorName: [''],
       startAt: [this.formatDateTimeLocal(startAt), Validators.required],
       endAt: [this.formatDateTimeLocal(endAt), Validators.required],
       reason: ['', [Validators.required, Validators.minLength(3)]]
@@ -59,13 +69,26 @@ export class AppointmentFormComponent implements OnInit {
       next: (appointment) => {
         this.appointmentForm.patchValue({
           patientId: appointment.patientId,
-          patientName: appointment.patientName,
           userId: appointment.userId || '',
-          doctorName: appointment.doctorName || '',
           startAt: this.formatDateTimeLocal(appointment.startAt),
           endAt: this.formatDateTimeLocal(appointment.endAt),
           reason: appointment.reason
         });
+        
+        this.selectedPatient.set({
+          id: appointment.patientId,
+          name: appointment.patientName,
+          email: '',
+          phone: ''
+        });
+        
+        if (appointment.userId && appointment.doctorName) {
+          this.selectedDoctor.set({
+            id: appointment.userId,
+            name: appointment.doctorName,
+            specialization: undefined
+          });
+        }
         this.loading.set(false);
       },
       error: (error) => {
@@ -147,5 +170,23 @@ export class AppointmentFormComponent implements OnInit {
       }
     }
     return null;
+  }
+
+  onPatientSelected(patient: PatientSearchResult | null): void {
+    this.selectedPatient.set(patient);
+    if (patient) {
+      this.appointmentForm.patchValue({ patientId: patient.id });
+    } else {
+      this.appointmentForm.patchValue({ patientId: '' });
+    }
+  }
+
+  onDoctorSelected(doctor: DoctorListItem | null): void {
+    this.selectedDoctor.set(doctor);
+    if (doctor) {
+      this.appointmentForm.patchValue({ userId: doctor.id });
+    } else {
+      this.appointmentForm.patchValue({ userId: '' });
+    }
   }
 }

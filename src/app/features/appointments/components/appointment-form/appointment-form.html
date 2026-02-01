@@ -19,78 +19,32 @@
     <div class="form-section">
       <h3>Información del Paciente</h3>
       
-      <div class="form-row">
-        <div class="form-group">
-          <label for="patientId">
-            ID del Paciente *
-            <span class="help-text">(Temporal - Se integrará con selector)</span>
-          </label>
-          <input 
-            type="text" 
-            id="patientId"
-            formControlName="patientId"
-            placeholder="00000000-0000-0000-0000-000000000000"
-            class="form-input"
-            [class.error]="getFieldError('patientId')"
-          >
-          @if (getFieldError('patientId')) {
-            <span class="error-message">{{ getFieldError('patientId') }}</span>
-          }
-        </div>
-
-        <div class="form-group">
-          <label for="patientName">
-            Nombre del Paciente *
-          </label>
-          <input 
-            type="text" 
-            id="patientName"
-            formControlName="patientName"
-            placeholder="Ej: Juan Pérez García"
-            class="form-input"
-            [class.error]="getFieldError('patientName')"
-          >
-          @if (getFieldError('patientName')) {
-            <span class="error-message">{{ getFieldError('patientName') }}</span>
-          }
-        </div>
+      <div class="form-group">
+        <app-patient-autocomplete
+          [selectedPatientId]="selectedPatient()?.id || null"
+          [required]="true"
+          [disabled]="loading()"
+          [error]="getFieldError('patientId')"
+          (patientSelected)="onPatientSelected($event)"
+        >
+          Buscar Paciente
+        </app-patient-autocomplete>
       </div>
     </div>
 
     <div class="form-section">
       <h3>Información del Doctor</h3>
       
-      <div class="form-row">
-        <div class="form-group">
-          <label for="userId">
-            ID del Doctor *
-            <span class="help-text">(Temporal - Se integrará con selector)</span>
-          </label>
-          <input 
-            type="text" 
-            id="userId"
-            formControlName="userId"
-            placeholder="00000000-0000-0000-0000-000000000000"
-            class="form-input"
-            [class.error]="getFieldError('userId')"
-          >
-          @if (getFieldError('userId')) {
-            <span class="error-message">{{ getFieldError('userId') }}</span>
-          }
-        </div>
-
-        <div class="form-group">
-          <label for="doctorName">
-            Nombre del Doctor
-          </label>
-          <input 
-            type="text" 
-            id="doctorName"
-            formControlName="doctorName"
-            placeholder="Ej: Dra. María González"
-            class="form-input"
-          >
-        </div>
+      <div class="form-group">
+        <app-doctor-select
+          [selectedDoctorId]="selectedDoctor()?.id || null"
+          [required]="true"
+          [disabled]="loading()"
+          [error]="getFieldError('userId')"
+          (doctorSelected)="onDoctorSelected($event)"
+        >
+          Seleccionar Doctor
+        </app-doctor-select>
       </div>
     </div>
 

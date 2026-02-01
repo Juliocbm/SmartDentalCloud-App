@@ -26,6 +26,7 @@ export class SidebarComponent {
     { icon: 'fa-solid fa-tooth', label: 'Tratamientos', route: '/treatments' },
     { icon: 'fa-solid fa-file-invoice-dollar', label: 'Facturación', route: '/billing' },
     { icon: 'fa-solid fa-user-doctor', label: 'Dentistas', route: '/dentists' },
+    { icon: 'fa-solid fa-user-shield', label: 'Usuarios y Roles', route: '/users' },
     { icon: 'fa-solid fa-chart-line', label: 'Reportes', route: '/reports' },
     { icon: 'fa-solid fa-gear', label: 'Configuración', route: '/settings' },
   ];

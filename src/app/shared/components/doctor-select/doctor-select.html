@@ -1,0 +1,37 @@
+<div class="select-container">
+  <label class="select-label">
+    <slot></slot>
+    @if (required) {
+      <span class="required">*</span>
+    }
+  </label>
+
+  <div class="select-wrapper">
+    @if (loading()) {
+      <div class="select-loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Cargando doctores...</span>
+      </div>
+    } @else {
+      <select
+        [formControl]="selectControl"
+        [disabled]="disabled"
+        class="select-input"
+        [class.error]="error"
+      >
+        <option [value]="null" disabled selected>{{ placeholder }}</option>
+        @for (doctor of doctors(); track doctor.id) {
+          <option [value]="doctor.id">
+            {{ doctor.name }}@if (doctor.specialization) { - {{ doctor.specialization }} }
+          </option>
+        }
+      </select>
+
+      <i class="fa-solid fa-chevron-down select-icon"></i>
+    }
+  </div>
+
+  @if (error) {
+    <span class="error-message">{{ error }}</span>
+  }
+</div>

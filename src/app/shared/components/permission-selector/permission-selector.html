@@ -1,0 +1,117 @@
+<div class="permission-selector">
+  <!-- Header with Controls -->
+  <div class="selector-header">
+    <div class="header-info">
+      <h3 class="selector-title">🔐 Selección de Permisos</h3>
+      <p class="selector-count">
+        <span class="count-selected">{{ getTotalSelectedCount() }}</span> de 
+        <span class="count-total">{{ getTotalPermissionsCount() }}</span> seleccionados
+      </p>
+    </div>
+    
+    <div class="header-actions">
+      <button type="button" class="btn-text" (click)="expandAll()">
+        ➕ Expandir todos
+      </button>
+      <button type="button" class="btn-text" (click)="collapseAll()">
+        ➖ Colapsar todos
+      </button>
+      <button type="button" class="btn-text" (click)="selectAll()">
+        ☑️ Seleccionar todos
+      </button>
+      <button type="button" class="btn-text btn-danger" (click)="deselectAll()">
+        ☐ Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- Search Box -->
+  <div class="selector-search">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      placeholder="Buscar permisos..."
+      (input)="onSearchChange($any($event.target).value)"
+      class="search-input"
+    />
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner-small"></div>
+      <span>Cargando permisos...</span>
+    </div>
+  }
+
+  <!-- Permission Groups -->
+  @else {
+    <div class="permissions-container">
+      @for (group of getFilteredGroups(); track group.category) {
+        <div class="permission-group" [class.expanded]="isCategoryExpanded(group.category)">
+          <!-- Group Header -->
+          <div class="group-header" (click)="toggleCategory(group.category)">
+            <div class="group-header-left">
+              <span class="expand-icon">
+                {{ isCategoryExpanded(group.category) ? '▼' : '▶' }}
+              </span>
+              <span class="group-icon">{{ group.icon }}</span>
+              <h4 class="group-title">{{ group.category }}</h4>
+              <span class="group-count">
+                ({{ getCategorySelectedCount(group) }}/{{ group.permissions.length }})
+              </span>
+            </div>
+
+            <div class="group-header-right" (click)="$event.stopPropagation()">
+              <button
+                type="button"
+                class="btn-icon"
+                [class.active]="isCategoryFullySelected(group)"
+                [class.partial]="isCategoryPartiallySelected(group)"
+                (click)="isCategoryFullySelected(group) ? deselectAllInCategory(group) : selectAllInCategory(group)"
+                [title]="isCategoryFullySelected(group) ? 'Deseleccionar todos' : 'Seleccionar todos'"
+              >
+                @if (isCategoryFullySelected(group)) {
+                  ☑️
+                } @else if (isCategoryPartiallySelected(group)) {
+                  ◼️
+                } @else {
+                  ☐
+                }
+              </button>
+            </div>
+          </div>
+
+          <!-- Group Body (Collapsible) -->
+          @if (isCategoryExpanded(group.category)) {
+            <div class="group-body">
+              <div class="permissions-list">
+                @for (permission of group.permissions; track permission.id) {
+                  <label class="permission-item">
+                    <input
+                      type="checkbox"
+                      [checked]="isPermissionSelected(permission.key)"
+                      (change)="togglePermission(permission.key)"
+                      class="permission-checkbox"
+                    />
+                    <div class="permission-info">
+                      <span class="permission-key">{{ permission.key }}</span>
+                      <span class="permission-description">{{ permission.description }}</span>
+                    </div>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (getFilteredGroups().length === 0) {
+        <div class="empty-state">
+          <span class="empty-icon">🔍</span>
+          <p>No se encontraron permisos</p>
+        </div>
+      }
+    </div>
+  }
+</div>

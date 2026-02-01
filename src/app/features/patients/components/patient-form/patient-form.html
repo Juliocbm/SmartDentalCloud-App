@@ -1,0 +1,176 @@
+<div class="patient-form-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fa-solid fa-user-plus" *ngIf="!isEditMode()"></i>
+        <i class="fa-solid fa-user-pen" *ngIf="isEditMode()"></i>
+        {{ isEditMode() ? 'Editar Paciente' : 'Nuevo Paciente' }}
+      </h1>
+      <p class="page-subtitle">
+        {{ isEditMode() ? 'Actualiza la información del paciente' : 'Ingresa los datos del nuevo paciente' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-state">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <p>{{ isEditMode() ? 'Cargando paciente...' : 'Guardando...' }}</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error()" class="error-alert">
+    <i class="fa-solid fa-exclamation-circle"></i>
+    <span>{{ error() }}</span>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="patientForm" (ngSubmit)="onSubmit()" *ngIf="!loading()">
+    <div class="form-card">
+      <!-- Datos Personales -->
+      <div class="form-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-user"></i>
+          Datos Personales
+        </h2>
+
+        <div class="form-row">
+          <!-- Nombre -->
+          <div class="form-group">
+            <label for="firstName" class="form-label required">
+              Nombre
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              class="form-input"
+              formControlName="firstName"
+              placeholder="Ingrese el nombre"
+              [class.invalid]="isFieldInvalid('firstName')"
+            />
+            <span class="error-message" *ngIf="isFieldInvalid('firstName')">
+              {{ getFieldError('firstName') }}
+            </span>
+          </div>
+
+          <!-- Apellido -->
+          <div class="form-group">
+            <label for="lastName" class="form-label required">
+              Apellido
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              class="form-input"
+              formControlName="lastName"
+              placeholder="Ingrese el apellido"
+              [class.invalid]="isFieldInvalid('lastName')"
+            />
+            <span class="error-message" *ngIf="isFieldInvalid('lastName')">
+              {{ getFieldError('lastName') }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <!-- Fecha de Nacimiento -->
+          <div class="form-group">
+            <label for="dateOfBirth" class="form-label">
+              Fecha de Nacimiento
+            </label>
+            <input
+              type="date"
+              id="dateOfBirth"
+              class="form-input"
+              formControlName="dateOfBirth"
+              [class.invalid]="isFieldInvalid('dateOfBirth')"
+            />
+            <span class="age-indicator" *ngIf="calculatedAge() !== null">
+              <i class="fa-solid fa-calendar"></i>
+              {{ calculatedAge() }} años
+            </span>
+            <span class="error-message" *ngIf="isFieldInvalid('dateOfBirth')">
+              {{ getFieldError('dateOfBirth') }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Datos de Contacto -->
+      <div class="form-section">
+        <h2 class="section-title">
+          <i class="fa-solid fa-address-book"></i>
+          Información de Contacto
+        </h2>
+
+        <div class="form-row">
+          <!-- Teléfono -->
+          <div class="form-group">
+            <label for="phoneNumber" class="form-label">
+              Teléfono
+            </label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-phone"></i>
+              <input
+                type="tel"
+                id="phoneNumber"
+                class="form-input"
+                formControlName="phoneNumber"
+                placeholder="10 dígitos"
+                maxlength="10"
+                [class.invalid]="isFieldInvalid('phoneNumber')"
+              />
+            </div>
+            <span class="error-message" *ngIf="isFieldInvalid('phoneNumber')">
+              {{ getFieldError('phoneNumber') }}
+            </span>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email" class="form-label">
+              Email
+            </label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-envelope"></i>
+              <input
+                type="email"
+                id="email"
+                class="form-input"
+                formControlName="email"
+                placeholder="ejemplo@correo.com"
+                [class.invalid]="isFieldInvalid('email')"
+              />
+            </div>
+            <span class="error-message" *ngIf="isFieldInvalid('email')">
+              {{ getFieldError('email') }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="onCancel()"
+        [disabled]="loading()"
+      >
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loading() || patientForm.invalid"
+      >
+        <i class="fa-solid fa-check"></i>
+        {{ isEditMode() ? 'Actualizar' : 'Crear' }} Paciente
+      </button>
+    </div>
+  </form>
+</div>
