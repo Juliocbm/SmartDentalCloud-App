@@ -204,11 +204,18 @@
       }
       
 
+      .fc-header-toolbar {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin-bottom: var(--spacing-lg) !important;
+      }
+      
       .fc-toolbar {
         gap: var(--spacing-lg);
-        padding: var(--spacing-xl);
-        background: var(--surface-primary);
-        border-bottom: 1px solid var(--border-primary);
+        padding: 0;
+        background: transparent;
+        border-bottom: none;
         
         h2 {
           margin: 0;
