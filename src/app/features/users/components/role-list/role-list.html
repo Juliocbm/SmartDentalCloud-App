@@ -2,15 +2,20 @@
   <!-- Header -->
   <div class="list-header">
     <div class="header-content">
-      <h1 class="page-title">🔑 Roles y Permisos</h1>
+      <h1 class="page-title">
+        <i class="fa-solid fa-shield-halved"></i>
+        Roles y Permisos
+      </h1>
       <p class="page-subtitle">Gestiona roles personalizados y sus permisos</p>
     </div>
     <div class="header-actions">
       <a routerLink="/users" class="btn btn-secondary">
-        ← Volver a Usuarios
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver a Usuarios
       </a>
       <a routerLink="/users/roles/new" class="btn btn-primary">
-        ➕ Nuevo Rol
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Rol
       </a>
     </div>
   </div>
@@ -26,7 +31,7 @@
   <!-- Error State -->
   @else if (error()) {
     <div class="error-container">
-      <div class="error-icon">⚠️</div>
+      <i class="fa-solid fa-triangle-exclamation error-icon"></i>
       <p class="error-message">{{ error() }}</p>
       <button class="btn btn-secondary" (click)="loadRoles()">
         Reintentar
@@ -37,7 +42,7 @@
   <!-- Empty State -->
   @else if (roles().length === 0) {
     <div class="empty-state">
-      <div class="empty-icon">🔑</div>
+      <i class="fa-solid fa-shield-halved empty-icon"></i>
       <h3>No hay roles configurados</h3>
       <p>Crea el primer rol personalizado para tu consultorio</p>
       <a routerLink="/users/roles/new" class="btn btn-primary">
@@ -52,7 +57,9 @@
       @for (role of roles(); track role.id) {
         <div class="role-card">
           <div class="role-card-header">
-            <span class="role-icon-large">{{ getRoleIcon(role.name) }}</span>
+            <div class="role-icon-large">
+              <i class="fa-solid" [ngClass]="getRoleIcon(role.name)"></i>
+            </div>
             <div class="role-title-section">
               <h3 class="role-name">{{ role.name }}</h3>
               @if (role.description) {
@@ -64,7 +71,7 @@
           <div class="role-card-body">
             <div class="role-stats">
               <div class="stat-item">
-                <span class="stat-icon">🔐</span>
+                <i class="fa-solid fa-key stat-icon"></i>
                 <div class="stat-content">
                   <span class="stat-value">{{ role.permissions.length }}</span>
                   <span class="stat-label">Permisos</span>
@@ -91,13 +98,15 @@
 
           <div class="role-card-actions">
             <a [routerLink]="['/users/roles', role.id, 'edit']" class="btn btn-sm btn-primary">
-              ✏️ Editar
+              <i class="fa-solid fa-pen"></i>
+              Editar
             </a>
             <button
               (click)="deleteRole(role)"
               class="btn btn-sm btn-danger"
             >
-              🗑️ Eliminar
+              <i class="fa-solid fa-trash"></i>
+              Eliminar
             </button>
           </div>
         </div>
