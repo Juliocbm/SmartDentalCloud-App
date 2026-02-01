@@ -30,7 +30,7 @@
 .dashboard-header {
   background: var(--gradient-header);
   border-bottom: 1px solid var(--border-primary);
-  padding: var(--spacing-2xl) var(--spacing-3xl);
+  padding: var(--spacing-xl) var(--spacing-2xl);
   margin-bottom: 0;
   
   .header-content {
@@ -56,8 +56,8 @@
   .page-title {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    font-size: var(--font-size-4xl);
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
     color: var(--text-primary);
     margin: 0 0 var(--spacing-sm) 0;
@@ -70,9 +70,9 @@
   }
   
   .page-subtitle {
-    font-size: var(--font-size-base);
-    color: var(--text-tertiary);
-    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0 0;
     line-height: var(--line-height-normal);
   }
 }

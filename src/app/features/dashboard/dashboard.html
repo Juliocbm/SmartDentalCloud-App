@@ -7,18 +7,14 @@
           <i class="fa-solid fa-gauge"></i>
           Dashboard
         </h1>
-        <p class="page-subtitle">Resumen general de tu consultorio dental</p>
+        <p class="page-subtitle">Bienvenido a SmartDental Cloud</p>
       </div>
       <div class="header-actions">
-        <button class="btn btn-outline" (click)="exportData()">
-          <i class="fa-solid fa-download"></i>
-          Exportar
+        <button class="btn btn-outline" (click)="refreshData()" [disabled]="loading()">
+          <i class="fa-solid fa-sync-alt" [class.fa-spin]="loading()"></i>
+          Actualizar
         </button>
-        <button class="btn btn-outline" (click)="refreshData()" [disabled]="loading">
-          <i class="fa-solid fa-sync-alt" [class.fa-spin]="loading"></i>
-          {{ loading ? 'Actualizando...' : 'Actualizar' }}
-        </button>
-        <button class="btn btn-primary" (click)="createNew()">
+        <button class="btn btn-primary" (click)="onQuickAction(quickActions[0])">
           <i class="fa-solid fa-plus"></i>
           Nueva Cita
         </button>
@@ -26,215 +22,179 @@
     </div>
   </div>
 
-  <!-- KPI Cards -->
-  <div class="kpi-section">
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-header">
-          <div class="kpi-icon-wrapper">
-            <i class="fa-solid fa-users"></i>
-          </div>
-          <div class="kpi-trend positive">
-            <i class="fa-solid fa-arrow-up"></i>
-            <span>+12%</span>
-          </div>
-        </div>
-        <div class="kpi-content">
-          <div class="kpi-value">{{ kpiData.totalPatients }}</div>
-          <div class="kpi-label">Total Pacientes</div>
-          <div class="kpi-sublabel">Pacientes registrados</div>
-        </div>
-        <div class="kpi-chart">
-          <div class="mini-chart">
-            <div class="chart-bar" style="height: 60%"></div>
-            <div class="chart-bar" style="height: 80%"></div>
-            <div class="chart-bar" style="height: 45%"></div>
-            <div class="chart-bar" style="height: 90%"></div>
-            <div class="chart-bar" style="height: 75%"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-header">
-          <div class="kpi-icon-wrapper">
-            <i class="fa-solid fa-calendar-check"></i>
-          </div>
-          <div class="kpi-trend positive">
-            <i class="fa-solid fa-arrow-up"></i>
-            <span>+8%</span>
-          </div>
-        </div>
-        <div class="kpi-content">
-          <div class="kpi-value">{{ kpiData.appointmentsToday }}</div>
-          <div class="kpi-label">Citas Hoy</div>
-          <div class="kpi-sublabel">Citas programadas</div>
-        </div>
-        <div class="kpi-chart">
-          <div class="mini-chart">
-            <div class="chart-bar" style="height: 70%"></div>
-            <div class="chart-bar" style="height: 85%"></div>
-            <div class="chart-bar" style="height: 65%"></div>
-            <div class="chart-bar" style="height: 95%"></div>
-            <div class="chart-bar" style="height: 80%"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-header">
-          <div class="kpi-icon-wrapper">
-            <i class="fa-solid fa-clock"></i>
-          </div>
-          <div class="kpi-trend negative">
-            <i class="fa-solid fa-arrow-down"></i>
-            <span>-3%</span>
-          </div>
-        </div>
-        <div class="kpi-content">
-          <div class="kpi-value">{{ kpiData.pendingPayments }}</div>
-          <div class="kpi-label">Pagos Pendientes</div>
-          <div class="kpi-sublabel">Facturas sin cobrar</div>
-        </div>
-        <div class="kpi-chart">
-          <div class="mini-chart">
-            <div class="chart-bar" style="height: 50%"></div>
-            <div class="chart-bar" style="height: 40%"></div>
-            <div class="chart-bar" style="height: 55%"></div>
-            <div class="chart-bar" style="height: 30%"></div>
-            <div class="chart-bar" style="height: 45%"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-header">
-          <div class="kpi-icon-wrapper">
-            <i class="fa-solid fa-dollar-sign"></i>
-          </div>
-          <div class="kpi-trend positive">
-            <i class="fa-solid fa-arrow-up"></i>
-            <span>+15%</span>
-          </div>
-        </div>
-        <div class="kpi-content">
-          <div class="kpi-value">${{ kpiData.revenue.toLocaleString() }}</div>
-          <div class="kpi-label">Ingresos del Mes</div>
-          <div class="kpi-sublabel">Total facturado</div>
-        </div>
-        <div class="kpi-chart">
-          <div class="mini-chart">
-            <div class="chart-bar" style="height: 65%"></div>
-            <div class="chart-bar" style="height: 75%"></div>
-            <div class="chart-bar" style="height: 70%"></div>
-            <div class="chart-bar" style="height: 85%"></div>
-            <div class="chart-bar" style="height: 90%"></div>
-          </div>
-        </div>
+  @if (loading()) {
+    <div class="content-section">
+      <div style="text-align: center; padding: 4rem;">
+        <div class="spinner spinner-lg"></div>
+        <p class="text-secondary" style="margin-top: 1rem;">Cargando dashboard...</p>
       </div>
     </div>
-  </div>
-
-  <!-- Error Message -->
-  @if (errorMessage) {
-    <div class="alert alert-error">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <span>{{ errorMessage }}</span>
+  } @else {
+    <!-- KPI Cards -->
+    <div class="kpi-section">
+      <div class="kpi-grid">
+        @for (kpi of kpis(); track kpi.label) {
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <div class="kpi-icon-wrapper" [style.background]="'var(--' + kpi.color + '-50)'">
+                <i class="fa-solid" [ngClass]="kpi.icon" [style.color]="'var(--' + kpi.color + '-600)'"></i>
+              </div>
+              @if (kpi.trend !== undefined) {
+                <div class="kpi-trend" 
+                     [ngClass]="{
+                       'positive': kpi.trendDirection === 'up',
+                       'negative': kpi.trendDirection === 'down',
+                       'neutral': kpi.trendDirection === 'neutral'
+                     }">
+                  @if (kpi.trendDirection === 'up') {
+                    <i class="fa-solid fa-arrow-up"></i>
+                  } @else if (kpi.trendDirection === 'down') {
+                    <i class="fa-solid fa-arrow-down"></i>
+                  } @else {
+                    <i class="fa-solid fa-minus"></i>
+                  }
+                  <span>{{ kpi.trend }}%</span>
+                </div>
+              }
+            </div>
+            <div class="kpi-content">
+              <div class="kpi-value">{{ kpi.value }}</div>
+              <div class="kpi-label">{{ kpi.label }}</div>
+            </div>
+          </div>
+        }
+      </div>
     </div>
-  }
 
-  <!-- Data Table -->
-  <div class="content-section">
-    <div class="content-container">
+    <!-- Próximas Citas -->
+    <div class="content-section">
+      <div class="content-container">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i class="fa-solid fa-calendar-days"></i>
+            Próximas Citas
+          </h3>
+        </div>
+        
+        @if (upcomingAppointments().length === 0) {
+          <div class="alert alert-info">
+            <i class="fa-solid fa-info-circle"></i>
+            <span>No hay citas programadas próximamente</span>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Paciente</th>
+                  <th>Doctor</th>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Motivo</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (appointment of upcomingAppointments(); track appointment.id) {
+                  <tr>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-100); color: var(--primary-600); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">
+                          {{ appointment.patientName.charAt(0) }}
+                        </div>
+                        <strong>{{ appointment.patientName }}</strong>
+                      </div>
+                    </td>
+                    <td>{{ appointment.doctorName || 'Sin asignar' }}</td>
+                    <td>{{ formatDate(appointment.startAt) }}</td>
+                    <td>{{ formatTime(appointment.startAt) }}</td>
+                    <td>{{ appointment.reason }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="getStatusClass(appointment.status)">
+                        {{ appointment.status }}
+                      </span>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-outline">
+                        <i class="fa-solid fa-eye"></i>
+                        Ver
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Productos con Stock Bajo -->
+    @if (lowStockProducts().length > 0) {
+      <div class="content-section">
+        <div class="content-container">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="fa-solid fa-exclamation-triangle"></i>
+              Productos con Stock Bajo
+            </h3>
+          </div>
+          
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Categoría</th>
+                  <th>Stock Actual</th>
+                  <th>Stock Mínimo</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (product of lowStockProducts(); track product.id) {
+                  <tr>
+                    <td><strong>{{ product.name }}</strong></td>
+                    <td>{{ product.category }}</td>
+                    <td>{{ product.currentStock }}</td>
+                    <td>{{ product.minStock }}</td>
+                    <td>
+                      <span class="badge badge-warning">
+                        <i class="fa-solid fa-exclamation-circle"></i>
+                        Bajo stock
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Acciones Rápidas -->
+    <div class="quick-actions-section">
       <div class="section-header">
         <h3 class="section-title">
-          <i class="fa-solid fa-calendar-days"></i>
-          Próximas Citas
+          <i class="fa-solid fa-bolt"></i>
+          Acciones Rápidas
         </h3>
       </div>
-      
-      <div class="table-container">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Paciente</th>
-              <th>Hora</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (appointment of recentAppointments; track appointment.id) {
-              <tr>
-                <td>{{ appointment.patient }}</td>
-                <td>{{ appointment.time }}</td>
-                <td>
-                  <span class="badge" [ngClass]="getStatusClass(appointment.status)">
-                    {{ appointment.status }}
-                  </span>
-                </td>
-                <td>
-                  <button class="btn btn-sm btn-outline">
-                    <i class="fa-solid fa-eye"></i>
-                    Ver
-                  </button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+      <div class="quick-actions-grid">
+        @for (action of quickActions; track action.title) {
+          <button class="quick-action-card" (click)="onQuickAction(action)">
+            <div class="action-icon">
+              <i class="fa-solid" [ngClass]="action.icon"></i>
+            </div>
+            <div class="action-content">
+              <div class="action-title">{{ action.title }}</div>
+              <div class="action-subtitle">{{ action.subtitle }}</div>
+            </div>
+          </button>
+        }
       </div>
     </div>
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="quick-actions-section">
-    <div class="section-header">
-      <h3 class="section-title">
-        <i class="fa-solid fa-bolt"></i>
-        Acciones Rápidas
-      </h3>
-    </div>
-    <div class="quick-actions-grid">
-      <button class="quick-action-card" (click)="quickAction('new-patient')">
-        <div class="action-icon">
-          <i class="fa-solid fa-user-plus"></i>
-        </div>
-        <div class="action-content">
-          <div class="action-title">Nuevo Paciente</div>
-          <div class="action-subtitle">Registrar un nuevo paciente en el sistema</div>
-        </div>
-      </button>
-
-      <button class="quick-action-card" (click)="quickAction('new-appointment')">
-        <div class="action-icon">
-          <i class="fa-solid fa-calendar-plus"></i>
-        </div>
-        <div class="action-content">
-          <div class="action-title">Agendar Cita</div>
-          <div class="action-subtitle">Programar una nueva cita médica</div>
-        </div>
-      </button>
-
-      <button class="quick-action-card" (click)="quickAction('new-invoice')">
-        <div class="action-icon">
-          <i class="fa-solid fa-file-invoice"></i>
-        </div>
-        <div class="action-content">
-          <div class="action-title">Crear Factura</div>
-          <div class="action-subtitle">Generar una nueva factura de servicios</div>
-        </div>
-      </button>
-
-      <button class="quick-action-card" (click)="quickAction('reports')">
-        <div class="action-icon">
-          <i class="fa-solid fa-chart-bar"></i>
-        </div>
-        <div class="action-content">
-          <div class="action-title">Ver Reportes</div>
-          <div class="action-subtitle">Acceder a reportes y estadísticas</div>
-        </div>
-      </button>
-    </div>
-  </div>
+  }
 </div>

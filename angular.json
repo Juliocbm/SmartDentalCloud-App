@@ -3,6 +3,9 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
+    "cache": {
+      "enabled": false
+    },
     "analytics": "f1c2c6c6-cba7-47a8-98f3-4ca5f919adc6"
   },
   "newProjectRoot": "projects",
@@ -33,7 +36,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "outputMode": "static"
+            "outputMode": "static",
+            "ssr": false,
+            "prerender": false
           },
           "configurations": {
             "production": {
