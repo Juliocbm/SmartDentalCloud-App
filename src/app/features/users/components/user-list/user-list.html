@@ -1,18 +1,21 @@
 <div class="user-list-container">
   <!-- Header -->
-  <div class="list-header">
+  <div class="page-header">
     <div class="header-content">
-      <h1 class="page-title">👥 Usuarios del Consultorio</h1>
+      <h1 class="page-title">
+        <i class="fa-solid fa-users"></i>
+        Usuarios del Consultorio
+      </h1>
       <p class="page-subtitle">Gestiona usuarios, roles y permisos</p>
     </div>
     <div class="header-actions">
-      <a routerLink="/users/new" class="btn btn-primary">
-        <span class="btn-icon">➕</span>
-        Nuevo Usuario
-      </a>
-      <a routerLink="/users/roles" class="btn btn-secondary">
-        <span class="btn-icon">🔑</span>
+      <a class="btn btn-outline" routerLink="/users/roles">
+        <i class="fa-solid fa-key"></i>
         Gestionar Roles
+      </a>
+      <a class="btn btn-primary" routerLink="/users/new">
+        <i class="fa-solid fa-user-plus"></i>
+        Nuevo Usuario
       </a>
     </div>
   </div>
@@ -20,21 +23,21 @@
   <!-- Filters -->
   <div class="filters-section">
     <div class="search-box">
-      <span class="search-icon">🔍</span>
+      <i class="fa-solid fa-search search-icon"></i>
       <input
         type="text"
+        class="search-input"
         placeholder="Buscar por nombre o email..."
         [value]="searchTerm()"
         (input)="onSearchChange($any($event.target).value)"
-        class="search-input"
       />
     </div>
 
-    <div class="filter-group">
+    <div class="filter-actions">
       <select
+        class="filter-select"
         [value]="filterStatus()"
         (change)="onStatusFilterChange($any($event.target).value)"
-        class="filter-select"
       >
         <option value="all">Todos los estados</option>
         <option value="active">Activos</option>
@@ -42,9 +45,9 @@
       </select>
 
       <select
+        class="filter-select"
         [value]="filterRole()"
         (change)="onRoleFilterChange($any($event.target).value)"
-        class="filter-select"
       >
         <option value="all">Todos los roles</option>
         @for (role of roles(); track role.id) {
@@ -56,113 +59,167 @@
 
   <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-container">
-      <div class="spinner"></div>
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
       <p>Cargando usuarios...</p>
     </div>
   }
 
   <!-- Error State -->
-  @else if (error()) {
-    <div class="error-container">
-      <div class="error-icon">⚠️</div>
-      <p class="error-message">{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadData()">
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadData()">
+        <i class="fa-solid fa-refresh"></i>
         Reintentar
       </button>
     </div>
   }
 
   <!-- Empty State -->
-  @else if (filteredUsers().length === 0 && users().length === 0) {
+  @if (!loading() && !error() && filteredUsers().length === 0 && users().length === 0) {
     <div class="empty-state">
-      <div class="empty-icon">👥</div>
+      <i class="fa-solid fa-user-plus"></i>
       <h3>No hay usuarios registrados</h3>
-      <p>Comienza agregando el primer usuario del consultorio</p>
-      <a routerLink="/users/new" class="btn btn-primary">
+      <p>Comienza creando el primer usuario del sistema</p>
+      <a class="btn btn-primary" routerLink="/users/new">
+        <i class="fa-solid fa-plus"></i>
         Crear Primer Usuario
       </a>
     </div>
   }
 
   <!-- No Results State -->
-  @else if (filteredUsers().length === 0) {
+  @if (!loading() && !error() && filteredUsers().length === 0 && users().length > 0) {
     <div class="empty-state">
-      <div class="empty-icon">🔍</div>
+      <i class="fa-solid fa-filter"></i>
       <h3>No se encontraron resultados</h3>
-      <p>Intenta con otros filtros de búsqueda</p>
+      <p>Intenta ajustar los filtros de búsqueda</p>
     </div>
   }
 
-  <!-- Users List -->
-  @else {
-    <div class="users-grid">
-      @for (user of filteredUsers(); track user.id) {
-        <div class="user-card" [class.user-inactive]="!user.isActive">
-          <div class="user-card-header">
-            <div class="user-info">
-              <h3 class="user-name">{{ user.name }}</h3>
-              <p class="user-email">{{ user.email }}</p>
-            </div>
-            <div class="user-status">
-              @if (user.isActive) {
-                <span class="status-badge status-active">✅ Activo</span>
-              } @else {
-                <span class="status-badge status-inactive">❌ Inactivo</span>
-              }
-            </div>
-          </div>
+  <!-- Users Table -->
+  @if (!loading() && !error() && filteredUsers().length > 0) {
+    <div class="table-container">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Roles</th>
+            <th>Contacto</th>
+            <th>Especialidad</th>
+            <th>Registro</th>
+            <th>Estado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of filteredUsers(); track user.id) {
+            <tr [class.row-inactive]="!user.isActive">
+              <!-- Usuario -->
+              <td class="user-cell">
+                <div class="user-avatar">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="user-info">
+                  <div class="user-name">{{ user.name }}</div>
+                  <div class="user-email">{{ user.email }}</div>
+                </div>
+              </td>
 
-          <div class="user-card-body">
-            <div class="user-roles">
-              @for (role of user.roles; track role.id) {
-                <span [class]="'role-badge ' + getRoleBadgeClass(role.name)">
-                  <span class="role-icon">{{ getRoleIcon(role.name) }}</span>
-                  {{ role.name }}
+              <!-- Roles -->
+              <td class="roles-cell">
+                <div class="roles-wrapper">
+                  @for (role of user.roles; track role.id) {
+                    <span class="role-badge" [ngClass]="getRoleBadgeClass(role.name)">
+                      <span class="role-icon">{{ getRoleIcon(role.name) }}</span>
+                      {{ role.name }}
+                    </span>
+                  }
+                </div>
+              </td>
+
+              <!-- Contacto -->
+              <td class="contact-cell">
+                @if (user.profile?.phoneNumber) {
+                  <div class="contact-item">
+                    <i class="fa-solid fa-phone"></i>
+                    {{ user.profile?.phoneNumber }}
+                  </div>
+                } @else {
+                  <span class="text-muted">Sin teléfono</span>
+                }
+              </td>
+
+              <!-- Especialidad -->
+              <td class="specialty-cell">
+                @if (user.profile?.specialty) {
+                  <span class="specialty-tag">
+                    <i class="fa-solid fa-stethoscope"></i>
+                    {{ user.profile?.specialty }}
+                  </span>
+                } @else {
+                  <span class="text-muted">N/A</span>
+                }
+              </td>
+
+              <!-- Registro -->
+              <td class="date-cell">
+                {{ user.createdAt | date:'dd/MM/yyyy' }}
+              </td>
+
+              <!-- Estado -->
+              <td class="status-cell">
+                <span 
+                  class="badge" 
+                  [class.badge-success]="user.isActive"
+                  [class.badge-error]="!user.isActive"
+                >
+                  <i class="fa-solid" [class.fa-circle-check]="user.isActive" [class.fa-circle-xmark]="!user.isActive"></i>
+                  {{ user.isActive ? 'Activo' : 'Inactivo' }}
                 </span>
-              }
-            </div>
+              </td>
 
-            @if (user.profile?.specialty) {
-              <div class="user-specialty">
-                <span class="specialty-label">Especialidad:</span>
-                <span class="specialty-value">{{ user.profile?.specialty }}</span>
-              </div>
-            }
-
-            <div class="user-meta">
-              <span class="meta-item">
-                📅 Registrado: {{ user.createdAt | date:'dd/MM/yyyy' }}</span>
-              <span class="meta-item">
-                🔑 {{ user.permissions?.length || 0 }} permisos
-              </span>
-            </div>
-          </div>
-
-          <div class="user-card-actions">
-            <a [routerLink]="['/users', user.id]" class="btn btn-sm btn-outline">
-              👁️ Ver
-            </a>
-            <a [routerLink]="['/users', user.id, 'edit']" class="btn btn-sm btn-outline">
-              ✏️ Editar
-            </a>
-            <button
-              (click)="toggleUserActive(user)"
-              class="btn btn-sm"
-              [class.btn-warning]="user.isActive"
-              [class.btn-success]="!user.isActive"
-            >
-              {{ user.isActive ? '🚫 Desactivar' : '✅ Activar' }}
-            </button>
-          </div>
-        </div>
-      }
+              <!-- Acciones -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button
+                    class="btn-icon btn-view"
+                    [routerLink]="['/users', user.id]"
+                    title="Ver detalles"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                  <button
+                    class="btn-icon btn-edit"
+                    [routerLink]="['/users', user.id, 'edit']"
+                    title="Editar"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button
+                    class="btn-icon"
+                    [class.btn-toggle-on]="user.isActive"
+                    [class.btn-toggle-off]="!user.isActive"
+                    (click)="toggleUserActive(user)"
+                    [title]="user.isActive ? 'Desactivar' : 'Activar'"
+                  >
+                    <i class="fa-solid" [class.fa-toggle-on]="user.isActive" [class.fa-toggle-off]="!user.isActive"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
 
-    <div class="list-footer">
-      <p class="results-count">
-        Mostrando {{ filteredUsers().length }} de {{ users().length }} usuarios
-      </p>
+    <!-- Results Summary -->
+    <div class="table-footer">
+      <span class="results-count">
+        Mostrando <strong>{{ filteredUsers().length }}</strong> de <strong>{{ users().length }}</strong> usuarios
+      </span>
     </div>
   }
 </div>
