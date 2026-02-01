@@ -1,0 +1,112 @@
+// ============================================
+// SmartDentalCloud - Estilos Globales
+// Sistema de diseño moderno con variables CSS
+// ============================================
+
+// Importar módulos del sistema de diseño (debe ir primero)
+@use './styles/variables';
+@use './styles/layout';
+@use './styles/components';
+
+// Importar Font Awesome
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+// ===== Reset y estilos base =====
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  height: 100%;
+  font-family: var(--font-family-base);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  line-height: var(--line-height-normal);
+  transition: var(--transition-theme);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ===== Scrollbar personalizado =====
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-500);
+  border-radius: var(--radius-sm);
+  
+  &:hover {
+    background: var(--primary-600);
+  }
+}
+
+// ===== Estilos de accesibilidad =====
+*:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+// ===== Animaciones suaves =====
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+// ===== Estilos de impresión =====
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+  
+  .no-print,
+  .sidebar,
+  .header-actions,
+  button {
+    display: none !important;
+  }
+}

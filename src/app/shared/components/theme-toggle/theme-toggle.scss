@@ -1,0 +1,22 @@
+.theme-toggle {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: var(--surface-secondary);
+    color: var(--primary-600);
+  }
+
+  i {
+    transition: var(--transition-base);
+  }
+}

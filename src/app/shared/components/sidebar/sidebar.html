@@ -1,0 +1,45 @@
+<aside class="sidebar" [class.collapsed]="collapsed()">
+  <div class="sidebar-header">
+    <div class="logo">
+      <i class="fa-solid fa-tooth"></i>
+      @if (!collapsed()) {
+        <span class="logo-text">SmartDental</span>
+      }
+    </div>
+    <button class="toggle-btn" (click)="toggleSidebar()" title="Toggle Sidebar">
+      <i class="fa-solid" [class.fa-angles-left]="!collapsed()" [class.fa-angles-right]="collapsed()"></i>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+    @for (item of menuItems; track item.route) {
+      <a 
+        [routerLink]="item.route" 
+        routerLinkActive="active"
+        class="menu-item"
+        [title]="item.label">
+        <i [class]="item.icon"></i>
+        @if (!collapsed()) {
+          <span class="menu-label">{{ item.label }}</span>
+          @if (item.badge) {
+            <span class="badge badge-primary">{{ item.badge }}</span>
+          }
+        }
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info" [title]="collapsed() ? 'Usuario' : ''">
+      <div class="user-avatar">
+        <i class="fa-solid fa-user"></i>
+      </div>
+      @if (!collapsed()) {
+        <div class="user-details">
+          <div class="user-name">Admin</div>
+          <div class="user-role">Administrador</div>
+        </div>
+      }
+    </div>
+  </div>
+</aside>

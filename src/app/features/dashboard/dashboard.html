@@ -1,0 +1,240 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1 class="page-title">
+          <i class="fa-solid fa-gauge"></i>
+          Dashboard
+        </h1>
+        <p class="page-subtitle">Resumen general de tu consultorio dental</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" (click)="exportData()">
+          <i class="fa-solid fa-download"></i>
+          Exportar
+        </button>
+        <button class="btn btn-outline" (click)="refreshData()" [disabled]="loading">
+          <i class="fa-solid fa-sync-alt" [class.fa-spin]="loading"></i>
+          {{ loading ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+        <button class="btn btn-primary" (click)="createNew()">
+          <i class="fa-solid fa-plus"></i>
+          Nueva Cita
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-section">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-wrapper">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="kpi-trend positive">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span>+12%</span>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-value">{{ kpiData.totalPatients }}</div>
+          <div class="kpi-label">Total Pacientes</div>
+          <div class="kpi-sublabel">Pacientes registrados</div>
+        </div>
+        <div class="kpi-chart">
+          <div class="mini-chart">
+            <div class="chart-bar" style="height: 60%"></div>
+            <div class="chart-bar" style="height: 80%"></div>
+            <div class="chart-bar" style="height: 45%"></div>
+            <div class="chart-bar" style="height: 90%"></div>
+            <div class="chart-bar" style="height: 75%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-wrapper">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+          <div class="kpi-trend positive">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span>+8%</span>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-value">{{ kpiData.appointmentsToday }}</div>
+          <div class="kpi-label">Citas Hoy</div>
+          <div class="kpi-sublabel">Citas programadas</div>
+        </div>
+        <div class="kpi-chart">
+          <div class="mini-chart">
+            <div class="chart-bar" style="height: 70%"></div>
+            <div class="chart-bar" style="height: 85%"></div>
+            <div class="chart-bar" style="height: 65%"></div>
+            <div class="chart-bar" style="height: 95%"></div>
+            <div class="chart-bar" style="height: 80%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-wrapper">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div class="kpi-trend negative">
+            <i class="fa-solid fa-arrow-down"></i>
+            <span>-3%</span>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-value">{{ kpiData.pendingPayments }}</div>
+          <div class="kpi-label">Pagos Pendientes</div>
+          <div class="kpi-sublabel">Facturas sin cobrar</div>
+        </div>
+        <div class="kpi-chart">
+          <div class="mini-chart">
+            <div class="chart-bar" style="height: 50%"></div>
+            <div class="chart-bar" style="height: 40%"></div>
+            <div class="chart-bar" style="height: 55%"></div>
+            <div class="chart-bar" style="height: 30%"></div>
+            <div class="chart-bar" style="height: 45%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon-wrapper">
+            <i class="fa-solid fa-dollar-sign"></i>
+          </div>
+          <div class="kpi-trend positive">
+            <i class="fa-solid fa-arrow-up"></i>
+            <span>+15%</span>
+          </div>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-value">${{ kpiData.revenue.toLocaleString() }}</div>
+          <div class="kpi-label">Ingresos del Mes</div>
+          <div class="kpi-sublabel">Total facturado</div>
+        </div>
+        <div class="kpi-chart">
+          <div class="mini-chart">
+            <div class="chart-bar" style="height: 65%"></div>
+            <div class="chart-bar" style="height: 75%"></div>
+            <div class="chart-bar" style="height: 70%"></div>
+            <div class="chart-bar" style="height: 85%"></div>
+            <div class="chart-bar" style="height: 90%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
+
+  <!-- Data Table -->
+  <div class="content-section">
+    <div class="content-container">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="fa-solid fa-calendar-days"></i>
+          Próximas Citas
+        </h3>
+      </div>
+      
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Paciente</th>
+              <th>Hora</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (appointment of recentAppointments; track appointment.id) {
+              <tr>
+                <td>{{ appointment.patient }}</td>
+                <td>{{ appointment.time }}</td>
+                <td>
+                  <span class="badge" [ngClass]="getStatusClass(appointment.status)">
+                    {{ appointment.status }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline">
+                    <i class="fa-solid fa-eye"></i>
+                    Ver
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="fa-solid fa-bolt"></i>
+        Acciones Rápidas
+      </h3>
+    </div>
+    <div class="quick-actions-grid">
+      <button class="quick-action-card" (click)="quickAction('new-patient')">
+        <div class="action-icon">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <div class="action-content">
+          <div class="action-title">Nuevo Paciente</div>
+          <div class="action-subtitle">Registrar un nuevo paciente en el sistema</div>
+        </div>
+      </button>
+
+      <button class="quick-action-card" (click)="quickAction('new-appointment')">
+        <div class="action-icon">
+          <i class="fa-solid fa-calendar-plus"></i>
+        </div>
+        <div class="action-content">
+          <div class="action-title">Agendar Cita</div>
+          <div class="action-subtitle">Programar una nueva cita médica</div>
+        </div>
+      </button>
+
+      <button class="quick-action-card" (click)="quickAction('new-invoice')">
+        <div class="action-icon">
+          <i class="fa-solid fa-file-invoice"></i>
+        </div>
+        <div class="action-content">
+          <div class="action-title">Crear Factura</div>
+          <div class="action-subtitle">Generar una nueva factura de servicios</div>
+        </div>
+      </button>
+
+      <button class="quick-action-card" (click)="quickAction('reports')">
+        <div class="action-icon">
+          <i class="fa-solid fa-chart-bar"></i>
+        </div>
+        <div class="action-content">
+          <div class="action-title">Ver Reportes</div>
+          <div class="action-subtitle">Acceder a reportes y estadísticas</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
