@@ -26,7 +26,7 @@ export const routes: Routes = [
       },
       {
         path: 'appointments',
-        loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
+        loadChildren: () => import('./features/appointments/appointments.routes').then(m => m.APPOINTMENTS_ROUTES)
       },
       {
         path: 'treatments',

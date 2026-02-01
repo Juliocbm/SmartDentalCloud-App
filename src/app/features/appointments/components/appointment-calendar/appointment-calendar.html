@@ -1,0 +1,120 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <div class="header-title">
+      <h1>
+        <i class="fa-solid fa-calendar-days"></i>
+        Calendario de Citas
+      </h1>
+      <p>Gestiona tus citas de forma visual</p>
+    </div>
+    
+    <div class="header-actions">
+      <button 
+        (click)="goToListView()"
+        class="btn btn-secondary"
+        title="Vista de lista"
+      >
+        <i class="fa-solid fa-list"></i>
+        Lista
+      </button>
+      
+      <a 
+        routerLink="/appointments/new"
+        class="btn btn-primary"
+      >
+        <i class="fa-solid fa-plus"></i>
+        Nueva Cita
+      </a>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando calendario...</p>
+    </div>
+  } @else {
+    <div class="calendar-wrapper">
+      <div class="calendar-info">
+        <div class="info-box">
+          <i class="fa-solid fa-info-circle"></i>
+          <span>Click en un espacio vacío para agendar. Click en una cita para ver detalles.</span>
+        </div>
+        
+        <div class="legend">
+          <span class="legend-title">Estados:</span>
+          <span class="legend-item">
+            <span class="color-dot" style="background-color: #3b82f6;"></span>
+            Programada
+          </span>
+          <span class="legend-item">
+            <span class="color-dot" style="background-color: #10b981;"></span>
+            Confirmada
+          </span>
+          <span class="legend-item">
+            <span class="color-dot" style="background-color: #6b7280;"></span>
+            Completada
+          </span>
+          <span class="legend-item">
+            <span class="color-dot" style="background-color: #ef4444;"></span>
+            Cancelada
+          </span>
+          <span class="legend-item">
+            <span class="color-dot" style="background-color: #f59e0b;"></span>
+            No asistió
+          </span>
+        </div>
+      </div>
+
+      <div class="calendar-content">
+        <full-calendar [options]="calendarOptions()"></full-calendar>
+      </div>
+    </div>
+  }
+
+  @if (showQuickCreateModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>
+            <i class="fa-solid fa-calendar-plus"></i>
+            Nueva Cita
+          </h3>
+          <button (click)="closeModal()" class="close-btn">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="slot-info">
+            <div class="info-row">
+              <i class="fa-solid fa-calendar"></i>
+              <span>{{ selectedSlot()?.start | date:'EEEE, dd MMMM yyyy' }}</span>
+            </div>
+            <div class="info-row">
+              <i class="fa-solid fa-clock"></i>
+              <span>
+                {{ selectedSlot()?.start | date:'HH:mm' }} - 
+                {{ selectedSlot()?.end | date:'HH:mm' }}
+              </span>
+            </div>
+          </div>
+          
+          <p class="help-text">
+            Se abrirá el formulario completo con la fecha y hora preseleccionadas
+          </p>
+        </div>
+        
+        <div class="modal-footer">
+          <button (click)="closeModal()" class="btn btn-secondary">
+            Cancelar
+          </button>
+          <button (click)="navigateToFullForm()" class="btn btn-primary">
+            <i class="fa-solid fa-arrow-right"></i>
+            Continuar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

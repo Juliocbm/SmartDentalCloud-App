@@ -17,6 +17,7 @@
   gap: var(--spacing-sm);
   text-decoration: none;
   outline: none;
+  line-height: 1;
   
   &:disabled {
     opacity: 0.6;
@@ -25,6 +26,9 @@
   
   i {
     font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
   }
 }
 

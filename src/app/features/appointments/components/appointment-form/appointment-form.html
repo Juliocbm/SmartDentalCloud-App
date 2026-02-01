@@ -1,0 +1,189 @@
+<div class="form-container">
+  <div class="form-header">
+    <h1>
+      <i class="fa-solid fa-calendar-plus"></i>
+      {{ isEditMode() ? 'Reagendar Cita' : 'Nueva Cita' }}
+    </h1>
+    <p>{{ isEditMode() ? 'Modifica la fecha y hora de la cita' : 'Agenda una nueva cita para tu paciente' }}</p>
+  </div>
+
+  @if (error()) {
+    <div class="error-banner">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <span>{{ error() }}</span>
+    </div>
+  }
+
+  <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="appointment-form">
+    
+    <div class="form-section">
+      <h3>Información del Paciente</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="patientId">
+            ID del Paciente *
+            <span class="help-text">(Temporal - Se integrará con selector)</span>
+          </label>
+          <input 
+            type="text" 
+            id="patientId"
+            formControlName="patientId"
+            placeholder="00000000-0000-0000-0000-000000000000"
+            class="form-input"
+            [class.error]="getFieldError('patientId')"
+          >
+          @if (getFieldError('patientId')) {
+            <span class="error-message">{{ getFieldError('patientId') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="patientName">
+            Nombre del Paciente *
+          </label>
+          <input 
+            type="text" 
+            id="patientName"
+            formControlName="patientName"
+            placeholder="Ej: Juan Pérez García"
+            class="form-input"
+            [class.error]="getFieldError('patientName')"
+          >
+          @if (getFieldError('patientName')) {
+            <span class="error-message">{{ getFieldError('patientName') }}</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Información del Doctor</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="userId">
+            ID del Doctor *
+            <span class="help-text">(Temporal - Se integrará con selector)</span>
+          </label>
+          <input 
+            type="text" 
+            id="userId"
+            formControlName="userId"
+            placeholder="00000000-0000-0000-0000-000000000000"
+            class="form-input"
+            [class.error]="getFieldError('userId')"
+          >
+          @if (getFieldError('userId')) {
+            <span class="error-message">{{ getFieldError('userId') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="doctorName">
+            Nombre del Doctor
+          </label>
+          <input 
+            type="text" 
+            id="doctorName"
+            formControlName="doctorName"
+            placeholder="Ej: Dra. María González"
+            class="form-input"
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Fecha y Hora de la Cita</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startAt">
+            <i class="fa-solid fa-calendar"></i>
+            Fecha y Hora de Inicio *
+          </label>
+          <input 
+            type="datetime-local" 
+            id="startAt"
+            formControlName="startAt"
+            class="form-input"
+            [class.error]="getFieldError('startAt')"
+          >
+          @if (getFieldError('startAt')) {
+            <span class="error-message">{{ getFieldError('startAt') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="endAt">
+            <i class="fa-solid fa-clock"></i>
+            Fecha y Hora de Fin *
+          </label>
+          <input 
+            type="datetime-local" 
+            id="endAt"
+            formControlName="endAt"
+            class="form-input"
+            [class.error]="getFieldError('endAt')"
+          >
+          @if (getFieldError('endAt')) {
+            <span class="error-message">{{ getFieldError('endAt') }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="info-box">
+        <i class="fa-solid fa-info-circle"></i>
+        <span>La disponibilidad del horario se verificará al guardar la cita</span>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Motivo de la Consulta</h3>
+      
+      <div class="form-group">
+        <label for="reason">
+          Motivo *
+        </label>
+        <textarea 
+          id="reason"
+          formControlName="reason"
+          rows="4"
+          placeholder="Ej: Limpieza dental, Revisión general, Endodoncia..."
+          class="form-input"
+          [class.error]="getFieldError('reason')"
+        ></textarea>
+        @if (getFieldError('reason')) {
+          <span class="error-message">{{ getFieldError('reason') }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button 
+        type="button" 
+        (click)="onCancel()"
+        class="btn btn-secondary"
+        [disabled]="loading()"
+      >
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="loading() || appointmentForm.invalid"
+      >
+        @if (loading()) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-check"></i>
+          {{ isEditMode() ? 'Actualizar Cita' : 'Crear Cita' }}
+        }
+      </button>
+    </div>
+  </form>
+</div>

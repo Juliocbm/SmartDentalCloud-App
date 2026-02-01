@@ -1,0 +1,198 @@
+<div class="appointments-container">
+  <div class="appointments-header">
+    <div class="header-title">
+      <h1>
+        <i class="fa-solid fa-calendar-days"></i>
+        Citas
+      </h1>
+      <p>Gestiona las citas de tus pacientes</p>
+    </div>
+    <div class="header-actions">
+      <a 
+        routerLink="/appointments/calendar" 
+        class="btn btn-secondary"
+        title="Vista de calendario"
+      >
+        <i class="fa-solid fa-calendar"></i>
+        Calendario
+      </a>
+      <a routerLink="/appointments/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Cita
+      </a>
+    </div>
+  </div>
+
+  <div class="appointments-filters">
+    <div class="filter-group">
+      <label for="date-filter">
+        <i class="fa-solid fa-calendar"></i>
+        Fecha
+      </label>
+      <input 
+        type="date" 
+        id="date-filter"
+        [value]="formatDateForInput(selectedDate())"
+        (change)="onDateChange($event)"
+        class="filter-input"
+      >
+    </div>
+
+    <div class="filter-group">
+      <label for="status-filter">
+        <i class="fa-solid fa-filter"></i>
+        Estado
+      </label>
+      <select 
+        id="status-filter"
+        [value]="filterStatus()"
+        (change)="onStatusFilterChange($event)"
+        class="filter-select"
+      >
+        @for (option of statusOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group search-group">
+      <label for="search-filter">
+        <i class="fa-solid fa-search"></i>
+        Buscar
+      </label>
+      <input 
+        type="text" 
+        id="search-filter"
+        placeholder="Buscar paciente o motivo..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($event)"
+        class="filter-input"
+      >
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando citas...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-container">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button (click)="loadAppointments()" class="btn btn-secondary">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  @if (!loading() && !error()) {
+    @if (filteredAppointments().length === 0) {
+      <div class="empty-state">
+        <i class="fa-solid fa-calendar-xmark"></i>
+        <h3>No hay citas</h3>
+        <p>No se encontraron citas para la fecha y filtros seleccionados</p>
+        <a routerLink="/appointments/new" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i>
+          Crear Primera Cita
+        </a>
+      </div>
+    } @else {
+      <div class="appointments-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Paciente</th>
+              <th>Doctor</th>
+              <th>Motivo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (appointment of filteredAppointments(); track appointment.id) {
+              <tr>
+                <td class="time-cell">
+                  <div class="time-info">
+                    <span class="time">{{ appointment.displayTime }}</span>
+                    <span class="duration">{{ appointment.durationMinutes }} min</span>
+                  </div>
+                </td>
+                <td class="patient-cell">
+                  <div class="patient-info">
+                    <i class="fa-solid fa-user"></i>
+                    <span>{{ appointment.patientName }}</span>
+                  </div>
+                </td>
+                <td class="doctor-cell">
+                  <div class="doctor-info">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span>{{ appointment.doctorName || 'Sin asignar' }}</span>
+                  </div>
+                </td>
+                <td class="reason-cell">
+                  {{ appointment.reason }}
+                </td>
+                <td class="status-cell">
+                  <span 
+                    class="status-badge"
+                    [ngClass]="getStatusConfig(appointment.status).bgColor"
+                  >
+                    <i class="fa-solid" [ngClass]="getStatusConfig(appointment.status).icon"></i>
+                    {{ getStatusConfig(appointment.status).label }}
+                  </span>
+                </td>
+                <td class="actions-cell">
+                  <div class="actions-group">
+                    @if (appointment.status === 'Scheduled' || appointment.status === 'Confirmed') {
+                      <button 
+                        (click)="completeAppointment(appointment)"
+                        class="action-btn success"
+                        title="Completar"
+                      >
+                        <i class="fa-solid fa-check"></i>
+                      </button>
+                      <a 
+                        [routerLink]="['/appointments', appointment.id, 'edit']"
+                        class="action-btn primary"
+                        title="Editar"
+                      >
+                        <i class="fa-solid fa-edit"></i>
+                      </a>
+                      <button 
+                        (click)="cancelAppointment(appointment)"
+                        class="action-btn error"
+                        title="Cancelar"
+                      >
+                        <i class="fa-solid fa-times"></i>
+                      </button>
+                    }
+                    @if (appointment.status === 'Completed' || appointment.status === 'Cancelled') {
+                      <span class="action-disabled">
+                        <i class="fa-solid fa-check-circle"></i>
+                        Finalizada
+                      </span>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="appointments-summary">
+        <p>
+          <strong>{{ filteredAppointments().length }}</strong> 
+          {{ filteredAppointments().length === 1 ? 'cita' : 'citas' }}
+          @if (searchTerm() || filterStatus()) {
+            (filtradas)
+          }
+        </p>
+      </div>
+    }
+  }
+</div>
