@@ -122,10 +122,12 @@
                   </div>
                 </td>
                 <td class="patient-cell">
-                  <div class="patient-info">
-                    <i class="fa-solid fa-user"></i>
-                    <span>{{ appointment.patientName }}</span>
-                  </div>
+                  <a [routerLink]="['/appointments', appointment.id]" class="patient-link">
+                    <div class="patient-info">
+                      <i class="fa-solid fa-user"></i>
+                      <span>{{ appointment.patientName }}</span>
+                    </div>
+                  </a>
                 </td>
                 <td class="doctor-cell">
                   <div class="doctor-info">
@@ -147,6 +149,13 @@
                 </td>
                 <td class="actions-cell">
                   <div class="actions-group">
+                    <a 
+                      [routerLink]="['/appointments', appointment.id]"
+                      class="action-btn info"
+                      title="Ver detalle"
+                    >
+                      <i class="fa-solid fa-eye"></i>
+                    </a>
                     @if (appointment.status === 'Scheduled' || appointment.status === 'Confirmed') {
                       <button 
                         (click)="completeAppointment(appointment)"
@@ -171,10 +180,13 @@
                       </button>
                     }
                     @if (appointment.status === 'Completed' || appointment.status === 'Cancelled') {
-                      <span class="action-disabled">
-                        <i class="fa-solid fa-check-circle"></i>
-                        Finalizada
-                      </span>
+                      <a 
+                        [routerLink]="['/appointments', appointment.id, 'edit']"
+                        class="action-btn primary"
+                        title="Reagendar"
+                      >
+                        <i class="fa-solid fa-calendar"></i>
+                      </a>
                     }
                   </div>
                 </td>

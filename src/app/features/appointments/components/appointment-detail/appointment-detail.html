@@ -1,0 +1,199 @@
+<div class="detail-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando cita...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error al cargar la cita</h2>
+      <p>{{ error() }}</p>
+      <button (click)="onBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  } @else if (appointment(); as apt) {
+    <div class="detail-header">
+      <div class="header-top">
+        <button (click)="onBack()" class="btn-back">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver
+        </button>
+        
+        <div class="header-actions">
+          @if (canReschedule()) {
+            <button (click)="onEdit()" class="btn btn-secondary" [disabled]="actionLoading()">
+              <i class="fa-solid fa-edit"></i>
+              Reagendar
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="header-content">
+        <div class="title-section">
+          <h1>
+            <i class="fa-solid fa-calendar-check"></i>
+            Cita Médica
+          </h1>
+          <span class="status-badge" [ngClass]="getStatusConfig(apt.status).bgColor + ' ' + getStatusConfig(apt.status).textColor">
+            <i class="fa-solid" [ngClass]="getStatusConfig(apt.status).icon"></i>
+            {{ getStatusConfig(apt.status).label }}
+          </span>
+        </div>
+        
+        <div class="header-info">
+          <div class="info-item">
+            <i class="fa-solid fa-calendar"></i>
+            <span class="label">Fecha:</span>
+            <span class="value">{{ formatDate(apt.startAt) }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-clock"></i>
+            <span class="label">Hora:</span>
+            <span class="value">{{ formatTime(apt.startAt) }} - {{ formatTime(apt.endAt) }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-hourglass-half"></i>
+            <span class="label">Duración:</span>
+            <span class="value">{{ getDuration() }} minutos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-body">
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-user"></i>
+          Información del Paciente
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Nombre:</span>
+            <span class="info-value">{{ apt.patientName }}</span>
+          </div>
+          <div class="info-actions">
+            <button (click)="onViewPatient()" class="btn-link">
+              <i class="fa-solid fa-external-link-alt"></i>
+              Ver perfil del paciente
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-user-md"></i>
+          Información del Doctor
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Doctor:</span>
+            <span class="info-value">{{ apt.doctorName || 'No asignado' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-notes-medical"></i>
+          Detalles de la Cita
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Motivo:</span>
+            <span class="info-value">{{ apt.reason }}</span>
+          </div>
+          
+          @if (apt.notes) {
+            <div class="info-row">
+              <span class="info-label">Notas:</span>
+              <span class="info-value notes-text">{{ apt.notes }}</span>
+            </div>
+          }
+
+          @if (apt.cancellationReason) {
+            <div class="info-row alert-row">
+              <span class="info-label">Motivo de cancelación:</span>
+              <span class="info-value">{{ apt.cancellationReason }}</span>
+            </div>
+          }
+
+          <div class="info-row">
+            <span class="info-label">Fecha de creación:</span>
+            <span class="info-value">{{ formatDate(apt.createdAt) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-section">
+        <h3>
+          <i class="fa-solid fa-tasks"></i>
+          Acciones
+        </h3>
+        <div class="action-buttons">
+          @if (canConfirm()) {
+            <button 
+              (click)="onConfirm()" 
+              class="btn btn-success"
+              [disabled]="actionLoading()"
+            >
+              <i class="fa-solid fa-check-circle"></i>
+              Confirmar Cita
+            </button>
+          }
+
+          @if (canComplete()) {
+            <button 
+              (click)="onComplete()" 
+              class="btn btn-primary"
+              [disabled]="actionLoading()"
+            >
+              <i class="fa-solid fa-check"></i>
+              Marcar como Completada
+            </button>
+          }
+
+          @if (canMarkNoShow()) {
+            <button 
+              (click)="onMarkNoShow()" 
+              class="btn btn-warning"
+              [disabled]="actionLoading()"
+            >
+              <i class="fa-solid fa-exclamation-triangle"></i>
+              Marcar No Show
+            </button>
+          }
+
+          @if (canCancel()) {
+            <button 
+              (click)="onCancel()" 
+              class="btn btn-danger"
+              [disabled]="actionLoading()"
+            >
+              <i class="fa-solid fa-times-circle"></i>
+              Cancelar Cita
+            </button>
+          }
+
+          @if (apt.status === AppointmentStatus.Completed) {
+            <div class="completed-message">
+              <i class="fa-solid fa-check-circle"></i>
+              <span>Esta cita ha sido completada</span>
+            </div>
+          }
+
+          @if (apt.status === AppointmentStatus.Cancelled) {
+            <div class="cancelled-message">
+              <i class="fa-solid fa-ban"></i>
+              <span>Esta cita ha sido cancelada</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>
