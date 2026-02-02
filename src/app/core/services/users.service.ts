@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { User, DoctorListItem } from '../models/user.models';
+import { User, DentistListItem } from '../models/user.models';
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
@@ -15,7 +15,7 @@ export class UsersService {
     return this.api.get<User>(`/users/${id}`);
   }
 
-  getDoctors(): Observable<DoctorListItem[]> {
-    return this.api.get<DoctorListItem[]>('/users/doctors');
+  getDentists(): Observable<DentistListItem[]> {
+    return this.api.get<DentistListItem[]>('/users/dentists');
   }
 }

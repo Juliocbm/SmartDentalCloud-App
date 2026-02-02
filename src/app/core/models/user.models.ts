@@ -12,12 +12,12 @@ export interface User {
 
 export enum UserRole {
   Admin = 'Admin',
-  Doctor = 'Odontólogo',
+  Dentist = 'Dentista',
   Receptionist = 'Receptionist',
   Assistant = 'Assistant'
 }
 
-export interface DoctorListItem {
+export interface DentistListItem {
   id: string;
   name: string;
   specialization?: string;

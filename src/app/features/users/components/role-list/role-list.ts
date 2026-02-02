@@ -63,7 +63,7 @@ export class RoleListComponent implements OnInit {
   getRoleBadgeClass(roleName: string): string {
     const roleMap: Record<string, string> = {
       'Administrador': 'badge-admin',
-      'Odontólogo': 'badge-doctor',
+      'Dentista': 'badge-doctor',
       'Recepcionista': 'badge-receptionist',
       'Asistente': 'badge-assistant'
     };
@@ -73,7 +73,7 @@ export class RoleListComponent implements OnInit {
   getRoleIcon(roleName: string): string {
     const iconMap: Record<string, string> = {
       'Administrador': 'fa-user-tie',
-      'Odontólogo': 'fa-user-doctor',
+      'Dentista': 'fa-user-doctor',
       'Recepcionista': 'fa-clipboard-user',
       'Asistente': 'fa-hands-helping'
     };

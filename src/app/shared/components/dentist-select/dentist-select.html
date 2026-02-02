@@ -10,7 +10,7 @@
     @if (loading()) {
       <div class="select-loading">
         <i class="fa-solid fa-spinner fa-spin"></i>
-        <span>Cargando doctores...</span>
+        <span>Cargando dentistas...</span>
       </div>
     } @else {
       <select
@@ -20,9 +20,9 @@
         [class.error]="error"
       >
         <option [value]="null" disabled selected>{{ placeholder }}</option>
-        @for (doctor of doctors(); track doctor.id) {
-          <option [value]="doctor.id">
-            {{ doctor.name }}@if (doctor.specialization) { - {{ doctor.specialization }} }
+        @for (dentist of dentists(); track dentist.id) {
+          <option [value]="dentist.id">
+            {{ dentist.name }}@if (dentist.specialization) { - {{ dentist.specialization }} }
           </option>
         }
       </select>

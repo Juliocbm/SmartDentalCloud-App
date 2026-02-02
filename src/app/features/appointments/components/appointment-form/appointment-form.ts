@@ -4,9 +4,9 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppointmentsService } from '../../services/appointments.service';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
-import { DoctorSelectComponent } from '../../../../shared/components/doctor-select/doctor-select';
+import { DentistSelectComponent } from '../../../../shared/components/dentist-select/dentist-select';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
-import { DoctorListItem } from '../../../../core/models/user.models';
+import { DentistListItem } from '../../../../core/models/user.models';
 
 @Component({
   selector: 'app-appointment-form',
@@ -15,7 +15,7 @@ import { DoctorListItem } from '../../../../core/models/user.models';
     CommonModule,
     ReactiveFormsModule,
     PatientAutocompleteComponent,
-    DoctorSelectComponent
+    DentistSelectComponent
   ],
   templateUrl: './appointment-form.html',
   styleUrls: ['./appointment-form.scss']
@@ -33,7 +33,7 @@ export class AppointmentFormComponent implements OnInit {
   appointmentId = signal<string | null>(null);
   
   selectedPatient = signal<PatientSearchResult | null>(null);
-  selectedDoctor = signal<DoctorListItem | null>(null);
+  selectedDentist = signal<DentistListItem | null>(null);
 
   ngOnInit(): void {
     this.initForm();
@@ -83,7 +83,7 @@ export class AppointmentFormComponent implements OnInit {
         });
         
         if (appointment.userId && appointment.doctorName) {
-          this.selectedDoctor.set({
+          this.selectedDentist.set({
             id: appointment.userId,
             name: appointment.doctorName,
             specialization: undefined
@@ -181,10 +181,10 @@ export class AppointmentFormComponent implements OnInit {
     }
   }
 
-  onDoctorSelected(doctor: DoctorListItem | null): void {
-    this.selectedDoctor.set(doctor);
-    if (doctor) {
-      this.appointmentForm.patchValue({ userId: doctor.id });
+  onDentistSelected(dentist: DentistListItem | null): void {
+    this.selectedDentist.set(dentist);
+    if (dentist) {
+      this.appointmentForm.patchValue({ userId: dentist.id });
     } else {
       this.appointmentForm.patchValue({ userId: '' });
     }

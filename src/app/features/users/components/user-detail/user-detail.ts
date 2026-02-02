@@ -66,7 +66,7 @@ export class UserDetailComponent implements OnInit {
   getRoleBadgeClass(roleName: string): string {
     const roleMap: Record<string, string> = {
       'Administrador': 'badge-admin',
-      'Odontólogo': 'badge-doctor',
+      'Dentista': 'badge-doctor',
       'Recepcionista': 'badge-receptionist',
       'Asistente': 'badge-assistant'
     };

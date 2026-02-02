@@ -12,17 +12,17 @@
       <div class="doctor-filter">
         <label for="doctorSelect">
           <i class="fa-solid fa-user-doctor"></i>
-          Odontólogo
+          Dentista
         </label>
         <select 
           id="doctorSelect"
           class="doctor-select"
           [value]="selectedDoctorId()"
-          (change)="onDoctorChange($any($event.target).value)"
+          (change)="onDentistChange($any($event.target).value)"
         >
-          <option value="all">Todos los odontólogos</option>
-          @for (doctor of doctors(); track doctor.id) {
-            <option [value]="doctor.id">{{ doctor.name }}</option>
+          <option value="all">Todos los dentistas</option>
+          @for (dentist of dentists(); track dentist.id) {
+            <option [value]="dentist.id">{{ dentist.name }}</option>
           }
         </select>
       </div>

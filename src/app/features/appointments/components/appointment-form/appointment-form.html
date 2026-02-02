@@ -33,18 +33,18 @@
     </div>
 
     <div class="form-section">
-      <h3>Información del Doctor</h3>
+      <h3>Información del Dentista</h3>
       
       <div class="form-group">
-        <app-doctor-select
-          [selectedDoctorId]="selectedDoctor()?.id || null"
+        <app-dentist-select
+          [selectedDentistId]="selectedDentist()?.id || null"
           [required]="true"
           [disabled]="loading()"
           [error]="getFieldError('userId')"
-          (doctorSelected)="onDoctorSelected($event)"
+          (dentistSelected)="onDentistSelected($event)"
         >
-          Seleccionar Doctor
-        </app-doctor-select>
+          Dentista
+        </app-dentist-select>
       </div>
     </div>
 

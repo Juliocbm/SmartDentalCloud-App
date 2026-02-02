@@ -10,7 +10,7 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatusConfig } from '../../models/appointment.models';
 import { UsersService } from '../../../../core/services/users.service';
-import { DoctorListItem } from '../../../../core/models/user.models';
+import { DentistListItem } from '../../../../core/models/user.models';
 
 @Component({
   selector: 'app-appointment-calendar',
@@ -29,7 +29,7 @@ export class AppointmentCalendarComponent implements OnInit {
   selectedView = signal<'week' | 'day'>('week');
   showQuickCreateModal = signal(false);
   selectedSlot = signal<{ start: Date; end: Date } | null>(null);
-  doctors = signal<DoctorListItem[]>([]);
+  dentists = signal<DentistListItem[]>([]);
   selectedDoctorId = signal<string>('all');
 
   calendarOptions = signal<CalendarOptions>({
@@ -82,7 +82,7 @@ export class AppointmentCalendarComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadDoctors();
+    this.loadDentists();
     this.loadAppointments();
   }
 
@@ -203,26 +203,26 @@ export class AppointmentCalendarComponent implements OnInit {
     this.router.navigate(['/appointments']);
   }
 
-  private loadDoctors(): void {
-    this.usersService.getDoctors().subscribe({
-      next: (doctors) => {
-        this.doctors.set(doctors);
+  private loadDentists(): void {
+    this.usersService.getDentists().subscribe({
+      next: (dentists) => {
+        this.dentists.set(dentists);
       },
       error: (error) => {
-        console.error('Error loading doctors:', error);
-        this.doctors.set([]);
+        console.error('Error loading dentists:', error);
+        this.dentists.set([]);
       }
     });
   }
 
-  onDoctorChange(doctorId: string): void {
-    this.selectedDoctorId.set(doctorId);
+  onDentistChange(dentistId: string): void {
+    this.selectedDoctorId.set(dentistId);
     const allAppointments = this.appointments();
     
-    if (doctorId === 'all') {
+    if (dentistId === 'all') {
       this.updateCalendarEvents(allAppointments);
     } else {
-      const filtered = allAppointments.filter(apt => apt.userId === doctorId);
+      const filtered = allAppointments.filter(apt => apt.userId === dentistId);
       this.updateCalendarEvents(filtered);
     }
   }
