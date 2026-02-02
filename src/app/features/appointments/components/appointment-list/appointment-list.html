@@ -155,38 +155,33 @@
                 <td class="actions-column">
                   <div class="action-buttons">
                     <button
-                      class="btn-icon btn-icon-view"
+                      class="btn btn-sm btn-outline"
                       [routerLink]="['/appointments', appointment.id]"
-                      title="Ver detalle"
                     >
                       <i class="fa-solid fa-eye"></i>
+                      Ver
                     </button>
                     @if (appointment.status === 'Scheduled' || appointment.status === 'Confirmed') {
                       <button
-                        class="btn-icon btn-icon-edit"
+                        class="btn btn-sm btn-outline"
                         [routerLink]="['/appointments', appointment.id, 'edit']"
-                        title="Editar"
                       >
                         <i class="fa-solid fa-pen"></i>
+                        Editar
                       </button>
                       <button
-                        class="btn-icon"
-                        style="color: var(--success-600);"
+                        class="btn btn-sm btn-outline"
                         (click)="completeAppointment(appointment)"
-                        title="Completar"
                       >
                         <i class="fa-solid fa-check"></i>
+                        Completar
                       </button>
                       <button
-                        class="btn-icon btn-icon-delete"
+                        class="btn btn-sm btn-outline"
                         (click)="cancelAppointment(appointment)"
-                        title="Cancelar"
                       >
                         <i class="fa-solid fa-xmark"></i>
-                      </button>
-                    } @else {
-                      <button class="btn-icon" disabled title="Completada">
-                        <i class="fa-solid fa-check"></i>
+                        Cancelar
                       </button>
                     }
                   </div>

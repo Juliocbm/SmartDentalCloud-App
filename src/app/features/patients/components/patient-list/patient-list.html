@@ -147,34 +147,32 @@
           <td class="actions-column">
             <div class="action-buttons">
               <button 
-                class="btn-icon btn-icon-view" 
+                class="btn btn-sm btn-outline" 
                 [routerLink]="['/patients', patient.id]"
-                title="Ver detalles"
               >
                 <i class="fa-solid fa-eye"></i>
+                Ver
               </button>
               <button 
-                class="btn-icon btn-icon-edit" 
+                class="btn btn-sm btn-outline" 
                 [routerLink]="['/patients', patient.id, 'edit']"
-                title="Editar"
               >
                 <i class="fa-solid fa-pen"></i>
+                Editar
               </button>
               <button 
-                class="btn-icon"
-                [class.btn-icon-toggle-on]="patient.isActive"
-                [class.btn-icon-toggle-off]="!patient.isActive"
+                class="btn btn-sm btn-outline"
                 (click)="toggleActive(patient)"
-                [title]="patient.isActive ? 'Desactivar' : 'Activar'"
               >
                 <i class="fa-solid" [class.fa-toggle-on]="patient.isActive" [class.fa-toggle-off]="!patient.isActive"></i>
+                {{ patient.isActive ? 'Desactivar' : 'Activar' }}
               </button>
               <button 
-                class="btn-icon btn-icon-delete" 
+                class="btn btn-sm btn-outline" 
                 (click)="deletePatient(patient)"
-                title="Eliminar"
               >
                 <i class="fa-solid fa-trash"></i>
+                Eliminar
               </button>
             </div>
           </td>

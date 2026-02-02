@@ -184,28 +184,26 @@
               <td class="actions-column">
                 <div class="action-buttons">
                   <button
-                    class="btn-icon btn-view"
+                    class="btn btn-sm btn-outline"
                     [routerLink]="['/users', user.id]"
-                    title="Ver detalles"
                   >
                     <i class="fa-solid fa-eye"></i>
+                    Ver
                   </button>
                   <button
-                    class="btn-icon btn-edit"
+                    class="btn btn-sm btn-outline"
                     [routerLink]="['/users', user.id, 'edit']"
-                    title="Editar"
                   >
                     <i class="fa-solid fa-pen"></i>
+                    Editar
                   </button>
                   <button
-                    class="btn-icon"
-                    [class.btn-icon-toggle-on]="user.isActive"
-                    [class.btn-icon-toggle-off]="!user.isActive"
+                    class="btn btn-sm btn-outline"
                     (click)="toggleUserActive(user)"
-                    [title]="user.isActive ? 'Desactivar' : 'Activar'"
                   >
                     <i class="fa-solid fa-toggle-on" *ngIf="user.isActive"></i>
                     <i class="fa-solid fa-toggle-off" *ngIf="!user.isActive"></i>
+                    {{ user.isActive ? 'Desactivar' : 'Activar' }}
                   </button>
                 </div>
               </td>

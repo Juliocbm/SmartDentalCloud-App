@@ -164,15 +164,12 @@
 }
 
 .actions-column {
-  text-align: center;
-
   .action-buttons {
-    display: inline-flex;
+    display: flex;
     gap: var(--spacing-xs);
+    flex-wrap: wrap;
     justify-content: center;
   }
-  
-  // btn-icon: usa clases globales de _components.scss
 }
 
 .pagination-container {
