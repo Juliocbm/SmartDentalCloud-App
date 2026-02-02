@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
 import { Role } from '../../models/role.models';
@@ -9,7 +10,7 @@ import { Role } from '../../models/role.models';
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent],
   templateUrl: './user-form.html',
   styleUrls: ['./user-form.scss']
 })
@@ -30,6 +31,12 @@ export class UserFormComponent implements OnInit {
   loadingRoles = signal(true);
   error = signal<string | null>(null);
   showPassword = signal(false);
+
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Usuarios', route: '/users', icon: 'fa-users' },
+    { label: this.isEditMode() ? 'Editar' : 'Nuevo' }
+  ]);
 
   ngOnInit(): void {
     this.initForm();

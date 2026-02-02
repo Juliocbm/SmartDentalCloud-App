@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
 import { User, Role } from '../../models/user.models';
@@ -9,7 +10,7 @@ import { User, Role } from '../../models/user.models';
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent],
   templateUrl: './user-list.html',
   styleUrls: ['./user-list.scss']
 })
@@ -27,6 +28,11 @@ export class UserListComponent implements OnInit {
   searchTerm = signal('');
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
   filterRole = signal<string>('all');
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Usuarios' }
+  ];
 
   ngOnInit(): void {
     this.loadData();

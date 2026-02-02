@@ -2,13 +2,14 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientsService } from '../../services/patients.service';
 import { Patient } from '../../models/patient.models';
 
 @Component({
   selector: 'app-patient-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.scss'
 })
@@ -26,6 +27,11 @@ export class PatientListComponent implements OnInit {
   
   searchTerm = signal('');
   filterActive = signal<boolean | null>(null);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Pacientes' }
+  ];
 
   // Exponer Math para el template
   Math = Math;

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { RolesService } from '../../services/roles.service';
 import { UsersService } from '../../services/users.service';
 import { Role } from '../../models/role.models';
@@ -8,7 +9,7 @@ import { Role } from '../../models/role.models';
 @Component({
   selector: 'app-role-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PageHeaderComponent],
   templateUrl: './role-list.html',
   styleUrls: ['./role-list.scss']
 })
@@ -19,6 +20,12 @@ export class RoleListComponent implements OnInit {
   roles = signal<Role[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Usuarios', route: '/users', icon: 'fa-users' },
+    { label: 'Roles y Permisos' }
+  ];
 
   ngOnInit(): void {
     this.loadRoles();

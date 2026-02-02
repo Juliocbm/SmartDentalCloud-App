@@ -7,6 +7,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatusConfig } from '../../models/appointment.models';
 import { UsersService } from '../../../../core/services/users.service';
@@ -15,7 +16,7 @@ import { DentistListItem } from '../../../../core/models/user.models';
 @Component({
   selector: 'app-appointment-calendar',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, RouterLink],
+  imports: [CommonModule, FullCalendarModule, RouterLink, PageHeaderComponent],
   templateUrl: './appointment-calendar.html',
   styleUrl: './appointment-calendar.scss'
 })
@@ -31,6 +32,12 @@ export class AppointmentCalendarComponent implements OnInit {
   selectedSlot = signal<{ start: Date; end: Date } | null>(null);
   dentists = signal<DentistListItem[]>([]);
   selectedDoctorId = signal<string>('all');
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Citas', route: '/appointments' },
+    { label: 'Calendario' }
+  ];
 
   calendarOptions = signal<CalendarOptions>({
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],

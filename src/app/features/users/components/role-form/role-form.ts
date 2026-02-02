@@ -1,14 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { RolesService } from '../../services/roles.service';
 import { PermissionSelectorComponent } from '../../../../shared/components/permission-selector/permission-selector';
 
 @Component({
   selector: 'app-role-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PermissionSelectorComponent],
+  imports: [CommonModule, ReactiveFormsModule, PermissionSelectorComponent, PageHeaderComponent],
   templateUrl: './role-form.html',
   styleUrls: ['./role-form.scss']
 })
@@ -25,6 +26,13 @@ export class RoleFormComponent implements OnInit {
   roleId = signal<string | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Usuarios', route: '/users', icon: 'fa-users' },
+    { label: 'Roles', route: '/users/roles', icon: 'fa-shield-halved' },
+    { label: this.isEditMode() ? 'Editar' : 'Nuevo' }
+  ]);
 
   ngOnInit(): void {
     this.initForm();

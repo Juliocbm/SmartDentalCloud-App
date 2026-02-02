@@ -1,14 +1,15 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientsService } from '../../services/patients.service';
 import { Patient } from '../../models/patient.models';
 
 @Component({
   selector: 'app-patient-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent],
   templateUrl: './patient-form.html',
   styleUrl: './patient-form.scss'
 })
@@ -24,6 +25,12 @@ export class PatientFormComponent implements OnInit {
   isEditMode = signal(false);
   patientId = signal<string | null>(null);
   calculatedAge = signal<number | null>(null);
+
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Pacientes', route: '/patients', icon: 'fa-users' },
+    { label: this.isEditMode() ? 'Editar' : 'Nuevo' }
+  ]);
 
   ngOnInit(): void {
     this.initForm();

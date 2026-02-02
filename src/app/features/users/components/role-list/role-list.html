@@ -1,24 +1,19 @@
 <div class="role-list-container">
   <!-- Header -->
-  <div class="list-header">
-    <div class="header-content">
-      <h1 class="page-title">
-        <i class="fa-solid fa-shield-halved"></i>
-        Roles y Permisos
-      </h1>
-      <p class="page-subtitle">Gestiona roles personalizados y sus permisos</p>
-    </div>
-    <div class="header-actions">
-      <a routerLink="/users" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver a Usuarios
-      </a>
+  <app-page-header
+    [title]="'Roles y Permisos'"
+    [subtitle]="'Gestiona roles personalizados y sus permisos'"
+    [icon]="'fa-shield-halved'"
+    [showBackButton]="true"
+    [backRoute]="'/users'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
       <a routerLink="/users/roles/new" class="btn btn-primary">
         <i class="fa-solid fa-plus"></i>
         Nuevo Rol
       </a>
     </div>
-  </div>
+  </app-page-header>
 
   <!-- Loading State -->
   @if (loading()) {

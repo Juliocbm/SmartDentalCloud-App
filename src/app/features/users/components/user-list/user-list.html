@@ -1,14 +1,11 @@
 <div class="user-list-container">
   <!-- Header -->
-  <div class="page-header">
-    <div class="header-content">
-      <h1 class="page-title">
-        <i class="fa-solid fa-users"></i>
-        Usuarios del Consultorio
-      </h1>
-      <p class="page-subtitle">Gestiona usuarios, roles y permisos</p>
-    </div>
-    <div class="header-actions">
+  <app-page-header
+    [title]="'Usuarios del Consultorio'"
+    [subtitle]="'Gestiona usuarios, roles y permisos'"
+    [icon]="'fa-users'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
       <a class="btn btn-outline" routerLink="/users/roles">
         <i class="fa-solid fa-key"></i>
         Gestionar Roles
@@ -18,7 +15,7 @@
         Nuevo Usuario
       </a>
     </div>
-  </div>
+  </app-page-header>
 
   <!-- Filters -->
   <div class="filters-section">

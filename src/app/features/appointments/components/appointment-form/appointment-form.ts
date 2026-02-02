@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AppointmentsService } from '../../services/appointments.service';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { DentistSelectComponent } from '../../../../shared/components/dentist-select/dentist-select';
@@ -15,7 +16,8 @@ import { DentistListItem } from '../../../../core/models/user.models';
     CommonModule,
     ReactiveFormsModule,
     PatientAutocompleteComponent,
-    DentistSelectComponent
+    DentistSelectComponent,
+    PageHeaderComponent
   ],
   templateUrl: './appointment-form.html',
   styleUrls: ['./appointment-form.scss']
@@ -34,6 +36,12 @@ export class AppointmentFormComponent implements OnInit {
   
   selectedPatient = signal<PatientSearchResult | null>(null);
   selectedDentist = signal<DentistListItem | null>(null);
+
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Citas', route: '/appointments', icon: 'fa-calendar-days' },
+    { label: this.isEditMode() ? 'Reagendar' : 'Nueva' }
+  ]);
 
   ngOnInit(): void {
     this.initForm();

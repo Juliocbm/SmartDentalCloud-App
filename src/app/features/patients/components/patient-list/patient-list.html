@@ -1,20 +1,17 @@
 <div class="patient-list-container">
   <!-- Header -->
-  <div class="page-header">
-    <div class="header-content">
-      <h1 class="page-title">
-        <i class="fa-solid fa-users"></i>
-        Pacientes
-      </h1>
-      <p class="page-subtitle">Gestión de pacientes del consultorio</p>
-    </div>
-    <div class="header-actions">
+  <app-page-header
+    [title]="'Pacientes'"
+    [subtitle]="'Gestión de pacientes del consultorio'"
+    [icon]="'fa-users'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
       <button class="btn btn-primary" routerLink="/patients/new">
         <i class="fa-solid fa-plus"></i>
         Nuevo Paciente
       </button>
     </div>
-  </div>
+  </app-page-header>
 
   <!-- Filters and Search -->
   <div class="filters-section">

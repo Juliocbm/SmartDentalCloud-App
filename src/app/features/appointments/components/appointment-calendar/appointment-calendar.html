@@ -1,14 +1,10 @@
 <div class="calendar-container">
-  <div class="calendar-header">
-    <div class="header-title">
-      <h1>
-        <i class="fa-solid fa-calendar-days"></i>
-        Calendario de Citas
-      </h1>
-      <p>Gestiona tus citas de forma visual</p>
-    </div>
-    
-    <div class="header-actions">
+  <app-page-header
+    [title]="'Calendario de Citas'"
+    [subtitle]="'Gestiona tus citas de forma visual'"
+    [icon]="'fa-calendar-days'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
       <div class="doctor-filter">
         <label for="doctorSelect">
           <i class="fa-solid fa-user-doctor"></i>
@@ -44,7 +40,7 @@
         Nueva Cita
       </a>
     </div>
-  </div>
+  </app-page-header>
 
   @if (loading()) {
     <div class="loading-container">
