@@ -1,4 +1,4 @@
-<div class="page-container container-medium with-background">
+<div class="page-container container-medium">
   <!-- Header -->
   <app-page-header
     [title]="isEditMode() ? 'Editar Paciente' : 'Nuevo Paciente'"
@@ -9,21 +9,21 @@
     [breadcrumbs]="breadcrumbItems()">
   </app-page-header>
 
-  <!-- Loading State -->
-  <div *ngIf="loading()" class="loading-state">
-    <i class="fa-solid fa-spinner fa-spin"></i>
-    <p>{{ isEditMode() ? 'Cargando paciente...' : 'Guardando...' }}</p>
-  </div>
+  <div class="content-card">
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>{{ isEditMode() ? 'Cargando paciente...' : 'Guardando...' }}</p>
+    </div>
 
-  <!-- Error State -->
-  <div *ngIf="error()" class="error-alert">
-    <i class="fa-solid fa-exclamation-circle"></i>
-    <span>{{ error() }}</span>
-  </div>
+    <!-- Error State -->
+    <div *ngIf="error()" class="error-alert">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <span>{{ error() }}</span>
+    </div>
 
-  <!-- Form -->
-  <form [formGroup]="patientForm" (ngSubmit)="onSubmit()" *ngIf="!loading()">
-    <div class="form-card">
+    <!-- Form -->
+    <form [formGroup]="patientForm" (ngSubmit)="onSubmit()" *ngIf="!loading()">
       <!-- Datos Personales -->
       <div class="form-section">
         <h2 class="section-title">
@@ -145,28 +145,28 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Form Actions -->
-    <div class="form-actions">
-      <button
-        type="button"
-        class="btn btn-outline"
-        (click)="onCancel()"
-        [disabled]="loading()"
-      >
-        <i class="fa-solid fa-times"></i>
-        Cancelar
-      </button>
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="onCancel()"
+          [disabled]="loading()"
+        >
+          <i class="fa-solid fa-times"></i>
+          Cancelar
+        </button>
 
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="loading() || patientForm.invalid"
-      >
-        <i class="fa-solid fa-check"></i>
-        {{ isEditMode() ? 'Actualizar' : 'Crear' }} Paciente
-      </button>
-    </div>
-  </form>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="loading() || patientForm.invalid"
+        >
+          <i class="fa-solid fa-check"></i>
+          {{ isEditMode() ? 'Actualizar' : 'Crear' }} Paciente
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

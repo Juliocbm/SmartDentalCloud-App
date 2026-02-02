@@ -1,4 +1,4 @@
-<div class="page-container container-medium with-background">
+<div class="page-container container-medium">
   <!-- Header -->
   <app-page-header
     [title]="isEditMode() ? 'Editar Rol' : 'Nuevo Rol'"
@@ -9,19 +9,20 @@
     [breadcrumbs]="breadcrumbItems()">
   </app-page-header>
 
-  <!-- Error Alert -->
-  @if (error()) {
-    <div class="alert alert-danger">
-      <i class="fa-solid fa-triangle-exclamation alert-icon"></i>
-      <span class="alert-message">{{ error() }}</span>
-      <button class="alert-close" (click)="error.set(null)">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-  }
+  <div class="content-card">
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-triangle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ error() }}</span>
+        <button class="alert-close" (click)="error.set(null)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    }
 
-  <!-- Form -->
-  <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="role-form">
+    <!-- Form -->
+    <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="role-form">
     
     <!-- Basic Information Section -->
     <div class="form-section">
@@ -123,5 +124,6 @@
         }
       </button>
     </div>
-  </form>
+    </form>
+  </div>
 </div>

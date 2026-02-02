@@ -1,31 +1,9 @@
-.form-container {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.form-header {
-  margin-bottom: var(--spacing-3xl);
-  
-  h1 {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-    margin: 0 0 var(--spacing-sm) 0;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    
-    i {
-      color: var(--primary-500);
-    }
-  }
-  
-  p {
-    color: var(--text-secondary);
-    font-size: var(--font-size-base);
-    margin: 0;
-  }
-}
+// ============================================
+// AppointmentFormComponent - Estilos Específicos
+// Header: usa PageHeaderComponent compartido
+// Container: usa .page-container.container-medium de _layout.scss
+// Content: usa .content-card de _layout.scss
+// ============================================
 
 .error-banner {
   background-color: var(--error-100);
@@ -41,14 +19,6 @@
   i {
     font-size: var(--font-size-2xl);
   }
-}
-
-.appointment-form {
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-primary);
-  padding: var(--spacing-3xl);
-  box-shadow: var(--shadow-sm);
 }
 
 .form-section {

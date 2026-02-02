@@ -1,35 +1,9 @@
-.patient-form-container {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.page-header {
-  margin-bottom: var(--spacing-xl);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-color);
-
-  .header-content {
-    .page-title {
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0 0 var(--spacing-xs) 0;
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-
-      i {
-        color: var(--primary-500);
-      }
-    }
-
-    .page-subtitle {
-      color: var(--text-secondary);
-      margin: 0;
-      font-size: 0.95rem;
-    }
-  }
-}
+// ============================================
+// PatientFormComponent - Estilos Específicos
+// Header: usa PageHeaderComponent compartido
+// Container: usa .page-container.container-medium de _layout.scss
+// Content: usa .content-card de _layout.scss
+// ============================================
 
 .loading-state {
   text-align: center;
