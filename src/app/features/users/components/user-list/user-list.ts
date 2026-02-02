@@ -134,11 +134,11 @@ export class UserListComponent implements OnInit {
 
   getRoleIcon(roleName: string): string {
     const iconMap: Record<string, string> = {
-      'Administrador': '👨‍💼',
-      'Odontólogo': '🩺',
-      'Recepcionista': '📋',
-      'Asistente': '🤝'
+      'Administrador': 'fa-user-tie',
+      'Dentista': 'fa-user-doctor',
+      'Recepcionista': 'fa-clipboard',
+      'Asistente': 'fa-user-nurse'
     };
-    return iconMap[roleName] || '👤';
+    return iconMap[roleName] || 'fa-user';
   }
 }

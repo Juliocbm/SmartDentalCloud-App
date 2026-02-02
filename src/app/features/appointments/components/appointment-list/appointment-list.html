@@ -97,8 +97,8 @@
         </a>
       </div>
     } @else {
-      <div class="appointments-table">
-        <table>
+      <div class="table-container">
+        <table class="table">
           <thead>
             <tr>
               <th>Hora</th>
@@ -118,18 +118,26 @@
                     <span class="duration">{{ appointment.durationMinutes }} min</span>
                   </div>
                 </td>
-                <td class="patient-cell">
-                  <a [routerLink]="['/appointments', appointment.id]" class="patient-link">
-                    <div class="patient-info">
+                <td>
+                  <div class="info-cell">
+                    <div class="avatar avatar-success">
                       <i class="fa-solid fa-user"></i>
-                      <span>{{ appointment.patientName }}</span>
                     </div>
-                  </a>
+                    <div class="info-content">
+                      <div class="info-title">{{ appointment.patientName }}</div>
+                      <div class="info-subtitle">Paciente</div>
+                    </div>
+                  </div>
                 </td>
-                <td class="doctor-cell">
-                  <div class="doctor-info">
-                    <i class="fa-solid fa-user-doctor"></i>
-                    <span>{{ appointment.doctorName || 'Sin asignar' }}</span>
+                <td>
+                  <div class="info-cell">
+                    <div class="avatar avatar-info">
+                      <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                    <div class="info-content">
+                      <div class="info-title">{{ appointment.doctorName || 'Sin asignar' }}</div>
+                      <div class="info-subtitle">Dentista</div>
+                    </div>
                   </div>
                 </td>
                 <td class="reason-cell">
@@ -137,53 +145,49 @@
                 </td>
                 <td class="status-cell">
                   <span 
-                    class="status-badge"
+                    class="badge"
                     [ngClass]="getStatusConfig(appointment.status).bgColor"
                   >
                     <i class="fa-solid" [ngClass]="getStatusConfig(appointment.status).icon"></i>
                     {{ getStatusConfig(appointment.status).label }}
                   </span>
                 </td>
-                <td class="actions-cell">
-                  <div class="actions-group">
-                    <a 
+                <td class="actions-column">
+                  <div class="action-buttons">
+                    <button
+                      class="btn-icon btn-icon-view"
                       [routerLink]="['/appointments', appointment.id]"
-                      class="action-btn info"
                       title="Ver detalle"
                     >
                       <i class="fa-solid fa-eye"></i>
-                    </a>
+                    </button>
                     @if (appointment.status === 'Scheduled' || appointment.status === 'Confirmed') {
-                      <button 
+                      <button
+                        class="btn-icon btn-icon-edit"
+                        [routerLink]="['/appointments', appointment.id, 'edit']"
+                        title="Editar"
+                      >
+                        <i class="fa-solid fa-pen"></i>
+                      </button>
+                      <button
+                        class="btn-icon"
+                        style="color: var(--success-600);"
                         (click)="completeAppointment(appointment)"
-                        class="action-btn success"
                         title="Completar"
                       >
                         <i class="fa-solid fa-check"></i>
                       </button>
-                      <a 
-                        [routerLink]="['/appointments', appointment.id, 'edit']"
-                        class="action-btn primary"
-                        title="Editar"
-                      >
-                        <i class="fa-solid fa-edit"></i>
-                      </a>
-                      <button 
+                      <button
+                        class="btn-icon btn-icon-delete"
                         (click)="cancelAppointment(appointment)"
-                        class="action-btn error"
                         title="Cancelar"
                       >
-                        <i class="fa-solid fa-times"></i>
+                        <i class="fa-solid fa-xmark"></i>
                       </button>
-                    }
-                    @if (appointment.status === 'Completed' || appointment.status === 'Cancelled') {
-                      <a 
-                        [routerLink]="['/appointments', appointment.id, 'edit']"
-                        class="action-btn primary"
-                        title="Reagendar"
-                      >
-                        <i class="fa-solid fa-calendar"></i>
-                      </a>
+                    } @else {
+                      <button class="btn-icon" disabled title="Completada">
+                        <i class="fa-solid fa-check"></i>
+                      </button>
                     }
                   </div>
                 </td>

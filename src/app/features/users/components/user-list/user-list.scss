@@ -120,105 +120,10 @@
   color: var(--text-tertiary);
 }
 
-// ===== Users Table =====
-.users-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--font-size-sm);
+// Tabla: usa .table-container y .table de _components.scss
 
-  thead {
-    background: var(--surface-secondary);
-
-    th {
-      padding: var(--spacing-md) var(--spacing-lg);
-      text-align: left;
-      font-weight: var(--font-weight-semibold);
-      font-size: var(--font-size-xs);
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid var(--border-primary);
-      white-space: nowrap;
-
-      &.actions-column {
-        text-align: center;
-        width: 120px;
-      }
-    }
-  }
-
-  tbody {
-    tr {
-      border-bottom: 1px solid var(--border-primary);
-      transition: var(--transition-fast);
-
-      &:hover {
-        background: var(--surface-secondary);
-      }
-
-      &.row-inactive {
-        opacity: 0.6;
-      }
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      td {
-        padding: var(--spacing-md) var(--spacing-lg);
-        color: var(--text-primary);
-        vertical-align: middle;
-      }
-    }
-  }
-}
-
-// ===== Table Cells =====
-.user-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  min-width: 220px;
-
-  .user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-full);
-    background: var(--primary-100);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    i {
-      color: var(--primary-600);
-      font-size: var(--font-size-lg);
-    }
-  }
-
-  .user-info {
-    flex: 1;
-    min-width: 0;
-
-    .user-name {
-      font-weight: var(--font-weight-semibold);
-      color: var(--text-primary);
-      margin-bottom: var(--spacing-xs);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-size: var(--font-size-sm);
-    }
-
-    .user-email {
-      font-size: var(--font-size-xs);
-      color: var(--text-tertiary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-}
+// ===== Table Cell Content =====
+// Usuario: usa .info-cell y .avatar de _components.scss
 
 .roles-cell {
   min-width: 180px;
@@ -228,46 +133,32 @@
     flex-wrap: wrap;
     gap: var(--spacing-xs);
   }
+}
 
-  .role-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    white-space: nowrap;
+// Badges de roles: usa .badge de _components.scss + variantes de color específicas (backgrounds sólidos)
+.badge-admin {
+  background: var(--primary-500);
+  color: #ffffff;
+}
 
-    .role-icon {
-      font-size: var(--font-size-sm);
-    }
+.badge-doctor {
+  background: var(--info-500);
+  color: #ffffff;
+}
 
-    &.badge-admin {
-      background: var(--primary-100);
-      color: var(--primary-700);
-    }
+.badge-receptionist {
+  background: var(--warning-500);
+  color: #ffffff;
+}
 
-    &.badge-doctor {
-      background: var(--info-100);
-      color: var(--info-700);
-    }
+.badge-assistant {
+  background: var(--success-500);
+  color: #ffffff;
+}
 
-    &.badge-receptionist {
-      background: var(--warning-100);
-      color: var(--warning-700);
-    }
-
-    &.badge-assistant {
-      background: var(--success-100);
-      color: var(--success-700);
-    }
-
-    &.badge-default {
-      background: var(--neutral-100);
-      color: var(--neutral-700);
-    }
-  }
+.badge-default {
+  background: var(--neutral-500);
+  color: #ffffff;
 }
 
 .contact-cell {
@@ -295,22 +186,8 @@
 
 .specialty-cell {
   min-width: 140px;
-
-  .specialty-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-md);
-    background: var(--info-50);
-    color: var(--info-700);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-
-    i {
-      font-size: var(--font-size-sm);
-    }
-  }
+  
+  // specialty-tag: usa clase global de _components.scss
 
   .text-muted {
     color: var(--text-tertiary);
@@ -338,51 +215,8 @@
     gap: var(--spacing-xs);
     justify-content: center;
   }
-
-  .btn-icon {
-    width: 32px;
-    height: 32px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    border-radius: var(--radius-md);
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    font-size: var(--font-size-sm);
-
-    &:hover {
-      background: var(--surface-tertiary);
-    }
-
-    &.btn-view:hover {
-      background: var(--info-100);
-      color: var(--info-600);
-    }
-
-    &.btn-edit:hover {
-      background: var(--primary-100);
-      color: var(--primary-600);
-    }
-
-    &.btn-toggle-on {
-      color: var(--success-600);
-
-      &:hover {
-        background: var(--success-100);
-      }
-    }
-
-    &.btn-toggle-off {
-      color: var(--error-600);
-
-      &:hover {
-        background: var(--error-100);
-      }
-    }
-  }
+  
+  // btn-icon: usa clases globales de _components.scss
 }
 
 // ===== Table Footer =====

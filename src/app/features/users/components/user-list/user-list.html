@@ -99,7 +99,7 @@
   <!-- Users Table -->
   @if (!loading() && !error() && filteredUsers().length > 0) {
     <div class="table-container">
-      <table class="users-table">
+      <table class="table">
         <thead>
           <tr>
             <th>Usuario</th>
@@ -115,13 +115,15 @@
           @for (user of filteredUsers(); track user.id) {
             <tr [class.row-inactive]="!user.isActive">
               <!-- Usuario -->
-              <td class="user-cell">
-                <div class="user-avatar">
-                  <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="user-info">
-                  <div class="user-name">{{ user.name }}</div>
-                  <div class="user-email">{{ user.email }}</div>
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-primary">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ user.name }}</div>
+                    <div class="info-subtitle">{{ user.email }}</div>
+                  </div>
                 </div>
               </td>
 
@@ -129,8 +131,8 @@
               <td class="roles-cell">
                 <div class="roles-wrapper">
                   @for (role of user.roles; track role.id) {
-                    <span class="role-badge" [ngClass]="getRoleBadgeClass(role.name)">
-                      <span class="role-icon">{{ getRoleIcon(role.name) }}</span>
+                    <span class="badge" [ngClass]="getRoleBadgeClass(role.name)">
+                      <i class="fa-solid" [ngClass]="getRoleIcon(role.name)"></i>
                       {{ role.name }}
                     </span>
                   }
@@ -197,12 +199,13 @@
                   </button>
                   <button
                     class="btn-icon"
-                    [class.btn-toggle-on]="user.isActive"
-                    [class.btn-toggle-off]="!user.isActive"
+                    [class.btn-icon-toggle-on]="user.isActive"
+                    [class.btn-icon-toggle-off]="!user.isActive"
                     (click)="toggleUserActive(user)"
                     [title]="user.isActive ? 'Desactivar' : 'Activar'"
                   >
-                    <i class="fa-solid" [class.fa-toggle-on]="user.isActive" [class.fa-toggle-off]="!user.isActive"></i>
+                    <i class="fa-solid fa-toggle-on" *ngIf="user.isActive"></i>
+                    <i class="fa-solid fa-toggle-off" *ngIf="!user.isActive"></i>
                   </button>
                 </div>
               </td>

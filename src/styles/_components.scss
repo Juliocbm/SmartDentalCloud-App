@@ -397,36 +397,215 @@ textarea.form-control {
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.75rem;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
   line-height: 1;
+  white-space: nowrap;
+  
+  i {
+    font-size: var(--font-size-sm);
+  }
 }
 
 .badge-primary {
-  background: var(--primary-100);
-  color: var(--primary-700);
+  background: var(--primary-500);
+  color: #ffffff;
 }
 
 .badge-success {
-  background: var(--success-100);
-  color: var(--success-700);
+  background: var(--success-500);
+  color: #ffffff;
 }
 
 .badge-error {
-  background: var(--error-100);
-  color: var(--error-700);
+  background: var(--error-500);
+  color: #ffffff;
 }
 
 .badge-warning {
-  background: var(--warning-100);
-  color: var(--warning-700);
+  background: var(--warning-500);
+  color: #ffffff;
 }
 
-.badge-neutral {
-  background: var(--neutral-100);
-  color: var(--neutral-700);
+.badge-info {
+  background: var(--info-500);
+  color: #ffffff;
+}
+
+.badge-neutral,
+.badge-inactive {
+  background: var(--neutral-500);
+  color: #ffffff;
+}
+
+// Badge circular solo con ícono
+.badge-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  justify-content: center;
+}
+
+// Badge premium con ícono (estilo especialidad)
+.specialty-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--info-500);
+  color: #ffffff;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  
+  i {
+    font-size: var(--font-size-sm);
+  }
+}
+
+// ===== AVATARES =====
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  
+  i {
+    font-size: var(--font-size-lg);
+  }
+}
+
+.avatar-primary {
+  background: var(--primary-50);
+  
+  i {
+    color: var(--primary-600);
+  }
+}
+
+.avatar-success {
+  background: var(--success-50);
+  
+  i {
+    color: var(--success-600);
+  }
+}
+
+.avatar-info {
+  background: var(--info-50);
+  
+  i {
+    color: var(--info-600);
+  }
+}
+
+.avatar-warning {
+  background: var(--warning-50);
+  
+  i {
+    color: var(--warning-600);
+  }
+}
+
+// ===== CELDAS DE INFO (Nombre + Subtítulo) =====
+.info-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 220px;
+  
+  .info-content {
+    flex: 1;
+    min-width: 0;
+    
+    .info-title {
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: var(--font-size-sm);
+    }
+    
+    .info-subtitle {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+// ===== ACTION BUTTONS (Para tablas) - Estilo compacto =====
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+  font-size: var(--font-size-sm);
+  
+  &:hover {
+    background: var(--surface-tertiary);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn-icon-view {
+  &:hover:not(:disabled) {
+    background: var(--info-50);
+    color: var(--info-600);
+  }
+}
+
+.btn-icon-edit {
+  &:hover:not(:disabled) {
+    background: var(--primary-50);
+    color: var(--primary-600);
+  }
+}
+
+.btn-icon-delete {
+  &:hover:not(:disabled) {
+    background: var(--error-50);
+    color: var(--error-600);
+  }
+}
+
+.btn-icon-toggle-on {
+  color: var(--success-600);
+  
+  &:hover:not(:disabled) {
+    background: var(--success-50);
+  }
+}
+
+.btn-icon-toggle-off {
+  color: var(--error-600);
+  
+  &:hover:not(:disabled) {
+    background: var(--error-50);
+  }
 }
 
 // ===== TABLAS =====
@@ -436,31 +615,37 @@ textarea.form-control {
   border: 1px solid var(--border-primary);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+  
+  @media (max-width: 768px) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   
-  th, td {
-    padding: 0.75rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border-primary);
-  }
-  
-  th {
+  thead {
     background: var(--surface-secondary);
-    font-weight: var(--font-weight-semibold);
-    font-size: var(--font-size-xs);
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    
+    th {
+      padding: var(--spacing-md) var(--spacing-lg);
+      text-align: left;
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--border-primary);
+      white-space: nowrap;
+    }
   }
   
   tbody {
     tr {
-      border-bottom: 1px solid var(--border-secondary);
-      transition: var(--transition-base);
+      border-bottom: 1px solid var(--border-primary);
+      transition: var(--transition-fast);
       
       &:hover {
         background: var(--surface-secondary);
@@ -469,12 +654,22 @@ textarea.form-control {
       &:last-child {
         border-bottom: none;
       }
+      
+      &.row-inactive {
+        opacity: 0.6;
+      }
     }
     
     td {
+      padding: var(--spacing-md) var(--spacing-lg);
       font-size: var(--font-size-sm);
       color: var(--text-primary);
+      vertical-align: middle;
     }
+  }
+  
+  @media (max-width: 768px) {
+    min-width: 700px;
   }
 }
 

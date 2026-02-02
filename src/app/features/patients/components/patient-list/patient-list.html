@@ -63,7 +63,7 @@
 
   <!-- Patients Table -->
   <div *ngIf="!loading() && !error() && patients().length > 0" class="table-container">
-    <table class="patients-table">
+    <table class="table">
       <thead>
         <tr>
           <th>Paciente</th>
@@ -76,11 +76,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let patient of patients()" [class.inactive]="!patient.isActive">
+        <tr *ngFor="let patient of patients()" [class.row-inactive]="!patient.isActive">
           <!-- Paciente -->
-          <td class="patient-info">
-            <div class="patient-name">{{ getFullName(patient) }}</div>
-            <div class="patient-id">#{{ patient.id.substring(0, 8) }}</div>
+          <td>
+            <div class="info-cell">
+              <div class="avatar avatar-primary">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div class="info-content">
+                <div class="info-title">{{ getFullName(patient) }}</div>
+                <div class="info-subtitle">#{{ patient.id.substring(0, 8) }}</div>
+              </div>
+            </div>
           </td>
 
           <!-- Contacto -->
@@ -111,6 +118,7 @@
           <!-- Estado -->
           <td class="status-column">
             <span class="badge" [class.badge-success]="patient.isActive" [class.badge-inactive]="!patient.isActive">
+              <i class="fa-solid" [class.fa-circle-check]="patient.isActive" [class.fa-circle-xmark]="!patient.isActive"></i>
               {{ patient.isActive ? 'Activo' : 'Inactivo' }}
             </span>
           </td>
@@ -120,14 +128,14 @@
             <div class="indicator-badges">
               <span 
                 *ngIf="hasAllergies(patient)" 
-                class="indicator-badge badge-warning"
+                class="badge badge-icon badge-warning"
                 title="Tiene alergias registradas"
               >
                 <i class="fa-solid fa-exclamation-triangle"></i>
               </span>
               <span 
                 *ngIf="hasMedicalHistory(patient)" 
-                class="indicator-badge badge-info"
+                class="badge badge-icon badge-info"
                 title="Tiene historia médica"
               >
                 <i class="fa-solid fa-heartbeat"></i>
@@ -139,30 +147,30 @@
           <td class="actions-column">
             <div class="action-buttons">
               <button 
-                class="btn-icon btn-view" 
+                class="btn-icon btn-icon-view" 
                 [routerLink]="['/patients', patient.id]"
                 title="Ver detalles"
               >
                 <i class="fa-solid fa-eye"></i>
               </button>
               <button 
-                class="btn-icon btn-edit" 
+                class="btn-icon btn-icon-edit" 
                 [routerLink]="['/patients', patient.id, 'edit']"
                 title="Editar"
               >
                 <i class="fa-solid fa-pen"></i>
               </button>
               <button 
-                class="btn-icon btn-toggle"
-                [class.btn-deactivate]="patient.isActive"
-                [class.btn-activate]="!patient.isActive"
+                class="btn-icon"
+                [class.btn-icon-toggle-on]="patient.isActive"
+                [class.btn-icon-toggle-off]="!patient.isActive"
                 (click)="toggleActive(patient)"
                 [title]="patient.isActive ? 'Desactivar' : 'Activar'"
               >
                 <i class="fa-solid" [class.fa-toggle-on]="patient.isActive" [class.fa-toggle-off]="!patient.isActive"></i>
               </button>
               <button 
-                class="btn-icon btn-delete" 
+                class="btn-icon btn-icon-delete" 
                 (click)="deletePatient(patient)"
                 title="Eliminar"
               >

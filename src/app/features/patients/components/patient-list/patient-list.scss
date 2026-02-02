@@ -111,207 +111,68 @@
   color: var(--text-tertiary);
 }
 
-.table-container {
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
+// Tabla: usa .table-container y .table de _components.scss
+
+// ===== Table Cell Content =====
+// Paciente: usa .info-cell de _components.scss (avatar + nombre + subtítulo)
+
+.contact-info {
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+
+    i {
+      color: var(--text-tertiary);
+      width: 16px;
+      font-size: var(--font-size-xs);
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .contact-empty {
+    color: var(--text-tertiary);
+    font-style: italic;
+    font-size: var(--font-size-xs);
+  }
 }
 
-.patients-table {
-  width: 100%;
-  border-collapse: collapse;
+.age-info {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
 
-  thead {
-    background: var(--surface-secondary);
+.last-visit {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
 
-    th {
-      padding: var(--spacing-md);
-      text-align: left;
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid var(--border-color);
-    }
+// Badges: usa .badge, .badge-success, .badge-inactive de _components.scss
+// Indicator badges: usa .badge.badge-icon.badge-warning/info de _components.scss
+// Action buttons: usa .btn-icon, .btn-icon-view, .btn-icon-edit, etc. de _components.scss
+
+.indicators {
+  .indicator-badges {
+    display: flex;
+    gap: var(--spacing-xs);
   }
+}
 
-  tbody {
-    tr {
-      border-bottom: 1px solid var(--border-color);
-      transition: background var(--transition-fast);
+.actions-column {
+  text-align: center;
 
-      &:hover {
-        background: var(--surface-secondary);
-      }
-
-      &.inactive {
-        opacity: 0.6;
-      }
-
-      td {
-        padding: var(--spacing-md);
-        color: var(--text-primary);
-      }
-    }
+  .action-buttons {
+    display: inline-flex;
+    gap: var(--spacing-xs);
+    justify-content: center;
   }
-
-  .patient-info {
-    .patient-name {
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: var(--spacing-xs);
-    }
-
-    .patient-id {
-      font-size: 0.875rem;
-      color: var(--text-tertiary);
-      font-family: monospace;
-    }
-  }
-
-  .contact-info {
-    .contact-item {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-      margin-bottom: var(--spacing-xs);
-      font-size: 0.9rem;
-
-      i {
-        color: var(--text-tertiary);
-        width: 16px;
-      }
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-
-    .contact-empty {
-      color: var(--text-tertiary);
-      font-style: italic;
-    }
-  }
-
-  .age-info {
-    font-weight: 500;
-  }
-
-  .last-visit {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-  }
-
-  .status-column {
-    .badge {
-      display: inline-block;
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      font-weight: 500;
-
-      &.badge-success {
-        background: var(--success-100);
-        color: var(--success-700);
-      }
-
-      &.badge-inactive {
-        background: var(--neutral-100);
-        color: var(--neutral-600);
-      }
-    }
-  }
-
-  .indicators {
-    .indicator-badges {
-      display: flex;
-      gap: var(--spacing-xs);
-
-      .indicator-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: var(--radius-sm);
-        font-size: 0.875rem;
-
-        &.badge-warning {
-          background: var(--warning-100);
-          color: var(--warning-700);
-        }
-
-        &.badge-info {
-          background: var(--info-100);
-          color: var(--info-700);
-        }
-      }
-    }
-  }
-
-  .actions-column {
-    width: 200px;
-
-    .action-buttons {
-      display: flex;
-      gap: var(--spacing-xs);
-      justify-content: flex-end;
-
-      .btn-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: var(--radius-sm);
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all var(--transition-base);
-        background: var(--surface-secondary);
-        color: var(--text-primary);
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: var(--shadow-sm);
-        }
-
-        &.btn-view {
-          &:hover {
-            background: var(--info-100);
-            color: var(--info-700);
-          }
-        }
-
-        &.btn-edit {
-          &:hover {
-            background: var(--primary-100);
-            color: var(--primary-700);
-          }
-        }
-
-        &.btn-toggle {
-          &.btn-deactivate:hover {
-            background: var(--warning-100);
-            color: var(--warning-700);
-          }
-
-          &.btn-activate:hover {
-            background: var(--success-100);
-            color: var(--success-700);
-          }
-        }
-
-        &.btn-delete {
-          &:hover {
-            background: var(--danger-100);
-            color: var(--danger-700);
-          }
-        }
-      }
-    }
-  }
+  
+  // btn-icon: usa clases globales de _components.scss
 }
 
 .pagination-container {
