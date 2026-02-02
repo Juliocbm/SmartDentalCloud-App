@@ -32,11 +32,14 @@ export interface StockMovement {
   createdAt: Date;
 }
 
+/**
+ * Request para ajustar stock manualmente.
+ * quantity: Diferencia a aplicar (+entrada, -salida)
+ */
 export interface StockAdjustmentRequest {
   productId: string;
-  newQuantity: number;
+  quantity: number;
   reason: string;
-  notes?: string;
 }
 
 export interface StockAlert {

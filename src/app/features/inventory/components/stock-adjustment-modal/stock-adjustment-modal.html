@@ -1,0 +1,183 @@
+<app-modal
+  [title]="'Ajustar Stock'"
+  [subtitle]="modalData?.productName"
+  [icon]="'fa-boxes-stacked'"
+  [size]="'md'"
+  (closed)="onCancel()">
+
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error() }}</span>
+      <button class="alert-close" (click)="error.set(null)" type="button">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Product Info -->
+  <div class="product-info-card">
+    <div class="info-row">
+      <span class="info-label">Código:</span>
+      <span class="info-value code">{{ modalData?.productCode }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Stock Actual:</span>
+      <span class="info-value stock">{{ modalData?.currentStock }} {{ modalData?.unit }}</span>
+    </div>
+  </div>
+
+  <!-- Adjustment Form -->
+  <form [formGroup]="adjustmentForm" (ngSubmit)="onSubmit()" class="adjustment-form">
+    
+    <!-- Tipo de Ajuste -->
+    <div class="form-group">
+      <label class="form-label required">Tipo de Ajuste</label>
+      <div class="adjustment-type-selector">
+        @for (type of adjustmentTypes; track type.value) {
+          <label 
+            class="type-option"
+            [class.selected]="adjustmentForm.get('adjustmentType')?.value === type.value"
+            [class.type-add]="type.value === 'add'"
+            [class.type-subtract]="type.value === 'subtract'">
+            <input 
+              type="radio" 
+              formControlName="adjustmentType" 
+              [value]="type.value"
+            />
+            <i class="fa-solid" [ngClass]="type.icon"></i>
+            <span>{{ type.label }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+    <!-- Cantidad -->
+    <div class="form-group">
+      <label class="form-label required">Cantidad</label>
+      <div class="quantity-input-wrapper">
+        <input
+          type="number"
+          class="form-input quantity-input"
+          formControlName="quantity"
+          min="0.01"
+          step="1"
+          [class.error]="hasError('quantity', 'required') || hasError('quantity', 'min')"
+        />
+        <span class="unit-label">{{ modalData?.unit }}</span>
+      </div>
+      @if (hasError('quantity', 'required')) {
+        <span class="error-message">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          La cantidad es requerida
+        </span>
+      }
+      @if (hasError('quantity', 'min')) {
+        <span class="error-message">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          La cantidad debe ser mayor a 0
+        </span>
+      }
+    </div>
+
+    <!-- Preview del Stock -->
+    <div class="stock-preview">
+      <div class="preview-item">
+        <span class="preview-label">Stock Actual</span>
+        <span class="preview-value">{{ modalData?.currentStock }}</span>
+      </div>
+      <div class="preview-arrow">
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
+      <div class="preview-item">
+        <span class="preview-label">Stock Final</span>
+        <span 
+          class="preview-value final"
+          [class.positive]="stockDifference > 0"
+          [class.negative]="stockDifference < 0">
+          {{ previewStock }}
+        </span>
+      </div>
+      <div class="preview-difference" [class.positive]="stockDifference > 0" [class.negative]="stockDifference < 0">
+        {{ stockDifference > 0 ? '+' : '' }}{{ stockDifference }}
+      </div>
+    </div>
+
+    <!-- Razón -->
+    <div class="form-group">
+      <label class="form-label required">Razón del Ajuste</label>
+      <select 
+        class="form-select" 
+        formControlName="reason"
+        [class.error]="hasError('reason', 'required')">
+        <option value="">Selecciona una razón...</option>
+        @for (reason of commonReasons; track reason) {
+          <option [value]="reason">{{ reason }}</option>
+        }
+      </select>
+      @if (hasError('reason', 'required')) {
+        <span class="error-message">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          Debes seleccionar una razón
+        </span>
+      }
+    </div>
+
+    <!-- Razón Personalizada (si selecciona "Otro") -->
+    @if (adjustmentForm.get('reason')?.value === 'Otro') {
+      <div class="form-group">
+        <label class="form-label required">Especifica la Razón</label>
+        <input
+          type="text"
+          class="form-input"
+          formControlName="customReason"
+          placeholder="Describe la razón del ajuste..."
+          [class.error]="hasError('customReason', 'required')"
+        />
+        @if (hasError('customReason', 'required')) {
+          <span class="error-message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            Debes especificar la razón
+          </span>
+        }
+      </div>
+    }
+
+    <!-- Notas adicionales -->
+    <div class="form-group">
+      <label class="form-label">Notas Adicionales</label>
+      <textarea
+        class="form-textarea"
+        formControlName="notes"
+        rows="2"
+        placeholder="Observaciones opcionales..."
+      ></textarea>
+    </div>
+  </form>
+
+  <!-- Footer -->
+  <div modal-footer>
+    <button
+      type="button"
+      class="btn btn-outline"
+      (click)="onCancel()"
+      [disabled]="saving()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="onSubmit()"
+      [disabled]="saving() || adjustmentForm.invalid">
+      @if (saving()) {
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Guardando...
+      } @else {
+        <i class="fa-solid fa-check"></i>
+        Confirmar Ajuste
+      }
+    </button>
+  </div>
+</app-modal>

@@ -1,0 +1,11 @@
+// ============================================
+// ModalComponent - Estilos del Componente Modal Base
+// Usa variables globales de _variables.scss
+// ============================================
+
+// El overlay y estilos principales están en _components.scss
+// Este archivo solo contiene ajustes específicos del componente si es necesario
+
+:host {
+  display: contents;
+}

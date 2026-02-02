@@ -205,17 +205,17 @@
                 <div class="action-buttons">
                   <button
                     class="btn btn-sm btn-outline"
-                    [routerLink]="['/inventory/products', alert.productId]"
+                    [routerLink]="['/inventory/products', alert.productId, 'edit']"
                   >
-                    <i class="fa-solid fa-eye"></i>
-                    Ver
+                    <i class="fa-solid fa-pen"></i>
+                    Editar
                   </button>
                   <button
                     class="btn btn-sm btn-outline btn-success"
-                    [routerLink]="['/inventory/products', alert.productId, 'edit']"
+                    (click)="openAdjustmentModal(alert)"
                   >
-                    <i class="fa-solid fa-plus"></i>
-                    Ajustar
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    Ajustar Stock
                   </button>
                 </div>
               </td>

@@ -8,6 +8,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { StockService } from '../../services/stock.service';
 import { StockAlert, StockAlertLevel } from '../../models/stock.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { ModalService } from '../../../../shared/services/modal.service';
+import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
 
 @Component({
   selector: 'app-stock-alerts',
@@ -18,6 +20,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 })
 export class StockAlertsComponent implements OnInit {
   private stockService = inject(StockService);
+  private modalService = inject(ModalService);
   private searchSubject = new Subject<string>();
 
   alerts = signal<StockAlert[]>([]);
@@ -109,8 +112,24 @@ export class StockAlertsComponent implements OnInit {
     return 'fa-circle-check';
   }
 
-  navigateToProduct(productId: string): void {
-    // Navegar al detalle del producto
-    window.location.href = `/inventory/products/${productId}`;
+  openAdjustmentModal(alert: StockAlert): void {
+    const modalData: StockAdjustmentModalData = {
+      productId: alert.productId,
+      productCode: alert.productCode,
+      productName: alert.productName,
+      currentStock: alert.currentStock,
+      unit: alert.unit
+    };
+
+    const modalRef = this.modalService.open<StockAdjustmentModalData, boolean>(
+      StockAdjustmentModalComponent,
+      { data: modalData }
+    );
+
+    modalRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadData();
+      }
+    });
   }
 }

@@ -148,9 +148,16 @@ src/app/features/inventory/
 - `POST /api/stock/adjust` - Ajusta stock manualmente
 - `GET /api/stock/movements` - Historial de movimientos
 
-### Pendiente en Fase 3
-- [ ] stock-adjustment modal/dialog component
-- [ ] stock-movements component (historial detallado)
+### Stock Adjustment Modal (COMPLETADO)
+- [x] ModalService en shared/services (patrón reutilizable)
+- [x] ModalComponent base en shared/components
+- [x] Estilos globales de modal en _components.scss
+- [x] StockAdjustmentModal específico para ajustes
+- [x] Integración en stock-alerts
+- [x] Integración en layout para ViewContainerRef
+
+### Pospuesto
+- [ ] stock-movements component (requiere endpoint backend)
 
 ---
 
