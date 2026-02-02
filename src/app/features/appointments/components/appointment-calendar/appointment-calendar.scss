@@ -35,6 +35,49 @@
   .header-actions {
     display: flex;
     gap: var(--spacing-lg);
+    align-items: center;
+    
+    .doctor-filter {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      
+      label {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        white-space: nowrap;
+        
+        i {
+          color: var(--primary-500);
+        }
+      }
+      
+      .doctor-select {
+        padding: var(--spacing-sm) var(--spacing-md);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-sm);
+        background: var(--surface-primary);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: var(--transition-base);
+        min-width: 180px;
+        
+        &:hover {
+          border-color: var(--primary-500);
+        }
+        
+        &:focus {
+          outline: none;
+          border-color: var(--primary-500);
+          box-shadow: 0 0 0 3px var(--primary-100);
+        }
+      }
+    }
   }
 }
 

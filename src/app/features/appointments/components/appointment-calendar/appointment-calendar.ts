@@ -9,6 +9,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatusConfig } from '../../models/appointment.models';
+import { UsersService } from '../../../../core/services/users.service';
+import { DoctorListItem } from '../../../../core/models/user.models';
 
 @Component({
   selector: 'app-appointment-calendar',
@@ -19,6 +21,7 @@ import { Appointment, AppointmentStatusConfig } from '../../models/appointment.m
 })
 export class AppointmentCalendarComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);
+  private usersService = inject(UsersService);
   private router = inject(Router);
 
   appointments = signal<Appointment[]>([]);
@@ -26,6 +29,8 @@ export class AppointmentCalendarComponent implements OnInit {
   selectedView = signal<'week' | 'day'>('week');
   showQuickCreateModal = signal(false);
   selectedSlot = signal<{ start: Date; end: Date } | null>(null);
+  doctors = signal<DoctorListItem[]>([]);
+  selectedDoctorId = signal<string>('all');
 
   calendarOptions = signal<CalendarOptions>({
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -77,6 +82,7 @@ export class AppointmentCalendarComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.loadDoctors();
     this.loadAppointments();
   }
 
@@ -195,5 +201,29 @@ export class AppointmentCalendarComponent implements OnInit {
 
   goToListView(): void {
     this.router.navigate(['/appointments']);
+  }
+
+  private loadDoctors(): void {
+    this.usersService.getDoctors().subscribe({
+      next: (doctors) => {
+        this.doctors.set(doctors);
+      },
+      error: (error) => {
+        console.error('Error loading doctors:', error);
+        this.doctors.set([]);
+      }
+    });
+  }
+
+  onDoctorChange(doctorId: string): void {
+    this.selectedDoctorId.set(doctorId);
+    const allAppointments = this.appointments();
+    
+    if (doctorId === 'all') {
+      this.updateCalendarEvents(allAppointments);
+    } else {
+      const filtered = allAppointments.filter(apt => apt.userId === doctorId);
+      this.updateCalendarEvents(filtered);
+    }
   }
 }

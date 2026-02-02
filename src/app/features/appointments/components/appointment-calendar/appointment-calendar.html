@@ -9,6 +9,24 @@
     </div>
     
     <div class="header-actions">
+      <div class="doctor-filter">
+        <label for="doctorSelect">
+          <i class="fa-solid fa-user-doctor"></i>
+          Odontólogo
+        </label>
+        <select 
+          id="doctorSelect"
+          class="doctor-select"
+          [value]="selectedDoctorId()"
+          (change)="onDoctorChange($any($event.target).value)"
+        >
+          <option value="all">Todos los odontólogos</option>
+          @for (doctor of doctors(); track doctor.id) {
+            <option [value]="doctor.id">{{ doctor.name }}</option>
+          }
+        </select>
+      </div>
+      
       <button 
         (click)="goToListView()"
         class="btn btn-secondary"
