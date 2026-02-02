@@ -136,7 +136,7 @@
   
   ::ng-deep {
     .fc {
-      background: var(--surface-secondary);
+      background: var(--surface-primary);
       width: 100%;
       max-width: 100%;
       overflow: hidden;
@@ -205,16 +205,18 @@
       
 
       .fc-header-toolbar {
-        background: transparent !important;
+        background: var(--surface-primary) !important;
         border: none !important;
-        padding: 0 !important;
+        padding: var(--spacing-lg) var(--spacing-xl) 0 var(--spacing-xl) !important;
         margin-bottom: var(--spacing-lg) !important;
+        margin-left: calc(-1 * var(--spacing-xl)) !important;
+        margin-right: calc(-1 * var(--spacing-xl)) !important;
       }
       
       .fc-toolbar {
         gap: var(--spacing-lg);
-        padding: 0;
-        background: transparent;
+        padding: var(--spacing-lg) 0 0 0;
+        background: var(--surface-primary);
         border-bottom: none;
         
         h2 {
