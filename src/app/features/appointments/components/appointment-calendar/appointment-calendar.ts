@@ -47,7 +47,14 @@ export class AppointmentCalendarComponent implements OnInit {
     selectable: true,
     selectMirror: true,
     dayMaxEvents: true,
-    weekends: false,
+    weekends: true,
+    validRange: {
+      start: new Date()
+    },
+    selectAllow: (selectInfo) => {
+      const now = new Date();
+      return selectInfo.start >= now;
+    },
     businessHours: {
       daysOfWeek: [1, 2, 3, 4, 5],
       startTime: '08:00',
