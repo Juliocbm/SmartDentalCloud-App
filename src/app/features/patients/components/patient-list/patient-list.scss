@@ -1,42 +1,5 @@
 // Container: usa .page-container.container-wide de _layout.scss
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: var(--spacing-xl);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-color);
-
-  .header-content {
-    flex: 1;
-
-    .page-title {
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0 0 var(--spacing-xs) 0;
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-
-      i {
-        color: var(--primary-500);
-      }
-    }
-
-    .page-subtitle {
-      color: var(--text-secondary);
-      margin: 0;
-      font-size: 0.95rem;
-    }
-  }
-
-  .header-actions {
-    display: flex;
-    gap: var(--spacing-sm);
-  }
-}
+// Header: usa PageHeaderComponent compartido
 
 .filters-section {
   display: flex;
@@ -107,41 +70,7 @@
   }
 }
 
-.btn {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  font-weight: 500;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  border: none;
-
-  &.btn-primary {
-    background: var(--primary-500);
-    color: white;
-
-    &:hover {
-      background: var(--primary-600);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-  }
-
-  &.btn-outline {
-    background: transparent;
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-
-    &:hover {
-      background: var(--surface-secondary);
-      border-color: var(--primary-500);
-      color: var(--primary-500);
-    }
-  }
-}
+// Botones: usa clases globales .btn de _components.scss
 
 .loading-state,
 .error-state,

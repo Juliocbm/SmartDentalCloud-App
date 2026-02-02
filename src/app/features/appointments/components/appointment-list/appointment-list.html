@@ -1,13 +1,10 @@
 <div class="page-container container-wide">
-  <div class="appointments-header">
-    <div class="header-title">
-      <h1>
-        <i class="fa-solid fa-calendar-days"></i>
-        Citas
-      </h1>
-      <p>Gestiona las citas de tus pacientes</p>
-    </div>
-    <div class="header-actions">
+  <app-page-header
+    [title]="'Citas'"
+    [subtitle]="'Gestiona las citas de tus pacientes'"
+    [icon]="'fa-calendar-days'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
       <a 
         routerLink="/appointments/calendar" 
         class="btn btn-secondary"
@@ -21,7 +18,7 @@
         Nueva Cita
       </a>
     </div>
-  </div>
+  </app-page-header>
 
   <div class="appointments-filters">
     <div class="filter-group">

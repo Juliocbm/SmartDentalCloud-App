@@ -4,16 +4,22 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentListItem, AppointmentStatus, AppointmentStatusConfig } from '../../models/appointment.models';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent],
   templateUrl: './appointment-list.html',
   styleUrls: ['./appointment-list.scss']
 })
 export class AppointmentListComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Citas', route: '/appointments' }
+  ];
 
   appointments = signal<AppointmentListItem[]>([]);
   loading = signal(true);
