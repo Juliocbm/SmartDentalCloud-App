@@ -1,14 +1,8 @@
 // ============================================
 // UserFormComponent - Estilos Específicos
 // Header: usa PageHeaderComponent compartido
+// Container: usa .page-container.container-medium.with-background de _layout.scss
 // ============================================
-
-.user-form-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: var(--spacing-lg);
-  background: var(--surface-primary);
-}
 
 .loading-container {
   display: flex;

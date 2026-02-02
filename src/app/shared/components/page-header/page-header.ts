@@ -1,6 +1,6 @@
 import { Component, Input, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 export interface BreadcrumbItem {
   label: string;
@@ -11,7 +11,7 @@ export interface BreadcrumbItem {
 @Component({
   selector: 'app-page-header',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './page-header.html',
   styleUrl: './page-header.scss'
 })

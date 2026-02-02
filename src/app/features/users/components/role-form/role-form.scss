@@ -1,32 +1,4 @@
-.role-form-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: var(--spacing-lg);
-}
-
-.form-header {
-  margin-bottom: var(--spacing-xl);
-
-  .page-title {
-    font-size: var(--font-size-3xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--text-primary);
-    margin: 0 0 var(--spacing-xs) 0;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-
-    i {
-      color: var(--primary-500);
-    }
-  }
-
-  .page-subtitle {
-    font-size: var(--font-size-base);
-    color: var(--text-secondary);
-    margin: 0;
-  }
-}
+// Container: usa .page-container.container-medium.with-background de _layout.scss
 
 .alert {
   display: flex;

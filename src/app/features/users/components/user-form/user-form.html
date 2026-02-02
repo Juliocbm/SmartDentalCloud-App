@@ -1,4 +1,4 @@
-<div class="user-form-container">
+<div class="page-container container-medium with-background">
   <!-- Header -->
   <app-page-header
     [title]="isEditMode() ? 'Editar Usuario' : 'Nuevo Usuario'"
@@ -171,7 +171,7 @@
                 <div class="role-meta">
                   <span class="role-permissions-count">
                     <i class="fa-solid fa-key"></i>
-                    {{ role.permissions?.length || 0 }} permisos
+                    {{ role.permissions.length || 0 }} permisos
                   </span>
                 </div>
               </div>

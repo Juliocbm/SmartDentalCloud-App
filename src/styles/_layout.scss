@@ -473,3 +473,56 @@
   .xl\:inline-block { display: inline-block !important; }
   .xl\:flex { display: flex !important; }
 }
+
+// ============================================
+// PAGE CONTAINERS - Estandarización de Contenedores
+// ============================================
+
+.page-container {
+  margin: 0 auto;
+  padding: var(--spacing-2xl);
+  
+  // ===== Variantes de Ancho =====
+  &.container-wide {
+    max-width: var(--layout-max-width); // 1400px - Listas/Tablas
+  }
+  
+  &.container-standard {
+    max-width: var(--layout-width-standard); // 1200px - Detalles/Vistas mixtas
+  }
+  
+  &.container-medium {
+    max-width: var(--layout-width-medium); // 1000px - Formularios complejos
+  }
+  
+  &.container-narrow {
+    max-width: var(--layout-width-narrow); // 800px - Formularios simples
+  }
+  
+  // ===== Modificador de Fondo =====
+  &.with-background {
+    background: var(--surface-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  // ===== Responsive =====
+  @media (max-width: 1024px) {
+    padding: var(--spacing-xl);
+  }
+  
+  @media (max-width: 768px) {
+    padding: var(--spacing-lg);
+    
+    &.container-wide,
+    &.container-standard,
+    &.container-medium,
+    &.container-narrow {
+      max-width: 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    padding: var(--spacing-md);
+  }
+}

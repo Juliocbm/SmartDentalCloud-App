@@ -392,11 +392,7 @@
 }
 
 @media (max-width: 768px) {
-  .appointments-container {
-    padding: var(--spacing-xl);
-  }
-  
-  .appointments-header {
+  .page-header {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-xl);
