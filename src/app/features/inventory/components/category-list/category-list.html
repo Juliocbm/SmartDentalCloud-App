@@ -1,0 +1,177 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Categorías de Productos'"
+    [subtitle]="'Organiza el inventario por categorías'"
+    [icon]="'fa-tags'"
+    [breadcrumbs]="breadcrumbItems()">
+    <div actions>
+      <a class="btn btn-outline" routerLink="/inventory/products">
+        <i class="fa-solid fa-box"></i>
+        Productos
+      </a>
+      <a class="btn btn-primary" routerLink="/inventory/categories/new">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Categoría
+      </a>
+    </div>
+  </app-page-header>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por nombre..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="filterStatus()"
+        (change)="onStatusFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los estados</option>
+        <option value="active">Activas</option>
+        <option value="inactive">Inactivas</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando categorías...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadData()">
+        <i class="fa-solid fa-refresh"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredCategories().length === 0 && categories().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-tags"></i>
+      <h3>No hay categorías registradas</h3>
+      <p>Comienza agregando la primera categoría para organizar tus productos</p>
+      <a class="btn btn-primary" routerLink="/inventory/categories/new">
+        <i class="fa-solid fa-plus"></i>
+        Agregar Primera Categoría
+      </a>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredCategories().length === 0 && categories().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Categories Table -->
+  @if (!loading() && !error() && filteredCategories().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Fecha Creación</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (category of filteredCategories(); track category.id) {
+            <tr [class.row-inactive]="!category.isActive">
+              <!-- Categoría -->
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-secondary">
+                    <i class="fa-solid fa-tag"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ category.name }}</div>
+                    @if (category.parentCategoryId) {
+                      <div class="info-subtitle">Subcategoría</div>
+                    }
+                  </div>
+                </div>
+              </td>
+
+              <!-- Descripción -->
+              <td class="description-cell">
+                @if (category.description) {
+                  <span>{{ category.description }}</span>
+                } @else {
+                  <span class="text-muted">Sin descripción</span>
+                }
+              </td>
+
+              <!-- Estado -->
+              <td class="status-cell">
+                <span 
+                  class="badge" 
+                  [class.badge-success]="category.isActive"
+                  [class.badge-error]="!category.isActive"
+                >
+                  <i class="fa-solid" [class.fa-circle-check]="category.isActive" [class.fa-circle-xmark]="!category.isActive"></i>
+                  {{ category.isActive ? 'Activa' : 'Inactiva' }}
+                </span>
+              </td>
+
+              <!-- Fecha Creación -->
+              <td class="date-cell">
+                {{ category.createdAt | date:'dd/MM/yyyy' }}
+              </td>
+
+              <!-- Acciones -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-sm btn-outline"
+                    [routerLink]="['/inventory/categories', category.id, 'edit']"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                    Editar
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline btn-danger"
+                    (click)="deleteCategory(category)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Footer -->
+      <div class="table-footer centered">
+        <span class="results-count">
+          Mostrando <strong>{{ filteredCategories().length }}</strong> de <strong>{{ categories().length }}</strong> categorías
+        </span>
+      </div>
+    </div>
+  }
+</div>

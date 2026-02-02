@@ -1,0 +1,301 @@
+// ============================================
+// StockAlertsComponent - Estilos Específicos
+// Container: usa .page-container.container-wide de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Filters: usa .filters-section de _components.scss
+// Tabla: usa .table-container y .table de _components.scss
+// ============================================
+
+// ===== Alert Summary Cards =====
+.alert-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.summary-card {
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  border: 1px solid var(--border-primary);
+  transition: var(--transition-base);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &.critical {
+    border-left: 4px solid var(--error-500);
+
+    .card-icon {
+      background: var(--error-50);
+      color: var(--error-500);
+    }
+  }
+
+  &.warning {
+    border-left: 4px solid var(--warning-500);
+
+    .card-icon {
+      background: var(--warning-50);
+      color: var(--warning-500);
+    }
+  }
+
+  &.total {
+    border-left: 4px solid var(--primary-500);
+
+    .card-icon {
+      background: var(--primary-50);
+      color: var(--primary-500);
+    }
+  }
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: var(--spacing-xs);
+}
+
+.card-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+// ===== States =====
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-4xl);
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-lg) 0;
+
+  i {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-md);
+    display: block;
+  }
+
+  h3 {
+    font-size: var(--font-size-2xl);
+    color: var(--text-primary);
+    margin: var(--spacing-md) 0;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: var(--spacing-sm) 0;
+    font-size: var(--font-size-base);
+  }
+}
+
+.loading-state i {
+  color: var(--primary-500);
+}
+
+.error-state i {
+  color: var(--error-500);
+}
+
+.empty-state i {
+  color: var(--success-500);
+}
+
+// ===== Table Cell Content =====
+
+// Nivel de alerta
+.level-cell {
+  min-width: 120px;
+}
+
+.alert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+
+  &.badge-critical {
+    background: var(--error-50);
+    color: var(--error-700);
+    border: 1px solid var(--error-200);
+  }
+
+  &.badge-warning {
+    background: var(--warning-50);
+    color: var(--warning-700);
+    border: 1px solid var(--warning-200);
+  }
+
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+.badge-text {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+// Código de producto
+.product-code {
+  font-family: var(--font-family-mono, 'Consolas', monospace);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+}
+
+// Categoría
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  
+  i {
+    color: var(--primary-500);
+    font-size: 0.75rem;
+  }
+}
+
+// Stock actual
+.stock-cell {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+}
+
+.stock-value {
+  &.stock-critical {
+    color: var(--error-600);
+  }
+
+  &.stock-warning {
+    color: var(--warning-600);
+  }
+}
+
+// Celdas de números
+.min-stock-cell,
+.reorder-cell,
+.reorder-qty-cell {
+  text-align: center;
+  font-size: var(--font-size-sm);
+}
+
+// Filas de alerta
+.alert-row-critical {
+  background: var(--error-25);
+
+  &:hover {
+    background: var(--error-50);
+  }
+}
+
+.alert-row-warning {
+  background: var(--warning-25);
+
+  &:hover {
+    background: var(--warning-50);
+  }
+}
+
+// Columna de acciones
+.actions-column {
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+// ===== Table Footer =====
+// Usa .table-footer de _components.scss
+
+// ===== Responsive Design =====
+@media (max-width: 768px) {
+  .alert-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+
+    .header-actions {
+      width: 100%;
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .filters-section {
+    flex-direction: column;
+
+    .search-box {
+      min-width: 100%;
+    }
+
+    .filter-actions {
+      width: 100%;
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .alerts-table {
+    min-width: 1000px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-cell,
+  .min-stock-cell,
+  .reorder-cell {
+    display: none;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

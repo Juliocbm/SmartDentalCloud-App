@@ -1,0 +1,34 @@
+// ============================================
+// CategoryFormComponent - Estilos Específicos
+// Container: usa .page-container de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Form: usa clases globales .form-* de _components.scss
+// ============================================
+
+// Estados de carga
+.loading-state {
+  text-align: center;
+  padding: var(--spacing-4xl);
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-lg) 0;
+
+  i {
+    font-size: 3rem;
+    color: var(--primary-500);
+    margin-bottom: var(--spacing-md);
+    display: block;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+  }
+}
+
+// Categoría padre select
+.form-select {
+  option {
+    padding: var(--spacing-sm);
+  }
+}

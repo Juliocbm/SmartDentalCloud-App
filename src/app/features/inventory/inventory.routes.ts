@@ -30,6 +30,32 @@ export const INVENTORY_ROUTES: Routes = [
         loadComponent: () => import('./components/product-form/product-form').then(m => m.ProductFormComponent)
       }
     ]
+  },
+  {
+    path: 'categories',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./components/category-list/category-list').then(m => m.CategoryListComponent)
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./components/category-form/category-form').then(m => m.CategoryFormComponent)
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./components/category-form/category-form').then(m => m.CategoryFormComponent)
+      }
+    ]
+  },
+  {
+    path: 'stock',
+    children: [
+      {
+        path: 'alerts',
+        loadComponent: () => import('./components/stock-alerts/stock-alerts').then(m => m.StockAlertsComponent)
+      }
+    ]
   }
-  // TODO: Agregar rutas para categories, suppliers, purchase-orders
+  // TODO: Agregar rutas para suppliers, purchase-orders
 ];

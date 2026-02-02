@@ -95,15 +95,68 @@ src/app/features/inventory/
 
 ---
 
+---
+
+## Fase 2: Categorías (COMPLETADA)
+
+### Componentes Implementados
+- [x] category-list component (listado con filtros)
+- [x] category-form component (crear/editar)
+- [x] Rutas integradas en inventory.routes.ts
+- [x] Soporte para subcategorías (parentCategoryId)
+
+### Estructura
+```
+src/app/features/inventory/
+├── components/
+│   ├── category-list/
+│   │   ├── category-list.ts
+│   │   ├── category-list.html
+│   │   └── category-list.scss
+│   └── category-form/
+│       ├── category-form.ts
+│       ├── category-form.html
+│       └── category-form.scss
+```
+
+---
+
+## Fase 3: Stock y Alertas (EN PROGRESO)
+
+### Componentes Implementados
+- [x] stock.models.ts (interfaces para Stock, StockAlert, StockMovement)
+- [x] stock.service.ts (servicio para alertas y ajustes)
+- [x] stock-alerts component (dashboard de productos con stock bajo)
+- [x] Rutas integradas en inventory.routes.ts
+
+### Estructura
+```
+src/app/features/inventory/
+├── models/
+│   └── stock.models.ts
+├── services/
+│   └── stock.service.ts
+└── components/
+    └── stock-alerts/
+        ├── stock-alerts.ts
+        ├── stock-alerts.html
+        └── stock-alerts.scss
+```
+
+### Endpoints Backend
+- `GET /api/stock/alerts` - Obtiene productos con stock bajo
+- `POST /api/stock/adjust` - Ajusta stock manualmente
+- `GET /api/stock/movements` - Historial de movimientos
+
+### Pendiente en Fase 3
+- [ ] stock-adjustment modal/dialog component
+- [ ] stock-movements component (historial detallado)
+
+---
+
 ## Fases Futuras
 
-### Fase 2: Categorías y Stock
-- [ ] category-list component
-- [ ] category-form component
-- [ ] stock-alerts component
-- [ ] stock-adjustment component
-
-### Fase 3: Proveedores y Órdenes
+### Fase 4: Proveedores y Órdenes
 - [ ] supplier-list component
 - [ ] supplier-form component
 - [ ] purchase-order-list component

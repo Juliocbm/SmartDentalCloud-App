@@ -1,0 +1,235 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Alertas de Stock'"
+    [subtitle]="'Productos con niveles de inventario críticos o bajos'"
+    [icon]="'fa-triangle-exclamation'"
+    [breadcrumbs]="breadcrumbItems()">
+    <div actions>
+      <a class="btn btn-outline" routerLink="/inventory/products">
+        <i class="fa-solid fa-box"></i>
+        Productos
+      </a>
+      <a class="btn btn-outline" routerLink="/inventory/categories">
+        <i class="fa-solid fa-tags"></i>
+        Categorías
+      </a>
+    </div>
+  </app-page-header>
+
+  <!-- Alert Summary Cards -->
+  <div class="alert-summary">
+    <div class="summary-card critical">
+      <div class="card-icon">
+        <i class="fa-solid fa-circle-exclamation"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ criticalCount() }}</div>
+        <div class="card-label">Críticas</div>
+      </div>
+    </div>
+
+    <div class="summary-card warning">
+      <div class="card-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ warningCount() }}</div>
+        <div class="card-label">Advertencias</div>
+      </div>
+    </div>
+
+    <div class="summary-card total">
+      <div class="card-icon">
+        <i class="fa-solid fa-boxes-stacked"></i>
+      </div>
+      <div class="card-content">
+        <div class="card-value">{{ alerts().length }}</div>
+        <div class="card-label">Total Alertas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por código o nombre..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="filterLevel()"
+        (change)="onLevelFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los niveles</option>
+        <option value="critical">Críticas</option>
+        <option value="warning">Advertencias</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando alertas...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadData()">
+        <i class="fa-solid fa-refresh"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredAlerts().length === 0 && alerts().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-circle-check"></i>
+      <h3>¡Todo en orden!</h3>
+      <p>No hay alertas de stock en este momento</p>
+      <a class="btn btn-primary" routerLink="/inventory/products">
+        <i class="fa-solid fa-box"></i>
+        Ver Productos
+      </a>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredAlerts().length === 0 && alerts().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Alerts Table -->
+  @if (!loading() && !error() && filteredAlerts().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nivel</th>
+            <th>Código</th>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Stock Actual</th>
+            <th>Stock Mínimo</th>
+            <th>Pto. Reorden</th>
+            <th>Cant. Reorden</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (alert of filteredAlerts(); track alert.productId) {
+            <tr [class]="'alert-row-' + alert.alertLevel">
+              <!-- Nivel -->
+              <td class="level-cell">
+                <div class="alert-badge" [class]="'badge-' + alert.alertLevel">
+                  <i class="fa-solid" [ngClass]="getStockIcon(alert)"></i>
+                  <span class="badge-text">
+                    {{ alert.alertLevel === 'critical' ? 'Crítico' : 'Advertencia' }}
+                  </span>
+                </div>
+              </td>
+
+              <!-- Código -->
+              <td class="code-cell">
+                <span class="product-code">{{ alert.productCode }}</span>
+              </td>
+
+              <!-- Producto -->
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-secondary">
+                    <i class="fa-solid fa-box"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ alert.productName }}</div>
+                    <div class="info-subtitle">{{ alert.unit }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Categoría -->
+              <td class="category-cell">
+                @if (alert.categoryName) {
+                  <span class="category-tag">
+                    <i class="fa-solid fa-tag"></i>
+                    {{ alert.categoryName }}
+                  </span>
+                } @else {
+                  <span class="text-muted">Sin categoría</span>
+                }
+              </td>
+
+              <!-- Stock Actual -->
+              <td class="stock-cell">
+                <span class="stock-value" [class]="'stock-' + alert.alertLevel">
+                  {{ alert.currentStock }}
+                </span>
+              </td>
+
+              <!-- Stock Mínimo -->
+              <td class="min-stock-cell">
+                <span class="text-secondary">{{ alert.minStock }}</span>
+              </td>
+
+              <!-- Punto Reorden -->
+              <td class="reorder-cell">
+                <span class="text-secondary">{{ alert.reorderPoint }}</span>
+              </td>
+
+              <!-- Cantidad Reorden -->
+              <td class="reorder-qty-cell">
+                <span class="badge badge-info">{{ alert.reorderQuantity }}</span>
+              </td>
+
+              <!-- Acciones -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-sm btn-outline"
+                    [routerLink]="['/inventory/products', alert.productId]"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                    Ver
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline btn-success"
+                    [routerLink]="['/inventory/products', alert.productId, 'edit']"
+                  >
+                    <i class="fa-solid fa-plus"></i>
+                    Ajustar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Footer -->
+      <div class="table-footer centered">
+        <span class="results-count">
+          Mostrando <strong>{{ filteredAlerts().length }}</strong> de <strong>{{ alerts().length }}</strong> alertas
+        </span>
+      </div>
+    </div>
+  }
+</div>
