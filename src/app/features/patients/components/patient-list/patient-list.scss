@@ -103,57 +103,8 @@
   }
 }
 
-.pagination-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-md);
-  background: var(--surface-primary);
-  border-radius: var(--radius-md);
-
-  .pagination-info {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-  }
-
-  .pagination-controls {
-    display: flex;
-    gap: var(--spacing-xs);
-
-    .btn-page {
-      min-width: 36px;
-      height: 36px;
-      padding: var(--spacing-xs);
-      border: 1px solid var(--border-color);
-      background: var(--surface-primary);
-      color: var(--text-primary);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: all var(--transition-base);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      &:hover:not(:disabled):not(.active) {
-        background: var(--surface-secondary);
-        border-color: var(--primary-500);
-        color: var(--primary-500);
-      }
-
-      &.active {
-        background: var(--primary-500);
-        color: white;
-        border-color: var(--primary-500);
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-  }
-}
+// ===== Table Footer & Pagination =====
+// Usa .table-footer de _components.scss
 
 @media (max-width: 768px) {
   .patient-list-container {

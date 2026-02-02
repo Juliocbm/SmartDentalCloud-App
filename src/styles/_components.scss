@@ -615,6 +615,7 @@ textarea.form-control {
   border: 1px solid var(--border-primary);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+  margin-top: var(--spacing-lg);
   
   @media (max-width: 768px) {
     overflow-x: auto;
@@ -627,7 +628,8 @@ textarea.form-control {
   border-collapse: collapse;
   
   thead {
-    background: var(--surface-secondary);
+    background: var(--surface-tertiary);
+    position: relative;
     
     th {
       padding: var(--spacing-md) var(--spacing-lg);
@@ -637,7 +639,7 @@ textarea.form-control {
       color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      border-bottom: 2px solid var(--border-primary);
+      border-bottom: 2px solid var(--border-medium);
       white-space: nowrap;
     }
   }
@@ -670,6 +672,94 @@ textarea.form-control {
   
   @media (max-width: 768px) {
     min-width: 700px;
+  }
+}
+
+// ===== TABLE FOOTER =====
+.table-footer {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--surface-tertiary);
+  border-top: 1px solid var(--border-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+
+  // Simple results count (for non-paginated tables)
+  .results-count {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+
+    strong {
+      color: var(--text-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  // Pagination info (for paginated tables)
+  .pagination-info {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+
+    strong {
+      color: var(--text-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  // Pagination controls
+  .pagination-controls {
+    display: flex;
+    gap: var(--spacing-xs);
+
+    .btn-page {
+      min-width: 36px;
+      height: 36px;
+      padding: var(--spacing-xs);
+      border: 1px solid var(--border-primary);
+      background: var(--surface-primary);
+      color: var(--text-primary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+
+      &:hover:not(:disabled):not(.active) {
+        background: var(--surface-secondary);
+        border-color: var(--primary-500);
+        color: var(--primary-500);
+      }
+
+      &.active {
+        background: var(--primary-500);
+        color: #ffffff;
+        border-color: var(--primary-500);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // Center content when only showing results (no pagination)
+  &.centered {
+    justify-content: center;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+    
+    .pagination-controls {
+      justify-content: center;
+    }
   }
 }
 

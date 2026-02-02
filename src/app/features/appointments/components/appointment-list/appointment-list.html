@@ -173,16 +173,13 @@
             }
           </tbody>
         </table>
-      </div>
 
-      <div class="appointments-summary">
-        <p>
-          <strong>{{ filteredAppointments().length }}</strong> 
-          {{ filteredAppointments().length === 1 ? 'cita' : 'citas' }}
-          @if (searchTerm() || filterStatus()) {
-            (filtradas)
-          }
-        </p>
+        <!-- Table Footer -->
+        <div class="table-footer centered">
+          <span class="results-count">
+            Mostrando <strong>{{ filteredAppointments().length }}</strong> de <strong>{{ appointments().length }}</strong> {{ appointments().length === 1 ? 'cita' : 'citas' }}
+          </span>
+        </div>
       </div>
     }
   }

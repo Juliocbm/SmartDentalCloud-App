@@ -147,22 +147,7 @@
 }
 
 // ===== Table Footer =====
-.table-footer {
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--surface-secondary);
-  border-top: 1px solid var(--border-primary);
-  text-align: center;
-
-  .results-count {
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-
-    strong {
-      color: var(--text-primary);
-      font-weight: var(--font-weight-semibold);
-    }
-  }
-}
+// Usa .table-footer de _components.scss
 
 // ===== Responsive Design =====
 @media (max-width: 768px) {
