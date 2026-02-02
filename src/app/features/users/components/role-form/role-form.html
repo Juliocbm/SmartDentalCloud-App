@@ -2,7 +2,8 @@
   <!-- Header -->
   <div class="form-header">
     <h1 class="page-title">
-      {{ isEditMode() ? '✏️ Editar Rol' : '➕ Nuevo Rol' }}
+      <i class="fa-solid" [class.fa-pen]="isEditMode()" [class.fa-plus]="!isEditMode()"></i>
+      {{ isEditMode() ? 'Editar Rol' : 'Nuevo Rol' }}
     </h1>
     <p class="page-subtitle">
       {{ isEditMode() ? 'Modifica el rol y sus permisos' : 'Crea un rol personalizado para tu consultorio' }}
@@ -12,9 +13,11 @@
   <!-- Error Alert -->
   @if (error()) {
     <div class="alert alert-danger">
-      <span class="alert-icon">⚠️</span>
+      <i class="fa-solid fa-triangle-exclamation alert-icon"></i>
       <span class="alert-message">{{ error() }}</span>
-      <button class="alert-close" (click)="error.set(null)">✕</button>
+      <button class="alert-close" (click)="error.set(null)">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
   }
 
@@ -24,7 +27,7 @@
     <!-- Basic Information Section -->
     <div class="form-section">
       <h2 class="section-title">
-        <span class="section-icon">📋</span>
+        <i class="fa-solid fa-id-card section-icon"></i>
         Información del Rol
       </h2>
 
@@ -51,7 +54,8 @@
           </span>
         }
         <p class="field-hint">
-          💡 Elige un nombre descriptivo que refleje la función en el consultorio
+          <i class="fa-solid fa-lightbulb"></i>
+          Elige un nombre descriptivo que refleje la función en el consultorio
         </p>
       </div>
 
@@ -75,7 +79,7 @@
     <!-- Permissions Section -->
     <div class="form-section">
       <h2 class="section-title">
-        <span class="section-icon">🔐</span>
+        <i class="fa-solid fa-shield-halved section-icon"></i>
         Permisos del Rol
         <span class="required">*</span>
       </h2>
@@ -90,7 +94,8 @@
 
       @if (selectedPermissions().length === 0) {
         <p class="warning-message">
-          ⚠️ Debes seleccionar al menos un permiso
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Debes seleccionar al menos un permiso
         </p>
       }
     </div>
@@ -114,7 +119,8 @@
           <span class="btn-spinner"></span>
           Guardando...
         } @else {
-          {{ isEditMode() ? '💾 Guardar Cambios' : '➕ Crear Rol' }}
+          <i class="fa-solid" [class.fa-floppy-disk]="isEditMode()" [class.fa-plus]="!isEditMode()"></i>
+          {{ isEditMode() ? 'Guardar Cambios' : 'Crear Rol' }}
         }
       </button>
     </div>

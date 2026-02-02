@@ -2,7 +2,10 @@
   <!-- Header with Controls -->
   <div class="selector-header">
     <div class="header-info">
-      <h3 class="selector-title">🔐 Selección de Permisos</h3>
+      <h3 class="selector-title">
+        <i class="fa-solid fa-shield-halved"></i>
+        Selección de Permisos
+      </h3>
       <p class="selector-count">
         <span class="count-selected">{{ getTotalSelectedCount() }}</span> de 
         <span class="count-total">{{ getTotalPermissionsCount() }}</span> seleccionados
@@ -11,23 +14,27 @@
     
     <div class="header-actions">
       <button type="button" class="btn-text" (click)="expandAll()">
-        ➕ Expandir todos
+        <i class="fa-solid fa-plus"></i>
+        Expandir todos
       </button>
       <button type="button" class="btn-text" (click)="collapseAll()">
-        ➖ Colapsar todos
+        <i class="fa-solid fa-minus"></i>
+        Colapsar todos
       </button>
       <button type="button" class="btn-text" (click)="selectAll()">
-        ☑️ Seleccionar todos
+        <i class="fa-solid fa-check-square"></i>
+        Seleccionar todos
       </button>
       <button type="button" class="btn-text btn-danger" (click)="deselectAll()">
-        ☐ Limpiar
+        <i class="fa-solid fa-square"></i>
+        Limpiar
       </button>
     </div>
   </div>
 
   <!-- Search Box -->
   <div class="selector-search">
-    <span class="search-icon">🔍</span>
+    <i class="fa-solid fa-search search-icon"></i>
     <input
       type="text"
       placeholder="Buscar permisos..."
@@ -52,9 +59,7 @@
           <!-- Group Header -->
           <div class="group-header" (click)="toggleCategory(group.category)">
             <div class="group-header-left">
-              <span class="expand-icon">
-                {{ isCategoryExpanded(group.category) ? '▼' : '▶' }}
-              </span>
+              <i class="fa-solid expand-icon" [class.fa-chevron-down]="isCategoryExpanded(group.category)" [class.fa-chevron-right]="!isCategoryExpanded(group.category)"></i>
               <span class="group-icon">{{ group.icon }}</span>
               <h4 class="group-title">{{ group.category }}</h4>
               <span class="group-count">
@@ -71,13 +76,10 @@
                 (click)="isCategoryFullySelected(group) ? deselectAllInCategory(group) : selectAllInCategory(group)"
                 [title]="isCategoryFullySelected(group) ? 'Deseleccionar todos' : 'Seleccionar todos'"
               >
-                @if (isCategoryFullySelected(group)) {
-                  ☑️
-                } @else if (isCategoryPartiallySelected(group)) {
-                  ◼️
-                } @else {
-                  ☐
-                }
+                <i class="fa-solid" 
+                   [class.fa-check-square]="isCategoryFullySelected(group)"
+                   [class.fa-minus-square]="isCategoryPartiallySelected(group)"
+                   [class.fa-square]="!isCategoryFullySelected(group) && !isCategoryPartiallySelected(group)"></i>
               </button>
             </div>
           </div>
@@ -108,7 +110,7 @@
 
       @if (getFilteredGroups().length === 0) {
         <div class="empty-state">
-          <span class="empty-icon">🔍</span>
+          <i class="fa-solid fa-search empty-icon"></i>
           <p>No se encontraron permisos</p>
         </div>
       }
