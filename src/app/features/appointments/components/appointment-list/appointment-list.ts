@@ -1,7 +1,9 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentListItem, AppointmentStatus, AppointmentStatusConfig } from '../../models/appointment.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
@@ -13,8 +15,9 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
   templateUrl: './appointment-list.html',
   styleUrls: ['./appointment-list.scss']
 })
-export class AppointmentListComponent implements OnInit {
+export class AppointmentListComponent implements OnInit, OnDestroy {
   private appointmentsService = inject(AppointmentsService);
+  private searchSubject = new Subject<string>();
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -61,6 +64,18 @@ export class AppointmentListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAppointments();
+    
+    // Setup debounce for search with 300ms delay
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.searchTerm.set(term);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubject.complete();
   }
 
   loadAppointments(): void {
@@ -91,9 +106,8 @@ export class AppointmentListComponent implements OnInit {
     this.filterStatus.set(select.value as AppointmentStatus | '');
   }
 
-  onSearchChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.searchTerm.set(input.value);
+  onSearchChange(value: string): void {
+    this.searchSubject.next(value);
   }
 
   completeAppointment(appointment: AppointmentListItem): void {

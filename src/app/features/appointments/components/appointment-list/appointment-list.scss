@@ -1,55 +1,6 @@
 // Container: usa .page-container.container-wide de _layout.scss
 // Header: usa PageHeaderComponent compartido
-
-.appointments-filters {
-  display: flex;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-2xl);
-  flex-wrap: wrap;
-  
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    min-width: 200px;
-    
-    &.search-group {
-      flex: 1;
-      min-width: 300px;
-    }
-    
-    label {
-      font-size: var(--font-size-sm);
-      font-weight: var(--font-weight-medium);
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-    }
-    
-    .filter-input,
-    .filter-select {
-      padding: var(--spacing-md) var(--spacing-lg);
-      border: 1px solid var(--border-primary);
-      border-radius: var(--radius-md);
-      font-size: var(--font-size-base);
-      color: var(--text-primary);
-      background-color: var(--surface-primary);
-      transition: var(--transition-base);
-      font-family: var(--font-family-base);
-      
-      &:focus {
-        outline: none;
-        border-color: var(--primary-500);
-        box-shadow: 0 0 0 3px var(--primary-100);
-      }
-      
-      &::placeholder {
-        color: var(--text-muted);
-      }
-    }
-  }
-}
+// Filters: usa .filters-section de _components.scss
 
 .loading-container,
 .error-container,

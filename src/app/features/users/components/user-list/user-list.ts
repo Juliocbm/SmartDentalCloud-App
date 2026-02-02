@@ -1,7 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
@@ -14,9 +16,10 @@ import { User, Role } from '../../models/user.models';
   templateUrl: './user-list.html',
   styleUrls: ['./user-list.scss']
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent implements OnInit, OnDestroy {
   private usersService = inject(UsersService);
   private rolesService = inject(RolesService);
+  private searchSubject = new Subject<string>();
 
   users = signal<User[]>([]);
   filteredUsers = signal<User[]>([]);
@@ -36,6 +39,19 @@ export class UserListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+    
+    // Setup debounce for search with 300ms delay
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.searchTerm.set(term);
+      this.applyFilters();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubject.complete();
   }
 
   loadData(): void {
@@ -88,8 +104,7 @@ export class UserListComponent implements OnInit {
   }
 
   onSearchChange(value: string): void {
-    this.searchTerm.set(value);
-    this.applyFilters();
+    this.searchSubject.next(value);
   }
 
   onStatusFilterChange(value: 'all' | 'active' | 'inactive'): void {

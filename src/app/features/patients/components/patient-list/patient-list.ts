@@ -1,7 +1,9 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientsService } from '../../services/patients.service';
 import { Patient } from '../../models/patient.models';
@@ -13,8 +15,9 @@ import { Patient } from '../../models/patient.models';
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.scss'
 })
-export class PatientListComponent implements OnInit {
+export class PatientListComponent implements OnInit, OnDestroy {
   private patientsService = inject(PatientsService);
+  private searchSubject = new Subject<string>();
 
   patients = signal<Patient[]>([]);
   loading = signal(false);
@@ -26,7 +29,7 @@ export class PatientListComponent implements OnInit {
   totalPages = signal(0);
   
   searchTerm = signal('');
-  filterActive = signal<boolean | null>(null);
+  filterStatus = signal<'all' | 'active' | 'inactive'>('all');
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -38,16 +41,34 @@ export class PatientListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPatients();
+    
+    // Setup debounce for search with 300ms delay
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.searchTerm.set(term);
+      this.currentPage.set(1);
+      this.loadPatients();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubject.complete();
   }
 
   loadPatients(): void {
     this.loading.set(true);
     this.error.set(null);
 
+    const status = this.filterStatus();
+    const isActive = status === 'all' ? undefined : status === 'active';
+
     this.patientsService.getAll(
       this.currentPage(),
       this.pageSize(),
-      this.searchTerm() || undefined
+      this.searchTerm() || undefined,
+      isActive
     ).subscribe({
       next: (response) => {
         this.patients.set(response.items);
@@ -63,7 +84,12 @@ export class PatientListComponent implements OnInit {
     });
   }
 
-  onSearch(): void {
+  onSearchChange(value: string): void {
+    this.searchSubject.next(value);
+  }
+
+  onStatusFilterChange(value: 'all' | 'active' | 'inactive'): void {
+    this.filterStatus.set(value);
     this.currentPage.set(1);
     this.loadPatients();
   }

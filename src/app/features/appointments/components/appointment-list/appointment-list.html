@@ -20,51 +20,34 @@
     </div>
   </app-page-header>
 
-  <div class="appointments-filters">
-    <div class="filter-group">
-      <label for="date-filter">
-        <i class="fa-solid fa-calendar"></i>
-        Fecha
-      </label>
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
       <input 
-        type="date" 
-        id="date-filter"
-        [value]="formatDateForInput(selectedDate())"
-        (change)="onDateChange($event)"
-        class="filter-input"
+        type="text" 
+        class="search-input"
+        placeholder="Buscar paciente o motivo..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
       >
     </div>
 
-    <div class="filter-group">
-      <label for="status-filter">
-        <i class="fa-solid fa-filter"></i>
-        Estado
-      </label>
+    <div class="filter-actions">
+      <input 
+        type="date" 
+        class="filter-input"
+        [value]="formatDateForInput(selectedDate())"
+        (change)="onDateChange($event)"
+      >
       <select 
-        id="status-filter"
+        class="filter-select"
         [value]="filterStatus()"
         (change)="onStatusFilterChange($event)"
-        class="filter-select"
       >
         @for (option of statusOptions; track option.value) {
           <option [value]="option.value">{{ option.label }}</option>
         }
       </select>
-    </div>
-
-    <div class="filter-group search-group">
-      <label for="search-filter">
-        <i class="fa-solid fa-search"></i>
-        Buscar
-      </label>
-      <input 
-        type="text" 
-        id="search-filter"
-        placeholder="Buscar paciente o motivo..."
-        [value]="searchTerm()"
-        (input)="onSearchChange($event)"
-        class="filter-input"
-      >
     </div>
   </div>
 

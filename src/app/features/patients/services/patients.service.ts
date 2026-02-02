@@ -22,10 +22,18 @@ export class PatientsService {
   private api = inject(ApiService);
   private readonly baseUrl = '/patients';
 
-  getAll(pageNumber: number = 1, pageSize: number = 10, searchTerm?: string): Observable<PaginatedList<Patient>> {
+  getAll(
+    pageNumber: number = 1, 
+    pageSize: number = 10, 
+    searchTerm?: string,
+    isActive?: boolean
+  ): Observable<PaginatedList<Patient>> {
     const params: any = { pageNumber, pageSize };
     if (searchTerm) {
       params.searchTerm = searchTerm;
+    }
+    if (isActive !== undefined) {
+      params.isActive = isActive;
     }
     return this.api.get<PaginatedList<Patient>>(this.baseUrl, params);
   }

@@ -21,19 +21,21 @@
         type="text"
         class="search-input"
         placeholder="Buscar por nombre, email o teléfono..."
-        [(ngModel)]="searchTerm"
-        (keyup.enter)="onSearch()"
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
       />
-      <button class="btn-search" (click)="onSearch()" [disabled]="loading()">
-        Buscar
-      </button>
     </div>
 
     <div class="filter-actions">
-      <button class="btn btn-outline" routerLink="/patients/search">
-        <i class="fa-solid fa-filter"></i>
-        Búsqueda Avanzada
-      </button>
+      <select
+        class="filter-select"
+        [value]="filterStatus()"
+        (change)="onStatusFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los estados</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Inactivos</option>
+      </select>
     </div>
   </div>
 
