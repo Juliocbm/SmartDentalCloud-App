@@ -94,6 +94,71 @@
   }
 }
 
+// Variantes outline + color (para botones de acción con contexto)
+.btn-outline.btn-danger {
+  background: transparent;
+  border-color: var(--error-500);
+  color: var(--error-500);
+  
+  &:hover:not(:disabled) {
+    background: var(--error-50);
+    border-color: var(--error-600);
+    color: var(--error-600);
+  }
+  
+  &:active:not(:disabled) {
+    background: var(--error-100);
+  }
+}
+
+.btn-outline.btn-warning {
+  background: transparent;
+  border-color: var(--warning-500);
+  color: var(--warning-500);
+  
+  &:hover:not(:disabled) {
+    background: var(--warning-50);
+    border-color: var(--warning-600);
+    color: var(--warning-600);
+  }
+  
+  &:active:not(:disabled) {
+    background: var(--warning-100);
+  }
+}
+
+.btn-outline.btn-success {
+  background: transparent;
+  border-color: var(--success-500);
+  color: var(--success-500);
+  
+  &:hover:not(:disabled) {
+    background: var(--success-50);
+    border-color: var(--success-600);
+    color: var(--success-600);
+  }
+  
+  &:active:not(:disabled) {
+    background: var(--success-100);
+  }
+}
+
+.btn-outline.btn-info {
+  background: transparent;
+  border-color: var(--info-500);
+  color: var(--info-500);
+  
+  &:hover:not(:disabled) {
+    background: var(--info-50);
+    border-color: var(--info-600);
+    color: var(--info-600);
+  }
+  
+  &:active:not(:disabled) {
+    background: var(--info-100);
+  }
+}
+
 .btn-warning {
   background: var(--warning-500);
   border-color: var(--warning-500);

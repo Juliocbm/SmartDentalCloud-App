@@ -1,0 +1,182 @@
+// ============================================
+// ProductListComponent - Estilos Específicos
+// Container: usa .page-container.container-wide de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Filters: usa .filters-section de _components.scss
+// Tabla: usa .table-container y .table de _components.scss
+// Botones: usa clases globales .btn de _components.scss
+// Badges: usa .badge de _components.scss
+// ============================================
+
+// ===== States =====
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-4xl);
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-lg) 0;
+
+  i {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-md);
+    display: block;
+  }
+
+  h3 {
+    font-size: var(--font-size-2xl);
+    color: var(--text-primary);
+    margin: var(--spacing-md) 0;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: var(--spacing-sm) 0;
+    font-size: var(--font-size-base);
+  }
+}
+
+.loading-state i {
+  color: var(--primary-500);
+}
+
+.error-state i {
+  color: var(--error-500);
+}
+
+.empty-state i {
+  color: var(--text-tertiary);
+}
+
+// ===== Table Cell Content =====
+
+// Código de producto
+.product-code {
+  font-family: var(--font-family-mono, 'Consolas', monospace);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+}
+
+// Etiqueta de categoría
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  
+  i {
+    color: var(--primary-500);
+    font-size: 0.75rem;
+  }
+}
+
+// Indicador de stock
+.stock-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  
+  &.stock-normal {
+    background: var(--success-50);
+    color: var(--success-700);
+  }
+  
+  &.stock-warning {
+    background: var(--warning-50);
+    color: var(--warning-700);
+  }
+  
+  &.stock-critical {
+    background: var(--error-50);
+    color: var(--error-700);
+  }
+}
+
+// Punto de reorden
+.reorder-point {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+// Celda de costo
+.cost-cell {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+// Columna de acciones
+.actions-column {
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+// ===== Table Footer =====
+// Usa .table-footer de _components.scss
+
+// ===== Responsive Design =====
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+
+    .header-actions {
+      width: 100%;
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .filters-section {
+    flex-direction: column;
+
+    .search-box {
+      min-width: 100%;
+    }
+
+    .filter-actions {
+      width: 100%;
+
+      .filter-select {
+        flex: 1;
+      }
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .products-table {
+    min-width: 900px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cost-cell,
+  .reorder-cell {
+    display: none;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

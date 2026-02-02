@@ -164,13 +164,15 @@
               </button>
               <button 
                 class="btn btn-sm btn-outline"
+                [class.btn-warning]="patient.isActive"
+                [class.btn-success]="!patient.isActive"
                 (click)="toggleActive(patient)"
               >
                 <i class="fa-solid" [class.fa-toggle-on]="patient.isActive" [class.fa-toggle-off]="!patient.isActive"></i>
                 {{ patient.isActive ? 'Desactivar' : 'Activar' }}
               </button>
               <button 
-                class="btn btn-sm btn-outline" 
+                class="btn btn-sm btn-outline btn-danger" 
                 (click)="deletePatient(patient)"
               >
                 <i class="fa-solid fa-trash"></i>

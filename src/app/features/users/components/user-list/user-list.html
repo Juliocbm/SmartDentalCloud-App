@@ -199,6 +199,8 @@
                   </button>
                   <button
                     class="btn btn-sm btn-outline"
+                    [class.btn-warning]="user.isActive"
+                    [class.btn-success]="!user.isActive"
                     (click)="toggleUserActive(user)"
                   >
                     <i class="fa-solid fa-toggle-on" *ngIf="user.isActive"></i>

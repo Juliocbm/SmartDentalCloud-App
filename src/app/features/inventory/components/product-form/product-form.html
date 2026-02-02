@@ -1,0 +1,288 @@
+<div class="page-container">
+  <!-- Header -->
+  <app-page-header
+    [title]="isEditMode() ? 'Editar Producto' : 'Nuevo Producto'"
+    [subtitle]="isEditMode() ? 'Modifica la información del producto' : 'Agrega un nuevo producto al inventario'"
+    [icon]="'fa-box'"
+    [breadcrumbs]="breadcrumbItems()">
+  </app-page-header>
+
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error() }}</span>
+      <button class="alert-close" (click)="error.set(null)">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading() && isEditMode()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando producto...</p>
+    </div>
+  }
+
+  <!-- Form -->
+  @if (!loading() || !isEditMode()) {
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="form-container">
+      
+      <!-- Información Básica -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="fa-solid fa-info-circle"></i>
+          Información Básica
+        </h3>
+
+        <div class="form-grid">
+          <!-- Código -->
+          <div class="form-group">
+            <label for="code" class="form-label required">Código</label>
+            <input
+              type="text"
+              id="code"
+              class="form-input"
+              formControlName="code"
+              placeholder="Ej: MAT-001"
+              [class.invalid]="codeControl?.invalid && codeControl?.touched"
+            />
+            @if (codeControl?.invalid && codeControl?.touched) {
+              <span class="form-error">
+                @if (codeControl?.errors?.['required']) { El código es requerido }
+                @if (codeControl?.errors?.['maxlength']) { Máximo 50 caracteres }
+              </span>
+            }
+          </div>
+
+          <!-- Nombre -->
+          <div class="form-group">
+            <label for="name" class="form-label required">Nombre</label>
+            <input
+              type="text"
+              id="name"
+              class="form-input"
+              formControlName="name"
+              placeholder="Nombre del producto"
+              [class.invalid]="nameControl?.invalid && nameControl?.touched"
+            />
+            @if (nameControl?.invalid && nameControl?.touched) {
+              <span class="form-error">
+                @if (nameControl?.errors?.['required']) { El nombre es requerido }
+                @if (nameControl?.errors?.['minlength']) { Mínimo 3 caracteres }
+                @if (nameControl?.errors?.['maxlength']) { Máximo 200 caracteres }
+              </span>
+            }
+          </div>
+
+          <!-- Categoría -->
+          <div class="form-group">
+            <label for="categoryId" class="form-label">Categoría</label>
+            <select
+              id="categoryId"
+              class="form-select"
+              formControlName="categoryId"
+            >
+              <option value="">Sin categoría</option>
+              @for (category of categories(); track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Unidad -->
+          <div class="form-group">
+            <label for="unit" class="form-label required">Unidad de Medida</label>
+            <select
+              id="unit"
+              class="form-select"
+              formControlName="unit"
+              [class.invalid]="unitControl?.invalid && unitControl?.touched"
+            >
+              @for (unit of units; track unit.value) {
+                <option [value]="unit.value">{{ unit.label }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group form-group-full">
+            <label for="description" class="form-label">Descripción</label>
+            <textarea
+              id="description"
+              class="form-textarea"
+              formControlName="description"
+              placeholder="Descripción del producto (opcional)"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control de Inventario -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="fa-solid fa-warehouse"></i>
+          Control de Inventario
+        </h3>
+
+        <div class="form-grid">
+          <!-- Stock Mínimo -->
+          <div class="form-group">
+            <label for="minStock" class="form-label required">Stock Mínimo</label>
+            <input
+              type="number"
+              id="minStock"
+              class="form-input"
+              formControlName="minStock"
+              min="0"
+              step="1"
+              [class.invalid]="minStockControl?.invalid && minStockControl?.touched"
+            />
+            @if (minStockControl?.invalid && minStockControl?.touched) {
+              <span class="form-error">Debe ser mayor o igual a 0</span>
+            }
+            <span class="form-hint">Cantidad mínima antes de alerta crítica</span>
+          </div>
+
+          <!-- Stock Máximo -->
+          <div class="form-group">
+            <label for="maxStock" class="form-label">Stock Máximo</label>
+            <input
+              type="number"
+              id="maxStock"
+              class="form-input"
+              formControlName="maxStock"
+              min="0"
+              step="1"
+            />
+            <span class="form-hint">Capacidad máxima de almacenamiento</span>
+          </div>
+
+          <!-- Punto de Reorden -->
+          <div class="form-group">
+            <label for="reorderPoint" class="form-label required">Punto de Reorden</label>
+            <input
+              type="number"
+              id="reorderPoint"
+              class="form-input"
+              formControlName="reorderPoint"
+              min="0"
+              step="1"
+              [class.invalid]="reorderPointControl?.invalid && reorderPointControl?.touched"
+            />
+            @if (reorderPointControl?.invalid && reorderPointControl?.touched) {
+              <span class="form-error">Debe ser mayor o igual a 0</span>
+            }
+            <span class="form-hint">Cantidad en la que se debe reordenar</span>
+          </div>
+
+          <!-- Cantidad a Reordenar -->
+          <div class="form-group">
+            <label for="reorderQuantity" class="form-label required">Cantidad a Reordenar</label>
+            <input
+              type="number"
+              id="reorderQuantity"
+              class="form-input"
+              formControlName="reorderQuantity"
+              min="1"
+              step="1"
+              [class.invalid]="reorderQuantityControl?.invalid && reorderQuantityControl?.touched"
+            />
+            @if (reorderQuantityControl?.invalid && reorderQuantityControl?.touched) {
+              <span class="form-error">Debe ser mayor a 0</span>
+            }
+            <span class="form-hint">Cantidad sugerida para nueva orden</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información de Costos -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="fa-solid fa-dollar-sign"></i>
+          Información de Costos
+        </h3>
+
+        <div class="form-grid">
+          <!-- Costo Unitario -->
+          <div class="form-group">
+            <label for="unitCost" class="form-label required">Costo Unitario</label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">$</span>
+              <input
+                type="number"
+                id="unitCost"
+                class="form-input"
+                formControlName="unitCost"
+                min="0"
+                step="0.01"
+                [class.invalid]="unitCostControl?.invalid && unitCostControl?.touched"
+              />
+            </div>
+            @if (unitCostControl?.invalid && unitCostControl?.touched) {
+              <span class="form-error">Debe ser mayor o igual a 0</span>
+            }
+          </div>
+
+          <!-- Estado (solo en edición) -->
+          @if (isEditMode()) {
+            <div class="form-group">
+              <label class="form-label">Estado</label>
+              <div class="toggle-container">
+                <label class="toggle">
+                  <input type="checkbox" formControlName="isActive" />
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">
+                  {{ productForm.get('isActive')?.value ? 'Activo' : 'Inactivo' }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Notas Adicionales -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="fa-solid fa-sticky-note"></i>
+          Notas Adicionales
+        </h3>
+
+        <div class="form-group">
+          <textarea
+            id="notes"
+            class="form-textarea"
+            formControlName="notes"
+            placeholder="Notas o información adicional sobre el producto..."
+            rows="4"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" (click)="cancel()">
+          <i class="fa-solid fa-times"></i>
+          Cancelar
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="loading()"
+        >
+          @if (loading()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Guardando...
+          } @else {
+            <i class="fa-solid fa-save"></i>
+            {{ isEditMode() ? 'Actualizar' : 'Crear' }} Producto
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>

@@ -49,6 +49,10 @@ export const routes: Routes = [
         loadChildren: () => import('./features/users/users.routes').then(m => m.USERS_ROUTES)
       },
       {
+        path: 'inventory',
+        loadChildren: () => import('./features/inventory/inventory.routes').then(m => m.INVENTORY_ROUTES)
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
       }
