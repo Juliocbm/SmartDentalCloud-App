@@ -1,0 +1,126 @@
+// Estilos específicos del componente purchase-order-list
+// Usa variables globales definidas en src/styles
+// Container: usa .page-container.container-wide de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Filters: usa .filters-section de _components.scss
+// Table: usa .table-container y .table de _components.scss
+// Info cell: usa .info-cell de _components.scss (avatar + nombre + subtítulo)
+// Badges: usa .badge de _components.scss con clases personalizadas para estados
+// Action buttons: usa .btn-sm, .btn-outline de _components.scss
+
+// ===== Loading/Error/Empty States =====
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-lg) 0;
+
+  i {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+    display: block;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: var(--spacing-md) 0;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: var(--spacing-sm) 0;
+  }
+}
+
+.loading-state i {
+  color: var(--primary-500);
+}
+
+.error-state i {
+  color: var(--danger-500);
+}
+
+.empty-state i {
+  color: var(--text-tertiary);
+}
+
+// ===== Table Cell Content =====
+.supplier-cell {
+  .supplier-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+
+    i {
+      color: var(--text-tertiary);
+      font-size: var(--font-size-xs);
+    }
+
+    strong {
+      color: var(--text-primary);
+    }
+  }
+}
+
+.dates-cell {
+  .date-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+
+    i {
+      color: var(--text-tertiary);
+      width: 16px;
+      font-size: var(--font-size-xs);
+    }
+
+    &.expected {
+      color: var(--primary-600);
+      font-weight: var(--font-weight-medium);
+
+      i {
+        color: var(--primary-500);
+      }
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.total-cell {
+  .total-amount {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+  }
+}
+
+// Clases personalizadas para badges de estado (complementan las globales)
+.badge-info {
+  background: var(--info-50);
+  color: var(--info-700);
+
+  i {
+    color: var(--info-600);
+  }
+}
+
+.actions-column {
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}

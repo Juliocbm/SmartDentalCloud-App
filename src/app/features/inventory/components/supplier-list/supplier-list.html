@@ -1,0 +1,203 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Proveedores'"
+    [subtitle]="'Gestiona los proveedores de inventario'"
+    [icon]="'fa-truck'"
+    [breadcrumbs]="breadcrumbItems()">
+    <div actions>
+      <a class="btn btn-primary" routerLink="/inventory/suppliers/new">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Proveedor
+      </a>
+    </div>
+  </app-page-header>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por código, nombre, contacto..."
+        [value]="searchTerm()"
+        (input)="onSearchInput($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="filterStatus()"
+        (change)="onStatusFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los estados</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Inactivos</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando proveedores...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadData()">
+        <i class="fa-solid fa-refresh"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredSuppliers().length === 0 && suppliers().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-truck"></i>
+      <h3>No hay proveedores registrados</h3>
+      <p>Comienza agregando el primer proveedor</p>
+      <a class="btn btn-primary" routerLink="/inventory/suppliers/new">
+        <i class="fa-solid fa-plus"></i>
+        Agregar Primer Proveedor
+      </a>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredSuppliers().length === 0 && suppliers().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Suppliers Table -->
+  @if (!loading() && !error() && filteredSuppliers().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Proveedor</th>
+            <th>Contacto</th>
+            <th>Condiciones de Pago</th>
+            <th>Estado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (supplier of filteredSuppliers(); track supplier.id) {
+            <tr [class.row-inactive]="!supplier.isActive">
+              <!-- Proveedor -->
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-primary">
+                    <i class="fa-solid fa-truck"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ supplier.name }}</div>
+                    <div class="info-subtitle">
+                      {{ supplier.code }}
+                      @if (supplier.taxId) {
+                        · RFC: {{ supplier.taxId }}
+                      }
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Contacto -->
+              <td class="contact-cell">
+                @if (supplier.contactName) {
+                  <div class="contact-item">
+                    <i class="fa-solid fa-user"></i>
+                    {{ supplier.contactName }}
+                  </div>
+                }
+                @if (supplier.phone) {
+                  <div class="contact-item">
+                    <i class="fa-solid fa-phone"></i>
+                    {{ supplier.phone }}
+                  </div>
+                }
+                @if (supplier.email) {
+                  <div class="contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    {{ supplier.email }}
+                  </div>
+                }
+                @if (!supplier.contactName && !supplier.phone && !supplier.email) {
+                  <span class="text-muted">Sin información</span>
+                }
+              </td>
+
+              <!-- Condiciones de Pago -->
+              <td class="payment-cell">
+                @if (supplier.paymentTerms) {
+                  <span class="payment-terms">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    {{ supplier.paymentTerms }}
+                  </span>
+                } @else {
+                  <span class="text-muted">N/A</span>
+                }
+              </td>
+
+              <!-- Estado -->
+              <td class="status-cell">
+                <span 
+                  class="badge" 
+                  [class.badge-success]="supplier.isActive"
+                  [class.badge-error]="!supplier.isActive"
+                >
+                  <i class="fa-solid" [class.fa-circle-check]="supplier.isActive" [class.fa-circle-xmark]="!supplier.isActive"></i>
+                  {{ supplier.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+
+              <!-- Acciones -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button 
+                    class="btn btn-sm btn-outline" 
+                    [routerLink]="['/inventory/suppliers', supplier.id]">
+                    <i class="fa-solid fa-eye"></i>
+                    Ver
+                  </button>
+                  <button 
+                    class="btn btn-sm btn-outline" 
+                    [routerLink]="['/inventory/suppliers', supplier.id, 'edit']">
+                    <i class="fa-solid fa-pen"></i>
+                    Editar
+                  </button>
+                  <button 
+                    class="btn btn-sm btn-outline btn-danger" 
+                    (click)="deleteSupplier(supplier.id)">
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Table Footer -->
+      <div class="table-footer centered">
+        <span class="results-count">
+          Mostrando <strong>{{ filteredSuppliers().length }}</strong> de <strong>{{ suppliers().length }}</strong> proveedores
+        </span>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,193 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Órdenes de Compra'"
+    [subtitle]="'Gestiona las órdenes de compra de inventario'"
+    [icon]="'fa-file-invoice'"
+    [breadcrumbs]="breadcrumbItems()">
+    <div actions>
+      <a class="btn btn-primary" routerLink="/inventory/purchase-orders/new">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Orden
+      </a>
+    </div>
+  </app-page-header>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por número de orden o proveedor..."
+        [value]="searchTerm()"
+        (input)="onSearchInput($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="filterStatus()"
+        (change)="onStatusFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los estados</option>
+        <option value="Draft">Borrador</option>
+        <option value="Sent">Enviada</option>
+        <option value="Received">Recibida</option>
+        <option value="Cancelled">Cancelada</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando órdenes...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadData()">
+        <i class="fa-solid fa-refresh"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredOrders().length === 0 && orders().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-file-invoice"></i>
+      <h3>No hay órdenes de compra registradas</h3>
+      <p>Comienza creando la primera orden de compra</p>
+      <a class="btn btn-primary" routerLink="/inventory/purchase-orders/new">
+        <i class="fa-solid fa-plus"></i>
+        Crear Primera Orden
+      </a>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredOrders().length === 0 && orders().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Orders Table -->
+  @if (!loading() && !error() && filteredOrders().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Orden de Compra</th>
+            <th>Proveedor</th>
+            <th>Fechas</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of filteredOrders(); track order.id) {
+            <tr [class.row-inactive]="order.status === 'Cancelled'">
+              <!-- Orden de Compra -->
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-primary">
+                    <i class="fa-solid fa-file-invoice"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ order.orderNumber }}</div>
+                    <div class="info-subtitle">
+                      Orden #{{ order.id.substring(0, 8) }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Proveedor -->
+              <td class="supplier-cell">
+                <div class="supplier-info">
+                  <i class="fa-solid fa-truck"></i>
+                  <strong>{{ order.supplierName }}</strong>
+                </div>
+              </td>
+
+              <!-- Fechas -->
+              <td class="dates-cell">
+                <div class="date-item">
+                  <i class="fa-solid fa-calendar"></i>
+                  <span>{{ formatDate(order.orderDate) }}</span>
+                </div>
+                @if (order.expectedDate) {
+                  <div class="date-item expected">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>{{ formatDate(order.expectedDate) }}</span>
+                  </div>
+                }
+              </td>
+
+              <!-- Total -->
+              <td class="total-cell">
+                <strong class="total-amount">{{ formatCurrency(order.total) }}</strong>
+              </td>
+
+              <!-- Estado -->
+              <td class="status-cell">
+                <span class="badge" [ngClass]="getStatusClass(order.status)">
+                  @if (order.status === 'Draft') {
+                    <i class="fa-solid fa-file-lines"></i>
+                  } @else if (order.status === 'Sent') {
+                    <i class="fa-solid fa-paper-plane"></i>
+                  } @else if (order.status === 'Received') {
+                    <i class="fa-solid fa-circle-check"></i>
+                  } @else if (order.status === 'Cancelled') {
+                    <i class="fa-solid fa-circle-xmark"></i>
+                  }
+                  {{ statusLabels[order.status] }}
+                </span>
+              </td>
+
+              <!-- Acciones -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button 
+                    class="btn btn-sm btn-outline" 
+                    [routerLink]="['/inventory/purchase-orders', order.id]">
+                    <i class="fa-solid fa-eye"></i>
+                    Ver
+                  </button>
+                  @if (order.status === 'Draft' || order.status === 'Sent') {
+                    <button 
+                      class="btn btn-sm btn-outline btn-success" 
+                      [routerLink]="['/inventory/purchase-orders', order.id, 'receive']">
+                      <i class="fa-solid fa-box"></i>
+                      Recibir
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Table Footer -->
+      <div class="table-footer centered">
+        <span class="results-count">
+          Mostrando <strong>{{ filteredOrders().length }}</strong> de <strong>{{ orders().length }}</strong> órdenes
+        </span>
+      </div>
+    </div>
+  }
+</div>

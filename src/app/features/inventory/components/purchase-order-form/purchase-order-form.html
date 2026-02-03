@@ -1,0 +1,211 @@
+<div class="page-container">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Nueva Orden de Compra'"
+    [subtitle]="'Crea una nueva orden de compra de inventario'"
+    [icon]="'fa-file-invoice'"
+    [breadcrumbs]="breadcrumbItems()">
+  </app-page-header>
+
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error() }}</span>
+      <button class="alert-close" (click)="error.set(null)">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Form -->
+  <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="form-container">
+    
+    <!-- Información General -->
+    <div class="form-section">
+      <h3 class="form-section-title">
+        <i class="fa-solid fa-info-circle"></i>
+        Información General
+      </h3>
+
+      <div class="form-grid">
+        <!-- Proveedor -->
+        <div class="form-group">
+          <label for="supplierId" class="form-label required">Proveedor</label>
+          <select
+            id="supplierId"
+            class="form-select"
+            formControlName="supplierId"
+            [class.invalid]="hasError('supplierId', 'required')"
+          >
+            <option value="">Seleccionar proveedor...</option>
+            @for (supplier of suppliers(); track supplier.id) {
+              <option [value]="supplier.id">{{ supplier.name }}</option>
+            }
+          </select>
+          @if (hasError('supplierId', 'required')) {
+            <span class="form-error">El proveedor es requerido</span>
+          }
+        </div>
+
+        <!-- Fecha Esperada -->
+        <div class="form-group">
+          <label for="expectedDate" class="form-label">Fecha Esperada de Entrega</label>
+          <input
+            type="date"
+            id="expectedDate"
+            class="form-input"
+            formControlName="expectedDate"
+          />
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <div class="form-group">
+        <label for="notes" class="form-label">Notas</label>
+        <textarea
+          id="notes"
+          class="form-textarea"
+          formControlName="notes"
+          placeholder="Notas adicionales sobre la orden"
+          rows="3"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3 class="form-section-title">
+          <i class="fa-solid fa-box"></i>
+          Productos
+        </h3>
+        <button type="button" class="btn btn-outline btn-sm" (click)="addItem()">
+          <i class="fa-solid fa-plus"></i>
+          Agregar Producto
+        </button>
+      </div>
+
+      <div formArrayName="items" class="items-container">
+        @for (item of items.controls; track $index; let i = $index) {
+          <div [formGroupName]="i" class="item-card">
+            <div class="item-header">
+              <span class="item-number">#{{ i + 1 }}</span>
+              @if (items.length > 1) {
+                <button 
+                  type="button" 
+                  class="btn-icon btn-danger btn-sm" 
+                  (click)="removeItem(i)"
+                  title="Eliminar">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              }
+            </div>
+
+            <div class="item-grid">
+              <!-- Producto -->
+              <div class="form-group">
+                <label class="form-label required">Producto</label>
+                <select
+                  class="form-select"
+                  formControlName="productId"
+                  (change)="onProductChange(i)"
+                >
+                  <option value="">Seleccionar...</option>
+                  @for (product of products(); track product.id) {
+                    <option [value]="product.id">{{ product.code }} - {{ product.name }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- Cantidad -->
+              <div class="form-group">
+                <label class="form-label required">Cantidad</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  formControlName="quantity"
+                  placeholder="0"
+                  step="0.01"
+                  min="0.01"
+                />
+              </div>
+
+              <!-- Costo Unitario -->
+              <div class="form-group">
+                <label class="form-label required">Costo Unitario</label>
+                <input
+                  type="number"
+                  class="form-input"
+                  formControlName="unitCost"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                />
+              </div>
+
+              <!-- Subtotal -->
+              <div class="form-group">
+                <label class="form-label">Subtotal</label>
+                <div class="form-static">
+                  {{ formatCurrency(getItemSubtotal(i)) }}
+                </div>
+              </div>
+
+              <!-- Notas del Item -->
+              <div class="form-group form-group-full">
+                <label class="form-label">Notas</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  formControlName="notes"
+                  placeholder="Notas sobre este producto"
+                />
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Resumen de Totales -->
+    <div class="form-section">
+      <h3 class="form-section-title">
+        <i class="fa-solid fa-calculator"></i>
+        Resumen
+      </h3>
+
+      <div class="totals-container">
+        <div class="total-row">
+          <span class="total-label">Subtotal:</span>
+          <span class="total-value">{{ formatCurrency(subtotal()) }}</span>
+        </div>
+        <div class="total-row">
+          <span class="total-label">IVA (16%):</span>
+          <span class="total-value">{{ formatCurrency(tax()) }}</span>
+        </div>
+        <div class="total-row total-row-final">
+          <span class="total-label">Total:</span>
+          <span class="total-value">{{ formatCurrency(total()) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="saving()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="orderForm.invalid || items.length === 0 || saving()">
+        @if (saving()) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Creando...
+        } @else {
+          <i class="fa-solid fa-save"></i>
+          Crear Orden
+        }
+      </button>
+    </div>
+  </form>
+</div>

@@ -56,6 +56,50 @@ export const INVENTORY_ROUTES: Routes = [
         loadComponent: () => import('./components/stock-alerts/stock-alerts').then(m => m.StockAlertsComponent)
       }
     ]
+  },
+  {
+    path: 'suppliers',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./components/supplier-list/supplier-list').then(m => m.SupplierListComponent)
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./components/supplier-form/supplier-form').then(m => m.SupplierFormComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./components/supplier-list/supplier-list').then(m => m.SupplierListComponent)
+        // TODO: Crear supplier-detail component
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./components/supplier-form/supplier-form').then(m => m.SupplierFormComponent)
+      }
+    ]
+  },
+  {
+    path: 'purchase-orders',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./components/purchase-order-list/purchase-order-list').then(m => m.PurchaseOrderListComponent)
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./components/purchase-order-form/purchase-order-form').then(m => m.PurchaseOrderFormComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./components/purchase-order-list/purchase-order-list').then(m => m.PurchaseOrderListComponent)
+        // TODO: Crear purchase-order-detail component
+      },
+      {
+        path: ':id/receive',
+        loadComponent: () => import('./components/purchase-order-form/purchase-order-form').then(m => m.PurchaseOrderFormComponent)
+        // TODO: Crear purchase-order-receive component
+      }
+    ]
   }
-  // TODO: Agregar rutas para suppliers, purchase-orders
 ];

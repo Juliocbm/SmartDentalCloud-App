@@ -161,10 +161,108 @@ src/app/features/inventory/
 
 ---
 
-## Fases Futuras
+## Fase 4: Proveedores y Órdenes de Compra (COMPLETADA)
 
-### Fase 4: Proveedores y Órdenes
-- [ ] supplier-list component
-- [ ] supplier-form component
-- [ ] purchase-order-list component
-- [ ] purchase-order-form component
+### Componentes Implementados
+- [x] supplier.models.ts y purchase-order.models.ts (interfaces y tipos)
+- [x] suppliers.service.ts (servicio para CRUD de proveedores)
+- [x] purchase-orders.service.ts (servicio para gestión de órdenes)
+- [x] supplier-list component (listado con filtros y búsqueda)
+- [x] supplier-form component (crear/editar proveedores)
+- [x] purchase-order-list component (listado de órdenes con estados)
+- [x] purchase-order-form component (crear órdenes con FormArray de items)
+- [x] Rutas integradas en inventory.routes.ts
+- [x] Menú actualizado en sidebar con Proveedores y Órdenes de Compra
+
+### Estructura
+```
+src/app/features/inventory/
+├── models/
+│   ├── supplier.models.ts
+│   └── purchase-order.models.ts
+├── services/
+│   ├── suppliers.service.ts
+│   └── purchase-orders.service.ts
+└── components/
+    ├── supplier-list/
+    │   ├── supplier-list.ts
+    │   ├── supplier-list.html
+    │   └── supplier-list.scss
+    ├── supplier-form/
+    │   ├── supplier-form.ts
+    │   ├── supplier-form.html
+    │   └── supplier-form.scss
+    ├── purchase-order-list/
+    │   ├── purchase-order-list.ts
+    │   ├── purchase-order-list.html
+    │   └── purchase-order-list.scss
+    └── purchase-order-form/
+        ├── purchase-order-form.ts
+        ├── purchase-order-form.html
+        └── purchase-order-form.scss
+```
+
+### Características Implementadas
+
+#### Proveedores
+- Listado con búsqueda por código, nombre, contacto, email, teléfono
+- Filtro por estado (activo/inactivo)
+- Formulario con validaciones para crear/editar
+- Campos: código, nombre, contacto, email, teléfono, dirección, RFC, condiciones de pago
+- Estados visuales y badges
+- Integración completa con backend
+
+#### Órdenes de Compra
+- Listado con búsqueda por número de orden y proveedor
+- Filtro por estado (pendiente, parcial, recibida, cancelada)
+- Formulario dinámico con FormArray para agregar múltiples productos
+- Cálculo automático de subtotales, IVA y total
+- Auto-completado de costo unitario al seleccionar producto
+- Validaciones en cada item
+- Estados visuales con badges (warning, info, success, error)
+- Formato de moneda y fechas
+
+### Endpoints Backend
+- `GET /api/suppliers` - Listar proveedores
+- `POST /api/suppliers` - Crear proveedor
+- `PUT /api/suppliers/{id}` - Actualizar proveedor
+- `DELETE /api/suppliers/{id}` - Eliminar proveedor
+- `GET /api/purchase-orders` - Listar órdenes
+- `POST /api/purchase-orders` - Crear orden
+- `POST /api/purchase-orders/{id}/receive` - Recibir mercancía
+
+---
+
+## 📊 Estado General del Módulo
+
+### Fases Completadas: 4 de 4 (100%)
+
+| Fase | Estado | Componentes |
+|------|--------|-------------|
+| Fase 1: Core de Productos | ✅ Completada | product-list, product-form |
+| Fase 2: Categorías | ✅ Completada | category-list, category-form |
+| Fase 3: Stock y Alertas | ✅ Completada | stock-alerts, stock-adjustment-modal |
+| Fase 4: Proveedores y Órdenes | ✅ Completada | supplier-list, supplier-form, purchase-order-list, purchase-order-form |
+
+### Funcionalidades Clave
+- ✅ Gestión completa de productos y categorías
+- ✅ Control de stock con alertas automáticas
+- ✅ Ajustes manuales de stock con trazabilidad (StockMovement)
+- ✅ Gestión de proveedores
+- ✅ Creación y seguimiento de órdenes de compra
+- ✅ Integración completa con backend CQRS
+- ✅ Uso de variables globales CSS
+- ✅ Arquitectura modular y escalable
+- ✅ Componentes con signals y reactive forms
+- ✅ Búsquedas con debounce
+- ✅ Estados visuales consistentes
+
+---
+
+## Fases Futuras (Opcional)
+
+### Mejoras Pendientes
+- [ ] purchase-order-detail component (visualización detallada)
+- [ ] purchase-order-receive component (recepción de mercancía específica)
+- [ ] supplier-detail component (vista detallada del proveedor)
+- [ ] stock-movements component (historial de movimientos - requiere endpoint backend)

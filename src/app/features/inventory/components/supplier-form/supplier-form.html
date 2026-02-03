@@ -1,0 +1,220 @@
+<div class="page-container">
+  <!-- Header -->
+  <app-page-header
+    [title]="isEditMode() ? 'Editar Proveedor' : 'Nuevo Proveedor'"
+    [subtitle]="isEditMode() ? 'Modifica la información del proveedor' : 'Agrega un nuevo proveedor'"
+    [icon]="'fa-truck'"
+    [breadcrumbs]="breadcrumbItems()">
+  </app-page-header>
+
+  <!-- Error Alert -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error() }}</span>
+      <button class="alert-close" (click)="error.set(null)">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading() && isEditMode()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando proveedor...</p>
+    </div>
+  }
+
+  <!-- Form -->
+  @if (!loading() || !isEditMode()) {
+    <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="form-container">
+      
+      <!-- Información Básica -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="fa-solid fa-info-circle"></i>
+          Información Básica
+        </h3>
+
+        <div class="form-grid">
+          <!-- Código -->
+          <div class="form-group">
+            <label for="code" class="form-label required">Código</label>
+            <input
+              type="text"
+              id="code"
+              class="form-input"
+              formControlName="code"
+              placeholder="Ej: PROV-001"
+              [class.invalid]="isFieldInvalid('code')"
+            />
+            @if (hasError('code', 'required')) {
+              <span class="form-error">El código es requerido</span>
+            }
+            @if (hasError('code', 'maxlength')) {
+              <span class="form-error">Máximo 50 caracteres</span>
+            }
+          </div>
+
+          <!-- Nombre -->
+          <div class="form-group">
+            <label for="name" class="form-label required">Nombre</label>
+            <input
+              type="text"
+              id="name"
+              class="form-input"
+              formControlName="name"
+              placeholder="Nombre del proveedor"
+              [class.invalid]="isFieldInvalid('name')"
+            />
+            @if (hasError('name', 'required')) {
+              <span class="form-error">El nombre es requerido</span>
+            }
+            @if (hasError('name', 'minlength')) {
+              <span class="form-error">Mínimo 3 caracteres</span>
+            }
+          </div>
+
+          <!-- RFC/Tax ID -->
+          <div class="form-group">
+            <label for="taxId" class="form-label">RFC / Tax ID</label>
+            <input
+              type="text"
+              id="taxId"
+              class="form-input"
+              formControlName="taxId"
+              placeholder="RFC del proveedor"
+            />
+          </div>
+
+          <!-- Condiciones de Pago -->
+          <div class="form-group">
+            <label for="paymentTerms" class="form-label">Condiciones de Pago</label>
+            <select
+              id="paymentTerms"
+              class="form-select"
+              formControlName="paymentTerms"
+            >
+              <option value="">Seleccionar...</option>
+              @for (term of paymentTerms; track term.value) {
+                <option [value]="term.value">{{ term.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información de Contacto -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="fa-solid fa-address-book"></i>
+          Información de Contacto
+        </h3>
+
+        <div class="form-grid">
+          <!-- Persona de Contacto -->
+          <div class="form-group">
+            <label for="contactName" class="form-label">Persona de Contacto</label>
+            <input
+              type="text"
+              id="contactName"
+              class="form-input"
+              formControlName="contactName"
+              placeholder="Nombre del contacto"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-input"
+              formControlName="email"
+              placeholder="email@ejemplo.com"
+              [class.invalid]="isFieldInvalid('email')"
+            />
+            @if (hasError('email', 'email')) {
+              <span class="form-error">Email inválido</span>
+            }
+          </div>
+
+          <!-- Teléfono -->
+          <div class="form-group">
+            <label for="phone" class="form-label">Teléfono</label>
+            <input
+              type="tel"
+              id="phone"
+              class="form-input"
+              formControlName="phone"
+              placeholder="Teléfono del proveedor"
+            />
+          </div>
+
+          <!-- Dirección -->
+          <div class="form-group form-group-full">
+            <label for="address" class="form-label">Dirección</label>
+            <textarea
+              id="address"
+              class="form-textarea"
+              formControlName="address"
+              placeholder="Dirección completa"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notas Adicionales -->
+      <div class="form-section">
+        <h3 class="form-section-title">
+          <i class="fa-solid fa-note-sticky"></i>
+          Notas Adicionales
+        </h3>
+
+        <div class="form-grid">
+          <div class="form-group form-group-full">
+            <label for="notes" class="form-label">Notas</label>
+            <textarea
+              id="notes"
+              class="form-textarea"
+              formControlName="notes"
+              placeholder="Notas adicionales sobre el proveedor"
+              rows="4"
+            ></textarea>
+          </div>
+
+          <!-- Estado -->
+          <div class="form-group">
+            <label class="form-checkbox">
+              <input
+                type="checkbox"
+                formControlName="isActive"
+              />
+              <span>Proveedor Activo</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="saving()">
+          <i class="fa-solid fa-times"></i>
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="supplierForm.invalid || saving()">
+          @if (saving()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Guardando...
+          } @else {
+            <i class="fa-solid fa-save"></i>
+            {{ isEditMode() ? 'Actualizar' : 'Guardar' }}
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>
