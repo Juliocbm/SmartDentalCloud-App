@@ -1,0 +1,170 @@
+// ============================================
+// DentistListComponent - Estilos Específicos
+// Usa estilos globales de _components.scss y _layout.scss
+// ============================================
+
+.dentist-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dentist-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-base);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  &.card-inactive {
+    opacity: 0.7;
+    background: var(--surface-secondary);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-primary);
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--surface-primary) 100%);
+}
+
+.dentist-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: var(--font-size-2xl);
+  flex-shrink: 0;
+}
+
+.dentist-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.dentist-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dentist-email {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  
+  &.badge-success {
+    background: var(--success-100);
+    color: var(--success-700);
+  }
+  
+  &.badge-error {
+    background: var(--error-100);
+    color: var(--error-700);
+  }
+}
+
+.card-body {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.info-icon {
+  width: 20px;
+  color: var(--primary-500);
+  font-size: var(--font-size-base);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.info-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--font-weight-medium);
+}
+
+.info-value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+  
+  &.text-muted {
+    color: var(--text-tertiary);
+    font-style: italic;
+  }
+}
+
+.card-footer {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--surface-secondary);
+  display: flex;
+  gap: var(--spacing-sm);
+  border-top: 1px solid var(--border-primary);
+
+  .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+.results-summary {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.results-count {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+
+  strong {
+    color: var(--primary-600);
+    font-weight: var(--font-weight-semibold);
+  }
+}

@@ -1,0 +1,181 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Dentistas del Consultorio'"
+    [subtitle]="'Gestiona la información y horarios de los dentistas'"
+    [icon]="'fa-user-doctor'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <a class="btn btn-primary" routerLink="/users/new">
+        <i class="fa-solid fa-user-plus"></i>
+        Nuevo Dentista
+      </a>
+    </div>
+  </app-page-header>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por nombre, email o especialidad..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="filterStatus()"
+        (change)="onStatusFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los estados</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Inactivos</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando dentistas...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="alert alert-danger">
+      <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+      <span class="alert-message">{{ error() }}</span>
+      <button class="alert-close" (click)="error.set(null)">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredDentists().length === 0 && dentists().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-user-doctor"></i>
+      <h3>No hay dentistas registrados</h3>
+      <p>Comienza agregando el primer dentista del consultorio</p>
+      <a class="btn btn-primary" routerLink="/users/new">
+        <i class="fa-solid fa-plus"></i>
+        Agregar Primer Dentista
+      </a>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredDentists().length === 0 && dentists().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Dentists Cards Grid -->
+  @if (!loading() && !error() && filteredDentists().length > 0) {
+    <div class="dentist-cards-grid">
+      @for (dentist of filteredDentists(); track dentist.id) {
+        <div class="dentist-card" [class.card-inactive]="!dentist.isActive">
+          <!-- Card Header -->
+          <div class="card-header">
+            <div class="dentist-avatar">
+              <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <div class="dentist-info">
+              <h3 class="dentist-name">{{ dentist.name }}</h3>
+              <p class="dentist-email">{{ dentist.email }}</p>
+            </div>
+            <span 
+              class="status-badge" 
+              [class.badge-success]="dentist.isActive"
+              [class.badge-error]="!dentist.isActive"
+            >
+              {{ dentist.isActive ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body">
+            <!-- Especialidad -->
+            <div class="info-row">
+              <i class="fa-solid fa-stethoscope info-icon"></i>
+              <div class="info-content">
+                <span class="info-label">Especialidad</span>
+                @if (dentist.profile?.specialty) {
+                  <span class="info-value">{{ dentist.profile?.specialty }}</span>
+                } @else {
+                  <span class="info-value text-muted">Sin especificar</span>
+                }
+              </div>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="info-row">
+              <i class="fa-solid fa-phone info-icon"></i>
+              <div class="info-content">
+                <span class="info-label">Teléfono</span>
+                @if (dentist.profile?.phoneNumber) {
+                  <span class="info-value">{{ dentist.profile?.phoneNumber }}</span>
+                } @else {
+                  <span class="info-value text-muted">Sin teléfono</span>
+                }
+              </div>
+            </div>
+
+            <!-- Fecha de Registro -->
+            <div class="info-row">
+              <i class="fa-solid fa-calendar info-icon"></i>
+              <div class="info-content">
+                <span class="info-label">Registro</span>
+                <span class="info-value">{{ dentist.createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer -->
+          <div class="card-footer">
+            <button
+              class="btn btn-sm btn-outline"
+              [routerLink]="['/users', dentist.id]"
+            >
+              <i class="fa-solid fa-eye"></i>
+              Ver Perfil
+            </button>
+            <button
+              class="btn btn-sm btn-outline"
+              [routerLink]="['/users', dentist.id, 'edit']"
+            >
+              <i class="fa-solid fa-pen"></i>
+              Editar
+            </button>
+            <button
+              class="btn btn-sm"
+              [class.btn-warning]="dentist.isActive"
+              [class.btn-success]="!dentist.isActive"
+              (click)="toggleDentistActive(dentist)"
+            >
+              <i class="fa-solid" [class.fa-toggle-on]="dentist.isActive" [class.fa-toggle-off]="!dentist.isActive"></i>
+              {{ dentist.isActive ? 'Desactivar' : 'Activar' }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Results Summary -->
+    <div class="results-summary">
+      <span class="results-count">
+        Mostrando <strong>{{ filteredDentists().length }}</strong> de <strong>{{ dentists().length }}</strong> dentistas
+      </span>
+    </div>
+  }
+</div>

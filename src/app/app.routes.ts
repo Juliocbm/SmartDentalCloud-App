@@ -38,7 +38,7 @@ export const routes: Routes = [
       },
       {
         path: 'dentists',
-        loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
+        loadComponent: () => import('./features/users/components/dentist-list/dentist-list').then(m => m.DentistListComponent)
       },
       {
         path: 'reports',
