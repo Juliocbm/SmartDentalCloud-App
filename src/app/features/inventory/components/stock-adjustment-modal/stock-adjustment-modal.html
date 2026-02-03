@@ -1,6 +1,6 @@
 <app-modal
   [title]="'Ajustar Stock'"
-  [subtitle]="modalData?.productName"
+  [subtitle]="modalData.productName"
   [icon]="'fa-boxes-stacked'"
   [size]="'md'"
   (closed)="onCancel()">
@@ -20,11 +20,11 @@
   <div class="product-info-card">
     <div class="info-row">
       <span class="info-label">Código:</span>
-      <span class="info-value code">{{ modalData?.productCode }}</span>
+      <span class="info-value code">{{ modalData.productCode }}</span>
     </div>
     <div class="info-row">
       <span class="info-label">Stock Actual:</span>
-      <span class="info-value stock">{{ modalData?.currentStock }} {{ modalData?.unit }}</span>
+      <span class="info-value stock">{{ modalData.currentStock }} {{ modalData.unit }}</span>
     </div>
   </div>
 
@@ -65,7 +65,7 @@
           step="1"
           [class.error]="hasError('quantity', 'required') || hasError('quantity', 'min')"
         />
-        <span class="unit-label">{{ modalData?.unit }}</span>
+        <span class="unit-label">{{ modalData.unit }}</span>
       </div>
       @if (hasError('quantity', 'required')) {
         <span class="error-message">
@@ -85,7 +85,7 @@
     <div class="stock-preview">
       <div class="preview-item">
         <span class="preview-label">Stock Actual</span>
-        <span class="preview-value">{{ modalData?.currentStock }}</span>
+        <span class="preview-value">{{ modalData.currentStock }}</span>
       </div>
       <div class="preview-arrow">
         <i class="fa-solid fa-arrow-right"></i>
