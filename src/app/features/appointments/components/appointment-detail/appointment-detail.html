@@ -38,7 +38,7 @@
             <i class="fa-solid fa-calendar-check"></i>
             Cita Médica
           </h1>
-          <span class="status-badge" [ngClass]="getStatusConfig(apt.status).bgColor + ' ' + getStatusConfig(apt.status).textColor">
+          <span class="status-badge" [ngClass]="getStatusConfig(apt.status).bgColor">
             <i class="fa-solid" [ngClass]="getStatusConfig(apt.status).icon"></i>
             {{ getStatusConfig(apt.status).label }}
           </span>

@@ -1,42 +1,63 @@
-<div class="page-container">
+<div class="page-container container-medium">
   <!-- Header -->
   <app-page-header
     [title]="'Nueva Orden de Compra'"
     [subtitle]="'Crea una nueva orden de compra de inventario'"
     [icon]="'fa-file-invoice'"
+    [showBackButton]="true"
+    [backRoute]="'/inventory/purchase-orders'"
     [breadcrumbs]="breadcrumbItems()">
-  </app-page-header>
-
-  <!-- Error Alert -->
-  @if (error()) {
-    <div class="alert alert-error">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      <span>{{ error() }}</span>
-      <button class="alert-close" (click)="error.set(null)">
+    
+    <!-- Botones de Acción en Header -->
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="saving()">
         <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="orderForm.invalid || items.length === 0 || saving()">
+        @if (saving()) {
+          <span class="btn-spinner"></span>
+          Creando...
+        } @else {
+          <i class="fa-solid fa-save"></i>
+          Crear Orden
+        }
       </button>
     </div>
-  }
+  </app-page-header>
 
-  <!-- Form -->
-  <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="form-container">
+  <div class="content-card">
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ error() }}</span>
+        <button class="alert-close" (click)="error.set(null)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    }
+
+    <!-- Form -->
+    <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="purchase-order-form">
     
     <!-- Información General -->
     <div class="form-section">
-      <h3 class="form-section-title">
-        <i class="fa-solid fa-info-circle"></i>
+      <h3 class="section-title">
+        <i class="fa-solid fa-info-circle section-icon"></i>
         Información General
+        <span class="required">*</span>
       </h3>
 
-      <div class="form-grid">
+      <div class="form-row">
         <!-- Proveedor -->
         <div class="form-group">
-          <label for="supplierId" class="form-label required">Proveedor</label>
+          <label for="supplierId" class="form-label">Proveedor <span class="required">*</span></label>
           <select
             id="supplierId"
             class="form-select"
             formControlName="supplierId"
-            [class.invalid]="hasError('supplierId', 'required')"
+            [class.input-error]="hasError('supplierId', 'required')"
           >
             <option value="">Seleccionar proveedor...</option>
             @for (supplier of suppliers(); track supplier.id) {
@@ -44,7 +65,7 @@
             }
           </select>
           @if (hasError('supplierId', 'required')) {
-            <span class="form-error">El proveedor es requerido</span>
+            <span class="error-message">El proveedor es requerido</span>
           }
         </div>
 
@@ -76,9 +97,10 @@
     <!-- Items -->
     <div class="form-section">
       <div class="section-header">
-        <h3 class="form-section-title">
-          <i class="fa-solid fa-box"></i>
+        <h3 class="section-title">
+          <i class="fa-solid fa-box section-icon"></i>
           Productos
+          <span class="required">*</span>
         </h3>
         <button type="button" class="btn btn-outline btn-sm" (click)="addItem()">
           <i class="fa-solid fa-plus"></i>
@@ -105,7 +127,7 @@
             <div class="item-grid">
               <!-- Producto -->
               <div class="form-group">
-                <label class="form-label required">Producto</label>
+                <label class="form-label">Producto <span class="required">*</span></label>
                 <select
                   class="form-select"
                   formControlName="productId"
@@ -120,7 +142,7 @@
 
               <!-- Cantidad -->
               <div class="form-group">
-                <label class="form-label required">Cantidad</label>
+                <label class="form-label">Cantidad <span class="required">*</span></label>
                 <input
                   type="number"
                   class="form-input"
@@ -133,7 +155,7 @@
 
               <!-- Costo Unitario -->
               <div class="form-group">
-                <label class="form-label required">Costo Unitario</label>
+                <label class="form-label">Costo Unitario <span class="required">*</span></label>
                 <input
                   type="number"
                   class="form-input"
@@ -170,8 +192,8 @@
 
     <!-- Resumen de Totales -->
     <div class="form-section">
-      <h3 class="form-section-title">
-        <i class="fa-solid fa-calculator"></i>
+      <h3 class="section-title">
+        <i class="fa-solid fa-calculator section-icon"></i>
         Resumen
       </h3>
 
@@ -191,21 +213,6 @@
       </div>
     </div>
 
-    <!-- Form Actions -->
-    <div class="form-actions">
-      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="saving()">
-        <i class="fa-solid fa-times"></i>
-        Cancelar
-      </button>
-      <button type="submit" class="btn btn-primary" [disabled]="orderForm.invalid || items.length === 0 || saving()">
-        @if (saving()) {
-          <i class="fa-solid fa-spinner fa-spin"></i>
-          Creando...
-        } @else {
-          <i class="fa-solid fa-save"></i>
-          Crear Orden
-        }
-      </button>
-    </div>
   </form>
+  </div>
 </div>

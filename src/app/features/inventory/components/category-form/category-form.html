@@ -1,34 +1,34 @@
-<div class="page-container">
+<div class="page-container container-medium">
   <!-- Header -->
   <app-page-header
     [title]="isEditMode() ? 'Editar Categoría' : 'Nueva Categoría'"
     [subtitle]="isEditMode() ? 'Modifica la información de la categoría' : 'Agrega una nueva categoría para organizar productos'"
     [icon]="'fa-tags'"
+    [showBackButton]="true"
+    [backRoute]="'/inventory/categories'"
     [breadcrumbs]="breadcrumbItems()">
   </app-page-header>
 
-  <!-- Error Alert -->
-  @if (error()) {
-    <div class="alert alert-error">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      <span>{{ error() }}</span>
-      <button class="alert-close" (click)="error.set(null)">
-        <i class="fa-solid fa-times"></i>
-      </button>
-    </div>
-  }
+  <div class="content-card">
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="error-alert">
+        <i class="fa-solid fa-exclamation-circle"></i>
+        <span>{{ error() }}</span>
+      </div>
+    }
 
-  <!-- Loading State -->
-  @if (loading()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
-      <p>Cargando categoría...</p>
-    </div>
-  }
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="loading-state">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Cargando categoría...</p>
+      </div>
+    }
 
-  <!-- Form -->
-  @if (!loading()) {
-    <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="form-card">
+    <!-- Form -->
+    @if (!loading()) {
+      <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="form-container">
       <!-- Información Básica -->
       <div class="form-section">
         <h3 class="section-title">
@@ -150,4 +150,5 @@
       </div>
     </form>
   }
+  </div>
 </div>

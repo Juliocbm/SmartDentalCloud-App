@@ -78,36 +78,31 @@ export interface AppointmentListItem extends Appointment {
 export const AppointmentStatusConfig = {
   [AppointmentStatus.Scheduled]: {
     color: 'primary',
-    bgColor: 'bg-blue-100',
-    textColor: 'text-blue-800',
+    bgColor: 'badge-info',
     label: 'Programada',
     icon: 'fa-calendar'
   },
   [AppointmentStatus.Confirmed]: {
     color: 'success',
-    bgColor: 'bg-green-100',
-    textColor: 'text-green-800',
+    bgColor: 'badge-success',
     label: 'Confirmada',
     icon: 'fa-check-circle'
   },
   [AppointmentStatus.Completed]: {
     color: 'success',
-    bgColor: 'bg-gray-100',
-    textColor: 'text-gray-800',
+    bgColor: 'badge-secondary',
     label: 'Completada',
     icon: 'fa-check'
   },
   [AppointmentStatus.Cancelled]: {
     color: 'error',
-    bgColor: 'bg-red-100',
-    textColor: 'text-red-800',
+    bgColor: 'badge-error',
     label: 'Cancelada',
     icon: 'fa-times-circle'
   },
   [AppointmentStatus.NoShow]: {
     color: 'warning',
-    bgColor: 'bg-yellow-100',
-    textColor: 'text-yellow-800',
+    bgColor: 'badge-warning',
     label: 'No asistió',
     icon: 'fa-exclamation-triangle'
   }

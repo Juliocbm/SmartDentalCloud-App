@@ -1,5 +1,17 @@
-// Estilos específicos del componente purchase-order-form
-// Usa variables globales definidas en src/styles
+// ============================================
+// PurchaseOrderFormComponent - Estilos Específicos
+// Header: usa PageHeaderComponent compartido
+// Container: usa .page-container.container-medium de _layout.scss
+// Estilos de formulario base: importados desde _components.scss
+// ============================================
+
+.purchase-order-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+// Estilos únicos del purchase-order-form
 
 .section-header {
   display: flex;

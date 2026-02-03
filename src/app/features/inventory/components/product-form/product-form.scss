@@ -1,5 +1,17 @@
-// ===== Product Form Styles =====
-// Estilos locales mínimos - usar clases globales de _components.scss
+// ============================================
+// ProductFormComponent - Estilos Específicos
+// Header: usa PageHeaderComponent compartido
+// Container: usa .page-container.container-medium de _layout.scss
+// Estilos de formulario base: importados desde _components.scss
+// ============================================
+
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+// Estilos únicos del product-form
 
 // Input con prefijo (para moneda)
 .input-with-prefix {
@@ -84,12 +96,4 @@
 .toggle-label {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
-}
-
-// Form hint
-.form-hint {
-  display: block;
-  margin-top: var(--spacing-xs);
-  font-size: var(--font-size-xs);
-  color: var(--text-muted);
 }

@@ -1,5 +1,5 @@
 <div class="page-container container-medium">
-  <!-- Header -->
+  <!-- Header con Botones de Acción -->
   <app-page-header
     [title]="isEditMode() ? 'Editar Paciente' : 'Nuevo Paciente'"
     [subtitle]="isEditMode() ? 'Actualiza la información del paciente' : 'Ingresa los datos del nuevo paciente'"
@@ -7,166 +7,183 @@
     [showBackButton]="true"
     [backRoute]="'/patients'"
     [breadcrumbs]="breadcrumbItems()">
+    
+    <!-- Botones de Acción en Header -->
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="loading()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading() || patientForm.invalid">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-check"></i>
+          {{ isEditMode() ? 'Actualizar' : 'Crear' }} Paciente
+        }
+      </button>
+    </div>
   </app-page-header>
 
   <div class="content-card">
     <!-- Loading State -->
-    <div *ngIf="loading()" class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
-      <p>{{ isEditMode() ? 'Cargando paciente...' : 'Guardando...' }}</p>
-    </div>
+    @if (loading() && isEditMode()) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando paciente...</p>
+      </div>
+    }
 
-    <!-- Error State -->
-    <div *ngIf="error()" class="error-alert">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <span>{{ error() }}</span>
-    </div>
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ error() }}</span>
+        <button class="alert-close" (click)="error.set(null)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    }
 
     <!-- Form -->
-    <form [formGroup]="patientForm" (ngSubmit)="onSubmit()" *ngIf="!loading()">
-      <!-- Datos Personales -->
-      <div class="form-section">
-        <h2 class="section-title">
-          <i class="fa-solid fa-user"></i>
-          Datos Personales
-        </h2>
+    @if (!loading() || !isEditMode()) {
+      <form [formGroup]="patientForm" (ngSubmit)="onSubmit()" class="patient-form">
+        <!-- Datos Personales -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-user section-icon"></i>
+            Datos Personales
+            <span class="required">*</span>
+          </h3>
 
-        <div class="form-row">
-          <!-- Nombre -->
-          <div class="form-group">
-            <label for="firstName" class="form-label required">
-              Nombre
-            </label>
-            <input
-              type="text"
-              id="firstName"
-              class="form-input"
-              formControlName="firstName"
-              placeholder="Ingrese el nombre"
-              [class.invalid]="isFieldInvalid('firstName')"
-            />
-            <span class="error-message" *ngIf="isFieldInvalid('firstName')">
-              {{ getFieldError('firstName') }}
-            </span>
-          </div>
-
-          <!-- Apellido -->
-          <div class="form-group">
-            <label for="lastName" class="form-label required">
-              Apellido
-            </label>
-            <input
-              type="text"
-              id="lastName"
-              class="form-input"
-              formControlName="lastName"
-              placeholder="Ingrese el apellido"
-              [class.invalid]="isFieldInvalid('lastName')"
-            />
-            <span class="error-message" *ngIf="isFieldInvalid('lastName')">
-              {{ getFieldError('lastName') }}
-            </span>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <!-- Fecha de Nacimiento -->
-          <div class="form-group">
-            <label for="dateOfBirth" class="form-label">
-              Fecha de Nacimiento
-            </label>
-            <input
-              type="date"
-              id="dateOfBirth"
-              class="form-input"
-              formControlName="dateOfBirth"
-              [class.invalid]="isFieldInvalid('dateOfBirth')"
-            />
-            <span class="age-indicator" *ngIf="calculatedAge() !== null">
-              <i class="fa-solid fa-calendar"></i>
-              {{ calculatedAge() }} años
-            </span>
-            <span class="error-message" *ngIf="isFieldInvalid('dateOfBirth')">
-              {{ getFieldError('dateOfBirth') }}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Datos de Contacto -->
-      <div class="form-section">
-        <h2 class="section-title">
-          <i class="fa-solid fa-address-book"></i>
-          Información de Contacto
-        </h2>
-
-        <div class="form-row">
-          <!-- Teléfono -->
-          <div class="form-group">
-            <label for="phoneNumber" class="form-label">
-              Teléfono
-            </label>
-            <div class="input-with-icon">
-              <i class="fa-solid fa-phone"></i>
+          <div class="form-row">
+            <!-- Nombre -->
+            <div class="form-group">
+              <label for="firstName" class="form-label">
+                Nombre <span class="required">*</span>
+              </label>
               <input
-                type="tel"
-                id="phoneNumber"
+                type="text"
+                id="firstName"
                 class="form-input"
-                formControlName="phoneNumber"
-                placeholder="10 dígitos"
-                maxlength="10"
-                [class.invalid]="isFieldInvalid('phoneNumber')"
+                formControlName="firstName"
+                placeholder="Ingrese el nombre"
+                [class.input-error]="isFieldInvalid('firstName')"
               />
+              @if (isFieldInvalid('firstName')) {
+                <span class="error-message">
+                  {{ getFieldError('firstName') }}
+                </span>
+              }
             </div>
-            <span class="error-message" *ngIf="isFieldInvalid('phoneNumber')">
-              {{ getFieldError('phoneNumber') }}
-            </span>
+
+            <!-- Apellido -->
+            <div class="form-group">
+              <label for="lastName" class="form-label">
+                Apellido <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                class="form-input"
+                formControlName="lastName"
+                placeholder="Ingrese el apellido"
+                [class.input-error]="isFieldInvalid('lastName')"
+              />
+              @if (isFieldInvalid('lastName')) {
+                <span class="error-message">
+                  {{ getFieldError('lastName') }}
+                </span>
+              }
+            </div>
           </div>
 
-          <!-- Email -->
-          <div class="form-group">
-            <label for="email" class="form-label">
-              Email
-            </label>
-            <div class="input-with-icon">
-              <i class="fa-solid fa-envelope"></i>
+          <div class="form-row">
+            <!-- Fecha de Nacimiento -->
+            <div class="form-group">
+              <label for="dateOfBirth" class="form-label">
+                Fecha de Nacimiento
+              </label>
               <input
-                type="email"
-                id="email"
+                type="date"
+                id="dateOfBirth"
                 class="form-input"
-                formControlName="email"
-                placeholder="ejemplo@correo.com"
-                [class.invalid]="isFieldInvalid('email')"
+                formControlName="dateOfBirth"
+                [class.input-error]="isFieldInvalid('dateOfBirth')"
               />
+              @if (calculatedAge() !== null) {
+                <span class="age-indicator">
+                  <i class="fa-solid fa-calendar"></i>
+                  {{ calculatedAge() }} años
+                </span>
+              }
+              @if (isFieldInvalid('dateOfBirth')) {
+                <span class="error-message">
+                  {{ getFieldError('dateOfBirth') }}
+                </span>
+              }
             </div>
-            <span class="error-message" *ngIf="isFieldInvalid('email')">
-              {{ getFieldError('email') }}
-            </span>
           </div>
         </div>
-      </div>
 
-      <!-- Form Actions -->
-      <div class="form-actions">
-        <button
-          type="button"
-          class="btn btn-outline"
-          (click)="onCancel()"
-          [disabled]="loading()"
-        >
-          <i class="fa-solid fa-times"></i>
-          Cancelar
-        </button>
+        <!-- Datos de Contacto -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-address-book section-icon"></i>
+            Información de Contacto
+          </h3>
 
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="loading() || patientForm.invalid"
-        >
-          <i class="fa-solid fa-check"></i>
-          {{ isEditMode() ? 'Actualizar' : 'Crear' }} Paciente
-        </button>
-      </div>
-    </form>
+          <div class="form-row">
+            <!-- Teléfono -->
+            <div class="form-group">
+              <label for="phoneNumber" class="form-label">
+                Teléfono
+              </label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-phone"></i>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  class="form-input"
+                  formControlName="phoneNumber"
+                  placeholder="10 dígitos"
+                  maxlength="10"
+                  [class.input-error]="isFieldInvalid('phoneNumber')"
+                />
+              </div>
+              @if (isFieldInvalid('phoneNumber')) {
+                <span class="error-message">
+                  {{ getFieldError('phoneNumber') }}
+                </span>
+              }
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email" class="form-label">
+                Email
+              </label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-envelope"></i>
+                <input
+                  type="email"
+                  id="email"
+                  class="form-input"
+                  formControlName="email"
+                  placeholder="ejemplo@correo.com"
+                  [class.input-error]="isFieldInvalid('email')"
+                />
+              </div>
+              @if (isFieldInvalid('email')) {
+                <span class="error-message">
+                  {{ getFieldError('email') }}
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      </form>
+    }
   </div>
 </div>

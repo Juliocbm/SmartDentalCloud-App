@@ -1,7 +1,11 @@
 // Container: usa .page-container.container-wide de _layout.scss
 // Header: usa PageHeaderComponent compartido
 // Filters: usa .filters-section de _components.scss
+// Table: usa .table-container y .table de _components.scss
+// Badges: usa .badge, .badge-info, .badge-success, .badge-error, .badge-warning, .badge-secondary de _components.scss
+// Action buttons: usa .btn-sm, .btn-outline de _components.scss
 
+// ===== Loading/Error/Empty States =====
 .loading-container,
 .error-container,
 .empty-state {
@@ -63,8 +67,6 @@
   100% { transform: rotate(360deg); }
 }
 
-// Tabla: usa .table-container y .table de _components.scss
-
 // ===== Table Cell Content =====
 .time-cell {
   min-width: 100px;
@@ -111,31 +113,8 @@
   white-space: nowrap;
 }
 
-// Status badges: usa .badge de _components.scss + clases de color (backgrounds sólidos)
-.bg-blue-100 {
-  background-color: var(--primary-500);
-  color: #ffffff;
-}
-
-.bg-green-100 {
-  background-color: var(--success-500);
-  color: #ffffff;
-}
-
-.bg-gray-100 {
-  background-color: var(--neutral-500);
-  color: #ffffff;
-}
-
-.bg-red-100 {
-  background-color: var(--error-500);
-  color: #ffffff;
-}
-
-.bg-yellow-100 {
-  background-color: var(--warning-500);
-  color: #ffffff;
-}
+// Status badges: usa .badge y sus variantes de _components.scss
+// (badge-info, badge-success, badge-warning, badge-error, badge-secondary)
 
 .actions-column {
   .action-buttons {

@@ -7,6 +7,30 @@
     [showBackButton]="true"
     [backRoute]="'/users'"
     [breadcrumbs]="breadcrumbItems()">
+    <!-- Action Buttons -->
+    <div actions class="header-form-actions">
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="cancel()"
+        [disabled]="loading()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="onSubmit()"
+        [disabled]="loading() || loadingRoles()">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid" [class.fa-floppy-disk]="isEditMode()" [class.fa-user-plus]="!isEditMode()"></i>
+          {{ isEditMode() ? 'Guardar Cambios' : 'Crear Usuario' }}
+        }
+      </button>
+    </div>
   </app-page-header>
 
   <div class="content-card">
@@ -35,16 +59,14 @@
       
       <!-- Basic Information Section -->
       <div class="form-section">
-        <h2 class="section-title">
+        <h3 class="section-title">
           <i class="fa-solid fa-id-card section-icon"></i>
           Información Básica
-        </h2>
+        </h3>
 
         <div class="form-row form-row-inline">
           <div class="form-group">
-            <label for="name" class="form-label">
-              Nombre Completo <span class="required">*</span>
-            </label>
+            <label for="name" class="form-label">Nombre Completo <span class="required">*</span></label>
             <input
               id="name"
               type="text"
@@ -66,9 +88,7 @@
           </div>
 
           <div class="form-group">
-            <label for="email" class="form-label">
-              Email <span class="required">*</span>
-            </label>
+            <label for="email" class="form-label">Email <span class="required">*</span></label>
             <input
               id="email"
               type="email"
@@ -88,56 +108,65 @@
               </span>
             }
           </div>
-        </div>
 
-        @if (!isEditMode()) {
           <div class="form-group">
-            <label for="password" class="form-label">
-              Contraseña Temporal <span class="required">*</span>
-            </label>
-            <div class="password-input-wrapper">
-              <input
-                id="password"
-                [type]="showPassword() ? 'text' : 'password'"
-                formControlName="password"
-                class="form-input"
-                [class.input-error]="passwordControl?.invalid && passwordControl?.touched"
-                placeholder="Mínimo 8 caracteres"
-              />
-              <button
-                type="button"
-                class="password-toggle"
-                (click)="togglePasswordVisibility()"
-                [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-              >
-                <i class="fa-solid" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
-              </button>
-            </div>
-            @if (passwordControl?.invalid && passwordControl?.touched) {
-              <span class="error-message">
-                @if (passwordControl?.errors?.['required']) {
-                  La contraseña es requerida
-                }
-                @if (passwordControl?.errors?.['minlength']) {
-                  Mínimo 8 caracteres
-                }
-              </span>
-            }
-            <p class="field-hint">
-              <i class="fa-solid fa-lightbulb"></i>
-              El usuario deberá cambiarla en su primer inicio de sesión
-            </p>
+            <label for="phoneNumber" class="form-label">Teléfono</label>
+            <input
+              id="phoneNumber"
+              type="tel"
+              formControlName="phoneNumber"
+              class="form-input"
+              placeholder="555-1234"
+            />
           </div>
-        }
+
+          @if (!isEditMode()) {
+            <div class="form-group">
+              <label for="password" class="form-label">Contraseña Temporal <span class="required">*</span></label>
+              <div class="password-input-wrapper">
+                <input
+                  id="password"
+                  [type]="showPassword() ? 'text' : 'password'"
+                  formControlName="password"
+                  class="form-input"
+                  [class.input-error]="passwordControl?.invalid && passwordControl?.touched"
+                  placeholder="Mínimo 8 caracteres"
+                />
+                <button
+                  type="button"
+                  class="toggle-password-btn"
+                  (click)="togglePasswordVisibility()"
+                  tabindex="-1"
+                >
+                  <i class="fa-solid" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
+                </button>
+              </div>
+              @if (passwordControl?.invalid && passwordControl?.touched) {
+                <span class="error-message">
+                  @if (passwordControl?.errors?.['required']) {
+                    La contraseña es requerida
+                  }
+                  @if (passwordControl?.errors?.['minlength']) {
+                    Mínimo 8 caracteres
+                  }
+                </span>
+              }
+              <p class="field-hint">
+                <i class="fa-solid fa-lightbulb"></i>
+                El usuario deberá cambiarla en su primer inicio de sesión
+              </p>
+            </div>
+          }
+        </div>
       </div>
 
       <!-- Roles Section -->
       <div class="form-section">
-        <h2 class="section-title">
+        <h3 class="section-title">
           <i class="fa-solid fa-user-shield section-icon"></i>
           Asignación de Roles
           <span class="required">*</span>
-        </h2>
+        </h3>
         <p class="section-description">
           Selecciona uno o más roles. Los permisos del usuario serán la unión de todos sus roles.
         </p>
@@ -165,10 +194,12 @@
                   />
                   <i class="fa-solid role-icon" [ngClass]="getRoleIcon(role.name)"></i>
                   <span class="role-name">{{ role.name }}</span>
+                  <span 
+                    class="role-info-icon"
+                    [attr.data-tooltip]="role.description || ''"
+                    (click)="$event.stopPropagation()"
+                  >i</span>
                 </div>
-                @if (role.description) {
-                  <p class="role-description">{{ role.description }}</p>
-                }
                 <div class="role-meta">
                   <span class="role-permissions-count">
                     <i class="fa-solid fa-key"></i>
@@ -179,36 +210,25 @@
             }
           </div>
 
-          @if (selectedRoles().size === 0) {
+       <!--    @if (selectedRoles().size === 0) {
             <p class="warning-message">
               <i class="fa-solid fa-triangle-exclamation"></i>
               Debes seleccionar al menos un rol
             </p>
-          }
+          } -->
         }
       </div>
 
-      <!-- Professional Profile Section (Optional) -->
-      <div class="form-section">
-        <h2 class="section-title">
-          <i class="fa-solid fa-briefcase section-icon"></i>
-          Perfil Profesional
-          <span class="optional-badge">Opcional</span>
-        </h2>
+      <!-- Professional Profile Section (Only for Doctors) -->
+      @if (hasRoleDoctor()) {
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-briefcase section-icon"></i>
+            Perfil Profesional
+            <span class="optional-badge">Opcional</span>
+          </h3>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="phoneNumber" class="form-label">Teléfono</label>
-            <input
-              id="phoneNumber"
-              type="tel"
-              formControlName="phoneNumber"
-              class="form-input"
-              placeholder="555-1234"
-            />
-          </div>
-
-          @if (hasRoleDoctor()) {
+          <div class="form-row">
             <div class="form-group">
               <label for="specialty" class="form-label">Especialidad</label>
               <input
@@ -219,47 +239,21 @@
                 placeholder="Ej: Ortodoncia"
               />
             </div>
-          }
-        </div>
 
-        @if (hasRoleDoctor()) {
-          <div class="form-group">
-            <label for="professionalLicense" class="form-label">Cédula Profesional</label>
-            <input
-              id="professionalLicense"
-              type="text"
-              formControlName="professionalLicense"
-              class="form-input"
-              placeholder="Número de cédula"
-            />
+            <div class="form-group">
+              <label for="professionalLicense" class="form-label">Cédula Profesional</label>
+              <input
+                id="professionalLicense"
+                type="text"
+                formControlName="professionalLicense"
+                class="form-input"
+                placeholder="Número de cédula"
+              />
+            </div>
           </div>
-        }
-      </div>
+        </div>
+      }
 
-      <!-- Form Actions -->
-      <div class="form-actions">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="cancel()"
-          [disabled]="loading()"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="loading() || loadingRoles()"
-        >
-          @if (loading()) {
-            <span class="btn-spinner"></span>
-            Guardando...
-          } @else {
-            <i class="fa-solid" [class.fa-floppy-disk]="isEditMode()" [class.fa-user-plus]="!isEditMode()"></i>
-            {{ isEditMode() ? 'Guardar Cambios' : 'Crear Usuario' }}
-          }
-        </button>
-      </div>
       </form>
     }
   </div>

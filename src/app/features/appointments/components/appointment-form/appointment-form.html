@@ -6,20 +6,44 @@
     [showBackButton]="true"
     [backRoute]="'/appointments'"
     [breadcrumbs]="breadcrumbItems()">
+    
+    <!-- Botones de Acción en Header -->
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="loading()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading() || appointmentForm.invalid">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-check"></i>
+          {{ isEditMode() ? 'Actualizar Cita' : 'Crear Cita' }}
+        }
+      </button>
+    </div>
   </app-page-header>
 
   <div class="content-card">
     @if (error()) {
-      <div class="error-banner">
-        <i class="fa-solid fa-exclamation-circle"></i>
-        <span>{{ error() }}</span>
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ error() }}</span>
+        <button class="alert-close" (click)="error.set(null)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
     }
 
     <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="appointment-form">
     
     <div class="form-section">
-      <h3>Información del Paciente</h3>
+      <h3 class="section-title">
+        <i class="fa-solid fa-user section-icon"></i>
+        Información del Paciente
+        <span class="required">*</span>
+      </h3>
       
       <div class="form-group">
         <app-patient-autocomplete
@@ -35,7 +59,11 @@
     </div>
 
     <div class="form-section">
-      <h3>Información del Dentista</h3>
+      <h3 class="section-title">
+        <i class="fa-solid fa-user-doctor section-icon"></i>
+        Información del Dentista
+        <span class="required">*</span>
+      </h3>
       
       <div class="form-group">
         <app-dentist-select
@@ -51,20 +79,23 @@
     </div>
 
     <div class="form-section">
-      <h3>Fecha y Hora de la Cita</h3>
+      <h3 class="section-title">
+        <i class="fa-solid fa-calendar-days section-icon"></i>
+        Fecha y Hora de la Cita
+        <span class="required">*</span>
+      </h3>
       
       <div class="form-row">
         <div class="form-group">
-          <label for="startAt">
-            <i class="fa-solid fa-calendar"></i>
-            Fecha y Hora de Inicio *
+          <label for="startAt" class="form-label">
+            Fecha y Hora de Inicio <span class="required">*</span>
           </label>
           <input 
             type="datetime-local" 
             id="startAt"
             formControlName="startAt"
             class="form-input"
-            [class.error]="getFieldError('startAt')"
+            [class.input-error]="getFieldError('startAt')"
           >
           @if (getFieldError('startAt')) {
             <span class="error-message">{{ getFieldError('startAt') }}</span>
@@ -72,16 +103,15 @@
         </div>
 
         <div class="form-group">
-          <label for="endAt">
-            <i class="fa-solid fa-clock"></i>
-            Fecha y Hora de Fin *
+          <label for="endAt" class="form-label">
+            Fecha y Hora de Fin <span class="required">*</span>
           </label>
           <input 
             type="datetime-local" 
             id="endAt"
             formControlName="endAt"
             class="form-input"
-            [class.error]="getFieldError('endAt')"
+            [class.input-error]="getFieldError('endAt')"
           >
           @if (getFieldError('endAt')) {
             <span class="error-message">{{ getFieldError('endAt') }}</span>
@@ -96,11 +126,15 @@
     </div>
 
     <div class="form-section">
-      <h3>Motivo de la Consulta</h3>
+      <h3 class="section-title">
+        <i class="fa-solid fa-notes-medical section-icon"></i>
+        Motivo de la Consulta
+        <span class="required">*</span>
+      </h3>
       
       <div class="form-group">
-        <label for="reason">
-          Motivo *
+        <label for="reason" class="form-label">
+          Motivo <span class="required">*</span>
         </label>
         <textarea 
           id="reason"
@@ -108,7 +142,7 @@
           rows="4"
           placeholder="Ej: Limpieza dental, Revisión general, Endodoncia..."
           class="form-input"
-          [class.error]="getFieldError('reason')"
+          [class.input-error]="getFieldError('reason')"
         ></textarea>
         @if (getFieldError('reason')) {
           <span class="error-message">{{ getFieldError('reason') }}</span>
@@ -116,31 +150,6 @@
       </div>
     </div>
 
-    <div class="form-actions">
-      <button 
-        type="button" 
-        (click)="onCancel()"
-        class="btn btn-secondary"
-        [disabled]="loading()"
-      >
-        <i class="fa-solid fa-times"></i>
-        Cancelar
-      </button>
-      
-      <button 
-        type="submit" 
-        class="btn btn-primary"
-        [disabled]="loading() || appointmentForm.invalid"
-      >
-        @if (loading()) {
-          <i class="fa-solid fa-spinner fa-spin"></i>
-          Guardando...
-        } @else {
-          <i class="fa-solid fa-check"></i>
-          {{ isEditMode() ? 'Actualizar Cita' : 'Crear Cita' }}
-        }
-      </button>
-    </div>
     </form>
   </div>
 </div>
