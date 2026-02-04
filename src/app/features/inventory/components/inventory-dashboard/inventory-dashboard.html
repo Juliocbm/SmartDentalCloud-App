@@ -1,9 +1,11 @@
-<app-page-header
-  title="Inventario"
-  [breadcrumbs]="breadcrumbItems"
-></app-page-header>
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Inventario'"
+    [subtitle]="'Panel de control del módulo de inventario'"
+    [icon]="'fa-boxes-stacked'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
 
-<div class="dashboard-container">
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>

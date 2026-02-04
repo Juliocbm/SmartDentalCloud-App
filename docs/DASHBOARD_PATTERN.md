@@ -25,12 +25,14 @@ Contenedor para agrupar contenido relacionado.
 ## 🏗️ Estructura HTML
 
 ```html
-<app-page-header
-  title="Nombre del Dashboard"
-  [breadcrumbs]="breadcrumbItems"
-></app-page-header>
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Nombre del Dashboard'"
+    [subtitle]="'Descripción breve del dashboard'"
+    [icon]="'fa-boxes-stacked'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
 
-<div class="dashboard-container">
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
@@ -219,7 +221,7 @@ export class ModuleDashboardComponent implements OnInit {
 
 ## 🎨 Estilos SCSS
 
-**IMPORTANTE:** No escribir estilos personalizados. Usar SOLO las clases globales del proyecto.
+**IMPORTANTE:** El layout es manejado completamente por `.page-container`. Usar SOLO variables globales CSS.
 
 ```scss
 // ============================================
@@ -227,19 +229,22 @@ export class ModuleDashboardComponent implements OnInit {
 // Sigue el patrón estándar de dashboards del proyecto
 // ============================================
 
-// ✅ SOLO importar si necesitas variables SASS
-// Las variables CSS ya están disponibles globalmente
-// @import '../../../../../styles/variables';
+// ✅ El layout es manejado por .page-container
+// ✅ NO se necesita contenedor adicional
+// ✅ Todas las clases ya están definidas en estilos globales
 
-// ✅ NO escribir estilos aquí
-// Todas las clases ya están definidas en estilos globales:
-// - .dashboard-container
-// - .metrics-grid
-// - .metric-card
-// - .alert-banner
-// - .section-card
-// - .quick-actions-grid
-// - etc.
+// Ejemplo de estructura correcta:
+// - .page-container (maneja padding y max-width)
+//   - .metrics-grid
+//   - .metric-card (.primary, .critical, .warning, .info)
+//   - .alert-banner
+//   - .section-card
+//   - .quick-actions-grid
+//   - .quick-action-card
+
+// ✅ CRÍTICO: Usar variables CSS globales, NO valores hardcoded
+// Correcto:   @media (max-width: var(--breakpoint-md))
+// Incorrecto: @media (max-width: 768px)
 
 // ✅ Solo agregar estilos ESPECÍFICOS del módulo si es absolutamente necesario
 ```
@@ -296,7 +301,7 @@ Ver `src/styles/_variables.scss` para todas las variables disponibles.
 ## 🎨 Clases CSS Disponibles
 
 ### Layout
-- `.dashboard-container` - Contenedor principal
+- `.page-container.container-wide` - Contenedor principal (maneja padding y max-width)
 - `.loading-container` - Estado de carga
 
 ### Métricas
@@ -328,6 +333,36 @@ Ver `src/styles/_variables.scss` para todas las variables disponibles.
 - `.action-title` - Título de acción
 - `.action-description` - Descripción de acción
 - `.action-arrow` - Flecha de navegación
+
+---
+
+## 🔍 Verificación de Variables Globales
+
+### Checklist ✅
+
+Al crear o revisar un dashboard, verifica:
+
+```scss
+// ✅ CORRECTO - Usar variables CSS
+padding: var(--spacing-2xl);
+gap: var(--metric-card-gap);
+background: var(--metric-card-background);
+@media (max-width: var(--breakpoint-md)) { }
+
+// ❌ INCORRECTO - Valores hardcoded
+padding: 28px;
+gap: 1.5rem;
+background: #ffffff;
+@media (max-width: 768px) { }
+```
+
+### Excepciones Permitidas
+
+Solo estos valores pueden ser literales:
+- `1px` para borders (ej: `border: 1px solid var(--border-color)`)
+- `0` para valores cero
+- `1fr` para grid layouts
+- Porcentajes específicos (ej: `width: 100%`)
 
 ---
 

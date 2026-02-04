@@ -3,11 +3,8 @@
 // Sigue el patrón estándar de dashboards del proyecto
 // ============================================
 
-.dashboard-container {
-  padding: var(--dashboard-container-padding);
-  max-width: var(--dashboard-container-max-width);
-  margin: 0 auto;
-}
+// El layout es manejado por .page-container
+// No se necesita .dashboard-container adicional
 
 // ===== Estado de Carga =====
 .loading-container {
@@ -273,11 +270,7 @@
 }
 
 // ===== Responsive Design =====
-@media (max-width: 768px) {
-  .dashboard-container {
-    padding: var(--spacing-lg);
-  }
-
+@media (max-width: var(--breakpoint-md)) {
   .metrics-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
@@ -307,11 +300,7 @@
   }
 }
 
-@media (max-width: 480px) {
-  .dashboard-container {
-    padding: var(--spacing-md);
-  }
-
+@media (max-width: var(--breakpoint-sm)) {
   .section-card {
     padding: var(--spacing-lg);
   }
