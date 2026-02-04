@@ -55,126 +55,9 @@
       </div>
     }
 
-    <!-- Top 5 Productos Más Usados -->
-    <div class="section-card">
-      <h2 class="section-title">
-        <i class="fa-solid fa-star"></i>
-        Productos Más Utilizados
-      </h2>
-      
-      @if (loadingTopProducts()) {
-        <div class="loading-spinner">
-          <i class="fa-solid fa-spinner fa-spin"></i>
-        </div>
-      } @else if (topProducts().length === 0) {
-        <div class="empty-state">
-          <i class="fa-solid fa-inbox"></i>
-          <p>No hay datos de productos utilizados</p>
-        </div>
-      } @else {
-        <div class="top-products-list">
-          @for (product of topProducts(); track product.id) {
-            <a [routerLink]="['/inventory/products', product.id]" class="top-product-item">
-              <div class="product-info">
-                <div class="product-header">
-                  <span class="product-name">{{ product.name }}</span>
-                  <span class="product-code">{{ product.code }}</span>
-                </div>
-                <span class="product-category">{{ product.categoryName }}</span>
-              </div>
-              
-              <div class="product-stats">
-                <span class="usage-count">
-                  <i class="fa-solid fa-chart-simple"></i>
-                  {{ product.usageCount }} usos
-                </span>
-                <span class="stock-badge" [class]="'status-' + product.stockStatus">
-                  {{ product.currentStock }} unidades
-                </span>
-              </div>
-              
-              <i class="fa-solid fa-chevron-right item-arrow"></i>
-            </a>
-          }
-        </div>
-      }
-    </div>
-
-    <!-- Productos Próximos a Vencer -->
-    <div class="section-card">
-      <div class="section-header">
-        <h2 class="section-title">
-          <i class="fa-solid fa-calendar-xmark"></i>
-          Próximos a Vencer
-        </h2>
-        @if (expiringProducts().length > 0) {
-          <span class="section-badge">
-            {{ expiringProducts().length }}
-          </span>
-        }
-      </div>
-
-      @if (loadingExpiring()) {
-        <div class="loading-spinner">
-          <i class="fa-solid fa-spinner fa-spin"></i>
-        </div>
-      } @else if (expiringProducts().length === 0) {
-        <div class="empty-state success">
-          <i class="fa-solid fa-circle-check"></i>
-          <p>No hay productos próximos a vencer</p>
-        </div>
-      } @else {
-        <div class="expiring-products-list">
-          @for (product of expiringProducts(); track product.id) {
-            <a 
-              [routerLink]="['/inventory/products', product.id]" 
-              class="expiring-product-item"
-              [class]="'urgency-' + product.urgencyLevel">
-              
-              <div class="urgency-indicator">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-              </div>
-              
-              <div class="product-details">
-                <div class="product-main">
-                  <span class="product-name">{{ product.name }}</span>
-                  <span class="product-code">{{ product.code }}</span>
-                </div>
-                @if (product.lotNumber) {
-                  <span class="product-lot">Lote: {{ product.lotNumber }}</span>
-                }
-              </div>
-              
-              <div class="expiry-info">
-                <span class="expiry-date">
-                  <i class="fa-solid fa-calendar"></i>
-                  {{ product.expiryDate | date:'dd/MM/yyyy' }}
-                </span>
-                <span class="days-remaining">
-                  @if (product.daysToExpire === 0) {
-                    Vence hoy
-                  } @else if (product.daysToExpire === 1) {
-                    Vence mañana
-                  } @else if (product.daysToExpire < 0) {
-                    Vencido
-                  } @else {
-                    {{ product.daysToExpire }} días
-                  }
-                </span>
-              </div>
-              
-              <span class="stock-count">{{ product.currentStock }} unidades</span>
-              
-              <i class="fa-solid fa-chevron-right item-arrow"></i>
-            </a>
-          }
-        </div>
-      }
-    </div>
-
-    <!-- Fase 2: Grid de dos columnas para Categorías y Actividad -->
+    <!-- Fase 2: Grid de dos columnas para Gráficos -->
     <div class="analytics-grid">
-      <!-- Distribución por Categorías -->
+      <!-- Distribución por Categorías - Pie Chart -->
       <div class="section-card">
         <h2 class="section-title">
           <i class="fa-solid fa-chart-pie"></i>
@@ -191,38 +74,132 @@
             <p>No hay categorías registradas</p>
           </div>
         } @else {
-          <div class="category-chart">
-            @for (category of categoryDistribution(); track category.categoryId) {
-              <div class="category-bar-item">
-                <div class="category-bar-header">
-                  <span class="category-name">{{ category.categoryName }}</span>
-                  <span class="category-count">{{ category.totalProducts }} productos</span>
+          <app-pie-chart
+            [data]="categoryChartData()"
+            [doughnut]="true"
+            [showLegend]="true"
+            [height]="'280px'"
+          />
+        }
+      </div>
+
+      <!-- Top Productos - Bar Chart -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-ranking-star"></i>
+          Top Productos por Uso
+        </h2>
+        
+        @if (loadingTopProducts()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (topProducts().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <p>No hay datos de uso</p>
+          </div>
+        } @else {
+          <app-bar-chart
+            [data]="topProductsChartData()"
+            [horizontal]="true"
+            [height]="'280px'"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Grid de 3 columnas: Próximos a Vencer + Productos Más Utilizados + Actividad Reciente -->
+    <div class="analytics-grid cols-3">
+      <!-- Productos Próximos a Vencer -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-calendar-xmark"></i>
+            Próximos a Vencer
+          </h2>
+          @if (expiringProducts().length > 0) {
+            <span class="section-badge">
+              {{ expiringProducts().length }}
+            </span>
+          }
+        </div>
+
+        @if (loadingExpiring()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (expiringProducts().length === 0) {
+          <div class="empty-state success">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>No hay productos próximos a vencer</p>
+          </div>
+        } @else {
+          <div class="expiring-products-list">
+            @for (product of expiringProducts(); track product.id) {
+              <a 
+                [routerLink]="['/inventory/products', product.id]" 
+                class="expiring-product-item compact"
+                [class]="'urgency-' + product.urgencyLevel">
+                
+                <div class="urgency-indicator">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                <div class="category-bar-container">
-                  <div 
-                    class="category-bar-fill" 
-                    [class]="'status-' + category.status"
-                    [style.width.%]="category.percentage">
-                  </div>
-                  <span class="category-percentage">{{ category.percentage }}%</span>
+                
+                <div class="product-details">
+                  <span class="product-name">{{ product.name }}</span>
+                  <span class="expiry-date">
+                    {{ product.expiryDate | date:'dd/MM' }} - 
+                    @if (product.daysToExpire === 0) {
+                      Hoy
+                    } @else if (product.daysToExpire < 0) {
+                      Vencido
+                    } @else {
+                      {{ product.daysToExpire }}d
+                    }
+                  </span>
                 </div>
-                @if (category.criticalStockCount > 0 || category.lowStockCount > 0) {
-                  <div class="category-alerts">
-                    @if (category.criticalStockCount > 0) {
-                      <span class="alert-badge critical">
-                        <i class="fa-solid fa-circle-exclamation"></i>
-                        {{ category.criticalStockCount }} críticos
-                      </span>
-                    }
-                    @if (category.lowStockCount > 0) {
-                      <span class="alert-badge warning">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        {{ category.lowStockCount }} bajos
-                      </span>
-                    }
-                  </div>
-                }
-              </div>
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Top 5 Productos Más Usados -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-star"></i>
+          Productos Más Utilizados
+        </h2>
+        
+        @if (loadingTopProducts()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (topProducts().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <p>No hay datos de productos utilizados</p>
+          </div>
+        } @else {
+          <div class="top-products-list">
+            @for (product of topProducts(); track product.id) {
+              <a [routerLink]="['/inventory/products', product.id]" class="top-product-item compact">
+                <div class="product-info">
+                  <span class="product-name">{{ product.name }}</span>
+                  <span class="product-category">{{ product.categoryName }}</span>
+                </div>
+                
+                <div class="product-stats">
+                  <span class="usage-count">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    {{ product.usageCount }}
+                  </span>
+                  <span class="stock-badge" [class]="'status-' + product.stockStatus">
+                    {{ product.currentStock }}
+                  </span>
+                </div>
+              </a>
             }
           </div>
         }
@@ -255,7 +232,7 @@
                   <p class="activity-description">{{ activity.description }}</p>
                   <span class="activity-time">
                     <i class="fa-solid fa-clock"></i>
-                    {{ activity.timestamp | date:'dd/MM/yyyy HH:mm' }}
+                    {{ activity.timestamp | date:'dd/MM HH:mm' }}
                   </span>
                 </div>
               </div>

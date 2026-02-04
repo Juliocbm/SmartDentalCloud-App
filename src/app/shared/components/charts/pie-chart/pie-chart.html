@@ -1,0 +1,8 @@
+<div class="chart-container" [style.height]="height">
+  @if (title) {
+    <h3 class="chart-title">{{ title }}</h3>
+  }
+  <div class="chart-wrapper">
+    <canvas #chartCanvas></canvas>
+  </div>
+</div>

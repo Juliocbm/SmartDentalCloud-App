@@ -298,6 +298,7 @@
 
   // ===== Analytics Grid =====
   --analytics-grid-columns: repeat(2, 1fr);
+  --analytics-grid-columns-3: repeat(3, 1fr);
   --analytics-grid-gap: var(--spacing-xl);
 
   // ===== Category Chart (Progress Bars) =====
@@ -320,6 +321,28 @@
   
   --activity-icon-size: 36px;
   --activity-icon-radius: var(--radius-full);
+
+  // ===== Scrollable Lists =====
+  --list-max-height: 320px;
+  --list-max-height-lg: 400px;
+
+  // ===== Chart Colors =====
+  --chart-color-1: #3b82f6;  // Primary blue
+  --chart-color-2: #10b981;  // Success green
+  --chart-color-3: #f59e0b;  // Warning yellow
+  --chart-color-4: #ef4444;  // Error red
+  --chart-color-5: #8b5cf6;  // Purple
+  --chart-color-6: #06b6d4;  // Cyan
+  --chart-color-7: #ec4899;  // Pink
+  --chart-color-8: #84cc16;  // Lime
+
+  // Chart UI
+  --chart-background: var(--surface-primary);
+  --chart-grid-color: var(--border-primary);
+  --chart-text-color: var(--text-secondary);
+  --chart-legend-color: var(--text-primary);
+  --chart-tooltip-bg: rgba(15, 23, 42, 0.9);
+  --chart-tooltip-text: #ffffff;
 }
 
 // ===== Tema Oscuro =====
@@ -400,6 +423,20 @@
   // ===== Activity Timeline - Tema Oscuro =====
   --activity-item-background: var(--surface-secondary);
   --activity-item-hover: var(--surface-tertiary);
+
+  // ===== Chart Colors - Tema Oscuro =====
+  --chart-color-1: #60a5fa;  // Lighter blue
+  --chart-color-2: #34d399;  // Lighter green
+  --chart-color-3: #fbbf24;  // Lighter yellow
+  --chart-color-4: #f87171;  // Lighter red
+  --chart-color-5: #a78bfa;  // Lighter purple
+  --chart-color-6: #22d3ee;  // Lighter cyan
+  --chart-color-7: #f472b6;  // Lighter pink
+  --chart-color-8: #a3e635;  // Lighter lime
+
+  --chart-grid-color: var(--border-primary);
+  --chart-text-color: var(--text-secondary);
+  --chart-legend-color: var(--text-primary);
 }
 
 // ===== Tema Alto Contraste =====

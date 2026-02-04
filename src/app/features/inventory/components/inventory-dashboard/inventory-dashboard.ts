@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { PieChartComponent, BarChartComponent, ChartDataItem } from '../../../../shared/components/charts';
 import { ProductsService } from '../../services/products.service';
 import { AlertsCountService } from '../../../../core/services/alerts-count.service';
 import { InventoryAnalyticsService } from '../../services/inventory-analytics.service';
@@ -20,7 +21,7 @@ interface DashboardMetric {
 @Component({
   selector: 'app-inventory-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent],
   templateUrl: './inventory-dashboard.html',
   styleUrls: ['./inventory-dashboard.scss']
 })
@@ -223,4 +224,20 @@ export class InventoryDashboardComponent implements OnInit {
   getActivityColor(type: string): string {
     return this.activityConfig[type as keyof typeof this.activityConfig]?.color || 'info';
   }
+
+  /** Datos transformados para gráfico de categorías */
+  categoryChartData = computed<ChartDataItem[]>(() =>
+    this.categoryDistribution().map(cat => ({
+      label: cat.categoryName,
+      value: cat.totalProducts
+    }))
+  );
+
+  /** Datos transformados para gráfico de top productos */
+  topProductsChartData = computed<ChartDataItem[]>(() =>
+    this.topProducts().map(p => ({
+      label: p.name.length > 20 ? p.name.substring(0, 20) + '...' : p.name,
+      value: p.usageCount
+    }))
+  );
 }

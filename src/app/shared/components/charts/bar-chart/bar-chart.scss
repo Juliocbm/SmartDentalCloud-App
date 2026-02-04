@@ -1,0 +1,21 @@
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  background: var(--chart-background);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+.chart-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+  text-align: center;
+}
+
+.chart-wrapper {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
