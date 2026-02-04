@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CategoriesService } from '../../services/categories.service';
 import { Category } from '../../models/category.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { ROUTES } from '../../../../core/constants/routes.constants';
 
 @Component({
   selector: 'app-category-list',
@@ -27,9 +28,9 @@ export class CategoryListComponent implements OnInit {
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
 
   breadcrumbItems = signal<BreadcrumbItem[]>([
-    { label: 'Inicio', route: '/dashboard', icon: 'fa-home' },
-    { label: 'Inventario', route: '/inventory', icon: 'fa-boxes-stacked' },
-    { label: 'Categorías', route: '/inventory/categories', icon: 'fa-tags' }
+    { label: 'Inicio', route: ROUTES.DASHBOARD, icon: 'fa-home' },
+    { label: 'Inventario', route: ROUTES.INVENTORY, icon: 'fa-boxes-stacked' },
+    { label: 'Categorías' }
   ]);
 
   filteredCategories = computed(() => {

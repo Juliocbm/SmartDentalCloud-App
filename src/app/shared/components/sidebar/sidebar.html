@@ -13,19 +13,57 @@
 
   <nav class="sidebar-nav">
     @for (item of menuItems; track item.route) {
-      <a 
-        [routerLink]="item.route" 
-        routerLinkActive="active"
-        class="menu-item"
-        [title]="item.label">
-        <i [class]="item.icon"></i>
-        @if (!collapsed()) {
-          <span class="menu-label">{{ item.label }}</span>
-          @if (item.badge) {
-            <span class="badge badge-primary">{{ item.badge }}</span>
+      @if (item.children && item.children.length > 0) {
+        <!-- Menu item with children -->
+        <div class="menu-item-group">
+          <a 
+            [routerLink]="item.route" 
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{exact: false}"
+            class="menu-item parent"
+            [title]="item.label">
+            <i [class]="item.icon"></i>
+            @if (!collapsed()) {
+              <span class="menu-label">{{ item.label }}</span>
+              @if (item.badge) {
+                <span class="badge badge-primary">{{ item.badge }}</span>
+              }
+            }
+          </a>
+          @if (!collapsed()) {
+            <div class="submenu">
+              @for (child of item.children; track child.route) {
+                <a 
+                  [routerLink]="child.route" 
+                  routerLinkActive="active"
+                  class="submenu-item"
+                  [title]="child.label">
+                  <i [class]="child.icon"></i>
+                  <span class="submenu-label">{{ child.label }}</span>
+                  @if (child.badge !== undefined && child.badge > 0) {
+                    <span class="badge badge-warning">{{ child.badge }}</span>
+                  }
+                </a>
+              }
+            </div>
           }
-        }
-      </a>
+        </div>
+      } @else {
+        <!-- Regular menu item -->
+        <a 
+          [routerLink]="item.route" 
+          routerLinkActive="active"
+          class="menu-item"
+          [title]="item.label">
+          <i [class]="item.icon"></i>
+          @if (!collapsed()) {
+            <span class="menu-label">{{ item.label }}</span>
+            @if (item.badge) {
+              <span class="badge badge-primary">{{ item.badge }}</span>
+            }
+          }
+        </a>
+      }
     }
   </nav>
 

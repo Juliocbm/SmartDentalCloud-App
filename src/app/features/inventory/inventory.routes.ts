@@ -6,8 +6,7 @@ import { Routes } from '@angular/router';
 export const INVENTORY_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'products',
-    pathMatch: 'full'
+    loadComponent: () => import('./components/inventory-dashboard/inventory-dashboard').then(m => m.InventoryDashboardComponent)
   },
   {
     path: 'products',
@@ -49,13 +48,8 @@ export const INVENTORY_ROUTES: Routes = [
     ]
   },
   {
-    path: 'stock',
-    children: [
-      {
-        path: 'alerts',
-        loadComponent: () => import('./components/stock-alerts/stock-alerts').then(m => m.StockAlertsComponent)
-      }
-    ]
+    path: 'alerts',
+    loadComponent: () => import('./components/stock-alerts/stock-alerts').then(m => m.StockAlertsComponent)
   },
   {
     path: 'suppliers',

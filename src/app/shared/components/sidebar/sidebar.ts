@@ -7,6 +7,7 @@ interface MenuItem {
   label: string;
   route: string;
   badge?: number;
+  children?: MenuItem[];
 }
 
 @Component({
@@ -25,10 +26,18 @@ export class SidebarComponent {
     { icon: 'fa-solid fa-calendar-days', label: 'Citas', route: '/appointments', badge: 3 },
     { icon: 'fa-solid fa-tooth', label: 'Tratamientos', route: '/treatments' },
     { icon: 'fa-solid fa-file-invoice-dollar', label: 'Facturación', route: '/billing' },
-    { icon: 'fa-solid fa-boxes-stacked', label: 'Inventario', route: '/inventory' },
-    { icon: 'fa-solid fa-triangle-exclamation', label: 'Alertas de Stock', route: '/inventory/stock/alerts' },
-    { icon: 'fa-solid fa-truck', label: 'Proveedores', route: '/inventory/suppliers' },
-    { icon: 'fa-solid fa-file-invoice', label: 'Órdenes de Compra', route: '/inventory/purchase-orders' },
+    { 
+      icon: 'fa-solid fa-boxes-stacked', 
+      label: 'Inventario', 
+      route: '/inventory',
+      children: [
+        { icon: 'fa-solid fa-box', label: 'Productos', route: '/inventory/products' },
+        { icon: 'fa-solid fa-tags', label: 'Categorías', route: '/inventory/categories' },
+        { icon: 'fa-solid fa-triangle-exclamation', label: 'Alertas', route: '/inventory/alerts', badge: 0 },
+        { icon: 'fa-solid fa-truck', label: 'Proveedores', route: '/inventory/suppliers' },
+        { icon: 'fa-solid fa-file-invoice', label: 'Órdenes de Compra', route: '/inventory/purchase-orders' }
+      ]
+    },
     { icon: 'fa-solid fa-user-doctor', label: 'Dentistas', route: '/dentists' },
     { icon: 'fa-solid fa-user-shield', label: 'Usuarios y Roles', route: '/users' },
     { icon: 'fa-solid fa-chart-line', label: 'Reportes', route: '/reports' },

@@ -10,6 +10,7 @@ import { StockAlert, StockAlertLevel } from '../../models/stock.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
+import { ROUTES } from '../../../../core/constants/routes.constants';
 
 @Component({
   selector: 'app-stock-alerts',
@@ -30,9 +31,9 @@ export class StockAlertsComponent implements OnInit {
   filterLevel = signal<'all' | StockAlertLevel>('all');
 
   breadcrumbItems = signal<BreadcrumbItem[]>([
-    { label: 'Inicio', route: '/dashboard', icon: 'fa-home' },
-    { label: 'Inventario', route: '/inventory', icon: 'fa-boxes-stacked' },
-    { label: 'Alertas de Stock', route: '/inventory/stock/alerts', icon: 'fa-triangle-exclamation' }
+    { label: 'Inicio', route: ROUTES.DASHBOARD, icon: 'fa-home' },
+    { label: 'Inventario', route: ROUTES.INVENTORY, icon: 'fa-boxes-stacked' },
+    { label: 'Alertas de Stock' }
   ]);
 
   filteredAlerts = computed(() => {

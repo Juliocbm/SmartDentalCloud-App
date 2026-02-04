@@ -9,6 +9,7 @@ import { ProductsService } from '../../services/products.service';
 import { CategoriesService } from '../../services/categories.service';
 import { Product } from '../../models/product.models';
 import { Category } from '../../models/category.models';
+import { ROUTES } from '../../../../core/constants/routes.constants';
 
 /**
  * Componente para listar productos de inventario

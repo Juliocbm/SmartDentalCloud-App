@@ -36,7 +36,8 @@ export const ROUTES = {
   INVENTORY_PRODUCTS: '/inventory/products',
   INVENTORY_PRODUCTS_NEW: '/inventory/products/new',
   INVENTORY_SUPPLIERS: '/inventory/suppliers',
-  INVENTORY_SUPPLIERS_NEW: '/inventory/suppliers/new'
+  INVENTORY_SUPPLIERS_NEW: '/inventory/suppliers/new',
+  INVENTORY_ALERTS: '/inventory/alerts'
 } as const;
 
 /**
