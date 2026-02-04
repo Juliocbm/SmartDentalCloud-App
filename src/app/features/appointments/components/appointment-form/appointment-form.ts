@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AppointmentsService } from '../../services/appointments.service';
+import { AppointmentFormContextService } from '../../services/appointment-form-context.service';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { DentistSelectComponent } from '../../../../shared/components/dentist-select/dentist-select';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
@@ -27,6 +28,7 @@ export class AppointmentFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private appointmentsService = inject(AppointmentsService);
+  private contextService = inject(AppointmentFormContextService);
 
   appointmentForm!: FormGroup;
   loading = signal(false);
@@ -37,6 +39,8 @@ export class AppointmentFormComponent implements OnInit {
   selectedPatient = signal<PatientSearchResult | null>(null);
   selectedDentist = signal<DentistListItem | null>(null);
 
+  backRoute = computed(() => this.contextService.context().returnUrl);
+
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
     { label: 'Citas', route: '/appointments', icon: 'fa-calendar-days' },
@@ -45,7 +49,49 @@ export class AppointmentFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.loadContext();
     this.checkEditMode();
+  }
+
+  private loadContext(): void {
+    const context = this.contextService.getCurrentContext();
+    
+    // Aplicar preselección de dentista
+    if (context.preselectedDentistId && context.preselectedDentistName) {
+      this.selectedDentist.set({
+        id: context.preselectedDentistId,
+        name: context.preselectedDentistName,
+        specialization: context.preselectedDentistSpecialization || undefined
+      });
+      this.appointmentForm.patchValue({
+        userId: context.preselectedDentistId
+      });
+    }
+
+    // Aplicar preselección de paciente
+    if (context.preselectedPatientId && context.preselectedPatientName) {
+      this.selectedPatient.set({
+        id: context.preselectedPatientId,
+        name: context.preselectedPatientName,
+        email: '',
+        phone: ''
+      });
+      this.appointmentForm.patchValue({
+        patientId: context.preselectedPatientId
+      });
+    }
+
+    // Aplicar preselección de fechas (desde calendario)
+    if (context.preselectedStartAt) {
+      this.appointmentForm.patchValue({
+        startAt: this.formatDateTimeLocal(context.preselectedStartAt)
+      });
+    }
+    if (context.preselectedEndAt) {
+      this.appointmentForm.patchValue({
+        endAt: this.formatDateTimeLocal(context.preselectedEndAt)
+      });
+    }
   }
 
   private initForm(): void {
@@ -143,7 +189,9 @@ export class AppointmentFormComponent implements OnInit {
         reason: formValue.reason
       }).subscribe({
         next: () => {
-          this.router.navigate(['/appointments']);
+          const returnUrl = this.contextService.getCurrentContext().returnUrl;
+          this.contextService.resetContext();
+          this.router.navigate([returnUrl]);
         },
         error: (error) => {
           console.error('Error creating appointment:', error);
@@ -155,7 +203,9 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/appointments']);
+    const returnUrl = this.contextService.getCurrentContext().returnUrl;
+    this.contextService.resetContext();
+    this.router.navigate([returnUrl]);
   }
 
   private formatDateTimeLocal(date: Date): string {

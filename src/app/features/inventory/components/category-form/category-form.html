@@ -1,154 +1,151 @@
 <div class="page-container container-medium">
-  <!-- Header -->
+  <!-- Page Header con Actions -->
   <app-page-header
     [title]="isEditMode() ? 'Editar Categoría' : 'Nueva Categoría'"
     [subtitle]="isEditMode() ? 'Modifica la información de la categoría' : 'Agrega una nueva categoría para organizar productos'"
     [icon]="'fa-tags'"
     [showBackButton]="true"
-    [backRoute]="'/inventory/categories'"
+    [backRoute]="backRoute()"
     [breadcrumbs]="breadcrumbItems()">
+    
+    <!-- Botones de Acción en Header -->
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="loading()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading() || categoryForm.invalid">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-save"></i>
+          {{ isEditMode() ? 'Actualizar' : 'Crear' }}
+        }
+      </button>
+    </div>
   </app-page-header>
 
+  <!-- Content Card -->
   <div class="content-card">
-    <!-- Error Alert -->
-    @if (error()) {
-      <div class="error-alert">
-        <i class="fa-solid fa-exclamation-circle"></i>
-        <span>{{ error() }}</span>
-      </div>
-    }
-
+    
     <!-- Loading State -->
-    @if (loading()) {
-      <div class="loading-state">
-        <i class="fa-solid fa-spinner fa-spin"></i>
+    @if (loading() && isEditMode()) {
+      <div class="loading-container">
+        <div class="spinner"></div>
         <p>Cargando categoría...</p>
       </div>
     }
 
-    <!-- Form -->
-    @if (!loading()) {
-      <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="form-container">
-      <!-- Información Básica -->
-      <div class="form-section">
-        <h3 class="section-title">
-          <i class="fa-solid fa-circle-info"></i>
-          Información Básica
-        </h3>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label required">Nombre</label>
-            <input
-              type="text"
-              class="form-input"
-              formControlName="name"
-              placeholder="Ej: Materiales Dentales"
-              [class.error]="hasError('name', 'required')"
-            />
-            @if (hasError('name', 'required')) {
-              <span class="error-message">
-                <i class="fa-solid fa-circle-exclamation"></i>
-                El nombre es requerido
-              </span>
-            }
-            @if (hasError('name', 'maxlength')) {
-              <span class="error-message">
-                <i class="fa-solid fa-circle-exclamation"></i>
-                Máximo 100 caracteres
-              </span>
-            }
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Categoría Padre</label>
-            <select class="form-select" formControlName="parentCategoryId">
-              <option [value]="null">Sin categoría padre</option>
-              @for (cat of categories(); track cat.id) {
-                @if (cat.id !== categoryId()) {
-                  <option [value]="cat.id">{{ cat.name }}</option>
-                }
-              }
-            </select>
-            <span class="help-text">
-              <i class="fa-solid fa-circle-info"></i>
-              Opcional: selecciona una categoría padre para crear una subcategoría
-            </span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Descripción</label>
-          <textarea
-            class="form-textarea"
-            formControlName="description"
-            rows="3"
-            placeholder="Descripción de la categoría (opcional)"
-            [class.error]="hasError('description', 'maxlength')"
-          ></textarea>
-          @if (hasError('description', 'maxlength')) {
-            <span class="error-message">
-              <i class="fa-solid fa-circle-exclamation"></i>
-              Máximo 500 caracteres
-            </span>
-          }
-        </div>
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ error() }}</span>
+        <button class="alert-close" (click)="error.set(null)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
+    }
 
-      <!-- Estado -->
-      @if (isEditMode()) {
+    <!-- Form -->
+    @if (!loading() || !isEditMode()) {
+      <form [formGroup]="categoryForm" class="standard-form">
+        
+        <!-- Información Básica -->
         <div class="form-section">
           <h3 class="section-title">
-            <i class="fa-solid fa-toggle-on"></i>
-            Estado
+            <i class="fa-solid fa-circle-info section-icon"></i>
+            Información Básica
+            <span class="required">*</span>
           </h3>
 
-          <div class="form-group">
-            <label class="toggle-label">
+          <div class="form-row">
+            <!-- Nombre -->
+            <div class="form-group">
+              <label for="name" class="form-label">
+                Nombre <span class="required">*</span>
+              </label>
               <input
-                type="checkbox"
-                class="toggle-input"
-                formControlName="isActive"
+                id="name"
+                type="text"
+                class="form-input"
+                formControlName="name"
+                placeholder="Ej: Materiales Dentales"
+                [class.input-error]="hasError('name', 'required') || hasError('name', 'maxlength')"
               />
-              <span class="toggle-switch"></span>
-              <span class="toggle-text">
-                {{ categoryForm.get('isActive')?.value ? 'Activa' : 'Inactiva' }}
-              </span>
-            </label>
-            <span class="help-text">
-              <i class="fa-solid fa-circle-info"></i>
-              Las categorías inactivas no aparecerán en los filtros de productos
-            </span>
+              @if (hasError('name', 'required')) {
+                <span class="error-message">El nombre es requerido</span>
+              }
+              @if (hasError('name', 'maxlength')) {
+                <span class="error-message">Máximo 100 caracteres</span>
+              }
+            </div>
+
+            <!-- Categoría Padre -->
+            <div class="form-group">
+              <label for="parentCategoryId" class="form-label">Categoría Padre</label>
+              <select id="parentCategoryId" class="form-input" formControlName="parentCategoryId">
+                <option [value]="null">Sin categoría padre</option>
+                @for (cat of categories(); track cat.id) {
+                  @if (cat.id !== categoryId()) {
+                    <option [value]="cat.id">{{ cat.name }}</option>
+                  }
+                }
+              </select>
+              <p class="field-hint">
+                <i class="fa-solid fa-circle-info"></i>
+                Opcional: selecciona una categoría padre para crear una subcategoría
+              </p>
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group">
+            <label for="description" class="form-label">Descripción</label>
+            <textarea
+              id="description"
+              class="form-input"
+              formControlName="description"
+              rows="3"
+              placeholder="Descripción de la categoría (opcional)"
+              [class.input-error]="hasError('description', 'maxlength')"
+            ></textarea>
+            @if (hasError('description', 'maxlength')) {
+              <span class="error-message">Máximo 500 caracteres</span>
+            }
           </div>
         </div>
-      }
 
-      <!-- Actions -->
-      <div class="form-actions">
-        <button
-          type="button"
-          class="btn btn-outline"
-          (click)="onCancel()"
-          [disabled]="saving()"
-        >
-          <i class="fa-solid fa-times"></i>
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          [disabled]="saving() || categoryForm.invalid"
-        >
-          @if (saving()) {
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            Guardando...
-          } @else {
-            <i class="fa-solid fa-save"></i>
-            {{ isEditMode() ? 'Actualizar' : 'Crear' }} Categoría
-          }
-        </button>
-      </div>
-    </form>
-  }
+        <!-- Estado (solo en edición) -->
+        @if (isEditMode()) {
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-toggle-on section-icon"></i>
+              Estado
+            </h3>
+
+            <div class="form-group">
+              <label class="toggle-label">
+                <input
+                  type="checkbox"
+                  class="toggle-input"
+                  formControlName="isActive"
+                />
+                <span class="toggle-switch"></span>
+                <span class="toggle-text">
+                  {{ categoryForm.get('isActive')?.value ? 'Activa' : 'Inactiva' }}
+                </span>
+              </label>
+              <p class="field-hint">
+                <i class="fa-solid fa-circle-info"></i>
+                Las categorías inactivas no aparecerán en los filtros de productos
+              </p>
+            </div>
+          </div>
+        }
+
+      </form>
+    }
   </div>
 </div>

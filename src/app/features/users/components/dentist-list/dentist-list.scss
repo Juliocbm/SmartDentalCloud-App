@@ -27,8 +27,16 @@
   }
 
   &.card-inactive {
-    opacity: 0.7;
-    background: var(--surface-secondary);
+    opacity: 0.85;
+    border-color: var(--border-secondary);
+    
+    .card-header {
+      background: linear-gradient(135deg, var(--gray-100) 0%, var(--surface-primary) 100%);
+    }
+    
+    .dentist-avatar {
+      background: var(--gray-400);
+    }
   }
 }
 
@@ -141,15 +149,118 @@
 }
 
 .card-footer {
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--surface-secondary);
   display: flex;
   gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
   border-top: 1px solid var(--border-primary);
+  background: linear-gradient(to bottom, var(--surface-secondary) 0%, var(--gray-50) 100%);
+  align-items: stretch;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
 
   .btn {
     flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    gap: var(--spacing-xs);
+    white-space: nowrap;
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-base);
+
+    i {
+      font-size: var(--font-size-base);
+      flex-shrink: 0;
+    }
+
+    .btn-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  // Botón principal (40% del espacio)
+  .action-main {
+    flex: 1.8;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  // Botones secundarios (20% cada uno)
+  .action-secondary {
+    flex: 1;
+  }
+
+  // Botón de toggle con colores distintivos
+  .action-toggle {
+    flex: 1;
+    
+    // Activo - Verde (estado positivo)
+    &.btn-success {
+      background: var(--success-50);
+      color: var(--success-700);
+      border-color: var(--success-200);
+
+      &:hover {
+        background: var(--success-100);
+        border-color: var(--success-300);
+      }
+    }
+
+    // Inactivo - Amarillo/Advertencia
+    &.btn-warning {
+      background: var(--warning-50);
+      color: var(--warning-700);
+      border-color: var(--warning-200);
+
+      &:hover {
+        background: var(--warning-100);
+        border-color: var(--warning-300);
+      }
+    }
+  }
+}
+
+// Responsive: Tablet (ocultar algunos textos)
+@media (max-width: 768px) {
+  .card-footer {
+    .action-secondary .btn-text {
+      display: none;
+    }
+    
+    .action-secondary {
+      min-width: 44px;
+    }
+  }
+}
+
+// Responsive: Móvil (solo iconos)
+@media (max-width: 480px) {
+  .card-footer {
+    gap: var(--spacing-xs);
+    
+    .btn-text {
+      display: none;
+    }
+
+    .btn {
+      min-width: 44px;
+      padding: var(--spacing-xs);
+    }
+
+    .action-main {
+      flex: 1.2;
+    }
+
+    .action-secondary,
+    .action-toggle {
+      flex: 1;
+    }
   }
 }
 

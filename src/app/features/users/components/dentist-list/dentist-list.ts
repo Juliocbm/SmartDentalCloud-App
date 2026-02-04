@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -8,6 +8,10 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
 import { User, Role } from '../../models/user.models';
+import { UserFormContextService } from '../../services/user-form-context.service';
+import { DENTIST_CONTEXT } from '../../models/user-form-context.model';
+import { AppointmentFormContextService } from '../../../appointments/services/appointment-form-context.service';
+import { DENTIST_APPOINTMENT_CONTEXT } from '../../../appointments/models/appointment-form-context.model';
 
 @Component({
   selector: 'app-dentist-list',
@@ -17,8 +21,11 @@ import { User, Role } from '../../models/user.models';
   styleUrls: ['./dentist-list.scss']
 })
 export class DentistListComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
   private usersService = inject(UsersService);
   private rolesService = inject(RolesService);
+  private userContextService = inject(UserFormContextService);
+  private appointmentContextService = inject(AppointmentFormContextService);
   private searchSubject = new Subject<string>();
 
   dentists = signal<User[]>([]);
@@ -130,5 +137,26 @@ export class DentistListComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  navigateToNewDentist(): void {
+    this.userContextService.setContext(DENTIST_CONTEXT);
+    this.router.navigate(['/users/new']);
+  }
+
+  createAppointmentForDentist(dentist: User): void {
+    if (!dentist.isActive) {
+      alert('No se pueden crear citas para dentistas inactivos');
+      return;
+    }
+
+    this.appointmentContextService.setContext(
+      DENTIST_APPOINTMENT_CONTEXT(
+        dentist.id, 
+        dentist.name,
+        dentist.profile?.specialty
+      )
+    );
+    this.router.navigate(['/appointments/new']);
   }
 }

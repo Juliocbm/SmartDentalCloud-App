@@ -4,8 +4,10 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
 import { CategoriesService } from '../../services/categories.service';
+import { CategoryFormContextService } from '../../services/category-form-context.service';
 import { Category, CreateCategoryRequest, UpdateCategoryRequest } from '../../models/category.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { ROUTES } from '../../../../core/constants/routes.constants';
 
 @Component({
   selector: 'app-category-form',
@@ -19,35 +21,43 @@ export class CategoryFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private categoriesService = inject(CategoriesService);
+  private contextService = inject(CategoryFormContextService);
 
   categoryForm!: FormGroup;
   loading = signal(false);
-  saving = signal(false);
   error = signal<string | null>(null);
   categoryId = signal<string | null>(null);
   isEditMode = computed(() => !!this.categoryId());
 
   categories = signal<Category[]>([]);
+  backRoute = computed(() => this.contextService.context().returnUrl);
 
-  breadcrumbItems = signal<BreadcrumbItem[]>([
-    { label: 'Inicio', route: '/dashboard', icon: 'fa-home' },
-    { label: 'Inventario', route: '/inventory', icon: 'fa-boxes-stacked' },
-    { label: 'Categorías', route: '/inventory/categories', icon: 'fa-tags' },
-    { label: 'Nueva Categoría', route: '', icon: 'fa-plus' }
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => [
+    { label: 'Inicio', route: ROUTES.DASHBOARD, icon: 'fa-home' },
+    { label: 'Inventario', route: ROUTES.INVENTORY, icon: 'fa-boxes-stacked' },
+    { label: 'Categorías', route: ROUTES.INVENTORY_CATEGORIES, icon: 'fa-tags' },
+    { label: this.isEditMode() ? 'Editar' : 'Nueva' }
   ]);
 
   ngOnInit(): void {
     this.initializeForm();
     this.loadCategories();
+    this.loadContext();
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.categoryId.set(id);
-      this.breadcrumbItems.update(items => {
-        items[items.length - 1] = { label: 'Editar Categoría', route: '', icon: 'fa-pen' };
-        return items;
-      });
       this.loadCategory(id);
+    }
+  }
+
+  private loadContext(): void {
+    const context = this.contextService.getCurrentContext();
+    
+    if (context.preselectedParentCategoryId) {
+      this.categoryForm.patchValue({
+        parentCategoryId: context.preselectedParentCategoryId
+      });
     }
   }
 
@@ -101,7 +111,7 @@ export class CategoryFormComponent implements OnInit {
       return;
     }
 
-    this.saving.set(true);
+    this.loading.set(true);
     this.error.set(null);
 
     const formValue = this.categoryForm.value;
@@ -116,12 +126,14 @@ export class CategoryFormComponent implements OnInit {
 
       this.categoriesService.update(this.categoryId()!, updateData).subscribe({
         next: () => {
-          this.router.navigate(['/inventory/categories']);
+          const returnUrl = this.contextService.getCurrentContext().returnUrl;
+          this.contextService.resetContext();
+          this.router.navigate([returnUrl]);
         },
         error: (err) => {
           console.error('Error updating category:', err);
           this.error.set('Error al actualizar la categoría. Por favor, intenta de nuevo.');
-          this.saving.set(false);
+          this.loading.set(false);
         }
       });
     } else {
@@ -133,19 +145,23 @@ export class CategoryFormComponent implements OnInit {
 
       this.categoriesService.create(createData).subscribe({
         next: () => {
-          this.router.navigate(['/inventory/categories']);
+          const returnUrl = this.contextService.getCurrentContext().returnUrl;
+          this.contextService.resetContext();
+          this.router.navigate([returnUrl]);
         },
         error: (err) => {
           console.error('Error creating category:', err);
           this.error.set('Error al crear la categoría. Por favor, intenta de nuevo.');
-          this.saving.set(false);
+          this.loading.set(false);
         }
       });
     }
   }
 
   onCancel(): void {
-    this.router.navigate(['/inventory/categories']);
+    const returnUrl = this.contextService.getCurrentContext().returnUrl;
+    this.contextService.resetContext();
+    this.router.navigate([returnUrl]);
   }
 
   hasError(field: string, error: string): boolean {
