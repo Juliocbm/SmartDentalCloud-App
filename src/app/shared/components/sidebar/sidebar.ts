@@ -1,69 +1,159 @@
 import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AlertsCountService } from '../../../core/services/alerts-count.service';
 import { SidebarStateService } from '../../../core/services/sidebar-state.service';
+import { MenuItem } from './sidebar.models';
 
-interface MenuItem {
-  icon: string;
-  label: string;
-  route: string;
-  badge?: number;
-  children?: MenuItem[];
-}
-
+/**
+ * Componente Sidebar con menús colapsables, búsqueda y persistencia
+ */
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.scss']
 })
 export class SidebarComponent {
   private alertsService = inject(AlertsCountService);
-  private sidebarStateService = inject(SidebarStateService);
+  private sidebarState = inject(SidebarStateService);
+  private router = inject(Router);
 
-  collapsed = this.sidebarStateService.collapsed;
-  
+  // Estado del sidebar
+  collapsed = this.sidebarState.collapsed;
+  searchTerm = this.sidebarState.searchTerm;
+  expandedMenus = this.sidebarState.expandedMenus;
+
+  // Menús con IDs únicos
   menuItems = computed<MenuItem[]>(() => [
-    { icon: 'fa-solid fa-gauge', label: 'Dashboard', route: '/dashboard' },
-    { icon: 'fa-solid fa-users', label: 'Pacientes', route: '/patients' },
+    { id: 'dashboard', icon: 'fa-solid fa-gauge', label: 'Dashboard', route: '/dashboard' },
+    { id: 'patients', icon: 'fa-solid fa-users', label: 'Pacientes', route: '/patients' },
     { 
+      id: 'appointments',
       icon: 'fa-solid fa-calendar-days', 
       label: 'Citas', 
       route: '/appointments/dashboard',
       children: [
-        { icon: 'fa-solid fa-calendar', label: 'Calendario', route: '/appointments/calendar' },
-        { icon: 'fa-solid fa-list', label: 'Lista de Citas', route: '/appointments' },
-        { icon: 'fa-solid fa-calendar-plus', label: 'Nueva Cita', route: '/appointments/new' }
+        { id: 'appointments-calendar', icon: 'fa-solid fa-calendar', label: 'Calendario', route: '/appointments/calendar' },
+        { id: 'appointments-list', icon: 'fa-solid fa-list', label: 'Lista de Citas', route: '/appointments' },
+        { id: 'appointments-new', icon: 'fa-solid fa-calendar-plus', label: 'Nueva Cita', route: '/appointments/new' }
       ]
     },
-    { icon: 'fa-solid fa-tooth', label: 'Tratamientos', route: '/treatments' },
-    { icon: 'fa-solid fa-file-invoice-dollar', label: 'Facturación', route: '/billing' },
+    { id: 'treatments', icon: 'fa-solid fa-tooth', label: 'Tratamientos', route: '/treatments' },
+    { id: 'billing', icon: 'fa-solid fa-file-invoice-dollar', label: 'Facturación', route: '/billing' },
     { 
+      id: 'inventory',
       icon: 'fa-solid fa-boxes-stacked', 
       label: 'Inventario', 
       route: '/inventory',
       children: [
-        { icon: 'fa-solid fa-box', label: 'Productos', route: '/inventory/products' },
-        { icon: 'fa-solid fa-tags', label: 'Categorías', route: '/inventory/categories' },
+        { id: 'inventory-products', icon: 'fa-solid fa-box', label: 'Productos', route: '/inventory/products' },
+        { id: 'inventory-categories', icon: 'fa-solid fa-tags', label: 'Categorías', route: '/inventory/categories' },
         { 
+          id: 'inventory-alerts',
           icon: 'fa-solid fa-triangle-exclamation', 
           label: 'Alertas', 
           route: '/inventory/alerts', 
           badge: this.alertsService.totalAlerts() || undefined
         },
-        { icon: 'fa-solid fa-truck', label: 'Proveedores', route: '/inventory/suppliers' },
-        { icon: 'fa-solid fa-file-invoice', label: 'Órdenes de Compra', route: '/inventory/purchase-orders' }
+        { id: 'inventory-suppliers', icon: 'fa-solid fa-truck', label: 'Proveedores', route: '/inventory/suppliers' },
+        { id: 'inventory-orders', icon: 'fa-solid fa-file-invoice', label: 'Órdenes de Compra', route: '/inventory/purchase-orders' }
       ]
     },
-    { icon: 'fa-solid fa-user-doctor', label: 'Dentistas', route: '/dentists' },
-    { icon: 'fa-solid fa-user-shield', label: 'Usuarios y Roles', route: '/users' },
-    { icon: 'fa-solid fa-chart-line', label: 'Reportes', route: '/reports' },
-    { icon: 'fa-solid fa-gear', label: 'Configuración', route: '/settings' },
+    { id: 'dentists', icon: 'fa-solid fa-user-doctor', label: 'Dentistas', route: '/dentists' },
+    { id: 'users', icon: 'fa-solid fa-user-shield', label: 'Usuarios y Roles', route: '/users' },
+    { id: 'reports', icon: 'fa-solid fa-chart-line', label: 'Reportes', route: '/reports' },
+    { id: 'settings', icon: 'fa-solid fa-gear', label: 'Configuración', route: '/settings' },
   ]);
 
+  // Menús filtrados por búsqueda
+  filteredMenuItems = computed<MenuItem[]>(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+    if (!term) return this.menuItems();
+    return this.filterMenuItems(this.menuItems(), term);
+  });
+
+  // Indica si hay búsqueda activa
+  hasSearchTerm = computed(() => this.searchTerm().trim().length > 0);
+
+  // Cantidad de resultados de búsqueda
+  searchResultsCount = computed(() => {
+    if (!this.hasSearchTerm()) return 0;
+    return this.countMenuItems(this.filteredMenuItems());
+  });
+
+  // === Acciones ===
+
   toggleSidebar(): void {
-    this.sidebarStateService.toggleCollapsed();
+    this.sidebarState.toggleCollapsed();
+  }
+
+  toggleMenu(menuId: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.sidebarState.toggleMenuExpansion(menuId);
+  }
+
+  isExpanded(menuId: string): boolean {
+    // Si hay búsqueda activa, expandir todos los que tengan resultados
+    if (this.hasSearchTerm()) return true;
+    return this.sidebarState.isMenuExpanded(menuId);
+  }
+
+  hasChildren(item: MenuItem): boolean {
+    return !!item.children && item.children.length > 0;
+  }
+
+  navigateToRoute(route: string): void {
+    this.router.navigate([route]);
+  }
+
+  onSearchChange(term: string): void {
+    this.sidebarState.setSearchTerm(term);
+  }
+
+  clearSearch(): void {
+    this.sidebarState.clearSearch();
+  }
+
+  // === Helpers privados ===
+
+  private filterMenuItems(items: readonly MenuItem[], term: string): MenuItem[] {
+    const result: MenuItem[] = [];
+
+    for (const item of items) {
+      const labelMatch = item.label.toLowerCase().includes(term);
+
+      if (item.children && item.children.length > 0) {
+        const matchingChildren = item.children.filter(child =>
+          child.label.toLowerCase().includes(term)
+        );
+
+        if (matchingChildren.length > 0) {
+          // Mostrar padre con solo los hijos que coinciden
+          result.push({ ...item, children: matchingChildren });
+        } else if (labelMatch) {
+          // Padre coincide, mostrar con todos los hijos
+          result.push(item);
+        }
+      } else if (labelMatch) {
+        result.push(item);
+      }
+    }
+
+    return result;
+  }
+
+  private countMenuItems(items: readonly MenuItem[]): number {
+    let count = 0;
+    for (const item of items) {
+      count++;
+      if (item.children) {
+        count += item.children.length;
+      }
+    }
+    return count;
   }
 }

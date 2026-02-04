@@ -1,48 +1,88 @@
-<aside class="sidebar" [class.collapsed]="collapsed()">
-  <div class="sidebar-header">
-    <div class="logo">
+<aside class="sidebar" [class.sidebar--collapsed]="collapsed()">
+  <!-- Header -->
+  <div class="sidebar__header">
+    <div class="sidebar__logo">
       <i class="fa-solid fa-tooth"></i>
       @if (!collapsed()) {
-        <span class="logo-text">SmartDental</span>
+        <span class="sidebar__logo-text">SmartDental</span>
       }
     </div>
-    <button class="toggle-btn" (click)="toggleSidebar()" title="Toggle Sidebar">
+    <button 
+      class="sidebar__toggle" 
+      (click)="toggleSidebar()" 
+      [title]="collapsed() ? 'Expandir' : 'Colapsar'">
       <i class="fa-solid" [class.fa-angles-left]="!collapsed()" [class.fa-angles-right]="collapsed()"></i>
     </button>
   </div>
 
-  <nav class="sidebar-nav">
-    @for (item of menuItems(); track item.route) {
-      @if (item.children && item.children.length > 0) {
-        <!-- Menu item with children -->
-        <div class="menu-item-group">
-          <a 
-            [routerLink]="item.route" 
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{exact: false}"
-            class="menu-item parent"
-            [title]="item.label">
-            <i [class]="item.icon"></i>
+  <!-- Buscador -->
+  @if (!collapsed()) {
+    <div class="sidebar__search">
+      <i class="fa-solid fa-search sidebar__search-icon"></i>
+      <input 
+        type="text" 
+        class="sidebar__search-input"
+        placeholder="Buscar menú..."
+        [ngModel]="searchTerm()"
+        (ngModelChange)="onSearchChange($event)"
+      />
+      @if (hasSearchTerm()) {
+        <button class="sidebar__search-clear" (click)="clearSearch()" title="Limpiar">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      }
+    </div>
+  } @else {
+    <button class="sidebar__search-icon-only" title="Buscar">
+      <i class="fa-solid fa-search"></i>
+    </button>
+  }
+
+  <!-- Navegación -->
+  <nav class="sidebar__nav">
+    @for (item of filteredMenuItems(); track item.id) {
+      @if (hasChildren(item)) {
+        <!-- Menú con hijos -->
+        <div class="sidebar__menu-group" [class.sidebar__menu-group--expanded]="isExpanded(item.id)">
+          <!-- Botón para expandir/colapsar -->
+          <button 
+            class="sidebar__menu-item sidebar__menu-item--parent"
+            [class.sidebar__menu-item--active]="isExpanded(item.id)"
+            (click)="toggleMenu(item.id, $event)"
+            [title]="collapsed() ? item.label : ''">
+            <i [class]="item.icon" class="sidebar__menu-icon"></i>
             @if (!collapsed()) {
-              <span class="menu-label">{{ item.label }}</span>
-              @if (item.badge) {
-                <span class="badge badge-primary">{{ item.badge }}</span>
-              }
+              <span class="sidebar__menu-label">{{ item.label }}</span>
+              <i class="fa-solid fa-chevron-down sidebar__chevron" 
+                 [class.sidebar__chevron--expanded]="isExpanded(item.id)"></i>
             }
-          </a>
-          @if (!collapsed()) {
-            <div class="submenu">
-              @for (child of item.children; track child.route) {
+          </button>
+
+          <!-- Link al dashboard del módulo (solo expandido) -->
+          @if (!collapsed() && isExpanded(item.id)) {
+            <div class="sidebar__submenu">
+              <!-- Link al dashboard principal -->
+              <a 
+                [routerLink]="item.route" 
+                routerLinkActive="sidebar__submenu-item--active"
+                [routerLinkActiveOptions]="{exact: true}"
+                class="sidebar__submenu-item sidebar__submenu-item--dashboard"
+                [title]="'Dashboard de ' + item.label">
+                <i class="fa-solid fa-gauge-high sidebar__submenu-icon"></i>
+                <span class="sidebar__submenu-label">Dashboard</span>
+              </a>
+              <!-- Hijos -->
+              @for (child of item.children; track child.id) {
                 <a 
                   [routerLink]="child.route" 
-                  routerLinkActive="active"
+                  routerLinkActive="sidebar__submenu-item--active"
                   [routerLinkActiveOptions]="{exact: true}"
-                  class="submenu-item"
+                  class="sidebar__submenu-item"
                   [title]="child.label">
-                  <i [class]="child.icon"></i>
-                  <span class="submenu-label">{{ child.label }}</span>
+                  <i [class]="child.icon" class="sidebar__submenu-icon"></i>
+                  <span class="sidebar__submenu-label">{{ child.label }}</span>
                   @if (child.badge !== undefined && child.badge > 0) {
-                    <span class="badge badge-warning">{{ child.badge }}</span>
+                    <span class="sidebar__badge sidebar__badge--warning">{{ child.badge }}</span>
                   }
                 </a>
               }
@@ -50,33 +90,42 @@
           }
         </div>
       } @else {
-        <!-- Regular menu item -->
+        <!-- Menú simple -->
         <a 
           [routerLink]="item.route" 
-          routerLinkActive="active"
-          class="menu-item"
-          [title]="item.label">
-          <i [class]="item.icon"></i>
+          routerLinkActive="sidebar__menu-item--active"
+          class="sidebar__menu-item"
+          [title]="collapsed() ? item.label : ''">
+          <i [class]="item.icon" class="sidebar__menu-icon"></i>
           @if (!collapsed()) {
-            <span class="menu-label">{{ item.label }}</span>
+            <span class="sidebar__menu-label">{{ item.label }}</span>
             @if (item.badge) {
-              <span class="badge badge-primary">{{ item.badge }}</span>
+              <span class="sidebar__badge sidebar__badge--primary">{{ item.badge }}</span>
             }
           }
         </a>
       }
     }
+
+    <!-- Mensaje de resultados de búsqueda -->
+    @if (hasSearchTerm() && !collapsed()) {
+      <div class="sidebar__search-results">
+        <i class="fa-solid fa-info-circle"></i>
+        <span>{{ searchResultsCount() }} resultado{{ searchResultsCount() === 1 ? '' : 's' }}</span>
+      </div>
+    }
   </nav>
 
-  <div class="sidebar-footer">
-    <div class="user-info" [title]="collapsed() ? 'Usuario' : ''">
-      <div class="user-avatar">
+  <!-- Footer -->
+  <div class="sidebar__footer">
+    <div class="sidebar__user" [title]="collapsed() ? 'Admin - Administrador' : ''">
+      <div class="sidebar__user-avatar">
         <i class="fa-solid fa-user"></i>
       </div>
       @if (!collapsed()) {
-        <div class="user-details">
-          <div class="user-name">Admin</div>
-          <div class="user-role">Administrador</div>
+        <div class="sidebar__user-info">
+          <div class="sidebar__user-name">Admin</div>
+          <div class="sidebar__user-role">Administrador</div>
         </div>
       }
     </div>
