@@ -178,6 +178,80 @@
   --z-modal: 1050;
   --z-popover: 1060;
   --z-tooltip: 1070;
+
+  // ===== Dashboard Components =====
+  // Container
+  --dashboard-container-padding: 1.5rem;
+  --dashboard-container-max-width: 1400px;
+  
+  // Metrics Cards
+  --metric-card-gap: 1.5rem;
+  --metric-card-padding: 1.5rem;
+  --metric-card-border: 1px solid var(--border-primary);
+  --metric-card-radius: var(--radius-lg);
+  --metric-card-background: var(--surface-primary);
+  --metric-card-hover-shadow: var(--shadow-lg);
+  --metric-card-hover-transform: translateY(-2px);
+  
+  --metric-icon-size: 56px;
+  --metric-icon-radius: var(--radius-md);
+  --metric-icon-font-size: 1.5rem;
+  
+  --metric-value-font-size: 2rem;
+  --metric-value-font-weight: 700;
+  --metric-label-font-size: 0.875rem;
+  --metric-label-color: var(--text-secondary);
+  
+  // Metric Card Variants (backgrounds para iconos)
+  --metric-primary-bg: var(--primary-50);
+  --metric-primary-color: var(--primary-600);
+  --metric-success-bg: var(--success-50);
+  --metric-success-color: var(--success-600);
+  --metric-error-bg: var(--error-50);
+  --metric-error-color: var(--error-600);
+  --metric-warning-bg: var(--warning-50);
+  --metric-warning-color: var(--warning-600);
+  --metric-info-bg: var(--info-50);
+  --metric-info-color: var(--info-600);
+  
+  // Alert Banner
+  --alert-banner-padding: 1rem 1.5rem;
+  --alert-banner-gap: 1rem;
+  --alert-banner-radius: var(--radius-md);
+  --alert-banner-icon-size: 1.5rem;
+  
+  // Section Cards
+  --section-card-background: var(--surface-primary);
+  --section-card-border: 1px solid var(--border-primary);
+  --section-card-radius: var(--radius-lg);
+  --section-card-padding: 1.5rem;
+  
+  --section-title-font-size: 1.25rem;
+  --section-title-font-weight: 600;
+  --section-title-margin: 0 0 1.5rem 0;
+  --section-title-gap: 0.5rem;
+  
+  // Quick Actions
+  --quick-action-gap: 1rem;
+  --quick-action-padding: 1.25rem;
+  --quick-action-background: var(--surface-secondary);
+  --quick-action-hover-background: var(--surface-primary);
+  --quick-action-border: 1px solid var(--border-primary);
+  --quick-action-radius: var(--radius-md);
+  --quick-action-hover-transform: translateX(4px);
+  
+  --quick-action-icon-size: 48px;
+  --quick-action-icon-font-size: 1.25rem;
+  --quick-action-icon-background: var(--primary-50);
+  --quick-action-icon-color: var(--primary-600);
+  
+  --quick-action-title-font-size: 1rem;
+  --quick-action-title-font-weight: 600;
+  --quick-action-description-font-size: 0.875rem;
+  
+  // Grid Layouts
+  --dashboard-metrics-columns: repeat(auto-fit, minmax(250px, 1fr));
+  --dashboard-actions-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 // ===== Tema Oscuro =====

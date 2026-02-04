@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ProductsService } from '../../services/products.service';
+import { AlertsCountService } from '../../../../core/services/alerts-count.service';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 
 interface DashboardMetric {
@@ -22,15 +23,17 @@ interface DashboardMetric {
 })
 export class InventoryDashboardComponent implements OnInit {
   private productsService = inject(ProductsService);
+  private alertsService = inject(AlertsCountService);
 
   loading = signal(true);
   error = signal<string | null>(null);
 
   totalProducts = signal(0);
-  criticalAlerts = signal(0);
-  warningAlerts = signal(0);
-
-  totalAlerts = computed(() => this.criticalAlerts() + this.warningAlerts());
+  
+  // ✅ Reutilizar servicio global de alertas
+  criticalAlerts = this.alertsService.criticalAlerts;
+  warningAlerts = this.alertsService.warningAlerts;
+  totalAlerts = this.alertsService.totalAlerts;
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fa-home' },
@@ -104,19 +107,7 @@ export class InventoryDashboardComponent implements OnInit {
     this.productsService.getAll().subscribe({
       next: (products) => {
         this.totalProducts.set(products.length);
-        
-        // Calcular alertas
-        const critical = products.filter(p => 
-          p.currentStock !== undefined && p.currentStock <= p.minStock
-        ).length;
-        const warning = products.filter(p => 
-          p.currentStock !== undefined && 
-          p.currentStock > p.minStock && 
-          p.currentStock <= p.reorderPoint
-        ).length;
-        
-        this.criticalAlerts.set(critical);
-        this.warningAlerts.set(warning);
+        // ✅ AlertsCountService ya calcula las alertas automáticamente
         this.loading.set(false);
       },
       error: (err) => {
