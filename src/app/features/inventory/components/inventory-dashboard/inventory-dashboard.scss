@@ -131,12 +131,12 @@
 .alert-banner {
   display: flex;
   align-items: center;
-  gap: var(--alert-banner-gap);
-  padding: var(--alert-banner-padding);
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
   margin-bottom: var(--spacing-2xl);
   background: var(--warning-bg);
   border: 1px solid var(--warning-200);
-  border-radius: var(--alert-banner-radius);
+  border-radius: var(--radius-lg);
   color: var(--warning-text);
   transition: var(--transition-base);
 
@@ -145,7 +145,7 @@
   }
 
   i:first-child {
-    font-size: var(--alert-banner-icon-size);
+    font-size: var(--font-size-xl);
     flex-shrink: 0;
   }
 
@@ -163,6 +163,33 @@
   .btn {
     white-space: nowrap;
     flex-shrink: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    border: 1px solid transparent;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: var(--transition-base);
+
+    &.btn-primary {
+      background: var(--primary-500);
+      border-color: var(--primary-500);
+      color: white;
+
+      &:hover {
+        background: var(--primary-600);
+        border-color: var(--primary-600);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+    }
+
+    i {
+      font-size: 0.85rem;
+    }
   }
 }
 
@@ -195,6 +222,82 @@
   display: grid;
   grid-template-columns: var(--dashboard-actions-columns);
   gap: var(--quick-action-gap);
+
+  &.cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &.cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+
+    @media (max-width: 900px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 500px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// ===== Bottom Grid: Indicadores + Accesos Rápidos =====
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--analytics-grid-gap);
+  margin-bottom: var(--spacing-xl);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.indicators-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ===== Cards Compactas para Bottom Grid =====
+.bottom-grid .quick-action-card {
+  padding: var(--spacing-md);
+  gap: var(--spacing-md);
+
+  .action-icon {
+    width: 36px;
+    height: 36px;
+    font-size: var(--font-size-base);
+  }
+
+  .action-title {
+    font-size: var(--font-size-sm);
+    margin-bottom: 2px;
+  }
+
+  .action-description {
+    font-size: var(--font-size-xs);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .action-value {
+    font-size: var(--font-size-lg);
+  }
+
+  .action-arrow {
+    font-size: var(--font-size-sm);
+  }
 }
 
 // ===== Tarjetas de Acción Rápida =====
@@ -258,6 +361,36 @@
     font-size: var(--quick-action-description-font-size);
     color: var(--text-secondary);
     line-height: var(--line-height-normal);
+  }
+
+  .action-value {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    line-height: var(--line-height-tight);
+  }
+
+  .action-icon {
+    &.primary {
+      background: var(--metric-primary-bg);
+      color: var(--metric-primary-color);
+    }
+
+    &.success {
+      background: var(--metric-success-bg);
+      color: var(--metric-success-color);
+    }
+
+    &.warning {
+      background: var(--metric-warning-bg);
+      color: var(--metric-warning-color);
+    }
+
+    &.critical {
+      background: var(--metric-error-bg);
+      color: var(--metric-error-color);
+    }
   }
 
   .action-arrow {

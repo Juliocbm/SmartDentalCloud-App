@@ -17,30 +17,6 @@
       <span>{{ error() }}</span>
     </div>
   } @else {
-    <!-- Métricas -->
-    <div class="metrics-grid">
-      @for (metric of metrics(); track metric.label) {
-        <a [routerLink]="metric.route" class="metric-card {{ metric.colorClass }}">
-          <div class="metric-icon">
-            <i class="fa-solid {{ metric.icon }}"></i>
-          </div>
-          <div class="metric-content">
-            <span class="metric-label">{{ metric.label }}</span>
-            <span class="metric-value">
-              @if (metric.format === 'currency') {
-                {{ formatCurrency(metric.value) }}
-              } @else {
-                {{ metric.value }}
-              }
-            </span>
-          </div>
-          <div class="metric-arrow">
-            <i class="fa-solid fa-chevron-right"></i>
-          </div>
-        </a>
-      }
-    </div>
-
     <!-- Alertas destacadas -->
     @if (totalAlerts() > 0) {
       <div class="alert-banner">
@@ -54,6 +30,63 @@
         </a>
       </div>
     }
+
+    <!-- Grid: Indicadores + Accesos Rápidos -->
+    <div class="bottom-grid">
+      <!-- Indicadores Clave -->
+      <div class="section-card grid-narrow">
+        <h2 class="section-title">
+          <i class="fa-solid fa-gauge-high"></i>
+          Indicadores Clave
+        </h2>
+        <div class="indicators-list">
+          <!-- Total de Productos -->
+          <a [routerLink]="['/inventory/products']" class="quick-action-card">
+            <div class="action-icon primary">
+              <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Total Productos</h3>
+              <p class="action-value">{{ totalProducts() }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <!-- Valor del Inventario -->
+          <a [routerLink]="['/inventory/products']" class="quick-action-card">
+            <div class="action-icon success">
+              <i class="fa-solid fa-coins"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Valor Inventario</h3>
+              <p class="action-value">{{ formatCurrency(totalInventoryValue()) }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Accesos Rápidos -->
+      <div class="section-card grid-wide">
+        <h2 class="section-title">
+          <i class="fa-solid fa-bolt"></i>
+          Accesos Rápidos
+        </h2>
+        <div class="quick-actions-grid cols-4">
+          @for (action of quickActions; track action.route) {
+            <a [routerLink]="action.route" class="quick-action-card">
+              <div class="action-icon">
+                <i class="fa-solid {{ action.icon }}"></i>
+              </div>
+              <div class="action-content">
+                <h3 class="action-title">{{ action.label }}</h3>
+                <p class="action-description">{{ action.description }}</p>
+              </div>
+              <i class="fa-solid fa-chevron-right action-arrow"></i>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
 
     <!-- Fase 2: Grid de dos columnas para Gráficos -->
     <div class="analytics-grid">
@@ -238,28 +271,6 @@
               </div>
             }
           </div>
-        }
-      </div>
-    </div>
-
-    <!-- Accesos Rápidos -->
-    <div class="section-card">
-      <h2 class="section-title">
-        <i class="fa-solid fa-bolt"></i>
-        Accesos Rápidos
-      </h2>
-      <div class="quick-actions-grid">
-        @for (action of quickActions; track action.route) {
-          <a [routerLink]="action.route" class="quick-action-card">
-            <div class="action-icon">
-              <i class="fa-solid {{ action.icon }}"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">{{ action.label }}</h3>
-              <p class="action-description">{{ action.description }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
         }
       </div>
     </div>
