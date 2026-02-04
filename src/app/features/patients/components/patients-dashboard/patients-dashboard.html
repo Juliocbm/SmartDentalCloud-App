@@ -1,0 +1,257 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Pacientes'"
+    [subtitle]="'Panel de control del módulo de pacientes'"
+    [icon]="'fa-users'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando datos de pacientes...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error() }}</span>
+    </div>
+  } @else {
+    <!-- Alertas críticas -->
+    @if (criticalAlertsCount() > 0) {
+      <div class="alert-banner alert-banner--warning">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        <span>
+          <strong>{{ criticalAlertsCount() }} alerta{{ criticalAlertsCount() > 1 ? 's' : '' }} crítica{{ criticalAlertsCount() > 1 ? 's' : '' }}</strong>
+          requiere{{ criticalAlertsCount() > 1 ? 'n' : '' }} atención inmediata
+        </span>
+        <button class="btn btn--sm btn--warning" (click)="viewAllPatients()">Ver detalles</button>
+      </div>
+    }
+
+    <!-- Grid: Indicadores + Accesos Rápidos -->
+    <div class="bottom-grid">
+      <!-- Indicadores Clave -->
+      <div class="section-card grid-narrow">
+        <h2 class="section-title">
+          <i class="fa-solid fa-gauge-high"></i>
+          Indicadores
+        </h2>
+        <div class="indicators-list">
+          <!-- Total Pacientes -->
+          <a [routerLink]="['/patients']" class="quick-action-card">
+            <div class="action-icon primary">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Total Pacientes</h3>
+              <p class="action-value">{{ statistics()?.totalPatients || 0 }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <!-- Activos -->
+          <a [routerLink]="['/patients']" [queryParams]="{status: 'active'}" class="quick-action-card">
+            <div class="action-icon success">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Activos</h3>
+              <p class="action-value">{{ statistics()?.activePatients || 0 }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <!-- Nuevos este Mes -->
+          <a [routerLink]="['/patients']" [queryParams]="{filter: 'new'}" class="quick-action-card">
+            <div class="action-icon info">
+              <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Nuevos este Mes</h3>
+              <p class="action-value">{{ statistics()?.newThisMonth || 0 }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <!-- Inactivos -->
+          <a [routerLink]="['/patients']" [queryParams]="{status: 'inactive'}" class="quick-action-card">
+            <div class="action-icon warning">
+              <i class="fa-solid fa-user-clock"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Inactivos</h3>
+              <p class="action-value">{{ statistics()?.inactivePatients || 0 }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Accesos Rápidos -->
+      <div class="section-card grid-wide">
+        <h2 class="section-title">
+          <i class="fa-solid fa-bolt"></i>
+          Accesos Rápidos
+        </h2>
+        <div class="quick-actions-grid cols-4">
+          @for (action of quickActions; track action.route) {
+            <a [routerLink]="action.route" class="quick-action-card">
+              <div class="action-icon">
+                <i class="fa-solid {{ action.icon }}"></i>
+              </div>
+              <div class="action-content">
+                <h3 class="action-title">{{ action.label }}</h3>
+                <p class="action-description">{{ action.description }}</p>
+              </div>
+              <i class="fa-solid fa-chevron-right action-arrow"></i>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="charts-grid">
+      <!-- Distribución por edad -->
+      <section class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-chart-bar"></i>
+            Distribución por Edad
+          </h2>
+        </div>
+        <div class="chart-container">
+          <app-bar-chart
+            [data]="ageChartData()"
+            [horizontal]="true"
+            height="280px">
+          </app-bar-chart>
+        </div>
+      </section>
+
+      <!-- Nuevos pacientes por mes -->
+      <section class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-chart-line"></i>
+            Nuevos Pacientes por Mes
+          </h2>
+        </div>
+        <div class="chart-container">
+          <app-bar-chart
+            [data]="newPatientsChartData()"
+            height="280px">
+          </app-bar-chart>
+        </div>
+      </section>
+    </div>
+
+    <!-- Grid: Alertas, Pacientes Recientes, Cumpleaños (4-4-4) -->
+    <div class="triple-grid">
+      <!-- Alertas -->
+      <section class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-bell"></i>
+            Alertas
+          </h2>
+          <span class="section-badge">{{ alertsCount() }}</span>
+        </div>
+        @if (alerts().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-check-circle"></i>
+            <p>No hay alertas pendientes</p>
+          </div>
+        } @else {
+          <div class="alerts-list">
+            @for (alert of alerts(); track alert.id) {
+              <div class="alert-item" [class]="getAlertSeverityClass(alert.severity)">
+                <div class="alert-item__icon">
+                  <i [class]="getAlertConfig(alert.type).icon"></i>
+                </div>
+                <div class="alert-item__content">
+                  <span class="alert-item__patient">{{ alert.patientName }}</span>
+                  <span class="alert-item__message">{{ alert.message }}</span>
+                </div>
+                <button class="btn btn--sm btn--ghost" (click)="viewPatient(alert.patientId)">
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Pacientes recientes -->
+      <section class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-user-clock"></i>
+            Pacientes Recientes
+          </h2>
+          <button class="btn btn--sm btn--ghost" (click)="viewAllPatients()">Ver todos</button>
+        </div>
+        @if (recentPatients().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-user-plus"></i>
+            <p>No hay pacientes recientes</p>
+          </div>
+        } @else {
+          <div class="recent-patients-list">
+            @for (patient of recentPatients(); track patient.id) {
+              <div class="recent-patient-item" (click)="viewPatient(patient.id)">
+                <div class="recent-patient-item__avatar">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="recent-patient-item__info">
+                  <span class="recent-patient-item__name">{{ patient.fullName }}</span>
+                  <span class="recent-patient-item__contact">{{ patient.email || patient.phone || 'Sin contacto' }}</span>
+                </div>
+                <div class="recent-patient-item__appointment">
+                  @if (patient.nextAppointment) {
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>{{ formatDate(patient.nextAppointment) }}</span>
+                  } @else {
+                    <span class="no-appointment">Sin cita programada</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- Cumpleaños del mes -->
+      <section class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-cake-candles"></i>
+            Cumpleaños del Mes
+          </h2>
+          <span class="section-badge section-badge--success">{{ birthdays().length }}</span>
+        </div>
+        @if (birthdays().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-calendar"></i>
+            <p>No hay cumpleaños este mes</p>
+          </div>
+        } @else {
+          <div class="birthday-list">
+            @for (birthday of birthdays(); track birthday.id) {
+              <div class="birthday-item" [class.birthday-item--today]="birthday.daysUntilBirthday === 0" (click)="viewPatient(birthday.id)">
+                <div class="birthday-item__avatar">
+                  <i class="fa-solid fa-cake-candles"></i>
+                </div>
+                <div class="birthday-item__content">
+                  <span class="birthday-item__name">{{ birthday.fullName }}</span>
+                  <span class="birthday-item__age">Cumple {{ birthday.age }} años</span>
+                </div>
+                <span class="birthday-item__days" [class.birthday-item__days--today]="birthday.daysUntilBirthday === 0">
+                  {{ getBirthdayLabel(birthday.daysUntilBirthday) }}
+                </span>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  }
+</div>

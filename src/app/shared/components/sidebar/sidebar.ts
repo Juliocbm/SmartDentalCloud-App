@@ -29,7 +29,16 @@ export class SidebarComponent {
   // Menús con IDs únicos
   menuItems = computed<MenuItem[]>(() => [
     { id: 'dashboard', icon: 'fa-solid fa-gauge', label: 'Dashboard', route: '/dashboard' },
-    { id: 'patients', icon: 'fa-solid fa-users', label: 'Pacientes', route: '/patients' },
+    { 
+      id: 'patients',
+      icon: 'fa-solid fa-users', 
+      label: 'Pacientes', 
+      route: '/patients/dashboard',
+      children: [
+        { id: 'patients-list', icon: 'fa-solid fa-list', label: 'Lista de Pacientes', route: '/patients' },
+        { id: 'patients-new', icon: 'fa-solid fa-user-plus', label: 'Nuevo Paciente', route: '/patients/new' }
+      ]
+    },
     { 
       id: 'appointments',
       icon: 'fa-solid fa-calendar-days', 
