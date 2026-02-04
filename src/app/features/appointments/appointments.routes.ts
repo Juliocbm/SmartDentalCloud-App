@@ -1,15 +1,21 @@
 import { Routes } from '@angular/router';
 import { AppointmentsService } from './services/appointments.service';
+import { AppointmentsAnalyticsService } from './services/appointments-analytics.service';
 
 export const APPOINTMENTS_ROUTES: Routes = [
   {
     path: '',
-    providers: [AppointmentsService],
+    providers: [AppointmentsService, AppointmentsAnalyticsService],
     children: [
       {
         path: '',
         loadComponent: () => import('./components/appointment-list/appointment-list')
           .then(m => m.AppointmentListComponent)
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/appointments-dashboard/appointments-dashboard')
+          .then(m => m.AppointmentsDashboardComponent)
       },
       {
         path: 'calendar',

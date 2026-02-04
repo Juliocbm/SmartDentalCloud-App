@@ -1,0 +1,368 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Citas'"
+    [subtitle]="'Panel de control del módulo de citas'"
+    [icon]="'fa-calendar-check'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando datos de citas...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error() }}</span>
+    </div>
+  } @else {
+    <!-- Banner de Alertas: Citas sin confirmar -->
+    @if (totalPendingAlerts() > 0) {
+      <div class="alert-banner">
+        <i class="fa-solid fa-bell"></i>
+        <span>
+          Tienes <strong>{{ totalPendingAlerts() }}</strong> cita{{ totalPendingAlerts() === 1 ? '' : 's' }} pendiente{{ totalPendingAlerts() === 1 ? '' : 's' }} de confirmar.
+        </span>
+        <a [routerLink]="['/appointments']" [queryParams]="{status: 'Scheduled'}" class="btn btn-sm btn-primary">
+          Ver Pendientes
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    }
+
+    <!-- Grid: Indicadores + Accesos Rápidos -->
+    <div class="bottom-grid">
+      <!-- Indicadores Clave -->
+      <div class="section-card grid-narrow">
+        <h2 class="section-title">
+          <i class="fa-solid fa-gauge-high"></i>
+          Indicadores de Hoy
+        </h2>
+        <div class="indicators-list">
+          <!-- Citas Hoy -->
+          <a [routerLink]="['/appointments']" class="quick-action-card">
+            <div class="action-icon primary">
+              <i class="fa-solid fa-calendar-day"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Citas Hoy</h3>
+              <p class="action-value">{{ metrics()?.todayTotal || 0 }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <!-- Completadas Hoy -->
+          <a [routerLink]="['/appointments']" [queryParams]="{status: 'Completed'}" class="quick-action-card">
+            <div class="action-icon success">
+              <i class="fa-solid fa-check-circle"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Completadas</h3>
+              <p class="action-value">{{ metrics()?.todayCompleted || 0 }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <!-- Pendientes Hoy -->
+          <a [routerLink]="['/appointments']" [queryParams]="{status: 'Scheduled'}" class="quick-action-card">
+            <div class="action-icon warning">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Pendientes</h3>
+              <p class="action-value">{{ metrics()?.todayPending || 0 }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <!-- Esta Semana -->
+          <a [routerLink]="['/appointments/calendar']" class="quick-action-card">
+            <div class="action-icon info">
+              <i class="fa-solid fa-calendar-week"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Esta Semana</h3>
+              <p class="action-value">{{ metrics()?.weekTotal || 0 }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Accesos Rápidos -->
+      <div class="section-card grid-wide">
+        <h2 class="section-title">
+          <i class="fa-solid fa-bolt"></i>
+          Accesos Rápidos
+        </h2>
+        <div class="quick-actions-grid cols-4">
+          @for (action of quickActions; track action.route) {
+            <a [routerLink]="action.route" class="quick-action-card">
+              <div class="action-icon">
+                <i class="fa-solid {{ action.icon }}"></i>
+              </div>
+              <div class="action-content">
+                <h3 class="action-title">{{ action.label }}</h3>
+                <p class="action-description">{{ action.description }}</p>
+              </div>
+              <i class="fa-solid fa-chevron-right action-arrow"></i>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid de Gráficos (2 columnas) -->
+    <div class="analytics-grid">
+      <!-- Distribución por Estado - Pie Chart -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-chart-pie"></i>
+          Citas por Estado (Este Mes)
+        </h2>
+        
+        @if (loadingStatusChart()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (statusChartData().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-chart-pie"></i>
+            <p>No hay datos de citas este mes</p>
+          </div>
+        } @else {
+          <app-pie-chart
+            [data]="statusChartData()"
+            [doughnut]="true"
+            [showLegend]="true"
+            [height]="'280px'"
+          />
+        }
+      </div>
+
+      <!-- Citas por Día - Bar Chart -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-chart-bar"></i>
+          Citas por Día de la Semana
+        </h2>
+        
+        @if (loadingWeekdayChart()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (weekdayChartData().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-chart-bar"></i>
+            <p>No hay datos suficientes</p>
+          </div>
+        } @else {
+          <app-bar-chart
+            [data]="weekdayChartData()"
+            [horizontal]="false"
+            [height]="'280px'"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Grid de 3 columnas: Próximas + Sin Confirmar + Actividad -->
+    <div class="analytics-grid cols-3">
+      <!-- Próximas Citas del Día -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-clock"></i>
+            Próximas Citas Hoy
+          </h2>
+          @if (upcomingAppointments().length > 0) {
+            <span class="section-badge">{{ upcomingAppointments().length }}</span>
+          }
+        </div>
+
+        @if (loadingUpcoming()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (upcomingAppointments().length === 0) {
+          <div class="empty-state success">
+            <i class="fa-solid fa-calendar-check"></i>
+            <p>No hay más citas programadas hoy</p>
+          </div>
+        } @else {
+          <div class="upcoming-appointments-list">
+            @for (apt of upcomingAppointments(); track apt.id) {
+              <a [routerLink]="['/appointments', apt.id]" class="upcoming-appointment-item">
+                <div class="appointment-time">
+                  <span class="time">{{ apt.displayTime }}</span>
+                </div>
+                <div class="appointment-details">
+                  <span class="patient-name">{{ apt.patientName }}</span>
+                  <span class="appointment-reason">{{ apt.reason }}</span>
+                </div>
+                <span class="status-badge status-{{ apt.statusColor }}">
+                  {{ apt.statusLabel }}
+                </span>
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Citas Sin Confirmar -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-bell"></i>
+            Sin Confirmar
+          </h2>
+          @if (pendingConfirmations().length > 0) {
+            <span class="section-badge">{{ pendingConfirmations().length }}</span>
+          }
+        </div>
+
+        @if (loadingPending()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (pendingConfirmations().length === 0) {
+          <div class="empty-state success">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>Todas las citas están confirmadas</p>
+          </div>
+        } @else {
+          <div class="pending-confirmations-list">
+            @for (pending of pendingConfirmations(); track pending.id) {
+              <a 
+                [routerLink]="['/appointments', pending.id]" 
+                class="pending-confirmation-item"
+                [class]="getUrgencyClass(pending.hoursUntil)">
+                <div class="urgency-indicator">
+                  <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="pending-details">
+                  <span class="patient-name">{{ pending.patientName }}</span>
+                  <span class="pending-time">
+                    {{ pending.displayDate }} - {{ pending.displayTime }}
+                  </span>
+                </div>
+                <span class="hours-badge">
+                  @if (pending.hoursUntil <= 0) {
+                    Ahora
+                  } @else if (pending.hoursUntil < 24) {
+                    {{ pending.hoursUntil }}h
+                  } @else {
+                    {{ (pending.hoursUntil / 24) | number:'1.0-0' }}d
+                  }
+                </span>
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Actividad Reciente -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Actividad Reciente
+        </h2>
+        
+        @if (loadingActivity()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (recentActivity().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-history"></i>
+            <p>No hay actividad reciente</p>
+          </div>
+        } @else {
+          <div class="activity-timeline">
+            @for (activity of recentActivity(); track activity.id) {
+              <div class="activity-item">
+                <div class="activity-icon {{ getActivityColor(activity.type) }}">
+                  <i class="fa-solid {{ getActivityIcon(activity.type) }}"></i>
+                </div>
+                <div class="activity-content">
+                  <p class="activity-description">{{ activity.description }}</p>
+                  <span class="activity-time">
+                    <i class="fa-solid fa-clock"></i>
+                    {{ formatRelativeTime(activity.timestamp) }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Grid adicional: Pacientes Frecuentes -->
+    <div class="analytics-grid">
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-star"></i>
+          Pacientes Frecuentes
+        </h2>
+        
+        @if (loadingPatients()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (frequentPatients().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-users"></i>
+            <p>No hay datos de pacientes frecuentes</p>
+          </div>
+        } @else {
+          <div class="frequent-patients-list">
+            @for (patient of frequentPatients(); track patient.patientId) {
+              <a [routerLink]="['/patients', patient.patientId]" class="frequent-patient-item">
+                <div class="patient-info">
+                  <span class="patient-name">{{ patient.patientName }}</span>
+                  <span class="visit-count">{{ patient.totalAppointments }} visitas</span>
+                </div>
+                <div class="patient-stats">
+                  @if (patient.nextAppointment) {
+                    <span class="next-visit">
+                      <i class="fa-solid fa-calendar"></i>
+                      {{ formatDate(patient.nextAppointment) }}
+                    </span>
+                  } @else {
+                    <span class="no-next-visit">Sin cita próxima</span>
+                  }
+                </div>
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Estadísticas del Mes -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-chart-line"></i>
+          Estadísticas del Mes
+        </h2>
+        
+        <div class="month-stats">
+          <div class="stat-item">
+            <span class="stat-label">Tasa de Completadas</span>
+            <span class="stat-value success">{{ (metrics()?.completionRateMonth || 0) | number:'1.0-0' }}%</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">No Shows</span>
+            <span class="stat-value warning">{{ metrics()?.noShowsThisMonth || 0 }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Citas Semana</span>
+            <span class="stat-value">{{ metrics()?.weekTotal || 0 }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Completadas Semana</span>
+            <span class="stat-value success">{{ metrics()?.weekCompleted || 0 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

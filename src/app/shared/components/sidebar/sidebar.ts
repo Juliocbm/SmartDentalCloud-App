@@ -28,7 +28,16 @@ export class SidebarComponent {
   menuItems = computed<MenuItem[]>(() => [
     { icon: 'fa-solid fa-gauge', label: 'Dashboard', route: '/dashboard' },
     { icon: 'fa-solid fa-users', label: 'Pacientes', route: '/patients' },
-    { icon: 'fa-solid fa-calendar-days', label: 'Citas', route: '/appointments', badge: 3 },
+    { 
+      icon: 'fa-solid fa-calendar-days', 
+      label: 'Citas', 
+      route: '/appointments/dashboard',
+      children: [
+        { icon: 'fa-solid fa-calendar', label: 'Calendario', route: '/appointments/calendar' },
+        { icon: 'fa-solid fa-list', label: 'Lista de Citas', route: '/appointments' },
+        { icon: 'fa-solid fa-calendar-plus', label: 'Nueva Cita', route: '/appointments/new' }
+      ]
+    },
     { icon: 'fa-solid fa-tooth', label: 'Tratamientos', route: '/treatments' },
     { icon: 'fa-solid fa-file-invoice-dollar', label: 'Facturación', route: '/billing' },
     { 

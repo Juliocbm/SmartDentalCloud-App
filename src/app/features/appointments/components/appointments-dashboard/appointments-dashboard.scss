@@ -1,0 +1,333 @@
+// ============================================
+// Dashboard de Citas - Estilos Específicos
+// Los estilos base de dashboard están en _dashboard.scss
+// Este archivo solo contiene estilos específicos de citas
+// ============================================
+
+// ===== Upcoming Appointments List =====
+.upcoming-appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--list-item-gap);
+  max-height: var(--list-max-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.upcoming-appointment-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--list-item-background);
+  border: var(--list-item-border);
+  border-radius: var(--list-item-radius);
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-smooth);
+
+  &:hover {
+    background: var(--list-item-hover-background);
+    border-color: var(--primary-600);
+    transform: var(--list-item-hover-transform);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .appointment-time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 50px;
+    flex-shrink: 0;
+
+    .time {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-600);
+    }
+  }
+
+  .appointment-details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .patient-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .appointment-reason {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .status-badge {
+    padding: var(--badge-padding);
+    border-radius: var(--badge-radius);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &.status-primary {
+      background: var(--info-bg);
+      color: var(--info-text);
+    }
+
+    &.status-success {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    &.status-warning {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+
+    &.status-error {
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+  }
+}
+
+// ===== Pending Confirmations List =====
+.pending-confirmations-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-height: var(--list-max-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.pending-confirmation-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--list-item-background);
+  border-left: 3px solid transparent;
+  border-radius: var(--list-item-radius);
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-smooth);
+
+  &:hover {
+    background: var(--list-item-hover-background);
+    box-shadow: var(--shadow-sm);
+  }
+
+  // Urgency levels
+  &.urgency-critical {
+    border-left-color: var(--error-600);
+
+    .urgency-indicator {
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+
+    .hours-badge {
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+  }
+
+  &.urgency-warning {
+    border-left-color: var(--warning-600);
+
+    .urgency-indicator {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+
+    .hours-badge {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+  }
+
+  &.urgency-info {
+    border-left-color: var(--info-600);
+
+    .urgency-indicator {
+      background: var(--info-bg);
+      color: var(--info-text);
+    }
+
+    .hours-badge {
+      background: var(--info-bg);
+      color: var(--info-text);
+    }
+  }
+
+  .urgency-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
+    flex-shrink: 0;
+  }
+
+  .pending-details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .patient-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pending-time {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+  }
+
+  .hours-badge {
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+// ===== Frequent Patients List =====
+.frequent-patients-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--list-item-gap);
+  max-height: var(--list-max-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.frequent-patient-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--list-item-background);
+  border: var(--list-item-border);
+  border-radius: var(--list-item-radius);
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-smooth);
+
+  &:hover {
+    background: var(--list-item-hover-background);
+    border-color: var(--primary-600);
+    transform: var(--list-item-hover-transform);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .patient-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    .patient-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+    }
+
+    .visit-count {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+  }
+
+  .patient-stats {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    .next-visit {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: var(--font-size-xs);
+      color: var(--primary-600);
+
+      i {
+        font-size: 10px;
+      }
+    }
+
+    .no-next-visit {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      font-style: italic;
+    }
+  }
+}
+
+// ===== Month Stats =====
+.month-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-md);
+
+  .stat-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .stat-value {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+
+    &.success {
+      color: var(--success-600);
+    }
+
+    &.warning {
+      color: var(--warning-600);
+    }
+
+    &.error {
+      color: var(--error-600);
+    }
+  }
+}

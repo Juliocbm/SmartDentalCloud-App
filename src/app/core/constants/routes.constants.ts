@@ -8,6 +8,7 @@ export const ROUTES = {
 
   // Appointments (Citas)
   APPOINTMENTS: '/appointments',
+  APPOINTMENTS_DASHBOARD: '/appointments/dashboard',
   APPOINTMENTS_NEW: '/appointments/new',
   APPOINTMENTS_CALENDAR: '/appointments/calendar',
 

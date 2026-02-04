@@ -36,6 +36,7 @@
                 <a 
                   [routerLink]="child.route" 
                   routerLinkActive="active"
+                  [routerLinkActiveOptions]="{exact: true}"
                   class="submenu-item"
                   [title]="child.label">
                   <i [class]="child.icon"></i>
