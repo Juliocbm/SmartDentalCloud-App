@@ -294,6 +294,37 @@ export class ModuleDashboardComponent implements OnInit {
 --quick-action-icon-size: 48px
 ```
 
+### Analytics Grid (Fase 2)
+```scss
+--analytics-grid-columns: repeat(2, 1fr)
+--analytics-grid-gap: var(--spacing-xl)
+```
+
+### Category Chart (Progress Bars)
+```scss
+--category-bar-height: 24px
+--category-bar-radius: var(--radius-sm)
+--category-bar-background: var(--neutral-100)
+--category-bar-border: 1px solid var(--border-primary)
+--category-bar-gap: var(--spacing-lg)
+
+--category-bar-normal: var(--gradient-primary)
+--category-bar-warning: var(--warning-gradient)
+--category-bar-critical: var(--error-gradient)
+```
+
+### Activity Timeline
+```scss
+--activity-item-background: var(--surface-secondary)
+--activity-item-hover: var(--surface-tertiary)
+--activity-item-padding: var(--spacing-md)
+--activity-item-radius: var(--radius-md)
+--activity-item-gap: var(--spacing-md)
+
+--activity-icon-size: 36px
+--activity-icon-radius: var(--radius-full)
+```
+
 Ver `src/styles/_variables.scss` para todas las variables disponibles.
 
 ---
@@ -333,6 +364,25 @@ Ver `src/styles/_variables.scss` para todas las variables disponibles.
 - `.action-title` - Título de acción
 - `.action-description` - Descripción de acción
 - `.action-arrow` - Flecha de navegación
+
+### Analytics (Fase 2)
+- `.analytics-grid` - Grid de dos columnas para gráficos
+- `.category-chart` - Contenedor de gráfico de barras
+- `.category-bar-item` - Item de barra de categoría
+- `.category-bar-header` - Header con nombre y conteo
+- `.category-bar-container` - Contenedor de la barra de progreso
+- `.category-bar-fill` - Barra de relleno (`.status-normal`, `.status-warning`, `.status-critical`)
+- `.category-percentage` - Texto de porcentaje
+- `.category-alerts` - Badges de alertas por categoría
+- `.alert-badge` - Badge de alerta (`.critical`, `.warning`)
+
+### Timeline de Actividad (Fase 2)
+- `.activity-timeline` - Contenedor del timeline
+- `.activity-item` - Item de actividad
+- `.activity-icon` - Icono de actividad (`.success`, `.info`, `.warning`, `.error`, `.primary`)
+- `.activity-content` - Contenido de actividad
+- `.activity-description` - Descripción del evento
+- `.activity-time` - Timestamp del evento
 
 ---
 

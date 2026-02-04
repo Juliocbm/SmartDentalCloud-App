@@ -5,7 +5,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ProductsService } from '../../services/products.service';
 import { AlertsCountService } from '../../../../core/services/alerts-count.service';
 import { InventoryAnalyticsService } from '../../services/inventory-analytics.service';
-import { TopProduct, ExpiringProduct } from '../../models/inventory-analytics.models';
+import { TopProduct, ExpiringProduct, CategoryStockStatus, InventoryActivity, ACTIVITY_CONFIG } from '../../models/inventory-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 
 interface DashboardMetric {
@@ -42,6 +42,16 @@ export class InventoryDashboardComponent implements OnInit {
   
   loadingExpiring = signal(false);
   expiringProducts = signal<ExpiringProduct[]>([]);
+  
+  // Fase 2: Gráficas y Timeline
+  loadingCategories = signal(false);
+  categoryDistribution = signal<CategoryStockStatus[]>([]);
+  
+  loadingActivity = signal(false);
+  recentActivity = signal<InventoryActivity[]>([]);
+  
+  // Configuración de actividades (iconos y colores)
+  activityConfig = ACTIVITY_CONFIG;
   
   // ✅ Reutilizar servicio global de alertas
   criticalAlerts = this.alertsService.criticalAlerts;
@@ -117,6 +127,8 @@ export class InventoryDashboardComponent implements OnInit {
     this.loadInventoryValue();
     this.loadTopProducts();
     this.loadExpiringProducts();
+    this.loadCategoryDistribution();
+    this.loadRecentActivity();
   }
 
   private loadDashboardData(): void {
@@ -169,10 +181,46 @@ export class InventoryDashboardComponent implements OnInit {
     });
   }
 
+  private loadCategoryDistribution(): void {
+    this.loadingCategories.set(true);
+    this.analyticsService.getCategoryDistribution().subscribe({
+      next: (categories) => {
+        this.categoryDistribution.set(categories);
+        this.loadingCategories.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading category distribution:', err);
+        this.loadingCategories.set(false);
+      }
+    });
+  }
+
+  private loadRecentActivity(): void {
+    this.loadingActivity.set(true);
+    this.analyticsService.getRecentActivity(5).subscribe({
+      next: (activities) => {
+        this.recentActivity.set(activities);
+        this.loadingActivity.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading recent activity:', err);
+        this.loadingActivity.set(false);
+      }
+    });
+  }
+
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: 'MXN'
     }).format(value);
+  }
+
+  getActivityIcon(type: string): string {
+    return this.activityConfig[type as keyof typeof this.activityConfig]?.icon || 'fa-circle';
+  }
+
+  getActivityColor(type: string): string {
+    return this.activityConfig[type as keyof typeof this.activityConfig]?.color || 'info';
   }
 }

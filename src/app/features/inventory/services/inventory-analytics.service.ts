@@ -157,6 +157,57 @@ export class InventoryAnalyticsService {
   }
 
   /**
+   * Obtiene distribución de productos por categoría
+   */
+  getCategoryDistribution(): Observable<CategoryStockStatus[]> {
+    return this.productsService.getAll().pipe(
+      map(products => {
+        const categoryMap = new Map<string, {
+          categoryId: string;
+          categoryName: string;
+          products: Product[];
+        }>();
+
+        // Agrupar por categoría
+        products.forEach(p => {
+          const catId = p.categoryId || 'sin-categoria';
+          const catName = p.categoryName || 'Sin categoría';
+          
+          if (!categoryMap.has(catId)) {
+            categoryMap.set(catId, { categoryId: catId, categoryName: catName, products: [] });
+          }
+          categoryMap.get(catId)!.products.push(p);
+        });
+
+        // Calcular estadísticas por categoría
+        const totalProducts = products.length;
+        return Array.from(categoryMap.values()).map(cat => {
+          const lowStock = cat.products.filter(p => 
+            (p.currentStock || 0) <= (p.reorderPoint || 0) && (p.currentStock || 0) > (p.minStock || 0)
+          ).length;
+          const criticalStock = cat.products.filter(p => 
+            (p.currentStock || 0) <= (p.minStock || 0)
+          ).length;
+
+          let status: 'critical' | 'warning' | 'normal' = 'normal';
+          if (criticalStock > 0) status = 'critical';
+          else if (lowStock > 0) status = 'warning';
+
+          return {
+            categoryId: cat.categoryId,
+            categoryName: cat.categoryName,
+            totalProducts: cat.products.length,
+            lowStockCount: lowStock,
+            criticalStockCount: criticalStock,
+            percentage: totalProducts > 0 ? Math.round((cat.products.length / totalProducts) * 100) : 0,
+            status
+          };
+        }).sort((a, b) => b.totalProducts - a.totalProducts);
+      })
+    );
+  }
+
+  /**
    * Obtiene la tendencia de una métrica (para comparaciones)
    * @param metric Tipo de métrica ('products' | 'alerts' | 'value')
    */

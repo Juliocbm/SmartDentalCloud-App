@@ -295,6 +295,31 @@
 
   // ===== Urgency Indicators =====
   --urgency-border-width: 4px;
+
+  // ===== Analytics Grid =====
+  --analytics-grid-columns: repeat(2, 1fr);
+  --analytics-grid-gap: var(--spacing-xl);
+
+  // ===== Category Chart (Progress Bars) =====
+  --category-bar-height: 24px;
+  --category-bar-radius: var(--radius-sm);
+  --category-bar-background: var(--neutral-100);
+  --category-bar-border: 1px solid var(--border-primary);
+  --category-bar-gap: var(--spacing-lg);
+  
+  --category-bar-normal: var(--gradient-primary);
+  --category-bar-warning: var(--warning-gradient);
+  --category-bar-critical: var(--error-gradient);
+
+  // ===== Activity Timeline =====
+  --activity-item-background: var(--surface-secondary);
+  --activity-item-hover: var(--surface-tertiary);
+  --activity-item-padding: var(--spacing-md);
+  --activity-item-radius: var(--radius-md);
+  --activity-item-gap: var(--spacing-md);
+  
+  --activity-icon-size: 36px;
+  --activity-icon-radius: var(--radius-full);
 }
 
 // ===== Tema Oscuro =====
@@ -368,6 +393,13 @@
   // Neutral - Adaptado
   --neutral-bg: rgba(148, 163, 184, 0.15);
   --neutral-text: #94a3b8;
+
+  // ===== Category Chart - Tema Oscuro =====
+  --category-bar-background: var(--neutral-700);
+  
+  // ===== Activity Timeline - Tema Oscuro =====
+  --activity-item-background: var(--surface-secondary);
+  --activity-item-hover: var(--surface-tertiary);
 }
 
 // ===== Tema Alto Contraste =====

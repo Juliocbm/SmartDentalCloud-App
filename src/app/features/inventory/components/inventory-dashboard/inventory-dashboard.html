@@ -172,6 +172,99 @@
       }
     </div>
 
+    <!-- Fase 2: Grid de dos columnas para Categorías y Actividad -->
+    <div class="analytics-grid">
+      <!-- Distribución por Categorías -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-chart-pie"></i>
+          Distribución por Categorías
+        </h2>
+        
+        @if (loadingCategories()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (categoryDistribution().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-folder-open"></i>
+            <p>No hay categorías registradas</p>
+          </div>
+        } @else {
+          <div class="category-chart">
+            @for (category of categoryDistribution(); track category.categoryId) {
+              <div class="category-bar-item">
+                <div class="category-bar-header">
+                  <span class="category-name">{{ category.categoryName }}</span>
+                  <span class="category-count">{{ category.totalProducts }} productos</span>
+                </div>
+                <div class="category-bar-container">
+                  <div 
+                    class="category-bar-fill" 
+                    [class]="'status-' + category.status"
+                    [style.width.%]="category.percentage">
+                  </div>
+                  <span class="category-percentage">{{ category.percentage }}%</span>
+                </div>
+                @if (category.criticalStockCount > 0 || category.lowStockCount > 0) {
+                  <div class="category-alerts">
+                    @if (category.criticalStockCount > 0) {
+                      <span class="alert-badge critical">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        {{ category.criticalStockCount }} críticos
+                      </span>
+                    }
+                    @if (category.lowStockCount > 0) {
+                      <span class="alert-badge warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        {{ category.lowStockCount }} bajos
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Timeline de Actividad Reciente -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Actividad Reciente
+        </h2>
+        
+        @if (loadingActivity()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (recentActivity().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-history"></i>
+            <p>No hay actividad reciente</p>
+          </div>
+        } @else {
+          <div class="activity-timeline">
+            @for (activity of recentActivity(); track activity.id) {
+              <div class="activity-item">
+                <div class="activity-icon {{ getActivityColor(activity.type) }}">
+                  <i class="fa-solid {{ getActivityIcon(activity.type) }}"></i>
+                </div>
+                <div class="activity-content">
+                  <p class="activity-description">{{ activity.description }}</p>
+                  <span class="activity-time">
+                    <i class="fa-solid fa-clock"></i>
+                    {{ activity.timestamp | date:'dd/MM/yyyy HH:mm' }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
     <!-- Accesos Rápidos -->
     <div class="section-card">
       <h2 class="section-title">
