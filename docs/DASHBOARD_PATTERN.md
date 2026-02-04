@@ -6,18 +6,50 @@ Define el patrón estándar para crear dashboards (vistas generales) en la aplic
 
 ---
 
+## 🏗️ Arquitectura de Estilos
+
+### Archivos Involucrados
+
+```
+src/
+├── styles/
+│   ├── _variables.scss      # Variables CSS globales
+│   ├── _components.scss     # Componentes UI globales (botones, alerts, etc.)
+│   └── _dashboard.scss      # ⭐ Estilos reutilizables de dashboard
+│
+└── app/features/[modulo]/components/[modulo]-dashboard/
+    ├── [modulo]-dashboard.ts       # Lógica del componente
+    ├── [modulo]-dashboard.html     # Template
+    └── [modulo]-dashboard.scss     # Solo estilos ESPECÍFICOS del módulo
+```
+
+### Principio de Separación
+
+| Archivo | Contenido |
+|---------|----------|
+| `_dashboard.scss` | Layouts, cards, timelines, badges - **reutilizable en cualquier dashboard** |
+| `[modulo]-dashboard.scss` | Solo estilos específicos del dominio (ej: `.expiring-product-item`) |
+
+---
+
 ## 🎯 Componentes del Dashboard
 
-### 1. **Métricas (Metrics Cards)**
-Tarjetas que muestran KPIs o estadísticas clave.
+### 1. **Indicadores Clave**
+Tarjetas compactas que muestran KPIs principales (Total, Valor, etc.).
 
-### 2. **Banner de Alertas**
-Notificaciones destacadas para información importante.
+### 2. **Accesos Rápidos (Quick Actions)**
+Navegación directa a acciones comunes del módulo.
 
-### 3. **Accesos Rápidos (Quick Actions)**
-Navegación directa a acciones comunes.
+### 3. **Banner de Alertas**
+Notificaciones destacadas para información crítica.
 
-### 4. **Sección Card**
+### 4. **Analytics Grid**
+Gráficos y visualizaciones de datos (2 o 3 columnas).
+
+### 5. **Listas de Datos**
+Timelines de actividad, productos próximos a vencer, top items, etc.
+
+### 6. **Section Card**
 Contenedor para agrupar contenido relacionado.
 
 ---
@@ -44,57 +76,162 @@ Contenedor para agrupar contenido relacionado.
       <span>{{ error() }}</span>
     </div>
   } @else {
-    <!-- Métricas -->
-    <div class="metrics-grid">
-      @for (metric of metrics(); track metric.label) {
-        <a [routerLink]="metric.route" class="metric-card {{ metric.colorClass }}">
-          <div class="metric-icon">
-            <i class="fa-solid {{ metric.icon }}"></i>
-          </div>
-          <div class="metric-content">
-            <span class="metric-label">{{ metric.label }}</span>
-            <span class="metric-value">{{ metric.value }}</span>
-          </div>
-          <div class="metric-arrow">
-            <i class="fa-solid fa-chevron-right"></i>
-          </div>
-        </a>
-      }
-    </div>
-
     <!-- Banner de Alerta (Opcional) -->
-    @if (hasAlerts()) {
+    @if (totalAlerts() > 0) {
       <div class="alert-banner">
         <i class="fa-solid fa-triangle-exclamation"></i>
-        <span>
-          Mensaje de alerta con <strong>énfasis</strong>
-        </span>
-        <a [routerLink]="['/ruta']" class="btn btn-sm btn-primary">
-          Ver Detalles
+        <span>Tienes <strong>{{ totalAlerts() }}</strong> alertas pendientes.</span>
+        <a [routerLink]="['/module/alerts']" class="btn btn-sm btn-primary">
+          Ver Alertas
           <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
     }
 
-    <!-- Accesos Rápidos -->
-    <div class="section-card">
-      <h2 class="section-title">
-        <i class="fa-solid fa-bolt"></i>
-        Accesos Rápidos
-      </h2>
-      <div class="quick-actions-grid">
-        @for (action of quickActions; track action.route) {
-          <a [routerLink]="action.route" class="quick-action-card">
-            <div class="action-icon">
-              <i class="fa-solid {{ action.icon }}"></i>
+    <!-- Grid Superior: Indicadores + Accesos Rápidos -->
+    <div class="bottom-grid">
+      <!-- Indicadores Clave (columna estrecha) -->
+      <div class="section-card grid-narrow">
+        <h2 class="section-title">
+          <i class="fa-solid fa-gauge-high"></i>
+          Indicadores Clave
+        </h2>
+        <div class="indicators-list">
+          <a [routerLink]="['/module/items']" class="quick-action-card">
+            <div class="action-icon primary">
+              <i class="fa-solid fa-boxes-stacked"></i>
             </div>
             <div class="action-content">
-              <h3 class="action-title">{{ action.label }}</h3>
-              <p class="action-description">{{ action.description }}</p>
+              <h3 class="action-title">Total Items</h3>
+              <p class="action-value">{{ totalItems() }}</p>
             </div>
             <i class="fa-solid fa-chevron-right action-arrow"></i>
           </a>
+          <a [routerLink]="['/module/value']" class="quick-action-card">
+            <div class="action-icon success">
+              <i class="fa-solid fa-coins"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Valor Total</h3>
+              <p class="action-value">{{ formatCurrency(totalValue()) }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Accesos Rápidos (columna ancha) -->
+      <div class="section-card grid-wide">
+        <h2 class="section-title">
+          <i class="fa-solid fa-bolt"></i>
+          Accesos Rápidos
+        </h2>
+        <div class="quick-actions-grid cols-4">
+          @for (action of quickActions; track action.route) {
+            <a [routerLink]="action.route" class="quick-action-card">
+              <div class="action-icon">
+                <i class="fa-solid {{ action.icon }}"></i>
+              </div>
+              <div class="action-content">
+                <h3 class="action-title">{{ action.label }}</h3>
+                <p class="action-description">{{ action.description }}</p>
+              </div>
+              <i class="fa-solid fa-chevron-right action-arrow"></i>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid de Gráficos (2 columnas) -->
+    <div class="analytics-grid">
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-chart-pie"></i>
+          Distribución por Categorías
+        </h2>
+        @if (loadingCategories()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (categories().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-folder-open"></i>
+            <p>No hay categorías registradas</p>
+          </div>
+        } @else {
+          <app-pie-chart [data]="categoryChartData()" />
         }
+      </div>
+      <div class="section-card">
+        <!-- Segundo gráfico -->
+      </div>
+    </div>
+
+    <!-- Grid de Listas (3 columnas) -->
+    <div class="analytics-grid cols-3">
+      <!-- Lista 1: Con badge en header -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-calendar-xmark"></i>
+            Próximos a Vencer
+          </h2>
+          @if (expiringItems().length > 0) {
+            <span class="section-badge">{{ expiringItems().length }}</span>
+          }
+        </div>
+        @if (loadingExpiring()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (expiringItems().length === 0) {
+          <div class="empty-state success">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>No hay items próximos a vencer</p>
+          </div>
+        } @else {
+          <div class="data-list">
+            @for (item of expiringItems(); track item.id) {
+              <a [routerLink]="['/module/items', item.id]" class="data-list-item compact">
+                <!-- Contenido específico del módulo -->
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Lista 2 -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-star"></i>
+          Más Utilizados
+        </h2>
+        <!-- Similar structure -->
+      </div>
+
+      <!-- Timeline de Actividad -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Actividad Reciente
+        </h2>
+        <div class="activity-timeline">
+          @for (activity of recentActivity(); track activity.id) {
+            <div class="activity-item">
+              <div class="activity-icon {{ activity.color }}">
+                <i class="fa-solid {{ activity.icon }}"></i>
+              </div>
+              <div class="activity-content">
+                <p class="activity-description">{{ activity.description }}</p>
+                <span class="activity-time">
+                  <i class="fa-solid fa-clock"></i>
+                  {{ activity.timestamp | date:'dd/MM HH:mm' }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
       </div>
     </div>
   }
@@ -221,33 +358,69 @@ export class ModuleDashboardComponent implements OnInit {
 
 ## 🎨 Estilos SCSS
 
-**IMPORTANTE:** El layout es manejado completamente por `.page-container`. Usar SOLO variables globales CSS.
+### Archivo Global: `_dashboard.scss`
+
+Contiene **~730 líneas** de estilos reutilizables. Ya está importado en `styles.scss`.
+
+### Archivo del Módulo: `[modulo]-dashboard.scss`
+
+**Solo debe contener estilos específicos del dominio.** Ejemplo:
 
 ```scss
 // ============================================
-// Dashboard de [Módulo] - Usando Variables Globales
-// Sigue el patrón estándar de dashboards del proyecto
+// Dashboard de [Módulo] - Estilos Específicos
+// Los estilos base de dashboard están en _dashboard.scss
 // ============================================
 
-// ✅ El layout es manejado por .page-container
-// ✅ NO se necesita contenedor adicional
-// ✅ Todas las clases ya están definidas en estilos globales
+// ✅ Solo agregar estilos para elementos ÚNICOS del módulo
+// ❌ NO duplicar layouts, cards, timelines, badges
 
-// Ejemplo de estructura correcta:
-// - .page-container (maneja padding y max-width)
-//   - .metrics-grid
-//   - .metric-card (.primary, .critical, .warning, .info)
-//   - .alert-banner
-//   - .section-card
-//   - .quick-actions-grid
-//   - .quick-action-card
+// Ejemplo: Lista específica de productos próximos a vencer
+.expiring-product-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--list-item-padding);
+  background: var(--list-item-background);
+  border-left: 3px solid transparent;
+  border-radius: var(--list-item-radius);
+  transition: var(--transition-smooth);
 
-// ✅ CRÍTICO: Usar variables CSS globales, NO valores hardcoded
-// Correcto:   @media (max-width: var(--breakpoint-md))
-// Incorrecto: @media (max-width: 768px)
+  &:hover {
+    background: var(--list-item-hover-background);
+  }
 
-// ✅ Solo agregar estilos ESPECÍFICOS del módulo si es absolutamente necesario
+  // Variantes de urgencia
+  &.urgency-critical {
+    border-left-color: var(--error-600);
+  }
+
+  &.urgency-warning {
+    border-left-color: var(--warning-600);
+  }
+}
+
+// Ejemplo: Gráfico de barras por categoría
+.category-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--category-bar-gap);
+}
 ```
+
+### Regla de Oro
+
+| Si necesitas... | Usa... |
+|-----------------|--------|
+| Grid de 2 columnas | `.analytics-grid` |
+| Grid de 3 columnas | `.analytics-grid.cols-3` |
+| Grid indicadores + acciones | `.bottom-grid` |
+| Tarjeta contenedora | `.section-card` |
+| Cards de acción | `.quick-action-card` |
+| Timeline | `.activity-timeline` + `.activity-item` |
+| Lista con scroll | `.data-list` + `.data-list-item` |
+| Estado vacío | `.empty-state` |
+| Spinner | `.loading-spinner` |
 
 ---
 
@@ -329,60 +502,122 @@ Ver `src/styles/_variables.scss` para todas las variables disponibles.
 
 ---
 
-## 🎨 Clases CSS Disponibles
+## 🎨 Clases CSS Disponibles (en `_dashboard.scss`)
 
-### Layout
-- `.page-container.container-wide` - Contenedor principal (maneja padding y max-width)
-- `.loading-container` - Estado de carga
+### Layouts
 
-### Métricas
-- `.metrics-grid` - Grid de métricas
-- `.metric-card` - Tarjeta de métrica
-  - `.metric-card.primary` - Variante primaria (azul)
-  - `.metric-card.success` - Variante éxito (verde)
-  - `.metric-card.critical` - Variante crítica (rojo)
-  - `.metric-card.warning` - Variante advertencia (amarillo)
-  - `.metric-card.info` - Variante info (cyan)
-- `.metric-icon` - Icono de métrica
-- `.metric-content` - Contenido de métrica
-- `.metric-label` - Etiqueta de métrica
-- `.metric-value` - Valor de métrica
-- `.metric-arrow` - Flecha de navegación
+| Clase | Descripción | Columnas |
+|-------|-------------|----------|
+| `.analytics-grid` | Grid para gráficos/secciones | 2 columnas |
+| `.analytics-grid.cols-3` | Grid de 3 columnas | 3 columnas |
+| `.bottom-grid` | Grid asimétrico | 1:2 ratio |
+| `.indicators-list` | Grid para indicadores | 2 columnas |
+| `.quick-actions-grid` | Grid de acciones | Configurable |
+| `.quick-actions-grid.cols-2` | Variante 2 columnas | 2 columnas |
+| `.quick-actions-grid.cols-4` | Variante 4 columnas | 4 columnas |
+| `.metrics-grid` | Grid de métricas KPI | 4 columnas |
+
+### Contenedores
+
+| Clase | Descripción |
+|-------|-------------|
+| `.page-container.container-wide` | Contenedor principal |
+| `.section-card` | Tarjeta contenedora de sección |
+| `.section-header` | Header con título y badge |
+| `.section-title` | Título de sección con icono |
+| `.section-badge` | Badge numérico en header |
+
+### Cards de Acción
+
+| Clase | Descripción |
+|-------|-------------|
+| `.quick-action-card` | Tarjeta de acción clickeable |
+| `.dashboard-action-card` | Alias de quick-action-card |
+| `.action-icon` | Icono de la acción |
+| `.action-icon.primary` | Variante azul |
+| `.action-icon.success` | Variante verde |
+| `.action-icon.warning` | Variante amarillo |
+| `.action-icon.critical` | Variante rojo |
+| `.action-content` | Contenedor de texto |
+| `.action-title` | Título de la acción |
+| `.action-description` | Descripción |
+| `.action-value` | Valor numérico (para indicadores) |
+| `.action-arrow` | Flecha de navegación |
+
+### Cards de Métricas KPI
+
+| Clase | Descripción |
+|-------|-------------|
+| `.metric-card` | Tarjeta de métrica |
+| `.metric-card.primary` | Variante azul |
+| `.metric-card.success` | Variante verde |
+| `.metric-card.warning` | Variante amarillo |
+| `.metric-card.critical` | Variante rojo |
+| `.metric-card.info` | Variante cyan |
+| `.metric-icon` | Icono de la métrica |
+| `.metric-content` | Contenedor de texto |
+| `.metric-label` | Etiqueta |
+| `.metric-value` | Valor |
+| `.metric-arrow` | Flecha de navegación |
 
 ### Alertas
-- `.alert-banner` - Banner de alerta
 
-### Secciones
-- `.section-card` - Tarjeta de sección
-- `.section-title` - Título de sección
+| Clase | Descripción |
+|-------|-------------|
+| `.alert-banner` | Banner de alerta destacada |
 
-### Accesos Rápidos
-- `.quick-actions-grid` - Grid de acciones
-- `.quick-action-card` - Tarjeta de acción
-- `.action-icon` - Icono de acción
-- `.action-content` - Contenido de acción
-- `.action-title` - Título de acción
-- `.action-description` - Descripción de acción
-- `.action-arrow` - Flecha de navegación
+### Listas de Datos
 
-### Analytics (Fase 2)
-- `.analytics-grid` - Grid de dos columnas para gráficos
-- `.category-chart` - Contenedor de gráfico de barras
-- `.category-bar-item` - Item de barra de categoría
-- `.category-bar-header` - Header con nombre y conteo
-- `.category-bar-container` - Contenedor de la barra de progreso
-- `.category-bar-fill` - Barra de relleno (`.status-normal`, `.status-warning`, `.status-critical`)
-- `.category-percentage` - Texto de porcentaje
-- `.category-alerts` - Badges de alertas por categoría
-- `.alert-badge` - Badge de alerta (`.critical`, `.warning`)
+| Clase | Descripción |
+|-------|-------------|
+| `.data-list` | Lista con scroll vertical |
+| `.data-list-item` | Item de lista clickeable |
+| `.data-list-item.compact` | Variante compacta |
+| `.item-arrow` | Flecha de navegación |
 
-### Timeline de Actividad (Fase 2)
-- `.activity-timeline` - Contenedor del timeline
-- `.activity-item` - Item de actividad
-- `.activity-icon` - Icono de actividad (`.success`, `.info`, `.warning`, `.error`, `.primary`)
-- `.activity-content` - Contenido de actividad
-- `.activity-description` - Descripción del evento
-- `.activity-time` - Timestamp del evento
+### Timeline de Actividad
+
+| Clase | Descripción |
+|-------|-------------|
+| `.activity-timeline` | Contenedor del timeline |
+| `.activity-item` | Item de actividad |
+| `.activity-icon` | Icono del evento |
+| `.activity-icon.success` | Variante verde |
+| `.activity-icon.info` | Variante cyan |
+| `.activity-icon.warning` | Variante amarillo |
+| `.activity-icon.error` | Variante rojo |
+| `.activity-icon.primary` | Variante azul |
+| `.activity-content` | Contenido |
+| `.activity-description` | Descripción del evento |
+| `.activity-time` | Timestamp |
+
+### Estados
+
+| Clase | Descripción |
+|-------|-------------|
+| `.loading-container` | Carga principal (página completa) |
+| `.loading-spinner` | Spinner en sección |
+| `.empty-state` | Estado vacío |
+| `.empty-state.success` | Variante positiva ("no hay pendientes") |
+
+### Badges
+
+| Clase | Descripción |
+|-------|-------------|
+| `.status-badge` | Badge de estado |
+| `.status-badge.status-critical` | Estado crítico (rojo) |
+| `.status-badge.status-warning` | Estado advertencia (amarillo) |
+| `.status-badge.status-normal` | Estado normal (verde) |
+| `.status-badge.status-info` | Estado info (cyan) |
+
+### Indicadores de Urgencia
+
+| Clase | Descripción |
+|-------|-------------|
+| `.urgency-indicator` | Indicador de urgencia |
+| `.urgency-indicator.critical` | Urgencia crítica |
+| `.urgency-indicator.warning` | Urgencia media |
+| `.urgency-indicator.info` | Urgencia baja |
 
 ---
 
