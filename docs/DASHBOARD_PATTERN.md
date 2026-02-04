@@ -78,12 +78,11 @@ Contenedor para agrupar contenido relacionado.
   } @else {
     <!-- Banner de Alerta (Opcional) -->
     @if (totalAlerts() > 0) {
-      <div class="alert-banner">
-        <i class="fa-solid fa-triangle-exclamation"></i>
+      <div class="alert-banner alert-banner--warning">
+        <i class="fa-solid fa-exclamation-triangle"></i>
         <span>Tienes <strong>{{ totalAlerts() }}</strong> alertas pendientes.</span>
-        <a [routerLink]="['/module/alerts']" class="btn btn-sm btn-primary">
+        <a [routerLink]="['/module/alerts']" class="btn btn--sm btn--warning">
           Ver Alertas
-          <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
     }
@@ -560,11 +559,34 @@ Ver `src/styles/_variables.scss` para todas las variables disponibles.
 | `.metric-value` | Valor |
 | `.metric-arrow` | Flecha de navegación |
 
-### Alertas
+### Alert Banner
 
 | Clase | Descripción |
 |-------|-------------|
-| `.alert-banner` | Banner de alerta destacada |
+| `.alert-banner` | Banner de alerta destacada (base) |
+| `.alert-banner--warning` | Variante warning con fondo amarillo intenso |
+
+**Uso recomendado:**
+```html
+<div class="alert-banner alert-banner--warning">
+  <i class="fa-solid fa-exclamation-triangle"></i>
+  <span>Mensaje de alerta con <strong>énfasis</strong>.</span>
+  <a [routerLink]="['/ruta']" class="btn btn--sm btn--warning">
+    Ver Detalles
+  </a>
+</div>
+```
+
+### Botones (nomenclatura BEM)
+
+| Clase | Descripción |
+|-------|-------------|
+| `.btn--sm` | Tamaño pequeño |
+| `.btn--lg` | Tamaño grande |
+| `.btn--warning` | Botón amarillo/naranja sólido |
+| `.btn--ghost` | Botón transparente |
+
+> **Nota:** Las clases BEM (`btn--*`) son alias de las clases tradicionales (`btn-*`) y pueden usarse indistintamente.
 
 ### Listas de Datos
 

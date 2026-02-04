@@ -19,14 +19,13 @@
   } @else {
     <!-- Banner de Alertas: Citas sin confirmar -->
     @if (totalPendingAlerts() > 0) {
-      <div class="alert-banner">
-        <i class="fa-solid fa-bell"></i>
+      <div class="alert-banner alert-banner--warning">
+        <i class="fa-solid fa-exclamation-triangle"></i>
         <span>
           Tienes <strong>{{ totalPendingAlerts() }}</strong> cita{{ totalPendingAlerts() === 1 ? '' : 's' }} pendiente{{ totalPendingAlerts() === 1 ? '' : 's' }} de confirmar.
         </span>
-        <a [routerLink]="['/appointments']" [queryParams]="{status: 'Scheduled'}" class="btn btn-sm btn-primary">
+        <a [routerLink]="['/appointments']" [queryParams]="{status: 'Scheduled'}" class="btn btn--sm btn--warning">
           Ver Pendientes
-          <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
     }

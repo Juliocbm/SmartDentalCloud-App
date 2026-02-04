@@ -19,14 +19,13 @@
   } @else {
     <!-- Alertas destacadas -->
     @if (totalAlerts() > 0) {
-      <div class="alert-banner">
-        <i class="fa-solid fa-triangle-exclamation"></i>
+      <div class="alert-banner alert-banner--warning">
+        <i class="fa-solid fa-exclamation-triangle"></i>
         <span>
           Tienes <strong>{{ totalAlerts() }}</strong> producto{{ totalAlerts() === 1 ? '' : 's' }} con alertas de stock.
         </span>
-        <a [routerLink]="['/inventory/alerts']" class="btn btn-sm btn-primary">
+        <a [routerLink]="['/inventory/alerts']" class="btn btn--sm btn--warning">
           Ver Alertas
-          <i class="fa-solid fa-arrow-right"></i>
         </a>
       </div>
     }

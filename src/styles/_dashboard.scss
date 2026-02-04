@@ -154,6 +154,20 @@
       justify-content: center;
     }
   }
+
+  /// Variante warning con botón sólido amarillo/naranja
+  &--warning {
+    background: var(--warning-100);
+    border-color: var(--warning-300);
+
+    > i:first-child {
+      color: var(--warning-600);
+    }
+
+    > span strong {
+      color: var(--warning-800);
+    }
+  }
 }
 
 // ===== Empty State =====
