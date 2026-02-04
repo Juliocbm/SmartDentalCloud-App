@@ -16,6 +16,7 @@ export interface Product {
   reorderPoint: number;
   reorderQuantity: number;
   unitCost: number;
+  price?: number; // Precio de venta
   isActive: boolean;
   notes?: string;
   createdAt: Date;
@@ -23,6 +24,10 @@ export interface Product {
   currentStock?: number;
   availableStock?: number;
   averageCost?: number;
+  usageCount?: number; // Contador de usos/rotación
+  expiryDate?: Date; // Fecha de vencimiento
+  lotNumber?: string; // Número de lote
+  thumbnailUrl?: string; // URL de imagen miniatura
 }
 
 /**

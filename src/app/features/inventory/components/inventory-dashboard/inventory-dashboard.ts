@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ProductsService } from '../../services/products.service';
 import { AlertsCountService } from '../../../../core/services/alerts-count.service';
+import { InventoryAnalyticsService } from '../../services/inventory-analytics.service';
+import { TopProduct, ExpiringProduct } from '../../models/inventory-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 
 interface DashboardMetric {
@@ -12,6 +14,7 @@ interface DashboardMetric {
   icon: string;
   colorClass: string;
   route: string;
+  format?: 'number' | 'currency';
 }
 
 @Component({
@@ -24,11 +27,21 @@ interface DashboardMetric {
 export class InventoryDashboardComponent implements OnInit {
   private productsService = inject(ProductsService);
   private alertsService = inject(AlertsCountService);
+  private analyticsService = inject(InventoryAnalyticsService);
 
   loading = signal(true);
   error = signal<string | null>(null);
 
+  // Métricas básicas
   totalProducts = signal(0);
+  totalInventoryValue = signal(0);
+  
+  // Fase 1: Nuevas secciones
+  loadingTopProducts = signal(false);
+  topProducts = signal<TopProduct[]>([]);
+  
+  loadingExpiring = signal(false);
+  expiringProducts = signal<ExpiringProduct[]>([]);
   
   // ✅ Reutilizar servicio global de alertas
   criticalAlerts = this.alertsService.criticalAlerts;
@@ -49,17 +62,18 @@ export class InventoryDashboardComponent implements OnInit {
       route: ROUTES.INVENTORY_PRODUCTS
     },
     {
+      label: 'Valor Total Inventario',
+      value: this.totalInventoryValue(),
+      icon: 'fa-dollar-sign',
+      colorClass: 'success',
+      route: ROUTES.INVENTORY_PRODUCTS,
+      format: 'currency'
+    },
+    {
       label: 'Alertas Críticas',
       value: this.criticalAlerts(),
       icon: 'fa-circle-exclamation',
       colorClass: 'critical',
-      route: ROUTES.INVENTORY_ALERTS
-    },
-    {
-      label: 'Advertencias',
-      value: this.warningAlerts(),
-      icon: 'fa-triangle-exclamation',
-      colorClass: 'warning',
       route: ROUTES.INVENTORY_ALERTS
     },
     {
@@ -100,6 +114,9 @@ export class InventoryDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboardData();
+    this.loadInventoryValue();
+    this.loadTopProducts();
+    this.loadExpiringProducts();
   }
 
   private loadDashboardData(): void {
@@ -107,7 +124,6 @@ export class InventoryDashboardComponent implements OnInit {
     this.productsService.getAll().subscribe({
       next: (products) => {
         this.totalProducts.set(products.length);
-        // ✅ AlertsCountService ya calcula las alertas automáticamente
         this.loading.set(false);
       },
       error: (err) => {
@@ -116,5 +132,47 @@ export class InventoryDashboardComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  private loadInventoryValue(): void {
+    this.analyticsService.calculateInventoryValue().subscribe({
+      next: (value) => this.totalInventoryValue.set(value),
+      error: (err) => console.error('Error calculating inventory value:', err)
+    });
+  }
+
+  private loadTopProducts(): void {
+    this.loadingTopProducts.set(true);
+    this.analyticsService.getTopProducts(5).subscribe({
+      next: (products) => {
+        this.topProducts.set(products);
+        this.loadingTopProducts.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading top products:', err);
+        this.loadingTopProducts.set(false);
+      }
+    });
+  }
+
+  private loadExpiringProducts(): void {
+    this.loadingExpiring.set(true);
+    this.analyticsService.getExpiringProducts(30).subscribe({
+      next: (products) => {
+        this.expiringProducts.set(products);
+        this.loadingExpiring.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading expiring products:', err);
+        this.loadingExpiring.set(false);
+      }
+    });
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN'
+    }).format(value);
   }
 }

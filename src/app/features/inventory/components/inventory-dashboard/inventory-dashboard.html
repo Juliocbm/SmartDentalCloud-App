@@ -26,7 +26,13 @@
           </div>
           <div class="metric-content">
             <span class="metric-label">{{ metric.label }}</span>
-            <span class="metric-value">{{ metric.value }}</span>
+            <span class="metric-value">
+              @if (metric.format === 'currency') {
+                {{ formatCurrency(metric.value) }}
+              } @else {
+                {{ metric.value }}
+              }
+            </span>
           </div>
           <div class="metric-arrow">
             <i class="fa-solid fa-chevron-right"></i>
@@ -48,6 +54,123 @@
         </a>
       </div>
     }
+
+    <!-- Top 5 Productos Más Usados -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <i class="fa-solid fa-star"></i>
+        Productos Más Utilizados
+      </h2>
+      
+      @if (loadingTopProducts()) {
+        <div class="loading-spinner">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+      } @else if (topProducts().length === 0) {
+        <div class="empty-state">
+          <i class="fa-solid fa-inbox"></i>
+          <p>No hay datos de productos utilizados</p>
+        </div>
+      } @else {
+        <div class="top-products-list">
+          @for (product of topProducts(); track product.id) {
+            <a [routerLink]="['/inventory/products', product.id]" class="top-product-item">
+              <div class="product-info">
+                <div class="product-header">
+                  <span class="product-name">{{ product.name }}</span>
+                  <span class="product-code">{{ product.code }}</span>
+                </div>
+                <span class="product-category">{{ product.categoryName }}</span>
+              </div>
+              
+              <div class="product-stats">
+                <span class="usage-count">
+                  <i class="fa-solid fa-chart-simple"></i>
+                  {{ product.usageCount }} usos
+                </span>
+                <span class="stock-badge" [class]="'status-' + product.stockStatus">
+                  {{ product.currentStock }} unidades
+                </span>
+              </div>
+              
+              <i class="fa-solid fa-chevron-right item-arrow"></i>
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Productos Próximos a Vencer -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fa-solid fa-calendar-xmark"></i>
+          Próximos a Vencer
+        </h2>
+        @if (expiringProducts().length > 0) {
+          <span class="section-badge">
+            {{ expiringProducts().length }}
+          </span>
+        }
+      </div>
+
+      @if (loadingExpiring()) {
+        <div class="loading-spinner">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+      } @else if (expiringProducts().length === 0) {
+        <div class="empty-state success">
+          <i class="fa-solid fa-circle-check"></i>
+          <p>No hay productos próximos a vencer</p>
+        </div>
+      } @else {
+        <div class="expiring-products-list">
+          @for (product of expiringProducts(); track product.id) {
+            <a 
+              [routerLink]="['/inventory/products', product.id]" 
+              class="expiring-product-item"
+              [class]="'urgency-' + product.urgencyLevel">
+              
+              <div class="urgency-indicator">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              
+              <div class="product-details">
+                <div class="product-main">
+                  <span class="product-name">{{ product.name }}</span>
+                  <span class="product-code">{{ product.code }}</span>
+                </div>
+                @if (product.lotNumber) {
+                  <span class="product-lot">Lote: {{ product.lotNumber }}</span>
+                }
+              </div>
+              
+              <div class="expiry-info">
+                <span class="expiry-date">
+                  <i class="fa-solid fa-calendar"></i>
+                  {{ product.expiryDate | date:'dd/MM/yyyy' }}
+                </span>
+                <span class="days-remaining">
+                  @if (product.daysToExpire === 0) {
+                    Vence hoy
+                  } @else if (product.daysToExpire === 1) {
+                    Vence mañana
+                  } @else if (product.daysToExpire < 0) {
+                    Vencido
+                  } @else {
+                    {{ product.daysToExpire }} días
+                  }
+                </span>
+              </div>
+              
+              <span class="stock-count">{{ product.currentStock }} unidades</span>
+              
+              <i class="fa-solid fa-chevron-right item-arrow"></i>
+            </a>
+          }
+        </div>
+      }
+    </div>
 
     <!-- Accesos Rápidos -->
     <div class="section-card">
