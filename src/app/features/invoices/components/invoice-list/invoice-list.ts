@@ -45,6 +45,7 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Facturación', route: '/invoices' },
     { label: 'Facturas' }
   ];
 

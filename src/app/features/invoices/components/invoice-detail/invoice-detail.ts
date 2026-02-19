@@ -1,16 +1,18 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { InvoicesService } from '../../services/invoices.service';
-import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG } from '../../models/invoice.models';
+import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG, Payment } from '../../models/invoice.models';
+import { ModalService } from '../../../../shared/services/modal.service';
+import { PaymentFormModalComponent, PaymentFormModalData } from '../payment-form-modal/payment-form-modal';
+import { PaymentsService } from '../../services/payments.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })
@@ -18,12 +20,14 @@ export class InvoiceDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private invoicesService = inject(InvoicesService);
+  private modalService = inject(ModalService);
+  private paymentsService = inject(PaymentsService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
 
   // State
   invoice = signal<Invoice | null>(null);
-  payments = signal<any[]>([]);
+  payments = signal<Payment[]>([]);
   loading = signal(false);
   loadingPayments = signal(false);
   error = signal<string | null>(null);
@@ -31,12 +35,6 @@ export class InvoiceDetailComponent implements OnInit {
   // Constants
   InvoiceStatus = InvoiceStatus;
   INVOICE_STATUS_CONFIG = INVOICE_STATUS_CONFIG;
-
-  breadcrumbItems: BreadcrumbItem[] = [
-    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
-    { label: 'Facturas', route: '/invoices' },
-    { label: 'Detalle' }
-  ];
 
   ngOnInit(): void {
     const invoiceId = this.route.snapshot.paramMap.get('id');
@@ -66,7 +64,7 @@ export class InvoiceDetailComponent implements OnInit {
   private loadPayments(invoiceId: string): void {
     this.loadingPayments.set(true);
 
-    this.invoicesService.getInvoicePayments(invoiceId).subscribe({
+    this.paymentsService.getByInvoice(invoiceId).subscribe({
       next: (data) => {
         this.payments.set(data);
         this.loadingPayments.set(false);
@@ -101,5 +99,33 @@ export class InvoiceDetailComponent implements OnInit {
 
   printInvoice(): void {
     window.print();
+  }
+
+  openPaymentModal(): void {
+    const inv = this.invoice();
+    if (!inv || inv.balance <= 0) return;
+
+    const ref = this.modalService.open<PaymentFormModalData, Payment>(
+      PaymentFormModalComponent,
+      {
+        data: {
+          invoiceId: inv.id,
+          balance: inv.balance,
+          patientName: inv.patientName
+        }
+      }
+    );
+
+    ref.afterClosed().subscribe(payment => {
+      if (payment) {
+        this.loadInvoice(inv.id);
+        this.loadPayments(inv.id);
+      }
+    });
+  }
+
+  canRegisterPayment(): boolean {
+    const inv = this.invoice();
+    return !!inv && inv.balance > 0 && inv.status !== InvoiceStatus.Cancelled;
   }
 }

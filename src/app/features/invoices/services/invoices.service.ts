@@ -4,6 +4,8 @@ import { ApiService } from '../../../core/services/api.service';
 import {
   Invoice,
   CreateInvoiceRequest,
+  Payment,
+  CreatePaymentRequest,
   AccountsReceivable,
   InvoiceFilters
 } from '../models/invoice.models';
@@ -41,8 +43,15 @@ export class InvoicesService {
   /**
    * Obtiene historial de pagos de una factura
    */
-  getInvoicePayments(invoiceId: string): Observable<any[]> {
-    return this.api.get<any[]>(`${this.baseUrl}/${invoiceId}/payments`);
+  getInvoicePayments(invoiceId: string): Observable<Payment[]> {
+    return this.api.get<Payment[]>('/payments', { invoiceId });
+  }
+
+  /**
+   * Registra un nuevo pago sobre una factura
+   */
+  createPayment(request: CreatePaymentRequest): Observable<Payment> {
+    return this.api.post<Payment>('/payments', request);
   }
 
   /**

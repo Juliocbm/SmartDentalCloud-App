@@ -1,0 +1,63 @@
+<div class="service-select-container">
+  <div class="service-input-wrapper">
+    <input
+      type="text"
+      [formControl]="searchControl"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      class="form-input service-search-input"
+      [class.has-value]="selectedService()"
+    />
+    
+    @if (loading()) {
+      <i class="fa-solid fa-spinner fa-spin input-icon"></i>
+    } @else if (selectedService()) {
+      <button
+        type="button"
+        (click)="clearSelection()"
+        class="input-clear-btn"
+        title="Limpiar selección"
+      >
+        <i class="fa-solid fa-times"></i>
+      </button>
+    } @else {
+      <i class="fa-solid fa-search input-icon"></i>
+    }
+
+    @if (showDropdown() && filteredServices().length > 0) {
+      <div class="service-dropdown">
+        @for (service of filteredServices(); track service.id) {
+          <button
+            type="button"
+            class="service-dropdown-item"
+            (click)="selectService(service)"
+          >
+            <div class="service-item-info">
+              <div class="service-item-name">{{ service.name }}</div>
+              <div class="service-item-details">
+                <span class="service-item-price">{{ formatCurrency(service.cost) }}</span>
+                @if (service.claveProdServ) {
+                  <span class="service-item-sat">
+                    <i class="fa-solid fa-barcode"></i>
+                    {{ service.claveProdServ }}
+                  </span>
+                }
+              </div>
+            </div>
+          </button>
+        }
+      </div>
+    }
+
+    @if (showDropdown() && !loading() && filteredServices().length === 0 && searchControl.value && searchControl.value.length >= 1) {
+      <div class="service-dropdown">
+        <div class="service-dropdown-empty">
+          <i class="fa-solid fa-tooth"></i>
+          <span>No se encontraron servicios</span>
+        </div>
+      </div>
+    }
+  </div>
+</div>

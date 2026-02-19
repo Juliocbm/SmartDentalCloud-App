@@ -5,6 +5,8 @@ import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } fr
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
+import { ServiceSelectComponent } from '../service-select/service-select';
+import { DentalService } from '../../models/service.models';
 import { InvoicesService } from '../../services/invoices.service';
 import { CreateInvoiceRequest, CreateInvoiceItemRequest, CFDI_USO_OPTIONS, CFDI_METODO_PAGO_OPTIONS, CFDI_FORMA_PAGO_OPTIONS } from '../../models/invoice.models';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -13,7 +15,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 @Component({
   selector: 'app-invoice-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent, ServiceSelectComponent],
   templateUrl: './invoice-form.html',
   styleUrl: './invoice-form.scss'
 })
@@ -151,6 +153,18 @@ export class InvoiceFormComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  onServiceSelected(index: number, service: DentalService | null): void {
+    const itemGroup = this.items.at(index);
+    if (service) {
+      itemGroup.patchValue({
+        description: service.name,
+        unitPrice: service.cost,
+        claveProdServ: service.claveProdServ || '85121800',
+        claveUnidad: service.claveUnidad || 'E48'
+      });
+    }
   }
 
   onPatientSelected(patient: PatientSearchResult | null): void {

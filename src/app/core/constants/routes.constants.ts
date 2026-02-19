@@ -30,6 +30,12 @@ export const ROUTES = {
   ADMIN: '/admin',
   ADMIN_APPOINTMENTS: '/admin/appointments',
 
+  // Invoices (Facturación)
+  INVOICES: '/invoices',
+  INVOICES_DASHBOARD: '/invoices',
+  INVOICES_LIST: '/invoices/list',
+  INVOICES_NEW: '/invoices/new',
+
   // Inventory (Inventario)
   INVENTORY: '/inventory',
   INVENTORY_CATEGORIES: '/inventory/categories',

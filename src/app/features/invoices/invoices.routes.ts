@@ -9,6 +9,12 @@ export const INVOICES_ROUTES: Routes = [
       {
         path: '',
         loadComponent: () =>
+          import('./components/invoices-dashboard/invoices-dashboard').then(m => m.InvoicesDashboardComponent),
+        title: 'Facturación'
+      },
+      {
+        path: 'list',
+        loadComponent: () =>
           import('./components/invoice-list/invoice-list').then(m => m.InvoiceListComponent),
         title: 'Facturas'
       },

@@ -1,0 +1,95 @@
+<app-modal
+  [title]="'Registrar Pago'"
+  [subtitle]="modalData?.patientName"
+  [icon]="'fa-money-bill-wave'"
+  [size]="'md'"
+  (closed)="onClose()"
+>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Saldo pendiente -->
+    <div class="balance-info">
+      <div class="balance-label">Saldo pendiente</div>
+      <div class="balance-value">{{ formatCurrency(modalData?.balance || 0) }}</div>
+    </div>
+
+    <!-- Monto -->
+    <div class="form-group">
+      <label class="form-label">Monto a pagar <span class="required">*</span></label>
+      <div class="amount-input-wrapper">
+        <span class="currency-prefix">$</span>
+        <input
+          type="number"
+          formControlName="amount"
+          class="form-input amount-input"
+          [class.input-error]="isFieldInvalid('amount')"
+          min="0.01"
+          [max]="modalData?.balance || 0"
+          step="0.01"
+          placeholder="0.00"
+        />
+      </div>
+      @if (isFieldInvalid('amount')) {
+        <span class="error-message">{{ getFieldError('amount') }}</span>
+      }
+    </div>
+
+    <!-- Método de pago -->
+    <div class="form-group">
+      <label class="form-label">Método de Pago <span class="required">*</span></label>
+      <div class="payment-methods">
+        @for (method of paymentMethods; track method.value) {
+          <label class="payment-method-option" [class.selected]="form.get('paymentMethod')?.value === method.value">
+            <input
+              type="radio"
+              formControlName="paymentMethod"
+              [value]="method.value"
+            />
+            <i [class]="'fa-solid ' + method.icon"></i>
+            <span>{{ method.label }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+    <!-- Fecha de pago -->
+    <div class="form-group">
+      <label class="form-label">Fecha de Pago <span class="required">*</span></label>
+      <input
+        type="date"
+        formControlName="paidAt"
+        class="form-input"
+        [class.input-error]="isFieldInvalid('paidAt')"
+      />
+      @if (isFieldInvalid('paidAt')) {
+        <span class="error-message">{{ getFieldError('paidAt') }}</span>
+      }
+    </div>
+
+    <!-- Referencia -->
+    <div class="form-group">
+      <label class="form-label">Referencia <span class="optional-label">(Opcional)</span></label>
+      <input
+        type="text"
+        formControlName="reference"
+        class="form-input"
+        placeholder="Ej: Recibo #123, Transferencia SPEI..."
+      />
+    </div>
+  </form>
+
+  <!-- Footer -->
+  <div modal-footer class="modal-actions">
+    <button type="button" class="btn btn-secondary" (click)="onClose()" [disabled]="loading()">
+      Cancelar
+    </button>
+    <button type="button" class="btn btn-success" (click)="onSubmit()" [disabled]="loading() || form.invalid">
+      @if (loading()) {
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Registrando...
+      } @else {
+        <i class="fa-solid fa-check"></i>
+        Registrar Pago
+      }
+    </button>
+  </div>
+</app-modal>

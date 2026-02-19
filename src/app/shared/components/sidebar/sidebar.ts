@@ -57,7 +57,7 @@ export class SidebarComponent {
       label: 'Facturación', 
       route: '/invoices',
       children: [
-        { id: 'billing-invoices', icon: 'fa-solid fa-file-invoice', label: 'Facturas', route: '/invoices' },
+        { id: 'billing-invoices', icon: 'fa-solid fa-file-invoice', label: 'Facturas', route: '/invoices/list' },
         { id: 'billing-payments', icon: 'fa-solid fa-money-bill-wave', label: 'Pagos', route: '/payments' },
         { id: 'billing-new-invoice', icon: 'fa-solid fa-plus', label: 'Nueva Factura', route: '/invoices/new' }
       ]

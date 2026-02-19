@@ -2,7 +2,7 @@
   <!-- Header -->
   <app-page-header
     [title]="'Facturas'"
-    [subtitle]="'Gestión de facturación a pacientes'"
+    [subtitle]="'Lista completa de facturas'"
     [icon]="'fa-file-invoice-dollar'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
@@ -12,46 +12,6 @@
       </a>
     </div>
   </app-page-header>
-
-  <!-- KPI Metrics -->
-  <div class="metrics-grid">
-    <div class="metric-card primary">
-      <div class="metric-icon">
-        <i class="fa-solid fa-file-invoice-dollar"></i>
-      </div>
-      <div class="metric-content">
-        <span class="metric-label">Total Facturado</span>
-        <span class="metric-value">{{ formatCurrency(totals().total) }}</span>
-      </div>
-    </div>
-    <div class="metric-card success">
-      <div class="metric-icon">
-        <i class="fa-solid fa-check-circle"></i>
-      </div>
-      <div class="metric-content">
-        <span class="metric-label">Total Cobrado</span>
-        <span class="metric-value">{{ formatCurrency(totals().paid) }}</span>
-      </div>
-    </div>
-    <div class="metric-card warning">
-      <div class="metric-icon">
-        <i class="fa-solid fa-clock"></i>
-      </div>
-      <div class="metric-content">
-        <span class="metric-label">Saldo Pendiente</span>
-        <span class="metric-value">{{ formatCurrency(totals().balance) }}</span>
-      </div>
-    </div>
-    <div class="metric-card info">
-      <div class="metric-icon">
-        <i class="fa-solid fa-receipt"></i>
-      </div>
-      <div class="metric-content">
-        <span class="metric-label">Total Facturas</span>
-        <span class="metric-value">{{ totals().count }}</span>
-      </div>
-    </div>
-  </div>
 
   <!-- Filters and Search -->
   <div class="filters-section">

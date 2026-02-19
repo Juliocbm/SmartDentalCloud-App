@@ -131,6 +131,24 @@
                 }
               </div>
 
+              <!-- Selector de Servicio (auto-fill) -->
+              <div class="form-row">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label class="form-label">
+                    Servicio del Catálogo
+                    <span class="optional-badge">Auto-fill</span>
+                  </label>
+                  <app-service-select
+                    [disabled]="loading()"
+                    (serviceSelected)="onServiceSelected($index, $event)"
+                  ></app-service-select>
+                  <p class="field-hint">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Selecciona un servicio para llenar automáticamente descripción, precio y claves SAT
+                  </p>
+                </div>
+              </div>
+
               <div class="form-row">
                 <div class="form-group" style="grid-column: 1 / -1;">
                   <label class="form-label">Descripción <span class="required">*</span></label>

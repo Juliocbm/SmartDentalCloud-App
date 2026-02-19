@@ -168,6 +168,41 @@ export const CFDI_FORMA_PAGO_OPTIONS = [
 ];
 
 /**
+ * Pago registrado (DTO de respuesta del backend)
+ */
+export interface Payment {
+  id: string;
+  patientId: string;
+  invoiceId: string;
+  amount: number;
+  paymentMethod: string;
+  paidAt: Date;
+  reference: string | null;
+  createdAt: Date;
+}
+
+/**
+ * Request para registrar un pago
+ */
+export interface CreatePaymentRequest {
+  invoiceId: string;
+  amount: number;
+  paymentMethod: string;
+  paidAt: string;
+  reference?: string;
+}
+
+/**
+ * Métodos de pago disponibles
+ */
+export const PAYMENT_METHOD_OPTIONS = [
+  { value: 'cash', label: 'Efectivo', icon: 'fa-money-bill' },
+  { value: 'card', label: 'Tarjeta', icon: 'fa-credit-card' },
+  { value: 'transfer', label: 'Transferencia', icon: 'fa-building-columns' },
+  { value: 'check', label: 'Cheque', icon: 'fa-money-check' }
+];
+
+/**
  * Filtros para lista de facturas
  */
 export interface InvoiceFilters {

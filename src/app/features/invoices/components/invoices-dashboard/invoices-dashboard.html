@@ -1,0 +1,217 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Facturación'"
+    [subtitle]="'Panel de control del módulo de facturación'"
+    [icon]="'fa-file-invoice-dollar'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando datos de facturación...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error() }}</span>
+    </div>
+  } @else {
+    <!-- Alerta: Facturas con saldo pendiente -->
+    @if (overdueInvoices().length > 0) {
+      <div class="alert-banner alert-banner--warning">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        <span>
+          Tienes <strong>{{ overdueInvoices().length }}</strong> factura{{ overdueInvoices().length === 1 ? '' : 's' }} con saldo pendiente.
+        </span>
+        <a routerLink="/invoices/list" [queryParams]="{status: 'pending'}" class="btn btn--sm btn--warning">
+          Ver Pendientes
+        </a>
+      </div>
+    }
+
+    <!-- Indicadores + Accesos Rápidos -->
+    <div class="bottom-grid">
+      <!-- Indicadores Clave -->
+      <div class="section-card grid-narrow">
+        <h2 class="section-title">
+          <i class="fa-solid fa-gauge-high"></i>
+          Resumen Financiero
+        </h2>
+        <div class="indicators-list">
+          <a routerLink="/invoices/list" class="quick-action-card">
+            <div class="action-icon primary">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Total Facturado</h3>
+              <p class="action-value">{{ formatCurrency(totals().total) }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <a routerLink="/invoices/list" class="quick-action-card">
+            <div class="action-icon success">
+              <i class="fa-solid fa-check-circle"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Total Cobrado</h3>
+              <p class="action-value">{{ formatCurrency(totals().paid) }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <a routerLink="/invoices/list" class="quick-action-card">
+            <div class="action-icon warning">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Saldo Pendiente</h3>
+              <p class="action-value">{{ formatCurrency(totals().balance) }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+          <a routerLink="/invoices/list" class="quick-action-card">
+            <div class="action-icon info">
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Total Facturas</h3>
+              <p class="action-value">{{ totals().count }}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Accesos Rápidos -->
+      <div class="section-card grid-wide">
+        <h2 class="section-title">
+          <i class="fa-solid fa-bolt"></i>
+          Accesos Rápidos
+        </h2>
+        <div class="quick-actions-grid cols-4">
+          @for (action of quickActions; track action.route) {
+            <a [routerLink]="action.route" class="quick-action-card">
+              <div class="action-icon">
+                <i class="fa-solid {{ action.icon }}"></i>
+              </div>
+              <div class="action-content">
+                <h3 class="action-title">{{ action.label }}</h3>
+                <p class="action-description">{{ action.description }}</p>
+              </div>
+              <i class="fa-solid fa-chevron-right action-arrow"></i>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos + Estadísticas -->
+    <div class="analytics-grid">
+      <!-- Distribución por Estado - Pie Chart -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-chart-pie"></i>
+          Facturas por Estado
+        </h2>
+        @if (statusChartData().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-chart-pie"></i>
+            <p>No hay datos de facturas</p>
+          </div>
+        } @else {
+          <app-pie-chart
+            [data]="statusChartData()"
+            [doughnut]="true"
+            [showLegend]="true"
+            [height]="'280px'"
+          />
+        }
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="section-card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-chart-line"></i>
+          Estadísticas
+        </h2>
+        <div class="month-stats">
+          <div class="stat-item">
+            <span class="stat-label">Tasa de Cobro</span>
+            <span class="stat-value success">{{ collectionRate() | number:'1.0-0' }}%</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Facturas Pagadas</span>
+            <span class="stat-value success">{{ invoicesByStatus().paid }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Pago Parcial</span>
+            <span class="stat-value warning">{{ invoicesByStatus().partial }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Pendientes</span>
+            <span class="stat-value">{{ invoicesByStatus().pending }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Canceladas</span>
+            <span class="stat-value error">{{ invoicesByStatus().cancelled }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Vencidas</span>
+            <span class="stat-value error">{{ invoicesByStatus().overdue }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Facturas Recientes -->
+    <div class="analytics-grid">
+      <div class="section-card" style="grid-column: 1 / -1;">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            Facturas Recientes
+          </h2>
+          <a routerLink="/invoices/list" class="btn btn--sm btn--outline">
+            Ver Todas
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        @if (recentInvoices().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-file-invoice"></i>
+            <p>No hay facturas registradas</p>
+          </div>
+        } @else {
+          <div class="recent-invoices-list">
+            @for (invoice of recentInvoices(); track invoice.id) {
+              <a [routerLink]="['/invoices', invoice.id]" class="recent-invoice-item">
+                <div class="invoice-patient">
+                  <div class="patient-avatar">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <div class="patient-info">
+                    <span class="patient-name">{{ invoice.patientName }}</span>
+                    <span class="invoice-date">{{ formatDate(invoice.issuedAt) }}</span>
+                  </div>
+                </div>
+                <div class="invoice-amounts">
+                  <span class="invoice-total">{{ formatCurrency(invoice.totalAmount) }}</span>
+                  @if (invoice.balance > 0) {
+                    <span class="invoice-balance">Saldo: {{ formatCurrency(invoice.balance) }}</span>
+                  } @else {
+                    <span class="invoice-paid">Pagada</span>
+                  }
+                </div>
+                <span [class]="'badge ' + getStatusConfig(invoice.status).class">
+                  <i [class]="'fa-solid ' + getStatusConfig(invoice.status).icon"></i>
+                  {{ getStatusConfig(invoice.status).label }}
+                </span>
+              </a>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

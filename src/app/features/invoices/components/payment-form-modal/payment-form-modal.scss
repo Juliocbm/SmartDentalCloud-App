@@ -1,0 +1,146 @@
+// ============================================
+// PaymentFormModal - Estilos
+// Usa variables globales del design system
+// ============================================
+
+.balance-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  border: 1px solid var(--primary-200, var(--border-primary));
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
+
+  .balance-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .balance-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-600);
+  }
+}
+
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.amount-input-wrapper {
+  position: relative;
+
+  .currency-prefix {
+    position: absolute;
+    left: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    pointer-events: none;
+  }
+
+  .amount-input {
+    padding-left: var(--spacing-2xl) !important;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+// ===== Payment Method Radio Buttons =====
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+.payment-method-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--surface-secondary);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  i {
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    width: 24px;
+    text-align: center;
+  }
+
+  &:hover {
+    border-color: var(--primary-300);
+    background: var(--surface-tertiary);
+  }
+
+  &.selected {
+    border-color: var(--primary-500);
+    background: var(--primary-50);
+
+    i {
+      color: var(--primary-600);
+    }
+
+    span {
+      color: var(--primary-700);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+}
+
+// ===== Optional Label =====
+
+.optional-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-tertiary);
+}
+
+// ===== Footer Actions =====
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+}
+
+// ===== Responsive =====
+
+@media (max-width: 480px) {
+  .payment-methods {
+    grid-template-columns: 1fr;
+  }
+
+  .balance-info {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-sm);
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

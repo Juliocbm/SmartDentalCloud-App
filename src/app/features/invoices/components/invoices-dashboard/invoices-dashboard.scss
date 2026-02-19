@@ -1,0 +1,169 @@
+// ============================================
+// Dashboard de Facturación - Estilos Específicos
+// Los estilos base de dashboard están en _dashboard.scss
+// Este archivo solo contiene estilos específicos de facturación
+// ============================================
+
+// ===== Recent Invoices List =====
+.recent-invoices-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--list-item-gap);
+  max-height: var(--list-max-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.recent-invoice-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--list-item-background);
+  border: var(--list-item-border);
+  border-radius: var(--list-item-radius);
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-smooth);
+
+  &:hover {
+    background: var(--list-item-hover-background);
+    border-color: var(--primary-600);
+    transform: var(--list-item-hover-transform);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .invoice-patient {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1;
+    min-width: 0;
+
+    .patient-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      background: var(--primary-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      i {
+        font-size: var(--font-size-sm);
+        color: var(--primary-600);
+      }
+    }
+
+    .patient-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+
+      .patient-name {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .invoice-date {
+        font-size: var(--font-size-xs);
+        color: var(--text-tertiary);
+      }
+    }
+  }
+
+  .invoice-amounts {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+
+    .invoice-total {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+    }
+
+    .invoice-balance {
+      font-size: var(--font-size-xs);
+      color: var(--warning-600);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .invoice-paid {
+      font-size: var(--font-size-xs);
+      color: var(--success-600);
+      font-weight: var(--font-weight-medium);
+    }
+  }
+
+  .badge {
+    flex-shrink: 0;
+  }
+}
+
+// ===== Month Stats =====
+.month-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-md);
+
+  .stat-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .stat-value {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+
+    &.success {
+      color: var(--success-600);
+    }
+
+    &.warning {
+      color: var(--warning-600);
+    }
+
+    &.error {
+      color: var(--error-600);
+    }
+  }
+}
+
+// ===== Responsive =====
+@media (max-width: 768px) {
+  .recent-invoice-item {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+
+    .invoice-patient {
+      flex: 1 1 100%;
+    }
+
+    .invoice-amounts {
+      align-items: flex-start;
+    }
+  }
+}
