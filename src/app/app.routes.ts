@@ -34,9 +34,12 @@ export const routes: Routes = [
         data: { moduleName: 'Tratamientos', icon: 'fa-tooth' }
       },
       {
-        path: 'billing',
-        loadComponent: () => import('./shared/components/coming-soon/coming-soon').then(m => m.ComingSoonComponent),
-        data: { moduleName: 'Facturación', icon: 'fa-file-invoice-dollar' }
+        path: 'invoices',
+        loadChildren: () => import('./features/invoices/invoices.routes').then(m => m.INVOICES_ROUTES)
+      },
+      {
+        path: 'payments',
+        loadChildren: () => import('./features/payments/payments.routes').then(m => m.PAYMENTS_ROUTES)
       },
       {
         path: 'dentists',

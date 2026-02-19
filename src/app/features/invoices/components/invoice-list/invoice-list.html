@@ -1,0 +1,219 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Facturas'"
+    [subtitle]="'Gestión de facturación a pacientes'"
+    [icon]="'fa-file-invoice-dollar'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <a class="btn btn-primary" routerLink="/invoices/new">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Factura
+      </a>
+    </div>
+  </app-page-header>
+
+  <!-- KPI Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card primary">
+      <div class="metric-icon">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+      </div>
+      <div class="metric-content">
+        <span class="metric-label">Total Facturado</span>
+        <span class="metric-value">{{ formatCurrency(totals().total) }}</span>
+      </div>
+    </div>
+    <div class="metric-card success">
+      <div class="metric-icon">
+        <i class="fa-solid fa-check-circle"></i>
+      </div>
+      <div class="metric-content">
+        <span class="metric-label">Total Cobrado</span>
+        <span class="metric-value">{{ formatCurrency(totals().paid) }}</span>
+      </div>
+    </div>
+    <div class="metric-card warning">
+      <div class="metric-icon">
+        <i class="fa-solid fa-clock"></i>
+      </div>
+      <div class="metric-content">
+        <span class="metric-label">Saldo Pendiente</span>
+        <span class="metric-value">{{ formatCurrency(totals().balance) }}</span>
+      </div>
+    </div>
+    <div class="metric-card info">
+      <div class="metric-icon">
+        <i class="fa-solid fa-receipt"></i>
+      </div>
+      <div class="metric-content">
+        <span class="metric-label">Total Facturas</span>
+        <span class="metric-value">{{ totals().count }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por paciente, folio, serie..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="filterStatus()"
+        (change)="onStatusFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los estados</option>
+        @for (status of statusOptions; track status) {
+          <option [value]="status">{{ getStatusConfig(status).label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando facturas...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadInvoices()">
+        <i class="fa-solid fa-refresh"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredInvoices().length === 0 && invoices().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-file-invoice"></i>
+      <h3>No hay facturas registradas</h3>
+      <p>Comienza creando tu primera factura</p>
+      <a class="btn btn-primary" routerLink="/invoices/new">
+        <i class="fa-solid fa-plus"></i>
+        Crear Primera Factura
+      </a>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredInvoices().length === 0 && invoices().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Invoices Table -->
+  @if (!loading() && !error() && filteredInvoices().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Paciente</th>
+            <th>Fecha</th>
+            <th>Monto Total</th>
+            <th>Pagado</th>
+            <th>Saldo</th>
+            <th>Estado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (invoice of filteredInvoices(); track invoice.id) {
+            <tr [class.row-warning]="isOverdue(invoice)">
+              <!-- Folio -->
+              <td>
+                @if (invoice.serie && invoice.folio) {
+                  <span class="badge badge-neutral">{{ invoice.serie }}-{{ invoice.folio }}</span>
+                } @else {
+                  <span class="text-muted">Sin folio</span>
+                }
+              </td>
+
+              <!-- Paciente -->
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-primary">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ invoice.patientName }}</div>
+                    <div class="info-subtitle">#{{ invoice.id.substring(0, 8) }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Fecha -->
+              <td class="date-cell">
+                {{ invoice.issuedAt | date:'dd/MM/yyyy' }}
+              </td>
+
+              <!-- Monto Total -->
+              <td class="amount-cell">
+                {{ formatCurrency(invoice.totalAmount) }}
+              </td>
+
+              <!-- Pagado -->
+              <td class="amount-cell amount-success">
+                {{ formatCurrency(invoice.paidAmount) }}
+              </td>
+
+              <!-- Saldo -->
+              <td class="amount-cell amount-warning">
+                {{ formatCurrency(invoice.balance) }}
+              </td>
+
+              <!-- Estado -->
+              <td>
+                <span [class]="'badge ' + getStatusConfig(invoice.status).class">
+                  <i [class]="'fa-solid ' + getStatusConfig(invoice.status).icon"></i>
+                  {{ getStatusConfig(invoice.status).label }}
+                </span>
+              </td>
+
+              <!-- Acciones -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-sm btn-primary"
+                    [routerLink]="['/invoices', invoice.id]"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                    Ver
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Table Footer -->
+      <div class="table-footer centered">
+        <span class="results-count">
+          Mostrando <strong>{{ filteredInvoices().length }}</strong> de <strong>{{ invoices().length }}</strong> facturas
+        </span>
+      </div>
+    </div>
+  }
+</div>

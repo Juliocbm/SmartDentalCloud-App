@@ -51,7 +51,17 @@ export class SidebarComponent {
       ]
     },
     { id: 'treatments', icon: 'fa-solid fa-tooth', label: 'Tratamientos', route: '/treatments' },
-    { id: 'billing', icon: 'fa-solid fa-file-invoice-dollar', label: 'Facturación', route: '/billing' },
+    { 
+      id: 'billing',
+      icon: 'fa-solid fa-file-invoice-dollar', 
+      label: 'Facturación', 
+      route: '/invoices',
+      children: [
+        { id: 'billing-invoices', icon: 'fa-solid fa-file-invoice', label: 'Facturas', route: '/invoices' },
+        { id: 'billing-payments', icon: 'fa-solid fa-money-bill-wave', label: 'Pagos', route: '/payments' },
+        { id: 'billing-new-invoice', icon: 'fa-solid fa-plus', label: 'Nueva Factura', route: '/invoices/new' }
+      ]
+    },
     { 
       id: 'inventory',
       icon: 'fa-solid fa-boxes-stacked', 

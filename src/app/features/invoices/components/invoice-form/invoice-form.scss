@@ -1,0 +1,174 @@
+// ============================================
+// InvoiceFormComponent - Estilos Específicos
+// Container: usa .page-container.container-medium de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Form: usa .standard-form, .form-section, .form-row, .form-group, .form-label, .form-input de _components.scss
+// Botones: usa clases globales .btn de _components.scss
+// Alertas: usa .alert .alert-danger de _components.scss
+// ============================================
+
+.standard-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+// ===== Section header con botón (Items de Factura) =====
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+
+  .section-title {
+    margin: 0;
+  }
+}
+
+// ===== Invoice Items =====
+
+.items-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.invoice-item {
+  padding: var(--spacing-xl);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-secondary);
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--border-medium);
+  }
+
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-primary);
+
+    .item-number {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+
+      i {
+        color: var(--primary-500);
+      }
+    }
+  }
+}
+
+// ===== Item Totals =====
+
+.item-totals {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+
+    .total-value {
+      font-weight: var(--font-weight-medium);
+      color: var(--text-primary);
+    }
+
+    .total-discount {
+      color: var(--success-600);
+    }
+
+    &.total-row-main {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      padding-top: var(--spacing-sm);
+      border-top: 1px solid var(--border-primary);
+
+      .total-value {
+        font-size: var(--font-size-lg);
+        color: var(--primary-600);
+      }
+    }
+  }
+}
+
+// ===== Invoice Summary =====
+
+.invoice-summary {
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+    border: 1px solid var(--primary-200, var(--border-primary));
+    border-radius: var(--radius-lg);
+
+    .summary-label {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+
+      i {
+        color: var(--primary-500);
+      }
+    }
+
+    .summary-value {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-600);
+    }
+  }
+}
+
+// ===== Responsive =====
+
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .invoice-item {
+    padding: var(--spacing-lg);
+  }
+
+  .invoice-summary .summary-row {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .header-form-actions {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    .btn {
+      width: 100%;
+    }
+  }
+}

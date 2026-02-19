@@ -1,0 +1,166 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Pagos Recibidos'"
+    [subtitle]="'Historial de pagos de pacientes'"
+    [icon]="'fa-money-bill-wave'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  <!-- KPI Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card success">
+      <div class="metric-icon">
+        <i class="fa-solid fa-sack-dollar"></i>
+      </div>
+      <div class="metric-content">
+        <span class="metric-label">Total Recibido</span>
+        <span class="metric-value">{{ formatCurrency(totalAmount()) }}</span>
+      </div>
+    </div>
+    <div class="metric-card info">
+      <div class="metric-icon">
+        <i class="fa-solid fa-receipt"></i>
+      </div>
+      <div class="metric-content">
+        <span class="metric-label">Pagos Registrados</span>
+        <span class="metric-value">{{ filteredPayments().length }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por referencia..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="filterMethod()"
+        (change)="onMethodFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los métodos</option>
+        @for (method of paymentMethods; track method) {
+          <option [value]="method">{{ getMethodConfig(method).label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando pagos...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadPayments()">
+        <i class="fa-solid fa-refresh"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredPayments().length === 0 && payments().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-receipt"></i>
+      <h3>No hay pagos registrados</h3>
+      <p>Los pagos aparecerán aquí cuando se registren desde las facturas</p>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredPayments().length === 0 && payments().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Payments Table -->
+  @if (!loading() && !error() && filteredPayments().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Referencia</th>
+            <th class="actions-column">Factura</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (payment of filteredPayments(); track payment.id) {
+            <tr>
+              <!-- Fecha -->
+              <td class="date-cell">
+                {{ payment.paidAt | date:'dd/MM/yyyy HH:mm' }}
+              </td>
+
+              <!-- Monto -->
+              <td class="amount-cell amount-success">
+                {{ formatCurrency(payment.amount) }}
+              </td>
+
+              <!-- Método -->
+              <td>
+                <div class="payment-method-cell">
+                  <i [class]="'fa-solid ' + getMethodConfig(payment.paymentMethod).icon"
+                     [style.color]="getMethodConfig(payment.paymentMethod).color"></i>
+                  <span>{{ getMethodConfig(payment.paymentMethod).label }}</span>
+                </div>
+              </td>
+
+              <!-- Referencia -->
+              <td>
+                @if (payment.reference) {
+                  <span class="badge badge-neutral">{{ payment.reference }}</span>
+                } @else {
+                  <span class="text-muted">-</span>
+                }
+              </td>
+
+              <!-- Factura -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-sm btn-primary"
+                    [routerLink]="['/invoices', payment.invoiceId]"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                    Ver Factura
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Table Footer -->
+      <div class="table-footer centered">
+        <span class="results-count">
+          Mostrando <strong>{{ filteredPayments().length }}</strong> de <strong>{{ payments().length }}</strong> pagos
+        </span>
+      </div>
+    </div>
+  }
+</div>

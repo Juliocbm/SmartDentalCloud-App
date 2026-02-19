@@ -1,0 +1,70 @@
+// ============================================
+// InvoiceListComponent - Estilos Específicos
+// Container: usa .page-container.container-wide de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Metrics: usa .metrics-grid, .metric-card de _dashboard.scss
+// Filters: usa .filters-section de _components.scss
+// Loading: usa .loading-container de _components.scss
+// Empty: usa .empty-state de _dashboard.scss
+// Table: usa .table-container, .table de _components.scss
+// Botones: usa clases globales .btn de _components.scss
+// ============================================
+
+// ===== Table Cell Content =====
+
+.date-cell {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.amount-cell {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+
+  &.amount-success {
+    color: var(--success-600);
+  }
+
+  &.amount-warning {
+    color: var(--warning-600);
+  }
+}
+
+.row-warning {
+  background-color: var(--error-50);
+  border-left: 3px solid var(--error-500);
+}
+
+.actions-column {
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+.text-muted {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+// ===== Responsive =====
+
+@media (max-width: 768px) {
+  .filters-section {
+    flex-direction: column;
+
+    .search-box {
+      min-width: 100%;
+    }
+
+    .filter-actions {
+      width: 100%;
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+}

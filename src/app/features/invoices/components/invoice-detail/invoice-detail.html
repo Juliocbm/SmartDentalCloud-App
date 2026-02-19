@@ -1,0 +1,245 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Detalle de Factura'"
+    [subtitle]="invoice() ? invoice()!.patientName : 'Cargando...'"
+    [icon]="'fa-file-invoice-dollar'"
+    [breadcrumbs]="breadcrumbItems"
+    [showBackButton]="true"
+    [backRoute]="'/invoices'">
+    <div actions>
+      @if (invoice()) {
+        <button class="btn btn-outline" (click)="printInvoice()">
+          <i class="fa-solid fa-print"></i>
+          Imprimir
+        </button>
+      }
+    </div>
+  </app-page-header>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando factura...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver a Facturas
+      </button>
+    </div>
+  }
+
+  <!-- Invoice Detail -->
+  @if (!loading() && !error() && invoice()) {
+    <!-- Invoice Info Card -->
+    <div class="card invoice-card">
+      <div class="invoice-header">
+        <div class="invoice-title">
+          <h2>Factura</h2>
+          @if (invoice()!.serie && invoice()!.folio) {
+            <p class="invoice-number">{{ invoice()!.serie }}-{{ invoice()!.folio }}</p>
+          }
+        </div>
+        <div>
+          <span [class]="'badge ' + getStatusConfig(invoice()!.status).class">
+            <i [class]="'fa-solid ' + getStatusConfig(invoice()!.status).icon"></i>
+            {{ getStatusConfig(invoice()!.status).label }}
+          </span>
+        </div>
+      </div>
+
+      <div class="invoice-info-grid">
+        <div class="info-section">
+          <h4>Paciente</h4>
+          <p>{{ invoice()!.patientName }}</p>
+        </div>
+        <div class="info-section">
+          <h4>Fecha de Emisión</h4>
+          <p>{{ invoice()!.issuedAt | date:'dd/MM/yyyy' }}</p>
+        </div>
+        @if (invoice()!.lastPaymentDate) {
+          <div class="info-section">
+            <h4>Último Pago</h4>
+            <p>{{ invoice()!.lastPaymentDate | date:'dd/MM/yyyy' }}</p>
+          </div>
+        }
+        @if (invoice()!.cfdiUUID) {
+          <div class="info-section full-width">
+            <h4>UUID CFDI</h4>
+            <p>{{ invoice()!.cfdiUUID }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Payment Progress -->
+      <div class="payment-progress">
+        <div class="progress-header">
+          <span>Progreso de Pago</span>
+          <span class="progress-percentage">{{ getPaymentPercentage() | number:'1.0-0' }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getPaymentPercentage()"></div>
+        </div>
+        <div class="progress-amounts">
+          <div class="amount-item">
+            <span class="amount-label">Pagado:</span>
+            <span class="amount-value amount-success">{{ formatCurrency(invoice()!.paidAmount) }}</span>
+          </div>
+          <div class="amount-item">
+            <span class="amount-label">Saldo:</span>
+            <span class="amount-value amount-warning">{{ formatCurrency(invoice()!.balance) }}</span>
+          </div>
+          <div class="amount-item">
+            <span class="amount-label">Total:</span>
+            <span class="amount-value amount-bold">{{ formatCurrency(invoice()!.totalAmount) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoice Items Table -->
+    <div class="card">
+      <h3 class="card-title">Items de Factura</h3>
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Descripción</th>
+              <th>Cantidad</th>
+              <th>Precio Unit.</th>
+              <th>Descuento</th>
+              <th>IVA</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of invoice()!.items; track item.id) {
+              <tr>
+                <td>{{ item.displayOrder }}</td>
+                <td>
+                  <div class="item-description">
+                    {{ item.description }}
+                    @if (item.claveProdServ) {
+                      <span class="badge badge-neutral">{{ item.claveProdServ }}</span>
+                    }
+                  </div>
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ formatCurrency(item.unitPrice) }}</td>
+                <td class="amount-success">
+                  @if (item.discountAmount > 0) {
+                    -{{ formatCurrency(item.discountAmount) }}
+                    <span class="text-muted">({{ item.discountPercentage }}%)</span>
+                  } @else {
+                    -
+                  }
+                </td>
+                <td>
+                  {{ formatCurrency(item.taxAmount) }}
+                  <span class="text-muted">({{ item.taxRate }}%)</span>
+                </td>
+                <td class="amount-bold">{{ formatCurrency(item.total) }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="6" class="text-right">Total:</td>
+              <td class="amount-bold amount-primary">{{ formatCurrency(invoice()!.totalAmount) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Payment History -->
+    <div class="card">
+      <h3 class="card-title">
+        Historial de Pagos
+        @if (payments().length > 0) {
+          <span class="badge badge-neutral">{{ payments().length }}</span>
+        }
+      </h3>
+
+      @if (loadingPayments()) {
+        <div class="loading-small">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span>Cargando pagos...</span>
+        </div>
+      } @else if (payments().length > 0) {
+        <div class="payments-list">
+          @for (payment of payments(); track payment.id) {
+            <div class="payment-item">
+              <div class="payment-icon">
+                <i class="fa-solid fa-money-bill"></i>
+              </div>
+              <div class="payment-details">
+                <div class="payment-amount">{{ formatCurrency(payment.amount) }}</div>
+                <div class="payment-meta">
+                  <span class="payment-method">{{ payment.paymentMethod }}</span>
+                  @if (payment.reference) {
+                    <span class="payment-reference">Ref: {{ payment.reference }}</span>
+                  }
+                </div>
+              </div>
+              <div class="payment-date">
+                {{ payment.paidAt | date:'dd/MM/yyyy' }}
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state-small">
+          <i class="fa-solid fa-receipt"></i>
+          <p>No hay pagos registrados</p>
+        </div>
+      }
+    </div>
+
+    <!-- CFDI Info -->
+    @if (invoice()!.cfdiUUID) {
+      <div class="card">
+        <h3 class="card-title">Información CFDI</h3>
+        <div class="cfdi-info-grid">
+          <div class="info-item">
+            <span class="info-label">UUID:</span>
+            <span class="info-value">{{ invoice()!.cfdiUUID }}</span>
+          </div>
+          @if (invoice()!.stampedAt) {
+            <div class="info-item">
+              <span class="info-label">Fecha de Timbrado:</span>
+              <span class="info-value">{{ invoice()!.stampedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          }
+          @if (invoice()!.usoCFDI) {
+            <div class="info-item">
+              <span class="info-label">Uso CFDI:</span>
+              <span class="info-value">{{ invoice()!.usoCFDI }}</span>
+            </div>
+          }
+          @if (invoice()!.metodoPago) {
+            <div class="info-item">
+              <span class="info-label">Método de Pago:</span>
+              <span class="info-value">{{ invoice()!.metodoPago }}</span>
+            </div>
+          }
+          @if (invoice()!.formaPago) {
+            <div class="info-item">
+              <span class="info-label">Forma de Pago:</span>
+              <span class="info-value">{{ invoice()!.formaPago }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

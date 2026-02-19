@@ -1,0 +1,251 @@
+<div class="page-container container-medium">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Nueva Factura'"
+    [subtitle]="'Crea una nueva factura para un paciente'"
+    [icon]="'fa-file-invoice-dollar'"
+    [showBackButton]="true"
+    [backRoute]="'/invoices'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="loading()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Creando...
+        } @else {
+          <i class="fa-solid fa-file-invoice"></i>
+          Crear Factura
+        }
+      </button>
+    </div>
+  </app-page-header>
+
+  <div class="content-card">
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ error() }}</span>
+        <button class="alert-close" (click)="error.set(null)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    }
+
+    <form [formGroup]="form" class="standard-form">
+      <!-- Información del Paciente -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-user section-icon"></i>
+          Información del Paciente
+          <span class="required">*</span>
+        </h3>
+
+        <div class="form-group">
+          <app-patient-autocomplete
+            [selectedPatientId]="selectedPatient()?.id || null"
+            [required]="true"
+            [disabled]="loading()"
+            [error]="getFieldError('patientId')"
+            (patientSelected)="onPatientSelected($event)"
+          >
+            Buscar Paciente
+          </app-patient-autocomplete>
+        </div>
+      </div>
+
+      <!-- Datos Fiscales CFDI -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-file-contract section-icon"></i>
+          Datos Fiscales CFDI
+          <span class="optional-badge">Opcional</span>
+        </h3>
+        <p class="section-description">Configuración fiscal para la factura electrónica (CFDI México)</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="usoCFDI" class="form-label">Uso de CFDI</label>
+            <select id="usoCFDI" formControlName="usoCFDI" class="form-input">
+              @for (option of cfdiUsoOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="metodoPago" class="form-label">Método de Pago</label>
+            <select id="metodoPago" formControlName="metodoPago" class="form-input">
+              @for (option of cfdiMetodoPagoOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="formaPago" class="form-label">Forma de Pago</label>
+            <select id="formaPago" formControlName="formaPago" class="form-input">
+              @for (option of cfdiFormaPagoOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items de Factura -->
+      <div class="form-section">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i class="fa-solid fa-list-check section-icon"></i>
+            Items de Factura
+            <span class="required">*</span>
+          </h3>
+          <button type="button" class="btn btn-outline btn-sm" (click)="addItem()">
+            <i class="fa-solid fa-plus"></i>
+            Agregar Item
+          </button>
+        </div>
+
+        <div formArrayName="items" class="items-container">
+          @for (item of items.controls; track $index) {
+            <div [formGroupName]="$index" class="invoice-item">
+              <div class="item-header">
+                <span class="item-number">
+                  <i class="fa-solid fa-cube"></i>
+                  Item {{ $index + 1 }}
+                </span>
+                @if (items.length > 1) {
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger"
+                    (click)="removeItem($index)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                }
+              </div>
+
+              <div class="form-row">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                  <label class="form-label">Descripción <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    formControlName="description"
+                    class="form-input"
+                    [class.input-error]="isItemFieldInvalid($index, 'description')"
+                    placeholder="Descripción del servicio o producto"
+                  />
+                  @if (isItemFieldInvalid($index, 'description')) {
+                    <span class="error-message">La descripción es requerida (mín. 3 caracteres)</span>
+                  }
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Cantidad <span class="required">*</span></label>
+                  <input
+                    type="number"
+                    formControlName="quantity"
+                    class="form-input"
+                    [class.input-error]="isItemFieldInvalid($index, 'quantity')"
+                    min="0.01"
+                    step="0.01"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Precio Unitario <span class="required">*</span></label>
+                  <input
+                    type="number"
+                    formControlName="unitPrice"
+                    class="form-input"
+                    [class.input-error]="isItemFieldInvalid($index, 'unitPrice')"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Descuento (%)</label>
+                  <input
+                    type="number"
+                    formControlName="discountPercentage"
+                    class="form-input"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">IVA (%)</label>
+                  <input
+                    type="number"
+                    formControlName="taxRate"
+                    class="form-input"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Clave Prod/Serv (SAT)</label>
+                  <input type="text" formControlName="claveProdServ" class="form-input" placeholder="85121800" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Clave Unidad (SAT)</label>
+                  <input type="text" formControlName="claveUnidad" class="form-input" placeholder="E48" />
+                </div>
+              </div>
+
+              <!-- Item Totals -->
+              <div class="item-totals">
+                <div class="total-row">
+                  <span>Subtotal:</span>
+                  <span class="total-value">{{ formatCurrency(calculateItemSubtotal(item)) }}</span>
+                </div>
+                <div class="total-row">
+                  <span>Descuento:</span>
+                  <span class="total-value total-discount">-{{ formatCurrency(calculateItemDiscount(item)) }}</span>
+                </div>
+                <div class="total-row">
+                  <span>IVA:</span>
+                  <span class="total-value">{{ formatCurrency(calculateItemTax(item)) }}</span>
+                </div>
+                <div class="total-row total-row-main">
+                  <span>Total Item:</span>
+                  <span class="total-value">{{ formatCurrency(calculateItemTotal(item)) }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Invoice Total Summary -->
+      <div class="form-section">
+        <div class="invoice-summary">
+          <div class="summary-row">
+            <span class="summary-label">
+              <i class="fa-solid fa-calculator"></i>
+              Total de la Factura:
+            </span>
+            <span class="summary-value">{{ formatCurrency(calculateInvoiceTotal()) }}</span>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,331 @@
+// Container: usa .page-container.container-wide de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Card: usa .card de _components.scss
+// Table: usa .table-container, .table de _components.scss
+// Badges: usa .badge de _components.scss
+
+// States: usa .loading-container de _components.scss
+// States: usa .empty-state de _dashboard.scss
+
+// ===== Invoice Card =====
+
+.invoice-card {
+  .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 2px solid var(--border-primary);
+
+    .invoice-title {
+      h2 {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
+        margin: 0 0 var(--spacing-xs);
+      }
+
+      .invoice-number {
+        font-size: var(--font-size-lg);
+        color: var(--text-secondary);
+        margin: 0;
+      }
+    }
+  }
+
+  .invoice-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+
+    .info-section {
+      h4 {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        margin: 0 0 var(--spacing-xs);
+      }
+
+      p {
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-medium);
+        color: var(--text-primary);
+        margin: 0;
+      }
+
+      &.full-width {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+}
+
+// ===== Payment Progress =====
+
+.payment-progress {
+  padding: var(--spacing-lg);
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-lg);
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+
+    .progress-percentage {
+      color: var(--text-primary);
+      font-size: var(--font-size-base);
+    }
+  }
+
+  .progress-bar {
+    height: 12px;
+    background-color: var(--surface-tertiary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success-500), var(--success-600));
+      transition: width 0.3s ease;
+    }
+  }
+
+  .progress-amounts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+
+    .amount-item {
+      text-align: center;
+
+      .amount-label {
+        display: block;
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .amount-value {
+        display: block;
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-semibold);
+      }
+    }
+  }
+}
+
+// ===== Card Title =====
+
+.card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+// ===== Table Content =====
+
+.item-description {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.total-row {
+  font-weight: var(--font-weight-bold);
+  background-color: var(--surface-secondary);
+
+  td {
+    border-top: 2px solid var(--border-primary);
+  }
+}
+
+.text-right {
+  text-align: right;
+}
+
+.amount-bold {
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.amount-primary {
+  color: var(--primary-600);
+}
+
+.amount-success {
+  color: var(--success-600);
+}
+
+.amount-warning {
+  color: var(--warning-600);
+}
+
+.text-muted {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+// ===== Payment History =====
+
+.loading-small {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  color: var(--text-secondary);
+}
+
+.payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+
+  .payment-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: var(--surface-secondary);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--success-500);
+
+    .payment-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: var(--success-100);
+      color: var(--success-600);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-lg);
+    }
+
+    .payment-details {
+      flex: 1;
+
+      .payment-amount {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-xs);
+      }
+
+      .payment-meta {
+        display: flex;
+        gap: var(--spacing-md);
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+
+        .payment-method {
+          text-transform: capitalize;
+        }
+
+        .payment-reference {
+          color: var(--text-muted);
+        }
+      }
+    }
+
+    .payment-date {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+  }
+}
+
+.empty-state-small {
+  text-align: center;
+  padding: var(--spacing-xl);
+
+  i {
+    font-size: 2rem;
+    color: var(--text-tertiary);
+    display: block;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: 0;
+  }
+}
+
+// ===== CFDI Info =====
+
+.cfdi-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    .info-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+  }
+}
+
+// ===== Responsive =====
+
+@media (max-width: 768px) {
+  .invoice-card .invoice-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .payment-progress .progress-amounts {
+    grid-template-columns: 1fr;
+  }
+
+  .payments-list .payment-item {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .payment-date {
+      align-self: flex-end;
+    }
+  }
+}
+
+// ===== Print =====
+
+@media print {
+  app-page-header,
+  .btn,
+  button {
+    display: none !important;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+}
