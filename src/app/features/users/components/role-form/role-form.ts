@@ -7,6 +7,11 @@ import { RolesService } from '../../services/roles.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PermissionSelectorComponent } from '../../../../shared/components/permission-selector/permission-selector';
 
+interface RoleFormValue {
+  name: string;
+  description: string;
+}
+
 @Component({
   selector: 'app-role-form',
   standalone: true,
@@ -95,7 +100,7 @@ export class RoleFormComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    const formValue = this.roleForm.value;
+    const formValue = this.roleForm.value as RoleFormValue;
     
     if (this.isEditMode()) {
       this.updateRole(formValue);
@@ -104,7 +109,7 @@ export class RoleFormComponent implements OnInit {
     }
   }
 
-  private createRole(formValue: any): void {
+  private createRole(formValue: RoleFormValue): void {
     const request = {
       name: formValue.name,
       description: formValue.description || undefined,
@@ -127,7 +132,7 @@ export class RoleFormComponent implements OnInit {
     });
   }
 
-  private updateRole(formValue: any): void {
+  private updateRole(formValue: RoleFormValue): void {
     const id = this.roleId();
     if (!id) return;
 

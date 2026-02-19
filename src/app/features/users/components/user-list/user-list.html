@@ -203,8 +203,11 @@
                     [class.btn-success]="!user.isActive"
                     (click)="toggleUserActive(user)"
                   >
-                    <i class="fa-solid fa-toggle-on" *ngIf="user.isActive"></i>
-                    <i class="fa-solid fa-toggle-off" *ngIf="!user.isActive"></i>
+                    @if (user.isActive) {
+                      <i class="fa-solid fa-toggle-on"></i>
+                    } @else {
+                      <i class="fa-solid fa-toggle-off"></i>
+                    }
                     {{ user.isActive ? 'Desactivar' : 'Activar' }}
                   </button>
                 </div>

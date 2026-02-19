@@ -9,6 +9,21 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { Category } from '../../models/category.models';
 import { PRODUCT_UNITS } from '../../models/product.models';
 
+interface ProductFormValue {
+  code: string;
+  name: string;
+  description: string;
+  categoryId: string;
+  unit: string;
+  minStock: number;
+  maxStock: number;
+  reorderPoint: number;
+  reorderQuantity: number;
+  unitCost: number;
+  notes: string;
+  isActive: boolean;
+}
+
 /**
  * Componente para crear y editar productos
  */
@@ -127,7 +142,7 @@ export class ProductFormComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    const formValue = this.productForm.value;
+    const formValue = this.productForm.value as ProductFormValue;
     
     if (this.isEditMode()) {
       this.updateProduct(formValue);
@@ -136,7 +151,7 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
-  private createProduct(formValue: any): void {
+  private createProduct(formValue: ProductFormValue): void {
     const request = {
       code: formValue.code,
       name: formValue.name,
@@ -169,7 +184,7 @@ export class ProductFormComponent implements OnInit {
     });
   }
 
-  private updateProduct(formValue: any): void {
+  private updateProduct(formValue: ProductFormValue): void {
     const id = this.productId();
     if (!id) return;
 

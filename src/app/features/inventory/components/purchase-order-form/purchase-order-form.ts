@@ -10,6 +10,13 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { Supplier } from '../../models/supplier.models';
 import { Product } from '../../models/product.models';
 
+interface OrderItemFormValue {
+  productId: string;
+  quantity: string;
+  unitCost: string;
+  notes: string;
+}
+
 @Component({
   selector: 'app-purchase-order-form',
   standalone: true,
@@ -43,7 +50,7 @@ export class PurchaseOrderFormComponent implements OnInit {
 
   subtotal = computed(() => {
     const items = this.items.value;
-    return items.reduce((sum: number, item: any) => {
+    return items.reduce((sum: number, item: OrderItemFormValue) => {
       const quantity = parseFloat(item.quantity) || 0;
       const unitCost = parseFloat(item.unitCost) || 0;
       return sum + (quantity * unitCost);
@@ -164,7 +171,7 @@ export class PurchaseOrderFormComponent implements OnInit {
       supplierId: formValue.supplierId,
       expectedDate: formValue.expectedDate || undefined,
       notes: formValue.notes || undefined,
-      items: formValue.items.map((item: any) => ({
+      items: formValue.items.map((item: OrderItemFormValue) => ({
         productId: item.productId,
         quantity: parseFloat(item.quantity),
         unitCost: parseFloat(item.unitCost),

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ProductsService } from '../../services/products.service';
@@ -67,21 +67,22 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
 
-    Promise.all([
-      this.productsService.getAll().toPromise(),
-      this.categoriesService.getAll(true).toPromise()
-    ])
-      .then(([products, categories]) => {
-        this.products.set(products || []);
-        this.categories.set(categories || []);
+    forkJoin([
+      this.productsService.getAll(),
+      this.categoriesService.getAll(true)
+    ]).subscribe({
+      next: ([products, categories]) => {
+        this.products.set(products);
+        this.categories.set(categories);
         this.applyFilters();
         this.loading.set(false);
-      })
-      .catch(err => {
+      },
+      error: (err) => {
         this.logger.error('Error loading data:', err);
         this.error.set('Error al cargar productos. Intenta de nuevo.');
         this.loading.set(false);
-      });
+      }
+    });
   }
 
   applyFilters(): void {

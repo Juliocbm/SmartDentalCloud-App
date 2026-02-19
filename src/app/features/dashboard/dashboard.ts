@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { LoggingService } from '../../core/services/logging.service';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from './services/dashboard.service';
@@ -19,6 +20,7 @@ import {
 })
 export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
+  private router = inject(Router);
   private logger = inject(LoggingService);
 
   stats = signal<DashboardStats | null>(null);
@@ -153,8 +155,8 @@ export class DashboardComponent implements OnInit {
     }).format(value);
   }
 
-  onQuickAction(action: any): void {
-    console.log('Navigate to:', action.route);
+  onQuickAction(action: { icon: string; title: string; subtitle: string; route: string }): void {
+    this.router.navigate([action.route]);
   }
 
   refreshData(): void {

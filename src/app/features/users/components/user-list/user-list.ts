@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { UsersService } from '../../services/users.service';
@@ -62,21 +62,22 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
 
-    Promise.all([
-      this.usersService.getAll().toPromise(),
-      this.rolesService.getAll().toPromise()
-    ])
-      .then(([users, roles]) => {
-        this.users.set(users || []);
-        this.roles.set(roles || []);
+    forkJoin([
+      this.usersService.getAll(),
+      this.rolesService.getAll()
+    ]).subscribe({
+      next: ([users, roles]) => {
+        this.users.set(users);
+        this.roles.set(roles);
         this.applyFilters();
         this.loading.set(false);
-      })
-      .catch(err => {
+      },
+      error: (err) => {
         this.logger.error('Error loading data:', err);
         this.error.set('Error al cargar usuarios. Intenta de nuevo.');
         this.loading.set(false);
-      });
+      }
+    });
   }
 
   applyFilters(): void {

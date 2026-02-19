@@ -11,6 +11,41 @@ import {
   AppointmentStats
 } from '../models/dashboard.models';
 
+/**
+ * Interfaces internas para mapear respuestas de API del dashboard.
+ * Usadas en los helpers de cálculo mientras el backend devuelve DTOs genéricos.
+ */
+interface AppointmentResponse {
+  id: string;
+  patientName?: string;
+  patientId?: string;
+  doctorName?: string;
+  startAt: string;
+  endAt: string;
+  reason?: string;
+  status: string;
+  totalAmount?: number;
+}
+
+interface PatientsPagedResponse {
+  totalCount: number;
+  items: unknown[];
+}
+
+interface TreatmentResponse {
+  id: string;
+  status: string;
+  endDate?: string;
+}
+
+interface ProductStockResponse {
+  id: string;
+  name: string;
+  currentStock: number;
+  minStock: number;
+  categoryName?: string;
+}
+
 @Injectable()
 export class DashboardService {
   private apiService = inject(ApiService);
@@ -38,17 +73,17 @@ export class DashboardService {
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
     return forkJoin({
-      todayAppointments: this.apiService.get<any[]>('/api/appointments', {
+      todayAppointments: this.apiService.get<AppointmentResponse[]>('/api/appointments', {
         startDate: today.toISOString().split('T')[0],
         endDate: today.toISOString().split('T')[0]
       }),
-      monthlyAppointments: this.apiService.get<any[]>('/api/appointments', {
+      monthlyAppointments: this.apiService.get<AppointmentResponse[]>('/api/appointments', {
         startDate: startOfMonth.toISOString(),
         endDate: endOfMonth.toISOString()
       }),
-      patients: this.apiService.get<any>('/api/patients', { pageSize: 1 }),
-      treatments: this.apiService.get<any[]>('/api/treatments'),
-      products: this.apiService.get<any[]>('/api/products')
+      patients: this.apiService.get<PatientsPagedResponse>('/api/patients', { pageSize: 1 }),
+      treatments: this.apiService.get<TreatmentResponse[]>('/api/treatments'),
+      products: this.apiService.get<ProductStockResponse[]>('/api/products')
     }).pipe(
       map(data => ({
         todayAppointments: data.todayAppointments?.length || 0,
@@ -57,7 +92,7 @@ export class DashboardService {
         completedTreatmentsThisMonth: this.countCompletedTreatments(data.treatments, startOfMonth),
         pendingAppointments: this.countPendingAppointments(data.monthlyAppointments),
         lowStockProducts: this.countLowStockProducts(data.products),
-        activeTreatmentPlans: data.treatments?.filter((t: any) => t.status === 'InProgress').length || 0,
+        activeTreatmentPlans: data.treatments?.filter((t: TreatmentResponse) => t.status === 'InProgress').length || 0,
         monthlyRevenue: this.calculateMonthlyRevenue(data.monthlyAppointments)
       }))
     );
@@ -156,7 +191,7 @@ export class DashboardService {
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-    return this.apiService.get<any[]>('/api/appointments', {
+    return this.apiService.get<AppointmentResponse[]>('/api/appointments', {
       startDate: startOfMonth.toISOString(),
       endDate: endOfMonth.toISOString()
     }).pipe(
@@ -271,34 +306,34 @@ export class DashboardService {
     return of(activities.slice(0, limit));
   }
 
-  private calculateRevenue(appointments: any[] | null): number {
+  private calculateRevenue(appointments: AppointmentResponse[] | null): number {
     if (!appointments) return 0;
     return appointments.reduce((sum, apt) => sum + (apt.totalAmount || 1500), 0);
   }
 
-  private countNewPatientsThisMonth(patientsData: any): number {
+  private countNewPatientsThisMonth(patientsData: PatientsPagedResponse | null): number {
     return patientsData?.totalCount || 0;
   }
 
-  private countCompletedTreatments(treatments: any[] | null, startOfMonth: Date): number {
+  private countCompletedTreatments(treatments: TreatmentResponse[] | null, startOfMonth: Date): number {
     if (!treatments) return 0;
     return treatments.filter(t => 
       t.status === 'Completed' && 
-      new Date(t.endDate) >= startOfMonth
+      t.endDate && new Date(t.endDate) >= startOfMonth
     ).length;
   }
 
-  private countPendingAppointments(appointments: any[] | null): number {
+  private countPendingAppointments(appointments: AppointmentResponse[] | null): number {
     if (!appointments) return 0;
     return appointments.filter(a => a.status === 'Scheduled').length;
   }
 
-  private countLowStockProducts(products: any[] | null): number {
+  private countLowStockProducts(products: ProductStockResponse[] | null): number {
     if (!products) return 0;
     return products.filter(p => p.currentStock <= p.minStock).length;
   }
 
-  private calculateMonthlyRevenue(appointments: any[] | null): number {
+  private calculateMonthlyRevenue(appointments: AppointmentResponse[] | null): number {
     if (!appointments) return 0;
     return appointments
       .filter(a => a.status === 'Completed')

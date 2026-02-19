@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, map, of } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/services/api.service';
 import { ProductsService } from './products.service';
 import { Product } from '../models/product.models';
 import {
@@ -20,9 +19,9 @@ import {
   providedIn: 'root'
 })
 export class InventoryAnalyticsService {
-  private http = inject(HttpClient);
+  private api = inject(ApiService);
   private productsService = inject(ProductsService);
-  private readonly baseUrl = `${environment.apiUrl}/products`;
+  private readonly baseUrl = '/products';
 
   /**
    * Calcula el valor total del inventario (costo de adquisición)
@@ -42,9 +41,7 @@ export class InventoryAnalyticsService {
    * @param limit Número de productos a retornar (default: 5)
    */
   getTopProducts(limit: number = 5): Observable<TopProduct[]> {
-    return this.http.get<Product[]>(`${this.baseUrl}/top-used`, { 
-      params: { limit: limit.toString() } 
-    }).pipe(
+    return this.api.get<Product[]>(`${this.baseUrl}/top-used`, { limit }).pipe(
       map(products => products.map(p => ({
         id: p.id!,
         name: p.name,
@@ -65,9 +62,7 @@ export class InventoryAnalyticsService {
   getExpiringProducts(withinDays: number = 30): Observable<ExpiringProduct[]> {
     const today = new Date();
 
-    return this.http.get<Product[]>(`${this.baseUrl}/expiring`, { 
-      params: { withinDays: withinDays.toString() } 
-    }).pipe(
+    return this.api.get<Product[]>(`${this.baseUrl}/expiring`, { withinDays }).pipe(
       map(products => products.map(p => {
         const expiryDate = new Date(p.expiryDate!);
         const daysToExpire = Math.ceil(
@@ -94,10 +89,9 @@ export class InventoryAnalyticsService {
    * @param increment Cantidad a incrementar (default: 1)
    */
   incrementProductUsage(productId: string, increment: number = 1): Observable<void> {
-    return this.http.post<void>(
-      `${this.baseUrl}/${productId}/increment-usage`, 
-      null,
-      { params: { increment: increment.toString() } }
+    return this.api.post<void>(
+      `${this.baseUrl}/${productId}/increment-usage`,
+      { increment }
     );
   }
 

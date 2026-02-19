@@ -120,7 +120,7 @@ export class ModalService {
     this.isOpen.set(false);
   }
 
-  private closeModal(componentRef: ComponentRef<any>): void {
+  private closeModal(componentRef: ComponentRef<unknown>): void {
     const index = this.modalStack.indexOf(componentRef);
     if (index > -1) {
       this.modalStack.splice(index, 1);

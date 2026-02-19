@@ -1,5 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { ProductsService } from '../../features/inventory/services/products.service';
+import { Product } from '../../features/inventory/models/product.models';
 import { interval, startWith, switchMap } from 'rxjs';
 import { LoggingService } from './logging.service';
 
@@ -72,7 +73,7 @@ export class AlertsCountService {
   /**
    * Calcula alertas críticas y advertencias
    */
-  private calculateAlerts(products: any[]): void {
+  private calculateAlerts(products: Product[]): void {
     const critical = products.filter(p => 
       p.currentStock !== undefined && p.currentStock <= p.minStock
     ).length;

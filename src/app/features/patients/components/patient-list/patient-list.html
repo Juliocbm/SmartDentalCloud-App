@@ -40,31 +40,38 @@
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="loading()" class="loading-state">
-    <i class="fa-solid fa-spinner fa-spin"></i>
-    <p>Cargando pacientes...</p>
-  </div>
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando pacientes...</p>
+    </div>
+  }
 
   <!-- Error State -->
-  <div *ngIf="error()" class="error-state">
-    <i class="fa-solid fa-exclamation-circle"></i>
-    <p>{{ error() }}</p>
-    <button class="btn btn-primary" (click)="loadPatients()">Reintentar</button>
-  </div>
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadPatients()">Reintentar</button>
+    </div>
+  }
 
   <!-- Empty State -->
-  <div *ngIf="!loading() && !error() && patients().length === 0" class="empty-state">
-    <i class="fa-solid fa-user-plus"></i>
-    <h3>No hay pacientes registrados</h3>
-    <p>Comienza agregando tu primer paciente</p>
-    <button class="btn btn-primary" routerLink="/patients/new">
-      <i class="fa-solid fa-plus"></i>
-      Crear Primer Paciente
-    </button>
-  </div>
+  @if (!loading() && !error() && patients().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-user-plus"></i>
+      <h3>No hay pacientes registrados</h3>
+      <p>Comienza agregando tu primer paciente</p>
+      <button class="btn btn-primary" routerLink="/patients/new">
+        <i class="fa-solid fa-plus"></i>
+        Crear Primer Paciente
+      </button>
+    </div>
+  }
 
   <!-- Patients Table -->
-  <div *ngIf="!loading() && !error() && patients().length > 0" class="table-container">
+  @if (!loading() && !error() && patients().length > 0) {
+  <div class="table-container">
     <table class="table">
       <thead>
         <tr>
@@ -78,7 +85,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let patient of patients()" [class.row-inactive]="!patient.isActive">
+        @for (patient of patients(); track patient.id) {
+        <tr [class.row-inactive]="!patient.isActive">
           <!-- Paciente -->
           <td>
             <div class="info-cell">
@@ -94,17 +102,23 @@
 
           <!-- Contacto -->
           <td class="contact-info">
-            <div class="contact-item" *ngIf="patient.phoneNumber">
-              <i class="fa-solid fa-phone"></i>
-              {{ patient.phoneNumber }}
-            </div>
-            <div class="contact-item" *ngIf="patient.email">
-              <i class="fa-solid fa-envelope"></i>
-              {{ patient.email }}
-            </div>
-            <div class="contact-empty" *ngIf="!patient.phoneNumber && !patient.email">
-              <span class="text-muted">Sin contacto</span>
-            </div>
+            @if (patient.phoneNumber) {
+              <div class="contact-item">
+                <i class="fa-solid fa-phone"></i>
+                {{ patient.phoneNumber }}
+              </div>
+            }
+            @if (patient.email) {
+              <div class="contact-item">
+                <i class="fa-solid fa-envelope"></i>
+                {{ patient.email }}
+              </div>
+            }
+            @if (!patient.phoneNumber && !patient.email) {
+              <div class="contact-empty">
+                <span class="text-muted">Sin contacto</span>
+              </div>
+            }
           </td>
 
           <!-- Edad -->
@@ -128,20 +142,16 @@
           <!-- Indicadores -->
           <td class="indicators">
             <div class="indicator-badges">
-              <span 
-                *ngIf="hasAllergies(patient)" 
-                class="badge badge-icon badge-warning"
-                title="Tiene alergias registradas"
-              >
-                <i class="fa-solid fa-exclamation-triangle"></i>
-              </span>
-              <span 
-                *ngIf="hasMedicalHistory(patient)" 
-                class="badge badge-icon badge-info"
-                title="Tiene historia médica"
-              >
-                <i class="fa-solid fa-heartbeat"></i>
-              </span>
+              @if (hasAllergies(patient)) {
+                <span class="badge badge-icon badge-warning" title="Tiene alergias registradas">
+                  <i class="fa-solid fa-exclamation-triangle"></i>
+                </span>
+              }
+              @if (hasMedicalHistory(patient)) {
+                <span class="badge badge-icon badge-info" title="Tiene historia médica">
+                  <i class="fa-solid fa-heartbeat"></i>
+                </span>
+              }
             </div>
           </td>
 
@@ -181,6 +191,7 @@
             </div>
           </td>
         </tr>
+        }
       </tbody>
     </table>
 
@@ -200,14 +211,15 @@
           <i class="fa-solid fa-chevron-left"></i>
         </button>
 
-        <button 
-          *ngFor="let page of getPaginationPages()"
-          class="btn-page"
-          [class.active]="page === currentPage()"
-          (click)="onPageChange(page)"
-        >
-          {{ page }}
-        </button>
+        @for (page of getPaginationPages(); track page) {
+          <button 
+            class="btn-page"
+            [class.active]="page === currentPage()"
+            (click)="onPageChange(page)"
+          >
+            {{ page }}
+          </button>
+        }
 
         <button 
           class="btn-page" 
@@ -219,4 +231,5 @@
       </div>
     </div>
   </div>
+  }
 </div>

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { UsersService } from '../../services/users.service';
@@ -67,29 +67,30 @@ export class DentistListComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
 
-    Promise.all([
-      this.usersService.getAll().toPromise(),
-      this.rolesService.getAll().toPromise()
-    ])
-      .then(([users, roles]) => {
+    forkJoin([
+      this.usersService.getAll(),
+      this.rolesService.getAll()
+    ]).subscribe({
+      next: ([users, roles]) => {
         // Encontrar el rol de Dentista
-        const dentistRole = roles?.find(r => r.name === 'Dentista');
+        const dentistRole = roles.find(r => r.name === 'Dentista');
         this.dentistRole.set(dentistRole || null);
         
         // Filtrar solo usuarios con rol de Dentista
-        const dentistUsers = users?.filter(user => 
+        const dentistUsers = users.filter(user => 
           user.roles.some(r => r.name === 'Dentista')
-        ) || [];
+        );
         
         this.dentists.set(dentistUsers);
         this.applyFilters();
         this.loading.set(false);
-      })
-      .catch(err => {
+      },
+      error: (err) => {
         this.logger.error('Error loading dentists:', err);
         this.error.set('Error al cargar dentistas. Intenta de nuevo.');
         this.loading.set(false);
-      });
+      }
+    });
   }
 
   applyFilters(): void {

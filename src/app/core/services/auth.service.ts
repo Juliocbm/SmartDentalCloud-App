@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
+import { LoggingService } from './logging.service';
 import {
   LoginRequest,
   LoginResponse,
@@ -20,6 +21,7 @@ import {
 export class AuthService {
   private apiService = inject(ApiService);
   private router = inject(Router);
+  private logger = inject(LoggingService);
 
   private readonly TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
@@ -163,7 +165,7 @@ export class AuthService {
   private startTokenExpiryCheck(): void {
     this.tokenCheckInterval = setInterval(() => {
       if (!this.hasValidToken() && this.isAuthenticated()) {
-        console.warn('Token expired, logging out...');
+        this.logger.warn('Token expired, logging out...');
         this.handleLogout();
       }
     }, 60000);

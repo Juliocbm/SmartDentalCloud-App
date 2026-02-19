@@ -55,18 +55,18 @@ export class StockService {
     );
   }
 
-  private parseStockDates(stock: any): Stock {
+  private parseStockDates(stock: Stock): Stock {
     return {
       ...stock,
       lastMovementDate: stock.lastMovementDate ? new Date(stock.lastMovementDate) : undefined
     };
   }
 
-  private parseStockAlertDates(alert: any): StockAlert {
+  private parseStockAlertDates(alert: StockAlert): StockAlert {
     return alert;
   }
 
-  private parseMovementDates(movement: any): StockMovement {
+  private parseMovementDates(movement: StockMovement): StockMovement {
     return {
       ...movement,
       createdAt: new Date(movement.createdAt)

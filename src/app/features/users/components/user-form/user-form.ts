@@ -8,6 +8,15 @@ import { RolesService } from '../../services/roles.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { Role } from '../../models/role.models';
 
+interface UserFormValue {
+  name: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  specialty: string;
+  professionalLicense: string;
+}
+
 @Component({
   selector: 'app-user-form',
   standalone: true,
@@ -145,7 +154,7 @@ export class UserFormComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    const formValue = this.userForm.value;
+    const formValue = this.userForm.value as UserFormValue;
     
     if (this.isEditMode()) {
       this.updateUser(formValue);
@@ -154,7 +163,7 @@ export class UserFormComponent implements OnInit {
     }
   }
 
-  private createUser(formValue: any): void {
+  private createUser(formValue: UserFormValue): void {
     const request = {
       name: formValue.name,
       email: formValue.email,
@@ -183,7 +192,7 @@ export class UserFormComponent implements OnInit {
     });
   }
 
-  private updateUser(formValue: any): void {
+  private updateUser(formValue: UserFormValue): void {
     const id = this.userId();
     if (!id) return;
 
