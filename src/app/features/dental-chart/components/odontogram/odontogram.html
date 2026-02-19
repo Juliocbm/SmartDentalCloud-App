@@ -1,0 +1,456 @@
+<div class="odontogram-container">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="odontogram-loading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando odontograma...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="odontogram-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary btn-sm" (click)="loadChart()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (!loading() && !error()) {
+    <div class="odontogram-layout" [class.panel-open]="showDetailPanel()">
+
+      <!-- Chart Area -->
+      <div class="chart-area">
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+          @for (opt of statusOptions; track opt) {
+            <div class="stat-item">
+              <span class="stat-dot" [style.background]="statusConfig[opt].color"></span>
+              <span class="stat-label">{{ statusConfig[opt].label }}</span>
+              <span class="stat-count">
+                @switch (opt) {
+                  @case ('Healthy') { {{ stats().healthy }} }
+                  @case ('Treated') { {{ stats().treated }} }
+                  @case ('Decayed') { {{ stats().decayed }} }
+                  @case ('Missing') { {{ stats().missing }} }
+                  @case ('Extracted') { {{ stats().extracted }} }
+                  @case ('Implant') { {{ stats().implant }} }
+                }
+              </span>
+            </div>
+          }
+        </div>
+
+        <!-- Dental Chart SVG -->
+        <div class="chart-diagram">
+
+          <!-- Upper Jaw Label -->
+          <div class="jaw-label">
+            <span>Maxilar Superior</span>
+          </div>
+
+          <!-- Upper Jaw -->
+          <div class="jaw upper-jaw">
+            <div class="quadrant q1">
+              <span class="quadrant-label">Q1 - Derecho</span>
+              <div class="teeth-row">
+                @for (fdi of upperRight; track fdi) {
+                  <div
+                    class="tooth-cell"
+                    [class.selected]="isSelected(fdi)"
+                    [class.hovered]="hoveredTooth() === fdi"
+                    (click)="selectTooth(fdi)"
+                    (mouseenter)="onToothHover(fdi)"
+                    (mouseleave)="onToothHover(null)">
+
+                    <!-- Tooth SVG -->
+                    <svg class="tooth-svg" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">
+                      <!-- Root -->
+                      <path class="tooth-root" d="M16 34 L14 52 M22 34 L22 52 M28 34 L30 52" stroke="#bbb" stroke-width="1.5" fill="none"/>
+                      <!-- Crown background -->
+                      <rect class="tooth-crown" x="4" y="4" width="36" height="30" rx="6"
+                            [attr.fill]="getToothColor(fdi)"
+                            [attr.stroke]="isSelected(fdi) ? '#1565C0' : '#999'"
+                            [attr.stroke-width]="isSelected(fdi) ? '2.5' : '1.2'"/>
+                      <!-- 5-surface overlay -->
+                      <!-- Mesial (left) -->
+                      <rect class="surface-indicator" x="4" y="10" width="8" height="18" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'mesial')" opacity="0.7"/>
+                      <!-- Distal (right) -->
+                      <rect class="surface-indicator" x="32" y="10" width="8" height="18" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'distal')" opacity="0.7"/>
+                      <!-- Occlusal (center) -->
+                      <rect class="surface-indicator" x="14" y="12" width="16" height="14" rx="3"
+                            [attr.fill]="getSurfaceColor(fdi, 'occlusal')" opacity="0.7"/>
+                      <!-- Buccal (top) -->
+                      <rect class="surface-indicator" x="14" y="4" width="16" height="8" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'buccal')" opacity="0.7"/>
+                      <!-- Lingual (bottom) -->
+                      <rect class="surface-indicator" x="14" y="26" width="16" height="8" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'lingual')" opacity="0.7"/>
+                    </svg>
+
+                    <span class="tooth-number">{{ fdi }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="midline"></div>
+
+            <div class="quadrant q2">
+              <span class="quadrant-label">Q2 - Izquierdo</span>
+              <div class="teeth-row">
+                @for (fdi of upperLeft; track fdi) {
+                  <div
+                    class="tooth-cell"
+                    [class.selected]="isSelected(fdi)"
+                    [class.hovered]="hoveredTooth() === fdi"
+                    (click)="selectTooth(fdi)"
+                    (mouseenter)="onToothHover(fdi)"
+                    (mouseleave)="onToothHover(null)">
+
+                    <svg class="tooth-svg" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">
+                      <path class="tooth-root" d="M16 34 L14 52 M22 34 L22 52 M28 34 L30 52" stroke="#bbb" stroke-width="1.5" fill="none"/>
+                      <rect class="tooth-crown" x="4" y="4" width="36" height="30" rx="6"
+                            [attr.fill]="getToothColor(fdi)"
+                            [attr.stroke]="isSelected(fdi) ? '#1565C0' : '#999'"
+                            [attr.stroke-width]="isSelected(fdi) ? '2.5' : '1.2'"/>
+                      <rect class="surface-indicator" x="4" y="10" width="8" height="18" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'mesial')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="32" y="10" width="8" height="18" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'distal')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="14" y="12" width="16" height="14" rx="3"
+                            [attr.fill]="getSurfaceColor(fdi, 'occlusal')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="14" y="4" width="16" height="8" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'buccal')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="14" y="26" width="16" height="8" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'lingual')" opacity="0.7"/>
+                    </svg>
+
+                    <span class="tooth-number">{{ fdi }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Jaw Separator -->
+          <div class="jaw-separator">
+            <div class="separator-line"></div>
+          </div>
+
+          <!-- Lower Jaw -->
+          <div class="jaw lower-jaw">
+            <div class="quadrant q4">
+              <span class="quadrant-label">Q4 - Derecho</span>
+              <div class="teeth-row">
+                @for (fdi of lowerRight; track fdi) {
+                  <div
+                    class="tooth-cell"
+                    [class.selected]="isSelected(fdi)"
+                    [class.hovered]="hoveredTooth() === fdi"
+                    (click)="selectTooth(fdi)"
+                    (mouseenter)="onToothHover(fdi)"
+                    (mouseleave)="onToothHover(null)">
+
+                    <svg class="tooth-svg lower" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">
+                      <!-- Root (flipped for lower jaw) -->
+                      <path class="tooth-root" d="M16 20 L14 2 M22 20 L22 2 M28 20 L30 2" stroke="#bbb" stroke-width="1.5" fill="none"/>
+                      <rect class="tooth-crown" x="4" y="20" width="36" height="30" rx="6"
+                            [attr.fill]="getToothColor(fdi)"
+                            [attr.stroke]="isSelected(fdi) ? '#1565C0' : '#999'"
+                            [attr.stroke-width]="isSelected(fdi) ? '2.5' : '1.2'"/>
+                      <rect class="surface-indicator" x="4" y="26" width="8" height="18" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'mesial')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="32" y="26" width="8" height="18" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'distal')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="14" y="28" width="16" height="14" rx="3"
+                            [attr.fill]="getSurfaceColor(fdi, 'occlusal')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="14" y="42" width="16" height="8" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'buccal')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="14" y="20" width="16" height="8" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'lingual')" opacity="0.7"/>
+                    </svg>
+
+                    <span class="tooth-number">{{ fdi }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="midline"></div>
+
+            <div class="quadrant q3">
+              <span class="quadrant-label">Q3 - Izquierdo</span>
+              <div class="teeth-row">
+                @for (fdi of lowerLeft; track fdi) {
+                  <div
+                    class="tooth-cell"
+                    [class.selected]="isSelected(fdi)"
+                    [class.hovered]="hoveredTooth() === fdi"
+                    (click)="selectTooth(fdi)"
+                    (mouseenter)="onToothHover(fdi)"
+                    (mouseleave)="onToothHover(null)">
+
+                    <svg class="tooth-svg lower" viewBox="0 0 44 54" xmlns="http://www.w3.org/2000/svg">
+                      <path class="tooth-root" d="M16 20 L14 2 M22 20 L22 2 M28 20 L30 2" stroke="#bbb" stroke-width="1.5" fill="none"/>
+                      <rect class="tooth-crown" x="4" y="20" width="36" height="30" rx="6"
+                            [attr.fill]="getToothColor(fdi)"
+                            [attr.stroke]="isSelected(fdi) ? '#1565C0' : '#999'"
+                            [attr.stroke-width]="isSelected(fdi) ? '2.5' : '1.2'"/>
+                      <rect class="surface-indicator" x="4" y="26" width="8" height="18" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'mesial')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="32" y="26" width="8" height="18" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'distal')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="14" y="28" width="16" height="14" rx="3"
+                            [attr.fill]="getSurfaceColor(fdi, 'occlusal')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="14" y="42" width="16" height="8" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'buccal')" opacity="0.7"/>
+                      <rect class="surface-indicator" x="14" y="20" width="16" height="8" rx="2"
+                            [attr.fill]="getSurfaceColor(fdi, 'lingual')" opacity="0.7"/>
+                    </svg>
+
+                    <span class="tooth-number">{{ fdi }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Lower Jaw Label -->
+          <div class="jaw-label">
+            <span>Maxilar Inferior</span>
+          </div>
+        </div>
+
+        <!-- Hover Tooltip -->
+        @if (hoveredTooth() && !showDetailPanel()) {
+          <div class="tooth-tooltip">
+            <strong>{{ hoveredTooth() }}</strong> — {{ toothNames[hoveredTooth()!] }}
+            <br/>
+            <span class="tooltip-status" [style.color]="getToothColor(hoveredTooth()!)">
+              <i class="fa-solid" [class]="statusConfig[getToothStatus(hoveredTooth()!)].icon"></i>
+              {{ statusConfig[getToothStatus(hoveredTooth()!)].label }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <!-- Detail Panel (slide-in) -->
+      @if (showDetailPanel() && selectedTooth()) {
+        <div class="detail-panel">
+          <div class="detail-header">
+            <div class="detail-title">
+              <span class="tooth-badge" [style.background]="getToothColor(selectedTooth()!.toothNumber)">
+                {{ selectedTooth()!.toothNumber }}
+              </span>
+              <div>
+                <h3>{{ toothNames[selectedTooth()!.toothNumber] }}</h3>
+                <p class="detail-subtitle">
+                  <i class="fa-solid" [class]="statusConfig[selectedTooth()!.status].icon"
+                     [style.color]="statusConfig[selectedTooth()!.status].color"></i>
+                  {{ statusConfig[selectedTooth()!.status].label }}
+                  @if (selectedTooth()!.totalChanges > 0) {
+                    <span class="changes-badge">{{ selectedTooth()!.totalChanges }} cambios</span>
+                  }
+                </p>
+              </div>
+            </div>
+            <button class="btn-close" (click)="closeDetail()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Tabs -->
+          <div class="detail-tabs">
+            <button class="tab-btn" [class.active]="activeDetailTab() === 'info'"
+                    (click)="activeDetailTab.set('info')">
+              <i class="fa-solid fa-tooth"></i> Estado
+            </button>
+            <button class="tab-btn" [class.active]="activeDetailTab() === 'surfaces'"
+                    (click)="activeDetailTab.set('surfaces')">
+              <i class="fa-solid fa-cube"></i> Superficies
+            </button>
+            <button class="tab-btn" [class.active]="activeDetailTab() === 'history'"
+                    (click)="activeDetailTab.set('history')">
+              <i class="fa-solid fa-clock-rotate-left"></i> Historial
+            </button>
+          </div>
+
+          <div class="detail-body">
+            <!-- Info Tab -->
+            @if (activeDetailTab() === 'info') {
+              <div class="tab-content">
+                <!-- Status selector -->
+                <div class="form-group">
+                  <label>Estado</label>
+                  <div class="status-grid">
+                    @for (opt of statusOptions; track opt) {
+                      <button
+                        class="status-option"
+                        [class.active]="editStatus() === opt"
+                        [style.--status-color]="statusConfig[opt].color"
+                        (click)="editStatus.set(opt)"
+                        [disabled]="readonly()">
+                        <i class="fa-solid" [class]="statusConfig[opt].icon"></i>
+                        {{ statusConfig[opt].label }}
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                <!-- Conditions -->
+                <div class="form-group">
+                  <label>Condiciones</label>
+                  <div class="conditions-grid">
+                    @for (cond of dentalConditions; track cond) {
+                      <button
+                        class="condition-chip"
+                        [class.active]="editConditions().has(cond)"
+                        (click)="toggleCondition(cond)"
+                        [disabled]="readonly()">
+                        {{ conditionLabels[cond] }}
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group">
+                  <label>Notas</label>
+                  <textarea
+                    class="form-control"
+                    rows="3"
+                    [ngModel]="editNotes()"
+                    (ngModelChange)="editNotes.set($event)"
+                    placeholder="Observaciones sobre esta pieza..."
+                    [disabled]="readonly()">
+                  </textarea>
+                </div>
+              </div>
+            }
+
+            <!-- Surfaces Tab -->
+            @if (activeDetailTab() === 'surfaces') {
+              <div class="tab-content">
+                <!-- Surface Diagram -->
+                <div class="surface-diagram">
+                  <svg viewBox="0 0 200 200" class="surface-svg">
+                    <!-- Buccal (top) -->
+                    <path d="M30 10 L170 10 L150 50 L50 50 Z"
+                          [attr.fill]="editSurfaces()['buccal'] ? '#FF9800' : '#f5f5f5'"
+                          stroke="#999" stroke-width="1.5" class="surface-path"
+                          (click)="setSurfaceCondition('buccal', editSurfaces()['buccal'] ? null : 'caries')"/>
+                    <text x="100" y="35" text-anchor="middle" class="surface-text">V</text>
+
+                    <!-- Lingual (bottom) -->
+                    <path d="M50 150 L150 150 L170 190 L30 190 Z"
+                          [attr.fill]="editSurfaces()['lingual'] ? '#FF9800' : '#f5f5f5'"
+                          stroke="#999" stroke-width="1.5" class="surface-path"
+                          (click)="setSurfaceCondition('lingual', editSurfaces()['lingual'] ? null : 'caries')"/>
+                    <text x="100" y="175" text-anchor="middle" class="surface-text">L</text>
+
+                    <!-- Mesial (left) -->
+                    <path d="M10 30 L50 50 L50 150 L10 170 Z"
+                          [attr.fill]="editSurfaces()['mesial'] ? '#FF9800' : '#f5f5f5'"
+                          stroke="#999" stroke-width="1.5" class="surface-path"
+                          (click)="setSurfaceCondition('mesial', editSurfaces()['mesial'] ? null : 'caries')"/>
+                    <text x="30" y="105" text-anchor="middle" class="surface-text">M</text>
+
+                    <!-- Distal (right) -->
+                    <path d="M150 50 L190 30 L190 170 L150 150 Z"
+                          [attr.fill]="editSurfaces()['distal'] ? '#FF9800' : '#f5f5f5'"
+                          stroke="#999" stroke-width="1.5" class="surface-path"
+                          (click)="setSurfaceCondition('distal', editSurfaces()['distal'] ? null : 'caries')"/>
+                    <text x="170" y="105" text-anchor="middle" class="surface-text">D</text>
+
+                    <!-- Occlusal (center) -->
+                    <rect x="50" y="50" width="100" height="100" rx="8"
+                          [attr.fill]="editSurfaces()['occlusal'] ? '#FF9800' : '#f5f5f5'"
+                          stroke="#999" stroke-width="1.5" class="surface-path"
+                          (click)="setSurfaceCondition('occlusal', editSurfaces()['occlusal'] ? null : 'caries')"/>
+                    <text x="100" y="105" text-anchor="middle" class="surface-text">O</text>
+                  </svg>
+                </div>
+
+                <!-- Surface Details -->
+                <div class="surface-details">
+                  @for (surface of toothSurfaces; track surface) {
+                    <div class="surface-row">
+                      <span class="surface-name">{{ surfaceLabels[surface] }}</span>
+                      <select
+                        class="form-control form-control-sm"
+                        [ngModel]="editSurfaces()[surface] ?? ''"
+                        (ngModelChange)="setSurfaceCondition(surface, $event || null)"
+                        [disabled]="readonly()">
+                        <option value="">Sin condición</option>
+                        <option value="caries">Caries</option>
+                        <option value="resina">Resina</option>
+                        <option value="amalgama">Amalgama</option>
+                        <option value="corona">Corona</option>
+                        <option value="sellante">Sellante</option>
+                        <option value="fractura">Fractura</option>
+                      </select>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- History Tab -->
+            @if (activeDetailTab() === 'history') {
+              <div class="tab-content">
+                @if (loadingHistory()) {
+                  <div class="history-loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Cargando historial...
+                  </div>
+                } @else if (toothHistory().length === 0) {
+                  <div class="history-empty">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <p>Sin cambios registrados</p>
+                  </div>
+                } @else {
+                  <div class="history-timeline">
+                    @for (entry of toothHistory(); track entry.id) {
+                      <div class="timeline-entry">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                          <div class="timeline-header">
+                            <span class="timeline-type">{{ entry.changeType }}</span>
+                            <span class="timeline-date">{{ formatDate(entry.changedAt) }}</span>
+                          </div>
+                          @if (entry.description) {
+                            <p class="timeline-description">{{ entry.description }}</p>
+                          }
+                          <span class="timeline-user">
+                            <i class="fa-solid fa-user"></i> {{ entry.changedByName }}
+                          </span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Save Button -->
+          @if (!readonly()) {
+            <div class="detail-footer">
+              <button class="btn btn-primary" (click)="saveTooth()" [disabled]="saving()">
+                @if (saving()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                } @else {
+                  <i class="fa-solid fa-save"></i> Guardar Cambios
+                }
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

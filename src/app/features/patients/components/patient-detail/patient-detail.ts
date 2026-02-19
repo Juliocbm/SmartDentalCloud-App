@@ -5,11 +5,12 @@ import { PatientsService } from '../../services/patients.service';
 import { Patient } from '../../models/patient.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { OdontogramComponent } from '../../../dental-chart/components/odontogram/odontogram';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, OdontogramComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
@@ -23,7 +24,7 @@ export class PatientDetailComponent implements OnInit {
   patient = signal<Patient | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
-  activeTab = signal<'info' | 'medical' | 'dashboard' | 'history'>('info');
+  activeTab = signal<'info' | 'medical' | 'odontogram' | 'dashboard' | 'history'>('info');
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -49,7 +50,7 @@ export class PatientDetailComponent implements OnInit {
     });
   }
 
-  setActiveTab(tab: 'info' | 'medical' | 'dashboard' | 'history'): void {
+  setActiveTab(tab: 'info' | 'medical' | 'odontogram' | 'dashboard' | 'history'): void {
     this.activeTab.set(tab);
   }
 

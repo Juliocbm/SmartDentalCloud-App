@@ -75,6 +75,14 @@
           <i class="fa-solid fa-heartbeat"></i>
           Historia Médica
         </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'odontogram'"
+          (click)="setActiveTab('odontogram')"
+        >
+          <i class="fa-solid fa-tooth"></i>
+          Odontograma
+        </button>
       </div>
 
       <!-- Tab Content -->
@@ -250,6 +258,15 @@
             </button>
           </div>
           }
+        </div>
+        }
+        <!-- Odontogram Tab -->
+        @if (activeTab() === 'odontogram') {
+        <div class="tab-panel">
+          <app-odontogram
+            [patientId]="patient()!.id"
+            [patientName]="getFullName()"
+          />
         </div>
         }
       </div>
