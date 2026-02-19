@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RolesService } from '../../../features/users/services/roles.service';
 import { Permission, PermissionGroup, PERMISSION_CATEGORIES } from '../../../features/users/models/role.models';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-permission-selector',
@@ -13,6 +14,7 @@ import { Permission, PermissionGroup, PERMISSION_CATEGORIES } from '../../../fea
 })
 export class PermissionSelectorComponent implements OnInit {
   private rolesService = inject(RolesService);
+  private logger = inject(LoggingService);
 
   @Input() selectedPermissions: string[] = [];
   @Output() permissionsChange = new EventEmitter<string[]>();
@@ -41,7 +43,7 @@ export class PermissionSelectorComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading permissions:', err);
+        this.logger.error('Error loading permissions:', err);
         this.loading.set(false);
       }
     });

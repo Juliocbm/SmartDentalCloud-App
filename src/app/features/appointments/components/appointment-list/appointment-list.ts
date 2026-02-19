@@ -7,6 +7,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentListItem, AppointmentStatus, AppointmentStatusConfig } from '../../models/appointment.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-appointment-list',
@@ -17,6 +19,8 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 })
 export class AppointmentListComponent implements OnInit, OnDestroy {
   private appointmentsService = inject(AppointmentsService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -88,7 +92,7 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading appointments:', error);
+        this.logger.error('Error loading appointments:', error);
         this.error.set('Error al cargar las citas');
         this.loading.set(false);
       }
@@ -110,35 +114,32 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
     this.searchSubject.next(value);
   }
 
-  completeAppointment(appointment: AppointmentListItem): void {
-    if (!confirm(`¿Completar cita con ${appointment.patientName}?`)) {
-      return;
-    }
+  async completeAppointment(appointment: AppointmentListItem): Promise<void> {
+    const confirmed = await this.notifications.confirm(`¿Completar cita con ${appointment.patientName}?`);
+    if (!confirmed) return;
 
     this.appointmentsService.complete(appointment.id).subscribe({
       next: () => {
+        this.notifications.success('Cita completada correctamente.');
         this.loadAppointments();
       },
-      error: (error) => {
-        console.error('Error completing appointment:', error);
-        alert('Error al completar la cita');
+      error: () => {
+        this.notifications.error('Error al completar la cita.');
       }
     });
   }
 
-  cancelAppointment(appointment: AppointmentListItem): void {
-    const reason = prompt(`Cancelar cita con ${appointment.patientName}. Motivo (opcional):`);
-    if (reason === null) {
-      return;
-    }
+  async cancelAppointment(appointment: AppointmentListItem): Promise<void> {
+    const confirmed = await this.notifications.confirm(`¿Cancelar cita con ${appointment.patientName}?`);
+    if (!confirmed) return;
 
-    this.appointmentsService.cancel(appointment.id, reason).subscribe({
+    this.appointmentsService.cancel(appointment.id).subscribe({
       next: () => {
+        this.notifications.success('Cita cancelada correctamente.');
         this.loadAppointments();
       },
-      error: (error) => {
-        console.error('Error cancelling appointment:', error);
-        alert('Error al cancelar la cita');
+      error: () => {
+        this.notifications.error('Error al cancelar la cita.');
       }
     });
   }

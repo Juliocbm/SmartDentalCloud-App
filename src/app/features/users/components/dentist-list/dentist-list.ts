@@ -12,6 +12,8 @@ import { UserFormContextService } from '../../services/user-form-context.service
 import { DENTIST_CONTEXT } from '../../models/user-form-context.model';
 import { AppointmentFormContextService } from '../../../appointments/services/appointment-form-context.service';
 import { DENTIST_APPOINTMENT_CONTEXT } from '../../../appointments/models/appointment-form-context.model';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-dentist-list',
@@ -26,6 +28,8 @@ export class DentistListComponent implements OnInit, OnDestroy {
   private rolesService = inject(RolesService);
   private userContextService = inject(UserFormContextService);
   private appointmentContextService = inject(AppointmentFormContextService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
   dentists = signal<User[]>([]);
@@ -82,7 +86,7 @@ export class DentistListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       })
       .catch(err => {
-        console.error('Error loading dentists:', err);
+        this.logger.error('Error loading dentists:', err);
         this.error.set('Error al cargar dentistas. Intenta de nuevo.');
         this.loading.set(false);
       });
@@ -119,24 +123,26 @@ export class DentistListComponent implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
-  toggleDentistActive(dentist: User): void {
-    if (confirm(`¿Estás seguro de ${dentist.isActive ? 'desactivar' : 'activar'} a ${dentist.name}?`)) {
-      this.usersService.toggleActive(dentist.id).subscribe({
-        next: (updatedUser) => {
-          const index = this.dentists().findIndex(d => d.id === dentist.id);
-          if (index !== -1) {
-            const updated = [...this.dentists()];
-            updated[index] = updatedUser;
-            this.dentists.set(updated);
-            this.applyFilters();
-          }
-        },
-        error: (err) => {
-          console.error('Error toggling dentist status:', err);
-          alert('Error al cambiar el estado del dentista');
+  async toggleDentistActive(dentist: User): Promise<void> {
+    const action = dentist.isActive ? 'desactivar' : 'activar';
+    const confirmed = await this.notifications.confirm(`¿Estás seguro de ${action} a ${dentist.name}?`);
+    if (!confirmed) return;
+
+    this.usersService.toggleActive(dentist.id).subscribe({
+      next: (updatedUser) => {
+        const index = this.dentists().findIndex(d => d.id === dentist.id);
+        if (index !== -1) {
+          const updated = [...this.dentists()];
+          updated[index] = updatedUser;
+          this.dentists.set(updated);
+          this.applyFilters();
         }
-      });
-    }
+        this.notifications.success(`Dentista ${action === 'activar' ? 'activado' : 'desactivado'} correctamente.`);
+      },
+      error: () => {
+        this.notifications.error('Error al cambiar el estado del dentista.');
+      }
+    });
   }
 
   navigateToNewDentist(): void {
@@ -146,7 +152,7 @@ export class DentistListComponent implements OnInit, OnDestroy {
 
   createAppointmentForDentist(dentist: User): void {
     if (!dentist.isActive) {
-      alert('No se pueden crear citas para dentistas inactivos');
+      this.notifications.warning('No se pueden crear citas para dentistas inactivos.');
       return;
     }
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { UsersService } from '../../../core/services/users.service';
 import { DentistListItem } from '../../../core/models/user.models';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-dentist-select',
@@ -13,6 +14,7 @@ import { DentistListItem } from '../../../core/models/user.models';
 })
 export class DentistSelectComponent implements OnInit {
   private usersService = inject(UsersService);
+  private logger = inject(LoggingService);
 
   @Input() selectedDentistId: string | null = null;
   @Input() placeholder = 'Seleccionar dentista...';
@@ -47,7 +49,7 @@ export class DentistSelectComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading dentists:', error);
+        this.logger.error('Error loading dentists:', error);
         this.loading.set(false);
       }
     });

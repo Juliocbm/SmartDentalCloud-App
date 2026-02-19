@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { LoggingService } from '../../core/services/logging.service';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from './services/dashboard.service';
 import {
@@ -18,6 +19,7 @@ import {
 })
 export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
+  private logger = inject(LoggingService);
 
   stats = signal<DashboardStats | null>(null);
   kpis = signal<QuickStat[]>([]);
@@ -49,7 +51,7 @@ export class DashboardComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading dashboard stats:', error);
+        this.logger.error('Error loading dashboard stats:', error);
         this.loading.set(false);
       }
     });

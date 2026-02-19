@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ProductsService } from '../../services/products.service';
 import { CategoriesService } from '../../services/categories.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { Category } from '../../models/category.models';
 import { PRODUCT_UNITS } from '../../models/product.models';
 
@@ -24,6 +25,7 @@ export class ProductFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private productsService = inject(ProductsService);
   private categoriesService = inject(CategoriesService);
+  private logger = inject(LoggingService);
 
   productForm!: FormGroup;
   categories = signal<Category[]>([]);
@@ -73,7 +75,7 @@ export class ProductFormComponent implements OnInit {
         this.loadingCategories.set(false);
       },
       error: (err) => {
-        console.error('Error loading categories:', err);
+        this.logger.error('Error loading categories:', err);
         this.loadingCategories.set(false);
       }
     });
@@ -109,7 +111,7 @@ export class ProductFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading product:', err);
+        this.logger.error('Error loading product:', err);
         this.error.set('Error al cargar producto');
         this.loading.set(false);
       }
@@ -154,7 +156,7 @@ export class ProductFormComponent implements OnInit {
         this.router.navigate(['/inventory/products']);
       },
       error: (err) => {
-        console.error('Error creating product:', err);
+        this.logger.error('Error creating product:', err);
         if (err.status === 409) {
           this.error.set('Ya existe un producto con ese código');
         } else if (err.status === 400) {
@@ -191,7 +193,7 @@ export class ProductFormComponent implements OnInit {
         this.router.navigate(['/inventory/products']);
       },
       error: (err) => {
-        console.error('Error updating product:', err);
+        this.logger.error('Error updating product:', err);
         if (err.status === 409) {
           this.error.set('Ya existe un producto con ese código');
         } else {

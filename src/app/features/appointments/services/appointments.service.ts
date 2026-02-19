@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { ApiService } from '../../../core/services/api.service';
+import { ApiService, QueryParams } from '../../../core/services/api.service';
 import {
   Appointment,
   CreateAppointmentRequest,
@@ -75,9 +75,9 @@ export class AppointmentsService {
   }
 
   getMyAppointments(startDate?: Date, endDate?: Date): Observable<AppointmentListItem[]> {
-    const params: any = {};
-    if (startDate) params.startDate = startDate.toISOString();
-    if (endDate) params.endDate = endDate.toISOString();
+    const params: QueryParams = {};
+    if (startDate) params['startDate'] = startDate.toISOString();
+    if (endDate) params['endDate'] = endDate.toISOString();
     
     return this.api.get<Appointment[]>('/appointments/my-appointments', params).pipe(
       map(appointments => appointments.map(apt => this.toListItem(this.mapDates(apt))))
@@ -105,7 +105,7 @@ export class AppointmentsService {
   }
 
   getAvailability(date: Date, userId?: string, durationMinutes: number = 60): Observable<TimeSlot[]> {
-    return this.api.get<any[]>('/appointments/availability', {
+    return this.api.get<{ start: string; end: string; available: boolean }[]>('/appointments/availability', {
       date: date.toISOString(),
       userId,
       durationMinutes
@@ -119,15 +119,15 @@ export class AppointmentsService {
   }
 
   getStatistics(startDate?: Date, endDate?: Date, userId?: string): Observable<AppointmentStatistics> {
-    const params: any = {};
-    if (startDate) params.startDate = startDate.toISOString();
-    if (endDate) params.endDate = endDate.toISOString();
-    if (userId) params.userId = userId;
+    const params: QueryParams = {};
+    if (startDate) params['startDate'] = startDate.toISOString();
+    if (endDate) params['endDate'] = endDate.toISOString();
+    if (userId) params['userId'] = userId;
 
     return this.api.get<AppointmentStatistics>('/appointments/statistics', params);
   }
 
-  private mapDates(appointment: any): Appointment {
+  private mapDates(appointment: Appointment): Appointment {
     return {
       ...appointment,
       startAt: new Date(appointment.startAt),

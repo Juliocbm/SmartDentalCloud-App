@@ -2,9 +2,19 @@ import { Injectable, ComponentRef, ViewContainerRef, Type, signal } from '@angul
 import { Subject } from 'rxjs';
 
 /**
+ * Interfaz base que deben implementar los componentes usados como modales.
+ * Elimina la necesidad de casts `as any` al pasar datos y referencias.
+ */
+export interface ModalComponentBase<T = unknown, R = unknown> {
+  modalData?: T;
+  modalRef?: ModalRef<T, R>;
+  modalConfig?: ModalConfig<T>;
+}
+
+/**
  * Configuración para abrir un modal
  */
-export interface ModalConfig<T = any> {
+export interface ModalConfig<T = unknown> {
   data?: T;
   width?: string;
   maxWidth?: string;
@@ -15,7 +25,7 @@ export interface ModalConfig<T = any> {
 /**
  * Referencia al modal abierto
  */
-export interface ModalRef<T = any, R = any> {
+export interface ModalRef<T = unknown, R = unknown> {
   close: (result?: R) => void;
   afterClosed: () => Subject<R | undefined>;
   data: T;
@@ -30,7 +40,7 @@ export interface ModalRef<T = any, R = any> {
 })
 export class ModalService {
   private viewContainerRef: ViewContainerRef | null = null;
-  private modalStack: ComponentRef<any>[] = [];
+  private modalStack: ComponentRef<unknown>[] = [];
   
   isOpen = signal(false);
 
@@ -43,9 +53,10 @@ export class ModalService {
   }
 
   /**
-   * Abre un modal con el componente especificado
+   * Abre un modal con el componente especificado.
+   * El componente debe implementar ModalComponentBase<T, R>.
    */
-  open<T, R = any>(component: Type<any>, config: ModalConfig<T> = {}): ModalRef<T, R> {
+  open<T, R = unknown>(component: Type<ModalComponentBase<T, R>>, config: ModalConfig<T> = {}): ModalRef<T, R> {
     if (!this.viewContainerRef) {
       throw new Error('ModalService: ViewContainerRef no registrado. Llama registerViewContainerRef() primero.');
     }
@@ -54,11 +65,6 @@ export class ModalService {
     
     const componentRef = this.viewContainerRef.createComponent(component);
     
-    // Pasar datos al componente
-    if (config.data) {
-      (componentRef.instance as any).modalData = config.data;
-    }
-
     // Configurar el cierre
     const modalRef: ModalRef<T, R> = {
       close: (result?: R) => {
@@ -70,9 +76,12 @@ export class ModalService {
       data: config.data as T
     };
 
-    // Pasar la referencia al componente
-    (componentRef.instance as any).modalRef = modalRef;
-    (componentRef.instance as any).modalConfig = config;
+    // Pasar datos y referencia al componente de forma tipada
+    if (config.data) {
+      componentRef.instance.modalData = config.data;
+    }
+    componentRef.instance.modalRef = modalRef;
+    componentRef.instance.modalConfig = config;
 
     this.modalStack.push(componentRef);
     this.isOpen.set(true);

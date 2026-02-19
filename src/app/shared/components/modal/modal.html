@@ -1,21 +1,21 @@
 <div class="modal-overlay" (click)="onBackdropClick($event)">
-  <div class="modal-container" [ngClass]="'modal-' + size">
+  <div class="modal-container" [ngClass]="'modal-' + size()">
     <!-- Header -->
     <div class="modal-header">
       <div class="modal-title-section">
-        @if (icon) {
+        @if (icon()) {
           <div class="modal-icon">
-            <i class="fa-solid" [ngClass]="icon"></i>
+            <i class="fa-solid" [ngClass]="icon()!"></i>
           </div>
         }
         <div class="modal-title-content">
-          <h2 class="modal-title">{{ title }}</h2>
-          @if (subtitle) {
-            <p class="modal-subtitle">{{ subtitle }}</p>
+          <h2 class="modal-title">{{ title() }}</h2>
+          @if (subtitle()) {
+            <p class="modal-subtitle">{{ subtitle() }}</p>
           }
         </div>
       </div>
-      @if (showCloseButton) {
+      @if (showCloseButton()) {
         <button class="modal-close-btn" (click)="close()" type="button" aria-label="Cerrar">
           <i class="fa-solid fa-times"></i>
         </button>

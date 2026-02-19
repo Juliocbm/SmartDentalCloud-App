@@ -5,6 +5,8 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { RolesService } from '../../services/roles.service';
 import { UsersService } from '../../services/users.service';
 import { Role } from '../../models/role.models';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-role-list',
@@ -16,6 +18,8 @@ import { Role } from '../../models/role.models';
 export class RoleListComponent implements OnInit {
   private rolesService = inject(RolesService);
   private usersService = inject(UsersService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
 
   roles = signal<Role[]>([]);
   loading = signal(true);
@@ -41,30 +45,31 @@ export class RoleListComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading roles:', err);
+        this.logger.error('Error loading roles:', err);
         this.error.set('Error al cargar roles');
         this.loading.set(false);
       }
     });
   }
 
-  deleteRole(role: Role): void {
-    if (confirm(`¿Estás seguro de eliminar el rol "${role.name}"?\n\nEsta acción no se puede deshacer.`)) {
-      this.rolesService.delete(role.id).subscribe({
-        next: () => {
-          const updated = this.roles().filter(r => r.id !== role.id);
-          this.roles.set(updated);
-        },
-        error: (err) => {
-          console.error('Error deleting role:', err);
-          if (err.status === 400) {
-            alert('No se puede eliminar el rol porque tiene usuarios asignados');
-          } else {
-            alert('Error al eliminar el rol');
-          }
+  async deleteRole(role: Role): Promise<void> {
+    const confirmed = await this.notifications.confirm(`¿Estás seguro de eliminar el rol "${role.name}"?\n\nEsta acción no se puede deshacer.`);
+    if (!confirmed) return;
+
+    this.rolesService.delete(role.id).subscribe({
+      next: () => {
+        const updated = this.roles().filter(r => r.id !== role.id);
+        this.roles.set(updated);
+        this.notifications.success('Rol eliminado correctamente.');
+      },
+      error: (err) => {
+        if (err.status === 400) {
+          this.notifications.warning('No se puede eliminar el rol porque tiene usuarios asignados.');
+        } else {
+          this.notifications.error('Error al eliminar el rol.');
         }
-      });
-    }
+      }
+    });
   }
 
   getRoleBadgeClass(roleName: string): string {

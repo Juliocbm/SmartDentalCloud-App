@@ -9,6 +9,7 @@ import { StockService } from '../../services/stock.service';
 import { StockAlert, StockAlertLevel } from '../../models/stock.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ModalService } from '../../../../shared/services/modal.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 
@@ -22,6 +23,7 @@ import { ROUTES } from '../../../../core/constants/routes.constants';
 export class StockAlertsComponent implements OnInit {
   private stockService = inject(StockService);
   private modalService = inject(ModalService);
+  private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
   alerts = signal<StockAlert[]>([]);
@@ -92,7 +94,7 @@ export class StockAlertsComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading stock alerts:', err);
+        this.logger.error('Error loading stock alerts:', err);
         this.error.set('Error al cargar las alertas de stock. Por favor, intenta de nuevo.');
         this.loading.set(false);
       }

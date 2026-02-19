@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from '../../services/users.service';
 import { User } from '../../models/user.models';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-user-detail',
@@ -15,6 +17,8 @@ export class UserDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private usersService = inject(UsersService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
 
   user = signal<User | null>(null);
   loading = signal(true);
@@ -39,28 +43,30 @@ export class UserDetailComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading user:', err);
+        this.logger.error('Error loading user:', err);
         this.error.set('Error al cargar usuario');
         this.loading.set(false);
       }
     });
   }
 
-  toggleUserActive(): void {
+  async toggleUserActive(): Promise<void> {
     const user = this.user();
     if (!user) return;
 
-    if (confirm(`¿Estás seguro de ${user.isActive ? 'desactivar' : 'activar'} a ${user.name}?`)) {
-      this.usersService.toggleActive(user.id).subscribe({
-        next: (updatedUser) => {
-          this.user.set(updatedUser);
-        },
-        error: (err) => {
-          console.error('Error toggling status:', err);
-          alert('Error al cambiar el estado del usuario');
-        }
-      });
-    }
+    const action = user.isActive ? 'desactivar' : 'activar';
+    const confirmed = await this.notifications.confirm(`¿Estás seguro de ${action} a ${user.name}?`);
+    if (!confirmed) return;
+
+    this.usersService.toggleActive(user.id).subscribe({
+      next: (updatedUser) => {
+        this.user.set(updatedUser);
+        this.notifications.success(`Usuario ${action === 'activar' ? 'activado' : 'desactivado'} correctamente.`);
+      },
+      error: () => {
+        this.notifications.error('Error al cambiar el estado del usuario.');
+      }
+    });
   }
 
   getRoleBadgeClass(roleName: string): string {

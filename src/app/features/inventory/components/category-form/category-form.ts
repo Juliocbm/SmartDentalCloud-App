@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 
 import { CategoriesService } from '../../services/categories.service';
 import { CategoryFormContextService } from '../../services/category-form-context.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { Category, CreateCategoryRequest, UpdateCategoryRequest } from '../../models/category.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ROUTES } from '../../../../core/constants/routes.constants';
@@ -22,6 +23,7 @@ export class CategoryFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private categoriesService = inject(CategoriesService);
   private contextService = inject(CategoryFormContextService);
+  private logger = inject(LoggingService);
 
   categoryForm!: FormGroup;
   loading = signal(false);
@@ -76,7 +78,7 @@ export class CategoryFormComponent implements OnInit {
         this.categories.set(categories.filter(c => c.isActive));
       },
       error: (err) => {
-        console.error('Error loading categories:', err);
+        this.logger.error('Error loading categories:', err);
       }
     });
   }
@@ -98,7 +100,7 @@ export class CategoryFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading category:', err);
+        this.logger.error('Error loading category:', err);
         this.error.set('Error al cargar la categoría. Por favor, intenta de nuevo.');
         this.loading.set(false);
       }
@@ -131,7 +133,7 @@ export class CategoryFormComponent implements OnInit {
           this.router.navigate([returnUrl]);
         },
         error: (err) => {
-          console.error('Error updating category:', err);
+          this.logger.error('Error updating category:', err);
           this.error.set('Error al actualizar la categoría. Por favor, intenta de nuevo.');
           this.loading.set(false);
         }
@@ -150,7 +152,7 @@ export class CategoryFormComponent implements OnInit {
           this.router.navigate([returnUrl]);
         },
         error: (err) => {
-          console.error('Error creating category:', err);
+          this.logger.error('Error creating category:', err);
           this.error.set('Error al crear la categoría. Por favor, intenta de nuevo.');
           this.loading.set(false);
         }

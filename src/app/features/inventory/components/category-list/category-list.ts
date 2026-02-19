@@ -9,6 +9,8 @@ import { CategoriesService } from '../../services/categories.service';
 import { Category } from '../../models/category.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ROUTES } from '../../../../core/constants/routes.constants';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-category-list',
@@ -19,6 +21,8 @@ import { ROUTES } from '../../../../core/constants/routes.constants';
 })
 export class CategoryListComponent implements OnInit {
   private categoriesService = inject(CategoriesService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
   categories = signal<Category[]>([]);
@@ -78,7 +82,7 @@ export class CategoryListComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading categories:', err);
+        this.logger.error('Error loading categories:', err);
         this.error.set('Error al cargar las categorías. Por favor, intenta de nuevo.');
         this.loading.set(false);
       }
@@ -93,18 +97,17 @@ export class CategoryListComponent implements OnInit {
     this.filterStatus.set(value as 'all' | 'active' | 'inactive');
   }
 
-  deleteCategory(category: Category): void {
-    if (!confirm(`¿Estás seguro de eliminar la categoría "${category.name}"?`)) {
-      return;
-    }
+  async deleteCategory(category: Category): Promise<void> {
+    const confirmed = await this.notifications.confirm(`¿Estás seguro de eliminar la categoría "${category.name}"?`);
+    if (!confirmed) return;
 
     this.categoriesService.delete(category.id).subscribe({
       next: () => {
         this.categories.update(cats => cats.filter(c => c.id !== category.id));
+        this.notifications.success('Categoría eliminada correctamente.');
       },
-      error: (err) => {
-        console.error('Error deleting category:', err);
-        this.error.set('Error al eliminar la categoría. Por favor, intenta de nuevo.');
+      error: () => {
+        this.notifications.error('Error al eliminar la categoría. Por favor, intenta de nuevo.');
       }
     });
   }

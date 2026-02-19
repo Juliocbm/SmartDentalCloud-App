@@ -1,4 +1,5 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal, effect, inject } from '@angular/core';
+import { LoggingService } from './logging.service';
 
 /**
  * Configuración de estado del sidebar
@@ -29,6 +30,8 @@ const DEFAULT_STATE: SidebarState = {
   providedIn: 'root'
 })
 export class SidebarStateService {
+  private logger = inject(LoggingService);
+
   /**
    * Estado de colapso del sidebar
    */
@@ -98,7 +101,7 @@ export class SidebarStateService {
         return { ...DEFAULT_STATE, ...JSON.parse(stored) };
       }
     } catch (error) {
-      console.error('Error loading sidebar state:', error);
+      this.logger.error('Error loading sidebar state:', error);
     }
     return DEFAULT_STATE;
   }
@@ -110,7 +113,7 @@ export class SidebarStateService {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (error) {
-      console.error('Error saving sidebar state:', error);
+      this.logger.error('Error saving sidebar state:', error);
     }
   }
 

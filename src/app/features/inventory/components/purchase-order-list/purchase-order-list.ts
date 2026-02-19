@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { PurchaseOrdersService } from '../../services/purchase-orders.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { PurchaseOrder, PurchaseOrderStatus, PURCHASE_ORDER_STATUS_LABELS } from '../../models/purchase-order.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
@@ -18,6 +19,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 })
 export class PurchaseOrderListComponent implements OnInit, OnDestroy {
   private purchaseOrdersService = inject(PurchaseOrdersService);
+  private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
   orders = signal<PurchaseOrder[]>([]);
@@ -81,7 +83,7 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading purchase orders:', err);
+        this.logger.error('Error loading purchase orders:', err);
         this.error.set('Error al cargar órdenes de compra. Por favor, intenta de nuevo.');
         this.loading.set(false);
       }

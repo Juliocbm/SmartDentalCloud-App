@@ -10,6 +10,8 @@ import { CategoriesService } from '../../services/categories.service';
 import { Product } from '../../models/product.models';
 import { Category } from '../../models/category.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 /**
  * Componente para listar productos de inventario
@@ -24,6 +26,8 @@ import { ROUTES } from '../../../../core/constants/routes.constants';
 export class ProductListComponent implements OnInit, OnDestroy {
   private productsService = inject(ProductsService);
   private categoriesService = inject(CategoriesService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
   products = signal<Product[]>([]);
@@ -74,7 +78,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       })
       .catch(err => {
-        console.error('Error loading data:', err);
+        this.logger.error('Error loading data:', err);
         this.error.set('Error al cargar productos. Intenta de nuevo.');
         this.loading.set(false);
       });
@@ -121,20 +125,21 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
-  deleteProduct(product: Product): void {
-    if (confirm(`¿Estás seguro de eliminar el producto "${product.name}"?`)) {
-      this.productsService.delete(product.id).subscribe({
-        next: () => {
-          const updated = this.products().filter(p => p.id !== product.id);
-          this.products.set(updated);
-          this.applyFilters();
-        },
-        error: (err) => {
-          console.error('Error deleting product:', err);
-          alert('Error al eliminar el producto');
-        }
-      });
-    }
+  async deleteProduct(product: Product): Promise<void> {
+    const confirmed = await this.notifications.confirm(`¿Estás seguro de eliminar el producto "${product.name}"?`);
+    if (!confirmed) return;
+
+    this.productsService.delete(product.id).subscribe({
+      next: () => {
+        const updated = this.products().filter(p => p.id !== product.id);
+        this.products.set(updated);
+        this.applyFilters();
+        this.notifications.success('Producto eliminado correctamente.');
+      },
+      error: () => {
+        this.notifications.error('Error al eliminar el producto.');
+      }
+    });
   }
 
   /**

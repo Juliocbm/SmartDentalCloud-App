@@ -1,4 +1,4 @@
-import { Component, Input, inject, effect, ElementRef, ViewChild, AfterViewInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, inject, effect, ElementRef, ViewChild, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, ChartData, ChartOptions } from 'chart.js';
 import { ChartConfigService } from '../../../../core/services/chart-config.service';
@@ -13,7 +13,8 @@ import { ChartDataItem } from '../chart.models';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './pie-chart.html',
-  styleUrls: ['./pie-chart.scss']
+  styleUrls: ['./pie-chart.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PieChartComponent implements AfterViewInit, OnDestroy, OnChanges {
   private chartConfig = inject(ChartConfigService);

@@ -8,6 +8,8 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
 import { User, Role } from '../../models/user.models';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-user-list',
@@ -19,6 +21,8 @@ import { User, Role } from '../../models/user.models';
 export class UserListComponent implements OnInit, OnDestroy {
   private usersService = inject(UsersService);
   private rolesService = inject(RolesService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
   users = signal<User[]>([]);
@@ -69,7 +73,7 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       })
       .catch(err => {
-        console.error('Error loading data:', err);
+        this.logger.error('Error loading data:', err);
         this.error.set('Error al cargar usuarios. Intenta de nuevo.');
         this.loading.set(false);
       });
@@ -117,24 +121,26 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
-  toggleUserActive(user: User): void {
-    if (confirm(`¿Estás seguro de ${user.isActive ? 'desactivar' : 'activar'} a ${user.name}?`)) {
-      this.usersService.toggleActive(user.id).subscribe({
-        next: (updatedUser) => {
-          const index = this.users().findIndex(u => u.id === user.id);
-          if (index !== -1) {
-            const updated = [...this.users()];
-            updated[index] = updatedUser;
-            this.users.set(updated);
-            this.applyFilters();
-          }
-        },
-        error: (err) => {
-          console.error('Error toggling user status:', err);
-          alert('Error al cambiar el estado del usuario');
+  async toggleUserActive(user: User): Promise<void> {
+    const action = user.isActive ? 'desactivar' : 'activar';
+    const confirmed = await this.notifications.confirm(`¿Estás seguro de ${action} a ${user.name}?`);
+    if (!confirmed) return;
+
+    this.usersService.toggleActive(user.id).subscribe({
+      next: (updatedUser) => {
+        const index = this.users().findIndex(u => u.id === user.id);
+        if (index !== -1) {
+          const updated = [...this.users()];
+          updated[index] = updatedUser;
+          this.users.set(updated);
+          this.applyFilters();
         }
-      });
-    }
+        this.notifications.success(`Usuario ${action === 'activar' ? 'activado' : 'desactivado'} correctamente.`);
+      },
+      error: () => {
+        this.notifications.error('Error al cambiar el estado del usuario.');
+      }
+    });
   }
 
   getRoleBadgeClass(roleName: string): string {

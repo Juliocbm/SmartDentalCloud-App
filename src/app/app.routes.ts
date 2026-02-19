@@ -30,11 +30,13 @@ export const routes: Routes = [
       },
       {
         path: 'treatments',
-        loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
+        loadComponent: () => import('./shared/components/coming-soon/coming-soon').then(m => m.ComingSoonComponent),
+        data: { moduleName: 'Tratamientos', icon: 'fa-tooth' }
       },
       {
         path: 'billing',
-        loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
+        loadComponent: () => import('./shared/components/coming-soon/coming-soon').then(m => m.ComingSoonComponent),
+        data: { moduleName: 'Facturación', icon: 'fa-file-invoice-dollar' }
       },
       {
         path: 'dentists',
@@ -42,7 +44,8 @@ export const routes: Routes = [
       },
       {
         path: 'reports',
-        loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
+        loadComponent: () => import('./shared/components/coming-soon/coming-soon').then(m => m.ComingSoonComponent),
+        data: { moduleName: 'Reportes', icon: 'fa-chart-bar' }
       },
       {
         path: 'users',
@@ -54,7 +57,8 @@ export const routes: Routes = [
       },
       {
         path: 'settings',
-        loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
+        loadComponent: () => import('./shared/components/coming-soon/coming-soon').then(m => m.ComingSoonComponent),
+        data: { moduleName: 'Configuración', icon: 'fa-gear' }
       }
     ]
   },

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiService } from '../../../core/services/api.service';
+import { ApiService, QueryParams } from '../../../core/services/api.service';
 import {
   Patient,
   CreatePatientRequest,
@@ -28,12 +28,12 @@ export class PatientsService {
     searchTerm?: string,
     isActive?: boolean
   ): Observable<PaginatedList<Patient>> {
-    const params: any = { pageNumber, pageSize };
+    const params: QueryParams = { pageNumber, pageSize };
     if (searchTerm) {
-      params.searchTerm = searchTerm;
+      params['searchTerm'] = searchTerm;
     }
     if (isActive !== undefined) {
-      params.isActive = isActive;
+      params['isActive'] = isActive;
     }
     return this.api.get<PaginatedList<Patient>>(this.baseUrl, params);
   }
@@ -59,7 +59,16 @@ export class PatientsService {
     pageNumber: number = 1,
     pageSize: number = 10
   ): Observable<PaginatedList<Patient>> {
-    const params: any = { ...filters, pageNumber, pageSize };
+    const params: QueryParams = {
+      pageNumber,
+      pageSize,
+      email: filters.email,
+      phoneNumber: filters.phoneNumber,
+      dateOfBirth: filters.dateOfBirth?.toISOString(),
+      hasUpcomingAppointments: filters.hasUpcomingAppointments,
+      hasPendingBalance: filters.hasPendingBalance,
+      isActive: filters.isActive
+    };
     return this.api.get<PaginatedList<Patient>>(`${this.baseUrl}/search`, params);
   }
 

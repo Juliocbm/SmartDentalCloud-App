@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { RolesService } from '../../services/roles.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { PermissionSelectorComponent } from '../../../../shared/components/permission-selector/permission-selector';
 
 @Component({
@@ -18,6 +19,7 @@ export class RoleFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private rolesService = inject(RolesService);
+  private logger = inject(LoggingService);
 
   roleForm!: FormGroup;
   selectedPermissions = signal<string[]>([]);
@@ -68,7 +70,7 @@ export class RoleFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading role:', err);
+        this.logger.error('Error loading role:', err);
         this.error.set('Error al cargar rol');
         this.loading.set(false);
       }
@@ -114,7 +116,7 @@ export class RoleFormComponent implements OnInit {
         this.router.navigate(['/users/roles']);
       },
       error: (err) => {
-        console.error('Error creating role:', err);
+        this.logger.error('Error creating role:', err);
         if (err.status === 409) {
           this.error.set('Ya existe un rol con ese nombre');
         } else {
@@ -145,14 +147,14 @@ export class RoleFormComponent implements OnInit {
             this.router.navigate(['/users/roles']);
           },
           error: (err) => {
-            console.error('Error updating permissions:', err);
+            this.logger.error('Error updating permissions:', err);
             this.error.set('Rol actualizado pero error al actualizar permisos');
             this.loading.set(false);
           }
         });
       },
       error: (err) => {
-        console.error('Error updating role:', err);
+        this.logger.error('Error updating role:', err);
         if (err.status === 409) {
           this.error.set('Ya existe un rol con ese nombre');
         } else {

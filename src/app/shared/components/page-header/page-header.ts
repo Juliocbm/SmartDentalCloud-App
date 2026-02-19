@@ -1,4 +1,4 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -13,7 +13,8 @@ export interface BreadcrumbItem {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './page-header.html',
-  styleUrl: './page-header.scss'
+  styleUrl: './page-header.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PageHeaderComponent {
   @Input() title: string = '';

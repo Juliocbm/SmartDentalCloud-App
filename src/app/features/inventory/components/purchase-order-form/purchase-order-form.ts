@@ -6,6 +6,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { PurchaseOrdersService } from '../../services/purchase-orders.service';
 import { SuppliersService } from '../../services/suppliers.service';
 import { ProductsService } from '../../services/products.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { Supplier } from '../../models/supplier.models';
 import { Product } from '../../models/product.models';
 
@@ -22,6 +23,7 @@ export class PurchaseOrderFormComponent implements OnInit {
   private purchaseOrdersService = inject(PurchaseOrdersService);
   private suppliersService = inject(SuppliersService);
   private productsService = inject(ProductsService);
+  private logger = inject(LoggingService);
 
   orderForm!: FormGroup;
   suppliers = signal<Supplier[]>([]);
@@ -79,7 +81,7 @@ export class PurchaseOrderFormComponent implements OnInit {
         this.loadingSuppliers.set(false);
       },
       error: (err) => {
-        console.error('Error loading suppliers:', err);
+        this.logger.error('Error loading suppliers:', err);
         this.loadingSuppliers.set(false);
       }
     });
@@ -92,7 +94,7 @@ export class PurchaseOrderFormComponent implements OnInit {
         this.loadingProducts.set(false);
       },
       error: (err) => {
-        console.error('Error loading products:', err);
+        this.logger.error('Error loading products:', err);
         this.loadingProducts.set(false);
       }
     });
@@ -175,7 +177,7 @@ export class PurchaseOrderFormComponent implements OnInit {
         this.router.navigate(['/inventory/purchase-orders']);
       },
       error: (err) => {
-        console.error('Error creating purchase order:', err);
+        this.logger.error('Error creating purchase order:', err);
         this.error.set(err.error?.error || 'Error al crear orden de compra');
         this.saving.set(false);
       }

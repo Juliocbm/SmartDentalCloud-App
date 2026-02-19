@@ -8,6 +8,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { SuppliersService } from '../../services/suppliers.service';
 import { Supplier } from '../../models/supplier.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-supplier-list',
@@ -18,6 +20,8 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 })
 export class SupplierListComponent implements OnInit, OnDestroy {
   private suppliersService = inject(SuppliersService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
   suppliers = signal<Supplier[]>([]);
@@ -84,7 +88,7 @@ export class SupplierListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading suppliers:', err);
+        this.logger.error('Error loading suppliers:', err);
         this.error.set('Error al cargar proveedores. Por favor, intenta de nuevo.');
         this.loading.set(false);
       }
@@ -99,18 +103,17 @@ export class SupplierListComponent implements OnInit, OnDestroy {
     this.filterStatus.set(status);
   }
 
-  deleteSupplier(id: string): void {
-    if (!confirm('¿Estás seguro de que deseas eliminar este proveedor?')) {
-      return;
-    }
+  async deleteSupplier(id: string): Promise<void> {
+    const confirmed = await this.notifications.confirm('¿Estás seguro de que deseas eliminar este proveedor?');
+    if (!confirmed) return;
 
     this.suppliersService.delete(id).subscribe({
       next: () => {
+        this.notifications.success('Proveedor eliminado correctamente.');
         this.loadData();
       },
-      error: (err) => {
-        console.error('Error deleting supplier:', err);
-        alert('Error al eliminar proveedor');
+      error: () => {
+        this.notifications.error('Error al eliminar proveedor.');
       }
     });
   }

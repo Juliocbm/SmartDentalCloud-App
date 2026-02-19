@@ -5,6 +5,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { BarChartComponent, ChartDataItem } from '../../../../shared/components/charts';
 import { PatientsAnalyticsService } from '../../services/patients-analytics.service';
 import { ROUTES } from '../../../../core/constants/routes.constants';
+import { LoggingService } from '../../../../core/services/logging.service';
 import {
   PatientsAnalytics,
   PatientsStatistics,
@@ -45,6 +46,7 @@ interface QuickAction {
 export class PatientsDashboardComponent implements OnInit {
   private analyticsService = inject(PatientsAnalyticsService);
   private router = inject(Router);
+  private logger = inject(LoggingService);
 
   // Breadcrumbs
   breadcrumbItems: BreadcrumbItem[] = [
@@ -205,7 +207,7 @@ export class PatientsDashboardComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading patients dashboard:', err);
+        this.logger.error('Error loading patients dashboard:', err);
         this.error.set('Error al cargar los datos del dashboard');
         this.loading.set(false);
       }

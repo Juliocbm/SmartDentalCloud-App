@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { ProductsService } from '../../features/inventory/services/products.service';
 import { interval, startWith, switchMap } from 'rxjs';
+import { LoggingService } from './logging.service';
 
 /**
  * Servicio global para gestionar el contador de alertas de stock
@@ -11,6 +12,7 @@ import { interval, startWith, switchMap } from 'rxjs';
 })
 export class AlertsCountService {
   private productsService = inject(ProductsService);
+  private logger = inject(LoggingService);
 
   private criticalCount = signal(0);
   private warningCount = signal(0);
@@ -48,7 +50,7 @@ export class AlertsCountService {
           this.calculateAlerts(products);
         },
         error: (err) => {
-          console.error('Error refreshing alerts count:', err);
+          this.logger.error('Error refreshing alerts count:', err);
         }
       });
   }
@@ -62,7 +64,7 @@ export class AlertsCountService {
         this.calculateAlerts(products);
       },
       error: (err) => {
-        console.error('Error refreshing alerts count:', err);
+        this.logger.error('Error refreshing alerts count:', err);
       }
     });
   }

@@ -11,6 +11,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatusConfig } from '../../models/appointment.models';
 import { UsersService } from '../../../../core/services/users.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { DentistListItem } from '../../../../core/models/user.models';
 
 @Component({
@@ -24,6 +25,7 @@ export class AppointmentCalendarComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);
   private usersService = inject(UsersService);
   private router = inject(Router);
+  private logger = inject(LoggingService);
 
   appointments = signal<Appointment[]>([]);
   loading = signal(true);
@@ -109,7 +111,7 @@ export class AppointmentCalendarComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading appointments:', error);
+        this.logger.error('Error loading appointments:', error);
         this.loading.set(false);
       }
     });
@@ -216,7 +218,7 @@ export class AppointmentCalendarComponent implements OnInit {
         this.dentists.set(dentists);
       },
       error: (error) => {
-        console.error('Error loading dentists:', error);
+        this.logger.error('Error loading dentists:', error);
         this.dentists.set([]);
       }
     });

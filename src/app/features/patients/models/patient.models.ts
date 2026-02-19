@@ -75,15 +75,8 @@ export interface PatientSearchResult {
   phone: string;
 }
 
-export interface PaginatedList<T> {
-  items: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-}
+// Re-exportado desde core/models para mantener compatibilidad
+export type { PaginatedList } from '../../../core/models/pagination.models';
 
 export enum Gender {
   Male = 'Masculino',

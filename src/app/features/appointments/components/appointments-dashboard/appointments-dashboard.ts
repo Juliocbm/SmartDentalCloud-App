@@ -5,6 +5,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { PieChartComponent, BarChartComponent, ChartDataItem } from '../../../../shared/components/charts';
 import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentsAnalyticsService } from '../../services/appointments-analytics.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import {
   UpcomingAppointment,
   PendingConfirmation,
@@ -34,6 +35,7 @@ interface QuickAction {
 export class AppointmentsDashboardComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);
   private analyticsService = inject(AppointmentsAnalyticsService);
+  private logger = inject(LoggingService);
 
   // Estados de carga
   loading = signal(true);
@@ -136,7 +138,7 @@ export class AppointmentsDashboardComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading dashboard metrics:', err);
+        this.logger.error('Error loading dashboard metrics:', err);
         this.error.set('Error al cargar datos del dashboard');
         this.loading.set(false);
       }
@@ -159,7 +161,7 @@ export class AppointmentsDashboardComponent implements OnInit {
         this.loadingUpcoming.set(false);
       },
       error: (err) => {
-        console.error('Error loading upcoming appointments:', err);
+        this.logger.error('Error loading upcoming appointments:', err);
         this.loadingUpcoming.set(false);
       }
     });
@@ -173,7 +175,7 @@ export class AppointmentsDashboardComponent implements OnInit {
         this.loadingPending.set(false);
       },
       error: (err) => {
-        console.error('Error loading pending confirmations:', err);
+        this.logger.error('Error loading pending confirmations:', err);
         this.loadingPending.set(false);
       }
     });
@@ -187,7 +189,7 @@ export class AppointmentsDashboardComponent implements OnInit {
         this.loadingActivity.set(false);
       },
       error: (err) => {
-        console.error('Error loading recent activity:', err);
+        this.logger.error('Error loading recent activity:', err);
         this.loadingActivity.set(false);
       }
     });
@@ -201,7 +203,7 @@ export class AppointmentsDashboardComponent implements OnInit {
         this.loadingStatusChart.set(false);
       },
       error: (err) => {
-        console.error('Error loading status distribution:', err);
+        this.logger.error('Error loading status distribution:', err);
         this.loadingStatusChart.set(false);
       }
     });
@@ -215,7 +217,7 @@ export class AppointmentsDashboardComponent implements OnInit {
         this.loadingWeekdayChart.set(false);
       },
       error: (err) => {
-        console.error('Error loading weekday distribution:', err);
+        this.logger.error('Error loading weekday distribution:', err);
         this.loadingWeekdayChart.set(false);
       }
     });
@@ -229,7 +231,7 @@ export class AppointmentsDashboardComponent implements OnInit {
         this.loadingPatients.set(false);
       },
       error: (err) => {
-        console.error('Error loading frequent patients:', err);
+        this.logger.error('Error loading frequent patients:', err);
         this.loadingPatients.set(false);
       }
     });

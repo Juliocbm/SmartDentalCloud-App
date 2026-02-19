@@ -4,7 +4,8 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientsService } from '../../services/patients.service';
-import { Patient } from '../../models/patient.models';
+import { LoggingService } from '../../../../core/services/logging.service';
+import { Patient, CreatePatientRequest, UpdatePatientRequest } from '../../models/patient.models';
 
 @Component({
   selector: 'app-patient-form',
@@ -18,6 +19,7 @@ export class PatientFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private patientsService = inject(PatientsService);
+  private logger = inject(LoggingService);
 
   patientForm!: FormGroup;
   loading = signal(false);
@@ -84,7 +86,7 @@ export class PatientFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading patient:', err);
+        this.logger.error('Error loading patient:', err);
         this.error.set('Error al cargar el paciente. Por favor intente nuevamente.');
         this.loading.set(false);
       }
@@ -121,29 +123,29 @@ export class PatientFormComponent implements OnInit {
     }
   }
 
-  private createPatient(data: any): void {
+  private createPatient(data: CreatePatientRequest): void {
     this.patientsService.create(data).subscribe({
       next: (patient) => {
         this.router.navigate(['/patients', patient.id]);
       },
       error: (err) => {
-        console.error('Error creating patient:', err);
+        this.logger.error('Error creating patient:', err);
         this.error.set('Error al crear el paciente. Por favor intente nuevamente.');
         this.loading.set(false);
       }
     });
   }
 
-  private updatePatient(data: any): void {
+  private updatePatient(data: Partial<UpdatePatientRequest>): void {
     const id = this.patientId();
     if (!id) return;
 
-    this.patientsService.update(id, { ...data, id }).subscribe({
+    this.patientsService.update(id, { ...data, id } as UpdatePatientRequest).subscribe({
       next: () => {
         this.router.navigate(['/patients', id]);
       },
       error: (err) => {
-        console.error('Error updating patient:', err);
+        this.logger.error('Error updating patient:', err);
         this.error.set('Error al actualizar el paciente. Por favor intente nuevamente.');
         this.loading.set(false);
       }

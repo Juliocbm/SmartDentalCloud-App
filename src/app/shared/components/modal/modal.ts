@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, input, output, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -10,20 +10,21 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './modal.html',
-  styleUrls: ['./modal.scss']
+  styleUrls: ['./modal.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalComponent {
-  @Input() title: string = '';
-  @Input() subtitle?: string;
-  @Input() icon?: string;
-  @Input() size: 'sm' | 'md' | 'lg' | 'xl' = 'md';
-  @Input() showCloseButton: boolean = true;
-  @Input() closeOnBackdrop: boolean = true;
+  title = input<string>('');
+  subtitle = input<string | undefined>();
+  icon = input<string | undefined>();
+  size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
+  showCloseButton = input<boolean>(true);
+  closeOnBackdrop = input<boolean>(true);
 
-  @Output() closed = new EventEmitter<void>();
+  closed = output<void>();
 
   onBackdropClick(event: Event): void {
-    if (this.closeOnBackdrop && event.target === event.currentTarget) {
+    if (this.closeOnBackdrop() && event.target === event.currentTarget) {
       this.close();
     }
   }

@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, of, map } from 'rxjs';
 import { PatientsService } from '../../../features/patients/services/patients.service';
 import { PatientSearchResult } from '../../../features/patients/models/patient.models';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-patient-autocomplete',
@@ -14,6 +15,7 @@ import { PatientSearchResult } from '../../../features/patients/models/patient.m
 })
 export class PatientAutocompleteComponent {
   private patientsService = inject(PatientsService);
+  private logger = inject(LoggingService);
 
   @Input() selectedPatientId: string | null = null;
   @Input() placeholder = 'Buscar paciente...';
@@ -58,7 +60,7 @@ export class PatientAutocompleteComponent {
           this.showDropdown.set(results.length > 0);
         },
         error: (error) => {
-          console.error('Error searching patients:', error);
+          this.logger.error('Error searching patients:', error);
           this.loading.set(false);
           this.patients.set([]);
         }

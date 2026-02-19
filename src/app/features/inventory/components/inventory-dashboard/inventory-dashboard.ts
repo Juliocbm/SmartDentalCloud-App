@@ -6,6 +6,7 @@ import { PieChartComponent, BarChartComponent, ChartDataItem } from '../../../..
 import { ProductsService } from '../../services/products.service';
 import { AlertsCountService } from '../../../../core/services/alerts-count.service';
 import { InventoryAnalyticsService } from '../../services/inventory-analytics.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { TopProduct, ExpiringProduct, CategoryStockStatus, InventoryActivity, ACTIVITY_CONFIG } from '../../models/inventory-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 
@@ -29,6 +30,7 @@ export class InventoryDashboardComponent implements OnInit {
   private productsService = inject(ProductsService);
   private alertsService = inject(AlertsCountService);
   private analyticsService = inject(InventoryAnalyticsService);
+  private logger = inject(LoggingService);
 
   loading = signal(true);
   error = signal<string | null>(null);
@@ -140,7 +142,7 @@ export class InventoryDashboardComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading dashboard data:', err);
+        this.logger.error('Error loading dashboard data:', err);
         this.error.set('Error al cargar datos del dashboard');
         this.loading.set(false);
       }
@@ -150,7 +152,7 @@ export class InventoryDashboardComponent implements OnInit {
   private loadInventoryValue(): void {
     this.analyticsService.calculateInventoryValue().subscribe({
       next: (value) => this.totalInventoryValue.set(value),
-      error: (err) => console.error('Error calculating inventory value:', err)
+      error: (err) => this.logger.error('Error calculating inventory value:', err)
     });
   }
 
@@ -162,7 +164,7 @@ export class InventoryDashboardComponent implements OnInit {
         this.loadingTopProducts.set(false);
       },
       error: (err) => {
-        console.error('Error loading top products:', err);
+        this.logger.error('Error loading top products:', err);
         this.loadingTopProducts.set(false);
       }
     });
@@ -176,7 +178,7 @@ export class InventoryDashboardComponent implements OnInit {
         this.loadingExpiring.set(false);
       },
       error: (err) => {
-        console.error('Error loading expiring products:', err);
+        this.logger.error('Error loading expiring products:', err);
         this.loadingExpiring.set(false);
       }
     });
@@ -190,7 +192,7 @@ export class InventoryDashboardComponent implements OnInit {
         this.loadingCategories.set(false);
       },
       error: (err) => {
-        console.error('Error loading category distribution:', err);
+        this.logger.error('Error loading category distribution:', err);
         this.loadingCategories.set(false);
       }
     });
@@ -204,7 +206,7 @@ export class InventoryDashboardComponent implements OnInit {
         this.loadingActivity.set(false);
       },
       error: (err) => {
-        console.error('Error loading recent activity:', err);
+        this.logger.error('Error loading recent activity:', err);
         this.loadingActivity.set(false);
       }
     });

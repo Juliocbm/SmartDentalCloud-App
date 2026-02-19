@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PatientsService } from '../../services/patients.service';
 import { Patient } from '../../models/patient.models';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-patient-detail',
@@ -15,6 +17,8 @@ export class PatientDetailComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private patientsService = inject(PatientsService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
 
   patient = signal<Patient | null>(null);
   loading = signal(false);
@@ -38,7 +42,7 @@ export class PatientDetailComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading patient:', err);
+        this.logger.error('Error loading patient:', err);
         this.error.set('Error al cargar el paciente. Por favor intente nuevamente.');
         this.loading.set(false);
       }
@@ -49,27 +53,28 @@ export class PatientDetailComponent implements OnInit {
     this.activeTab.set(tab);
   }
 
-  toggleActive(): void {
+  async toggleActive(): Promise<void> {
     const patient = this.patient();
     if (!patient) return;
 
     const action = patient.isActive ? 'desactivar' : 'activar';
     
-    if (confirm(`¿Está seguro de ${action} a ${patient.firstName} ${patient.lastName}?`)) {
-      const operation = patient.isActive 
-        ? this.patientsService.deactivate(patient.id)
-        : this.patientsService.activate(patient.id);
+    const confirmed = await this.notifications.confirm(`¿Está seguro de ${action} a ${patient.firstName} ${patient.lastName}?`);
+    if (!confirmed) return;
 
-      operation.subscribe({
-        next: () => {
-          this.loadPatient(patient.id);
-        },
-        error: (err) => {
-          console.error(`Error al ${action} paciente:`, err);
-          alert(`Error al ${action} el paciente. Por favor intente nuevamente.`);
-        }
-      });
-    }
+    const operation = patient.isActive 
+      ? this.patientsService.deactivate(patient.id)
+      : this.patientsService.activate(patient.id);
+
+    operation.subscribe({
+      next: () => {
+        this.notifications.success(`Paciente ${action === 'activar' ? 'activado' : 'desactivado'} correctamente.`);
+        this.loadPatient(patient.id);
+      },
+      error: () => {
+        this.notifications.error(`Error al ${action} el paciente. Por favor intente nuevamente.`);
+      }
+    });
   }
 
   editPatient(): void {

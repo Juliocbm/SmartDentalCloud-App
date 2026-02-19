@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatus, AppointmentStatusConfig } from '../../models/appointment.models';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -15,6 +17,8 @@ export class AppointmentDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private appointmentsService = inject(AppointmentsService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
 
   appointment = signal<Appointment | null>(null);
   loading = signal(true);
@@ -44,7 +48,7 @@ export class AppointmentDetailComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading appointment:', error);
+        this.logger.error('Error loading appointment:', error);
         this.error.set('Error al cargar la cita');
         this.loading.set(false);
       }
@@ -103,82 +107,85 @@ export class AppointmentDetailComponent implements OnInit {
            status === AppointmentStatus.Cancelled;
   }
 
-  onConfirm(): void {
+  async onConfirm(): Promise<void> {
     const apt = this.appointment();
     if (!apt || !this.canConfirm()) return;
 
-    if (!confirm('¿Confirmar esta cita?')) return;
+    const confirmed = await this.notifications.confirm('¿Confirmar esta cita?');
+    if (!confirmed) return;
 
     this.actionLoading.set(true);
     this.appointmentsService.getById(apt.id).subscribe({
       next: (updated) => {
         this.appointment.set(updated);
+        this.notifications.success('Cita confirmada correctamente.');
         this.actionLoading.set(false);
       },
-      error: (error) => {
-        console.error('Error confirming appointment:', error);
-        alert('Error al confirmar la cita');
+      error: () => {
+        this.notifications.error('Error al confirmar la cita.');
         this.actionLoading.set(false);
       }
     });
   }
 
-  onComplete(): void {
+  async onComplete(): Promise<void> {
     const apt = this.appointment();
     if (!apt || !this.canComplete()) return;
 
-    if (!confirm('¿Marcar esta cita como completada?')) return;
+    const confirmed = await this.notifications.confirm('¿Marcar esta cita como completada?');
+    if (!confirmed) return;
 
     this.actionLoading.set(true);
     this.appointmentsService.complete(apt.id).subscribe({
       next: () => {
+        this.notifications.success('Cita completada correctamente.');
         this.loadAppointment(apt.id);
         this.actionLoading.set(false);
       },
-      error: (error) => {
-        console.error('Error completing appointment:', error);
-        alert('Error al completar la cita');
+      error: () => {
+        this.notifications.error('Error al completar la cita.');
         this.actionLoading.set(false);
       }
     });
   }
 
-  onCancel(): void {
+  async onCancel(): Promise<void> {
     const apt = this.appointment();
     if (!apt || !this.canCancel()) return;
 
-    const reason = prompt('Motivo de cancelación (opcional):');
-    if (reason === null) return;
+    const confirmed = await this.notifications.confirm('¿Cancelar esta cita?');
+    if (!confirmed) return;
 
     this.actionLoading.set(true);
-    this.appointmentsService.cancel(apt.id, reason || undefined).subscribe({
+    this.appointmentsService.cancel(apt.id).subscribe({
       next: () => {
+        this.notifications.success('Cita cancelada correctamente.');
         this.loadAppointment(apt.id);
         this.actionLoading.set(false);
       },
-      error: (error) => {
-        console.error('Error cancelling appointment:', error);
-        alert('Error al cancelar la cita');
+      error: () => {
+        this.notifications.error('Error al cancelar la cita.');
         this.actionLoading.set(false);
       }
     });
   }
 
-  onMarkNoShow(): void {
+  async onMarkNoShow(): Promise<void> {
     const apt = this.appointment();
     if (!apt || !this.canMarkNoShow()) return;
 
-    if (!confirm('¿Marcar al paciente como "No se presentó"?')) return;
+    const confirmed = await this.notifications.confirm('¿Marcar al paciente como "No se presentó"?');
+    if (!confirmed) return;
 
     this.actionLoading.set(true);
     this.appointmentsService.markAsNoShow(apt.id).subscribe({
       next: () => {
+        this.notifications.success('Cita marcada como no show.');
         this.loadAppointment(apt.id);
         this.actionLoading.set(false);
       },
-      error: (error) => {
-        console.error('Error marking no-show:', error);
-        alert('Error al marcar como no show');
+      error: () => {
+        this.notifications.error('Error al marcar como no show.');
         this.actionLoading.set(false);
       }
     });

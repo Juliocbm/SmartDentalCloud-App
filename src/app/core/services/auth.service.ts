@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap, BehaviorSubject } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import {
   LoginRequest,
@@ -29,11 +29,10 @@ export class AuthService {
   currentUser = signal<UserInfo | null>(this.getUserFromStorage());
   isAuthenticated = signal<boolean>(this.hasValidToken());
 
-  private authStateSubject = new BehaviorSubject<boolean>(this.hasValidToken());
-  authState$ = this.authStateSubject.asObservable();
+  private tokenCheckInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
-    this.checkTokenExpiry();
+    this.startTokenExpiryCheck();
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
@@ -42,7 +41,6 @@ export class AuthService {
         this.setSession(response);
         this.currentUser.set(response.user);
         this.isAuthenticated.set(true);
-        this.authStateSubject.next(true);
       })
     );
   }
@@ -53,11 +51,7 @@ export class AuthService {
 
     return this.apiService.post<void>('/auth/logout', request).pipe(
       tap(() => {
-        this.clearSession();
-        this.currentUser.set(null);
-        this.isAuthenticated.set(false);
-        this.authStateSubject.next(false);
-        this.router.navigate(['/login']);
+        this.handleLogout();
       })
     );
   }
@@ -75,7 +69,6 @@ export class AuthService {
         this.setSession(response);
         this.currentUser.set(response.user);
         this.isAuthenticated.set(true);
-        this.authStateSubject.next(true);
       })
     );
   }
@@ -156,16 +149,23 @@ export class AuthService {
     return expiryDate > new Date();
   }
 
-  private checkTokenExpiry(): void {
-    setInterval(() => {
+  /**
+   * Limpia sesión y redirige al login.
+   * Usado internamente y por authInterceptor.
+   */
+  handleLogout(): void {
+    this.clearSession();
+    this.currentUser.set(null);
+    this.isAuthenticated.set(false);
+    this.router.navigate(['/login']);
+  }
+
+  private startTokenExpiryCheck(): void {
+    this.tokenCheckInterval = setInterval(() => {
       if (!this.hasValidToken() && this.isAuthenticated()) {
         console.warn('Token expired, logging out...');
-        this.clearSession();
-        this.currentUser.set(null);
-        this.isAuthenticated.set(false);
-        this.authStateSubject.next(false);
-        this.router.navigate(['/login']);
+        this.handleLogout();
       }
-    }, 60000); // Check every minute
+    }, 60000);
   }
 }

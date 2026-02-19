@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentFormContextService } from '../../services/appointment-form-context.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { DentistSelectComponent } from '../../../../shared/components/dentist-select/dentist-select';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
@@ -29,6 +30,7 @@ export class AppointmentFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private appointmentsService = inject(AppointmentsService);
   private contextService = inject(AppointmentFormContextService);
+  private logger = inject(LoggingService);
 
   appointmentForm!: FormGroup;
   loading = signal(false);
@@ -146,7 +148,7 @@ export class AppointmentFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading appointment:', error);
+        this.logger.error('Error loading appointment:', error);
         this.error.set('Error al cargar la cita');
         this.loading.set(false);
       }
@@ -175,7 +177,7 @@ export class AppointmentFormComponent implements OnInit {
           this.router.navigate(['/appointments']);
         },
         error: (error) => {
-          console.error('Error updating appointment:', error);
+          this.logger.error('Error updating appointment:', error);
           this.error.set('Error al actualizar la cita');
           this.loading.set(false);
         }
@@ -194,7 +196,7 @@ export class AppointmentFormComponent implements OnInit {
           this.router.navigate([returnUrl]);
         },
         error: (error) => {
-          console.error('Error creating appointment:', error);
+          this.logger.error('Error creating appointment:', error);
           this.error.set('Error al crear la cita');
           this.loading.set(false);
         }

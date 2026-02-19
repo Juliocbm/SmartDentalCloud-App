@@ -2,6 +2,7 @@ import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle';
 import { AuthService } from '../../../core/services/auth.service';
+import { LoggingService } from '../../../core/services/logging.service';
 
 @Component({
   selector: 'app-header',
@@ -12,6 +13,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class HeaderComponent {
   private authService = inject(AuthService);
+  private logger = inject(LoggingService);
 
   showNotifications = false;
   showUserMenu = false;
@@ -46,7 +48,7 @@ export class HeaderComponent {
         // Navegación al login se maneja en el servicio
       },
       error: (error) => {
-        console.error('Error during logout:', error);
+        this.logger.error('Error during logout:', error);
         // Aún así limpiar sesión local
         localStorage.clear();
         window.location.href = '/login';

@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { Role } from '../../models/role.models';
 
 @Component({
@@ -20,6 +21,7 @@ export class UserFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private usersService = inject(UsersService);
   private rolesService = inject(RolesService);
+  private logger = inject(LoggingService);
 
   userForm!: FormGroup;
   roles = signal<Role[]>([]);
@@ -63,7 +65,7 @@ export class UserFormComponent implements OnInit {
         this.loadingRoles.set(false);
       },
       error: (err) => {
-        console.error('Error loading roles:', err);
+        this.logger.error('Error loading roles:', err);
         this.error.set('Error al cargar roles');
         this.loadingRoles.set(false);
       }
@@ -99,7 +101,7 @@ export class UserFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading user:', err);
+        this.logger.error('Error loading user:', err);
         this.error.set('Error al cargar usuario');
         this.loading.set(false);
       }
@@ -168,7 +170,7 @@ export class UserFormComponent implements OnInit {
         this.router.navigate(['/users']);
       },
       error: (err) => {
-        console.error('Error creating user:', err);
+        this.logger.error('Error creating user:', err);
         if (err.status === 409) {
           this.error.set('El email ya está registrado');
         } else if (err.status === 400) {
@@ -200,14 +202,14 @@ export class UserFormComponent implements OnInit {
             this.router.navigate(['/users', id]);
           },
           error: (err) => {
-            console.error('Error updating roles:', err);
+            this.logger.error('Error updating roles:', err);
             this.error.set('Usuario actualizado pero error al actualizar roles');
             this.loading.set(false);
           }
         });
       },
       error: (err) => {
-        console.error('Error updating user:', err);
+        this.logger.error('Error updating user:', err);
         if (err.status === 409) {
           this.error.set('El email ya está registrado');
         } else {

@@ -1,0 +1,30 @@
+<!-- Toast notifications -->
+<div class="toast-container">
+  @for (notification of notifications(); track notification.id) {
+    <div class="toast toast-{{ notification.type }}" role="alert">
+      <div class="toast-icon">
+        <i class="fa-solid {{ getIcon(notification.type) }}"></i>
+      </div>
+      <div class="toast-message">{{ notification.message }}</div>
+      <button class="toast-close" (click)="dismiss(notification.id)" aria-label="Cerrar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  }
+</div>
+
+<!-- Confirm dialog -->
+@if (pendingConfirm(); as confirm) {
+  <div class="confirm-backdrop" (click)="onCancel()">
+    <div class="confirm-dialog" (click)="$event.stopPropagation()">
+      <div class="confirm-icon">
+        <i class="fa-solid fa-circle-question"></i>
+      </div>
+      <p class="confirm-message">{{ confirm.message }}</p>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" (click)="onCancel()">Cancelar</button>
+        <button class="btn btn-primary" (click)="onConfirm()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+}

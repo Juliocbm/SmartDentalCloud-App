@@ -7,6 +7,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientsService } from '../../services/patients.service';
 import { Patient } from '../../models/patient.models';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-patient-list',
@@ -17,6 +19,8 @@ import { Patient } from '../../models/patient.models';
 })
 export class PatientListComponent implements OnInit, OnDestroy {
   private patientsService = inject(PatientsService);
+  private notifications = inject(NotificationService);
+  private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
   patients = signal<Patient[]>([]);
@@ -77,7 +81,7 @@ export class PatientListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading patients:', err);
+        this.logger.error('Error loading patients:', err);
         this.error.set('Error al cargar pacientes. Por favor intente nuevamente.');
         this.loading.set(false);
       }
@@ -101,38 +105,40 @@ export class PatientListComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleActive(patient: Patient): void {
+  async toggleActive(patient: Patient): Promise<void> {
     const action = patient.isActive ? 'desactivar' : 'activar';
     
-    if (confirm(`¿Está seguro de ${action} a ${patient.firstName} ${patient.lastName}?`)) {
-      const operation = patient.isActive 
-        ? this.patientsService.deactivate(patient.id)
-        : this.patientsService.activate(patient.id);
+    const confirmed = await this.notifications.confirm(`¿Está seguro de ${action} a ${patient.firstName} ${patient.lastName}?`);
+    if (!confirmed) return;
 
-      operation.subscribe({
-        next: () => {
-          this.loadPatients();
-        },
-        error: (err) => {
-          console.error(`Error al ${action} paciente:`, err);
-          alert(`Error al ${action} el paciente. Por favor intente nuevamente.`);
-        }
-      });
-    }
+    const operation = patient.isActive 
+      ? this.patientsService.deactivate(patient.id)
+      : this.patientsService.activate(patient.id);
+
+    operation.subscribe({
+      next: () => {
+        this.notifications.success(`Paciente ${action === 'activar' ? 'activado' : 'desactivado'} correctamente.`);
+        this.loadPatients();
+      },
+      error: () => {
+        this.notifications.error(`Error al ${action} el paciente. Por favor intente nuevamente.`);
+      }
+    });
   }
 
-  deletePatient(patient: Patient): void {
-    if (confirm(`¿Está seguro de eliminar a ${patient.firstName} ${patient.lastName}? Esta acción no se puede deshacer.`)) {
-      this.patientsService.delete(patient.id).subscribe({
-        next: () => {
-          this.loadPatients();
-        },
-        error: (err) => {
-          console.error('Error deleting patient:', err);
-          alert('Error al eliminar el paciente. Por favor intente nuevamente.');
-        }
-      });
-    }
+  async deletePatient(patient: Patient): Promise<void> {
+    const confirmed = await this.notifications.confirm(`¿Está seguro de eliminar a ${patient.firstName} ${patient.lastName}? Esta acción no se puede deshacer.`);
+    if (!confirmed) return;
+
+    this.patientsService.delete(patient.id).subscribe({
+      next: () => {
+        this.notifications.success('Paciente eliminado correctamente.');
+        this.loadPatients();
+      },
+      error: () => {
+        this.notifications.error('Error al eliminar el paciente. Por favor intente nuevamente.');
+      }
+    });
   }
 
   getFullName(patient: Patient): string {

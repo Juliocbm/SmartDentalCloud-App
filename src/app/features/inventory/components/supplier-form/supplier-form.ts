@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { SuppliersService } from '../../services/suppliers.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { PAYMENT_TERMS } from '../../models/supplier.models';
 
 @Component({
@@ -18,6 +19,7 @@ export class SupplierFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private suppliersService = inject(SuppliersService);
+  private logger = inject(LoggingService);
 
   supplierForm!: FormGroup;
   paymentTerms = PAYMENT_TERMS;
@@ -83,7 +85,7 @@ export class SupplierFormComponent implements OnInit {
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error loading supplier:', err);
+        this.logger.error('Error loading supplier:', err);
         this.error.set('Error al cargar proveedor');
         this.loading.set(false);
       }
@@ -107,7 +109,7 @@ export class SupplierFormComponent implements OnInit {
           this.router.navigate(['/inventory/suppliers']);
         },
         error: (err) => {
-          console.error('Error updating supplier:', err);
+          this.logger.error('Error updating supplier:', err);
           this.error.set(err.error?.error || 'Error al actualizar proveedor');
           this.saving.set(false);
         }
@@ -118,7 +120,7 @@ export class SupplierFormComponent implements OnInit {
           this.router.navigate(['/inventory/suppliers']);
         },
         error: (err) => {
-          console.error('Error creating supplier:', err);
+          this.logger.error('Error creating supplier:', err);
           this.error.set(err.error?.error || 'Error al crear proveedor');
           this.saving.set(false);
         }

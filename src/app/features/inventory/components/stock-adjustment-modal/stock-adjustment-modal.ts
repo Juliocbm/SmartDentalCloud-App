@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { ModalRef, ModalConfig } from '../../../../shared/services/modal.service';
 import { StockService } from '../../services/stock.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { StockAdjustmentRequest } from '../../models/stock.models';
 
 /**
@@ -32,6 +33,7 @@ export interface StockAdjustmentModalData {
 export class StockAdjustmentModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private stockService = inject(StockService);
+  private logger = inject(LoggingService);
 
   // Inyectados por ModalService
   modalRef!: ModalRef<StockAdjustmentModalData, boolean>;
@@ -127,7 +129,7 @@ export class StockAdjustmentModalComponent implements OnInit {
         this.modalRef.close(true);
       },
       error: (err) => {
-        console.error('Error adjusting stock:', err);
+        this.logger.error('Error adjusting stock:', err);
         this.error.set(err.error?.error || 'Error al ajustar el stock. Por favor, intenta de nuevo.');
         this.saving.set(false);
       }
