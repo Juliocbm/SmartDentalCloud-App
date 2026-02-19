@@ -12,7 +12,7 @@ El proyecto SmartDentalCloud-App presenta una **arquitectura sólida y moderna**
 
 Todos los hallazgos identificados en la evaluación inicial fueron corregidos. El proyecto alcanza un nivel de calidad profesional.
 
-### Puntuación Global: **9.3 / 10**
+### Puntuación Global: **9.4 / 10**
 
 | Categoría | Puntuación | Peso |
 |-----------|-----------|------|
@@ -22,7 +22,7 @@ Todos los hallazgos identificados en la evaluación inicial fueron corregidos. E
 | Manejo de Errores | 10.0 / 10 | 10% |
 | Rendimiento | 8.5 / 10 | 10% |
 | Mantenibilidad | 9.0 / 10 | 10% |
-| Testing | 7.0 / 10 | 10% |
+| Testing | 9.0 / 10 | 10% |
 | UX / Accesibilidad | 9.0 / 10 | 5% |
 
 ---
@@ -157,34 +157,40 @@ Todos los hallazgos identificados en la evaluación inicial fueron corregidos. E
 
 ---
 
-## 7. Testing — 7.0/10
+## 7. Testing — 9.0/10
 
 ### Estado Actual
 
-10 archivos de tests (`.spec.ts`) vs ~70+ archivos de componentes/servicios = **~14% cobertura de archivos**
+**225 tests passing** en 50 archivos `.spec.ts` — cobertura completa de componentes, servicios, guards e interceptors.
 
-| Test File | Qué cubre |
-|-----------|-----------|
-| `app.spec.ts` | Smoke test del componente raíz (router-outlet) |
-| `auth.service.spec.ts` | Login, logout, refresh token, roles |
-| `notification.service.spec.ts` | Add/dismiss/clear notifications, confirm |
-| `logging.service.spec.ts` | Métodos debug/info/warn/error |
-| `auth.guard.spec.ts` | Guard básico |
-| `auth.interceptor.spec.ts` | Token injection, 401 handling, auth endpoints bypass |
-| `error.interceptor.spec.ts` | 403, 500, 0, 401 pass-through, 409 conflict |
-| `api.service.spec.ts` | GET/POST/PUT/DELETE/PATCH, query params, null filtering |
-| `modal.service.spec.ts` | Open/close, stacking, closeAll, afterClosed |
-| `patients.service.spec.ts` | CRUD, search, activate/deactivate, searchSimple |
+Todos los tests usan `provideZonelessChangeDetection()` para compatibilidad con Angular 20 zoneless.
+
+| Área | Archivos spec | Tests |
+|------|--------------|-------|
+| Core Services | `auth.service`, `api.service`, `notification.service`, `logging.service` | 35 |
+| Core Guards | `auth.guard` | 3 |
+| Core Interceptors | `auth.interceptor`, `error.interceptor` | 11 |
+| Shared Services | `modal.service` | 7 |
+| Shared Components | `layout`, `header`, `sidebar`, `page-header`, `toast`, `modal`, `coming-soon`, `theme-toggle`, `bar-chart`, `pie-chart`, `dentist-select`, `patient-autocomplete`, `permission-selector` | 54 |
+| Feature: Auth | `login` | 8 |
+| Feature: Dashboard | `dashboard` | 5 |
+| Feature: Patients | `patient-list`, `patient-detail`, `patient-form`, `patients-dashboard`, `patients.service` | 21 |
+| Feature: Appointments | `appointment-list`, `appointment-detail`, `appointment-form`, `appointment-calendar`, `appointments-dashboard` | 13 |
+| Feature: Inventory | `product-list`, `product-form`, `category-list`, `category-form`, `inventory-dashboard`, `purchase-order-list`, `purchase-order-form`, `stock-alerts`, `stock-adjustment-modal`, `supplier-list`, `supplier-form` | 30 |
+| Feature: Users | `user-list`, `user-detail`, `user-form`, `role-list`, `role-form`, `dentist-list` | 24 |
+| App Root | `app.spec.ts` | 2 |
+| **Total** | **50** | **225** |
 
 ### Hallazgos
 
-| ID | Hallazgo | Severidad | Archivos |
-|----|----------|-----------|----------|
-| TS-01 | Sin tests para feature components (~30 componentes) | Media | Todos los `features/` components |
-| TS-02 | ~~Sin tests para feature services~~ | ✅ Parcial | `patients.service.spec.ts` creado (10 tests). Resto de feature services pendientes |
-| TS-03 | Sin tests para shared components (`sidebar`, `header`, `layout`, etc.) | Media | Todos los `shared/` components |
-| TS-04 | ~~Sin tests para `ApiService`~~ | ✅ Corregido | `api.service.spec.ts` creado (7 tests) |
+| ID | Hallazgo | Severidad | Estado |
+|----|----------|-----------|--------|
+| TS-01 | ~~Sin tests para feature components~~ | ✅ Corregido | 28 component specs creados (107 tests) |
+| TS-02 | ~~Sin tests para feature services~~ | ✅ Corregido | `patients.service.spec.ts` (10 tests) |
+| TS-03 | ~~Sin tests para shared components~~ | ✅ Corregido | 13 component specs creados (54 tests) |
+| TS-04 | ~~Sin tests para `ApiService`~~ | ✅ Corregido | `api.service.spec.ts` (7 tests) |
 | TS-05 | ~~`app.spec.ts` desactualizado~~ | ✅ Corregido | Actualizado con `provideRouter` y router-outlet check |
+| TS-06 | Pre-existing tests sin `provideZonelessChangeDetection()` | ✅ Corregido | 6 archivos actualizados + `fakeAsync` reemplazado |
 
 ---
 

@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
@@ -18,6 +19,7 @@ describe('authGuard', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([
@@ -40,16 +42,13 @@ describe('authGuard', () => {
   });
 
   it('should allow access when authenticated', () => {
-    // Simulate logged in state
+    // Simulate logged in state via localStorage before injecting
     localStorage.setItem('access_token', 'valid-token');
     localStorage.setItem('token_expiry', new Date(Date.now() + 3600000).toISOString());
     localStorage.setItem('current_user', JSON.stringify({ id: '1', name: 'Test', email: 'test@test.com', roles: [] }));
 
-    // Recreate service to pick up localStorage
-    const freshService = new (AuthService as any)();
-
     // The guard reads isAuthenticated from the service
-    // Since we can't easily override the singleton, test the underlying logic
+    // Verify token is accessible via the existing service
     expect(authService.getToken()).toBe('valid-token');
   });
 });
@@ -62,6 +61,7 @@ describe('roleGuard', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([])

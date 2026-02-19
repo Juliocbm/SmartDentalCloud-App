@@ -1,11 +1,14 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { NotificationService } from './notification.service';
 
 describe('NotificationService', () => {
   let service: NotificationService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()]
+    });
     service = TestBed.inject(NotificationService);
   });
 
@@ -57,12 +60,14 @@ describe('NotificationService', () => {
     expect(service.notifications().length).toBe(0);
   });
 
-  it('should auto-dismiss after duration', fakeAsync(() => {
-    service.success('Auto dismiss', 1000);
+  it('should auto-dismiss after duration', (done) => {
+    service.success('Auto dismiss', 500);
     expect(service.notifications().length).toBe(1);
-    tick(1000);
-    expect(service.notifications().length).toBe(0);
-  }));
+    setTimeout(() => {
+      expect(service.notifications().length).toBe(0);
+      done();
+    }, 600);
+  });
 
   it('should resolve confirm with true', async () => {
     const promise = service.confirm('Are you sure?');
