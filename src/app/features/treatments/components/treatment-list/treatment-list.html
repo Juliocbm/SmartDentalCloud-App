@@ -1,14 +1,14 @@
 <div class="page-container container-wide">
   <!-- Header -->
   <app-page-header
-    [title]="'Facturas'"
-    [subtitle]="'Lista completa de facturas'"
-    [icon]="'fa-file-invoice-dollar'"
+    [title]="'Tratamientos'"
+    [subtitle]="'Historial de tratamientos ejecutados'"
+    [icon]="'fa-tooth'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
-      <a class="btn btn-primary" routerLink="/invoices/new">
+      <a class="btn btn-primary" routerLink="/treatments/new">
         <i class="fa-solid fa-plus"></i>
-        Nueva Factura
+        Nuevo Tratamiento
       </a>
     </div>
   </app-page-header>
@@ -20,7 +20,7 @@
       <input
         type="text"
         class="search-input"
-        placeholder="Buscar por paciente, folio, serie..."
+        placeholder="Buscar por paciente, servicio, diente..."
         [value]="searchTerm()"
         (input)="onSearchChange($any($event.target).value)"
       />
@@ -44,7 +44,7 @@
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-      <p>Cargando facturas...</p>
+      <p>Cargando tratamientos...</p>
     </div>
   }
 
@@ -53,7 +53,7 @@
     <div class="empty-state">
       <i class="fa-solid fa-exclamation-triangle"></i>
       <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadInvoices()">
+      <button class="btn btn-secondary" (click)="loadTreatments()">
         <i class="fa-solid fa-refresh"></i>
         Reintentar
       </button>
@@ -61,20 +61,20 @@
   }
 
   <!-- Empty State -->
-  @if (!loading() && !error() && filteredInvoices().length === 0 && invoices().length === 0) {
+  @if (!loading() && !error() && filteredTreatments().length === 0 && treatments().length === 0) {
     <div class="empty-state">
-      <i class="fa-solid fa-file-invoice"></i>
-      <h3>No hay facturas registradas</h3>
-      <p>Comienza creando tu primera factura</p>
-      <a class="btn btn-primary" routerLink="/invoices/new">
+      <i class="fa-solid fa-tooth"></i>
+      <h3>No hay tratamientos registrados</h3>
+      <p>Comienza registrando tu primer tratamiento</p>
+      <a class="btn btn-primary" routerLink="/treatments/new">
         <i class="fa-solid fa-plus"></i>
-        Crear Primera Factura
+        Registrar Tratamiento
       </a>
     </div>
   }
 
   <!-- No Results State -->
-  @if (!loading() && !error() && filteredInvoices().length === 0 && invoices().length > 0) {
+  @if (!loading() && !error() && filteredTreatments().length === 0 && treatments().length > 0) {
     <div class="empty-state">
       <i class="fa-solid fa-filter"></i>
       <h3>No se encontraron resultados</h3>
@@ -82,34 +82,24 @@
     </div>
   }
 
-  <!-- Invoices Table -->
-  @if (!loading() && !error() && filteredInvoices().length > 0) {
+  <!-- Treatments Table -->
+  @if (!loading() && !error() && filteredTreatments().length > 0) {
     <div class="table-container">
       <table class="table">
         <thead>
           <tr>
-            <th>Folio</th>
             <th>Paciente</th>
-            <th>Fecha</th>
-            <th>Monto Total</th>
-            <th>Pagado</th>
-            <th>Saldo</th>
+            <th>Servicio</th>
+            <th>Diente</th>
+            <th>Fecha Inicio</th>
             <th>Estado</th>
+            <th>Tipo</th>
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          @for (invoice of filteredInvoices(); track invoice.id) {
-            <tr [class.row-warning]="isOverdue(invoice)">
-              <!-- Folio -->
-              <td>
-                @if (invoice.serie && invoice.folio) {
-                  <span class="badge badge-neutral">{{ invoice.serie }}-{{ invoice.folio }}</span>
-                } @else {
-                  <span class="text-muted">Sin folio</span>
-                }
-              </td>
-
+          @for (treatment of filteredTreatments(); track treatment.id) {
+            <tr>
               <!-- Paciente -->
               <td>
                 <div class="info-cell">
@@ -117,38 +107,56 @@
                     <i class="fa-solid fa-user"></i>
                   </div>
                   <div class="info-content">
-                    <div class="info-title">{{ invoice.patientName }}</div>
-                    <div class="info-subtitle">#{{ invoice.id.substring(0, 8) }}</div>
+                    <div class="info-title">{{ treatment.patientName || 'Sin nombre' }}</div>
                   </div>
                 </div>
               </td>
 
+              <!-- Servicio -->
+              <td>
+                <div class="info-content">
+                  <div class="info-title">{{ treatment.serviceName || 'Sin servicio' }}</div>
+                  @if (treatment.serviceCost) {
+                    <div class="info-subtitle">${{ treatment.serviceCost | number:'1.2-2' }}</div>
+                  }
+                </div>
+              </td>
+
+              <!-- Diente -->
+              <td>
+                @if (treatment.toothNumber) {
+                  <span class="badge badge-neutral">
+                    <i class="fa-solid fa-tooth"></i>
+                    #{{ treatment.toothNumber }}
+                  </span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+
               <!-- Fecha -->
               <td class="date-cell">
-                {{ invoice.issuedAt | date:'dd/MM/yyyy' }}
-              </td>
-
-              <!-- Monto Total -->
-              <td class="amount-cell">
-                {{ formatCurrency(invoice.totalAmount) }}
-              </td>
-
-              <!-- Pagado -->
-              <td class="amount-cell amount-success">
-                {{ formatCurrency(invoice.paidAmount) }}
-              </td>
-
-              <!-- Saldo -->
-              <td class="amount-cell amount-warning">
-                {{ formatCurrency(invoice.balance) }}
+                {{ formatDate(treatment.startDate) }}
               </td>
 
               <!-- Estado -->
               <td>
-                <span [class]="'badge ' + getStatusConfig(invoice.status).class">
-                  <i [class]="'fa-solid ' + getStatusConfig(invoice.status).icon"></i>
-                  {{ getStatusConfig(invoice.status).label }}
+                <span [class]="'badge ' + getStatusConfig(treatment.status).class">
+                  <i [class]="'fa-solid ' + getStatusConfig(treatment.status).icon"></i>
+                  {{ getStatusConfig(treatment.status).label }}
                 </span>
+              </td>
+
+              <!-- Tipo -->
+              <td>
+                @if (treatment.treatmentPlanItemId) {
+                  <span class="badge badge-info">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    Planificado
+                  </span>
+                } @else {
+                  <span class="badge badge-neutral">Ad-hoc</span>
+                }
               </td>
 
               <!-- Acciones -->
@@ -156,7 +164,7 @@
                 <div class="action-buttons">
                   <button
                     class="btn btn-sm btn-outline"
-                    [routerLink]="['/invoices', invoice.id]"
+                    [routerLink]="['/treatments', treatment.id]"
                   >
                     <i class="fa-solid fa-eye"></i>
                     Ver
@@ -171,7 +179,7 @@
       <!-- Table Footer -->
       <div class="table-footer centered">
         <span class="results-count">
-          Mostrando <strong>{{ filteredInvoices().length }}</strong> de <strong>{{ invoices().length }}</strong> facturas
+          Mostrando <strong>{{ filteredTreatments().length }}</strong> de <strong>{{ treatments().length }}</strong> tratamientos
         </span>
       </div>
     </div>

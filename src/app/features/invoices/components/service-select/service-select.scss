@@ -4,6 +4,11 @@
 // Input base: usa .form-input de _components.scss
 // ============================================
 
+:host {
+  display: block;
+  width: 100%;
+}
+
 .service-select-container {
   width: 100%;
 }
@@ -14,6 +19,9 @@
 }
 
 .service-search-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   padding-right: var(--spacing-4xl) !important;
 
   &.has-value {

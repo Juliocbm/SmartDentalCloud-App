@@ -1,0 +1,35 @@
+// ============================================
+// TreatmentFormComponent - Estilos Específicos
+// Container: usa .page-container.container-medium de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Form: usa .standard-form, .form-section, .form-row, .form-group de _components.scss
+// Botones: usa .btn, .header-form-actions de _components.scss
+// ============================================
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  padding-top: var(--spacing-md);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-500);
+    cursor: pointer;
+  }
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}

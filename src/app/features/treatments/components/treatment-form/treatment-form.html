@@ -1,0 +1,232 @@
+<div class="page-container container-medium">
+  <!-- Page Header con Actions -->
+  <app-page-header
+    [title]="isEditMode() ? 'Editar Tratamiento' : 'Nuevo Tratamiento'"
+    [subtitle]="'Registrar un procedimiento dental ejecutado'"
+    [icon]="'fa-tooth'"
+    [showBackButton]="true"
+    [backRoute]="'/treatments'"
+    [breadcrumbs]="breadcrumbItems()">
+
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-save"></i>
+          {{ isEditMode() ? 'Actualizar' : 'Registrar' }}
+        }
+      </button>
+    </div>
+  </app-page-header>
+
+  <!-- Content Card -->
+  <div class="content-card">
+    <!-- Loading State -->
+    @if (loading() && isEditMode()) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando tratamiento...</p>
+      </div>
+    }
+
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ error() }}</span>
+        <button class="alert-close" (click)="error.set(null)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    }
+
+    <!-- Form -->
+    @if (!loading() || !isEditMode()) {
+      <form [formGroup]="form" class="standard-form">
+
+        <!-- Sección: Paciente y Servicio -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-user section-icon"></i>
+            Paciente y Servicio
+          </h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <app-patient-autocomplete
+                [selectedPatientId]="selectedPatient()?.id || null"
+                [required]="true"
+                [disabled]="loading()"
+                (patientSelected)="onPatientSelected($event)"
+              >
+                Paciente
+              </app-patient-autocomplete>
+              @if (isFieldInvalid('patientId')) {
+                <span class="error-message">Seleccione un paciente</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Servicio <span class="required">*</span>
+              </label>
+              <app-service-select
+                [disabled]="loading()"
+                (serviceSelected)="onServiceSelected($event)"
+              />
+              @if (isFieldInvalid('serviceId')) {
+                <span class="error-message">Seleccione un servicio del catálogo</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Información Dental -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-tooth section-icon"></i>
+            Información Dental
+            <span class="optional-badge">Opcional</span>
+          </h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="toothNumber" class="form-label">Número de Diente</label>
+              <input
+                id="toothNumber"
+                type="text"
+                formControlName="toothNumber"
+                class="form-input"
+                placeholder="Ej: 16, 21, 36..."
+              />
+              <p class="field-hint">
+                <i class="fa-solid fa-circle-info"></i>
+                Numeración FDI (sistema internacional)
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="surface" class="form-label">Superficie</label>
+              <select id="surface" formControlName="surface" class="form-input">
+                <option value="">Seleccionar superficie</option>
+                @for (opt of surfaceOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="quadrant" class="form-label">Cuadrante</label>
+              <select id="quadrant" formControlName="quadrant" class="form-input">
+                <option [ngValue]="null">Seleccionar cuadrante</option>
+                @for (opt of quadrantOptions; track opt.value) {
+                  <option [ngValue]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Múltiples Dientes</label>
+              <div class="checkbox-wrapper">
+                <label class="checkbox-label">
+                  <input type="checkbox" formControlName="isMultipleTooth" />
+                  <span>Este tratamiento involucra múltiples dientes</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Fechas y Estado -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-calendar section-icon"></i>
+            Fechas y Estado
+          </h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="startDate" class="form-label">
+                Fecha de Inicio <span class="required">*</span>
+              </label>
+              <input
+                id="startDate"
+                type="date"
+                formControlName="startDate"
+                class="form-input"
+                [class.input-error]="isFieldInvalid('startDate')"
+              />
+              @if (isFieldInvalid('startDate')) {
+                <span class="error-message">La fecha de inicio es requerida</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="endDate" class="form-label">Fecha de Fin</label>
+              <input
+                id="endDate"
+                type="date"
+                formControlName="endDate"
+                class="form-input"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="status" class="form-label">Estado</label>
+              <select id="status" formControlName="status" class="form-input">
+                @for (status of statusOptions; track status) {
+                  <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="duration" class="form-label">Duración (minutos)</label>
+              <input
+                id="duration"
+                type="number"
+                formControlName="duration"
+                class="form-input"
+                placeholder="Ej: 30, 60, 90..."
+                min="1"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Notas -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-sticky-note section-icon"></i>
+            Notas
+            <span class="optional-badge">Opcional</span>
+          </h3>
+
+          <div class="form-row">
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label for="notes" class="form-label">Notas del tratamiento</label>
+              <textarea
+                id="notes"
+                formControlName="notes"
+                class="form-input form-textarea"
+                rows="4"
+                placeholder="Observaciones, complicaciones, indicaciones especiales..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    }
+  </div>
+</div>

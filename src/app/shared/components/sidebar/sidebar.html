@@ -61,16 +61,18 @@
           <!-- Link al dashboard del módulo (solo expandido) -->
           @if (!collapsed() && isExpanded(item.id)) {
             <div class="sidebar__submenu">
-              <!-- Link al dashboard principal -->
-              <a 
-                [routerLink]="item.route" 
-                routerLinkActive="sidebar__submenu-item--active"
-                [routerLinkActiveOptions]="{exact: true}"
-                class="sidebar__submenu-item sidebar__submenu-item--dashboard"
-                [title]="'Dashboard de ' + item.label">
-                <i class="fa-solid fa-gauge-high sidebar__submenu-icon"></i>
-                <span class="sidebar__submenu-label">Dashboard</span>
-              </a>
+              <!-- Link al dashboard principal (solo si el módulo tiene dashboard) -->
+              @if (item.hasDashboard) {
+                <a 
+                  [routerLink]="item.route" 
+                  routerLinkActive="sidebar__submenu-item--active"
+                  [routerLinkActiveOptions]="{exact: true}"
+                  class="sidebar__submenu-item sidebar__submenu-item--dashboard"
+                  [title]="'Dashboard de ' + item.label">
+                  <i class="fa-solid fa-gauge-high sidebar__submenu-icon"></i>
+                  <span class="sidebar__submenu-label">Dashboard</span>
+                </a>
+              }
               <!-- Hijos -->
               @for (child of item.children; track child.id) {
                 <a 

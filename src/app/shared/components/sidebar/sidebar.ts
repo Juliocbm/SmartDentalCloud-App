@@ -34,6 +34,7 @@ export class SidebarComponent {
       icon: 'fa-solid fa-users', 
       label: 'Pacientes', 
       route: '/patients/dashboard',
+      hasDashboard: true,
       children: [
         { id: 'patients-list', icon: 'fa-solid fa-list', label: 'Lista de Pacientes', route: '/patients' },
         { id: 'patients-new', icon: 'fa-solid fa-user-plus', label: 'Nuevo Paciente', route: '/patients/new' }
@@ -44,13 +45,23 @@ export class SidebarComponent {
       icon: 'fa-solid fa-calendar-days', 
       label: 'Citas', 
       route: '/appointments/dashboard',
+      hasDashboard: true,
       children: [
         { id: 'appointments-calendar', icon: 'fa-solid fa-calendar', label: 'Calendario', route: '/appointments/calendar' },
         { id: 'appointments-list', icon: 'fa-solid fa-list', label: 'Lista de Citas', route: '/appointments' },
         { id: 'appointments-new', icon: 'fa-solid fa-calendar-plus', label: 'Nueva Cita', route: '/appointments/new' }
       ]
     },
-    { id: 'treatments', icon: 'fa-solid fa-tooth', label: 'Tratamientos', route: '/treatments' },
+    { 
+      id: 'treatments',
+      icon: 'fa-solid fa-tooth', 
+      label: 'Tratamientos', 
+      route: '/treatments',
+      children: [
+        { id: 'treatments-list', icon: 'fa-solid fa-list', label: 'Lista de Tratamientos', route: '/treatments' },
+        { id: 'treatments-new', icon: 'fa-solid fa-plus', label: 'Nuevo Tratamiento', route: '/treatments/new' }
+      ]
+    },
     { 
       id: 'billing',
       icon: 'fa-solid fa-file-invoice-dollar', 

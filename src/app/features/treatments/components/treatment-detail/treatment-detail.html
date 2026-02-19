@@ -1,0 +1,245 @@
+<div class="detail-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando tratamiento...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error al cargar el tratamiento</h2>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver a Tratamientos
+      </button>
+    </div>
+  } @else if (treatment(); as t) {
+
+    <!-- Header -->
+    <div class="detail-header">
+      <div class="header-top">
+        <button (click)="goBack()" class="btn-back">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver
+        </button>
+        <div class="header-actions">
+          @if (t.status !== TreatmentStatus.Cancelled) {
+            <a class="btn btn-secondary" [routerLink]="['/treatments', t.id, 'edit']">
+              <i class="fa-solid fa-pen"></i>
+              Editar
+            </a>
+          }
+        </div>
+      </div>
+
+      <div class="header-content">
+        <div class="title-section">
+          <h1>
+            <i class="fa-solid fa-tooth"></i>
+            {{ t.serviceName || 'Tratamiento' }}
+          </h1>
+          <span class="status-badge" [class]="getStatusConfig(t.status).class">
+            <i [class]="'fa-solid ' + getStatusConfig(t.status).icon"></i>
+            {{ getStatusConfig(t.status).label }}
+          </span>
+        </div>
+
+        <div class="header-info">
+          <div class="info-item">
+            <i class="fa-solid fa-user"></i>
+            <span class="label">Paciente:</span>
+            <span class="value">{{ t.patientName || 'Sin asignar' }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-calendar"></i>
+            <span class="label">Inicio:</span>
+            <span class="value">{{ formatDate(t.startDate) }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-dollar-sign"></i>
+            <span class="label">Costo:</span>
+            <span class="value">{{ formatCurrency(t.serviceCost) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-body">
+
+      <!-- Información General -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-info-circle"></i>
+          Información General
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Paciente:</span>
+            <span class="info-value">
+              <a [routerLink]="['/patients', t.patientId]" class="link-primary">
+                {{ t.patientName || 'Sin nombre' }}
+              </a>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Servicio:</span>
+            <span class="info-value">{{ t.serviceName || '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Costo del Servicio:</span>
+            <span class="info-value">{{ formatCurrency(t.serviceCost) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Tipo:</span>
+            <span class="info-value">
+              @if (t.treatmentPlanItemId) {
+                <span class="badge badge-info">
+                  <i class="fa-solid fa-clipboard-list"></i>
+                  Planificado
+                </span>
+              } @else {
+                <span class="badge badge-neutral">Ad-hoc</span>
+              }
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Estado:</span>
+            <span class="info-value">
+              <span class="badge" [class]="getStatusConfig(t.status).class">
+                <i [class]="'fa-solid ' + getStatusConfig(t.status).icon"></i>
+                {{ getStatusConfig(t.status).label }}
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información Dental -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-tooth"></i>
+          Información Dental
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Número de Diente:</span>
+            <span class="info-value">
+              @if (t.toothNumber) {
+                <span class="badge badge-neutral">
+                  <i class="fa-solid fa-tooth"></i>
+                  #{{ t.toothNumber }}
+                </span>
+              } @else {
+                —
+              }
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Superficie:</span>
+            <span class="info-value">{{ t.surface || '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Cuadrante:</span>
+            <span class="info-value">
+              @if (t.quadrant) {
+                Q{{ t.quadrant }}
+              } @else {
+                —
+              }
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Múltiples Dientes:</span>
+            <span class="info-value">{{ t.isMultipleTooth ? 'Sí' : 'No' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fechas y Duración -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-calendar-days"></i>
+          Fechas y Duración
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Fecha de Inicio:</span>
+            <span class="info-value">{{ formatDate(t.startDate) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Fecha de Fin:</span>
+            <span class="info-value">{{ formatDate(t.endDate) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Duración:</span>
+            <span class="info-value">
+              @if (t.duration) {
+                {{ t.duration }} minutos
+              } @else {
+                —
+              }
+            </span>
+          </div>
+          @if (t.appointmentId) {
+            <div class="info-row">
+              <span class="info-label">Cita Asociada:</span>
+              <span class="info-value">
+                <a [routerLink]="['/appointments', t.appointmentId]" class="link-primary">
+                  <i class="fa-solid fa-calendar-check"></i>
+                  Ver Cita
+                </a>
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Notas -->
+      @if (t.notes) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-sticky-note"></i>
+            Notas
+          </h3>
+          <div class="notes-content">
+            {{ t.notes }}
+          </div>
+        </div>
+      }
+
+      <!-- Auditoría -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Auditoría
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Creado:</span>
+            <span class="info-value">{{ formatDateTime(t.createdAt) }}</span>
+          </div>
+          @if (t.createdByName) {
+            <div class="info-row">
+              <span class="info-label">Creado por:</span>
+              <span class="info-value">{{ t.createdByName }}</span>
+            </div>
+          }
+          @if (t.updatedAt) {
+            <div class="info-row">
+              <span class="info-label">Última Actualización:</span>
+              <span class="info-value">{{ formatDateTime(t.updatedAt) }}</span>
+            </div>
+          }
+          @if (t.updatedByName) {
+            <div class="info-row">
+              <span class="info-label">Actualizado por:</span>
+              <span class="info-value">{{ t.updatedByName }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

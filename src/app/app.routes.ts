@@ -30,8 +30,7 @@ export const routes: Routes = [
       },
       {
         path: 'treatments',
-        loadComponent: () => import('./shared/components/coming-soon/coming-soon').then(m => m.ComingSoonComponent),
-        data: { moduleName: 'Tratamientos', icon: 'fa-tooth' }
+        loadChildren: () => import('./features/treatments/treatments.routes').then(m => m.TREATMENTS_ROUTES)
       },
       {
         path: 'invoices',

@@ -1,0 +1,48 @@
+// ============================================
+// TreatmentListComponent - Estilos Específicos
+// Container: usa .page-container.container-wide de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Filters: usa .filters-section de _components.scss
+// Loading: usa .loading-container de _components.scss
+// Empty: usa .empty-state de _dashboard.scss
+// Table: usa .table-container, .table de _components.scss
+// Botones: usa clases globales .btn de _components.scss
+// ============================================
+
+.date-cell {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.text-muted {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.actions-column {
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+// ===== Responsive =====
+@media (max-width: 768px) {
+  .filters-section {
+    flex-direction: column;
+
+    .search-box {
+      min-width: 100%;
+    }
+
+    .filter-actions {
+      width: 100%;
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+}

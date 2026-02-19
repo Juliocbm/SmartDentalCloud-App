@@ -10,6 +10,7 @@ export interface MenuItem {
   readonly label: string;
   readonly route: string;
   readonly badge?: number;
+  readonly hasDashboard?: boolean;
   readonly children?: readonly MenuItem[];
 }
 

@@ -30,6 +30,10 @@ export const ROUTES = {
   ADMIN: '/admin',
   ADMIN_APPOINTMENTS: '/admin/appointments',
 
+  // Treatments (Tratamientos)
+  TREATMENTS: '/treatments',
+  TREATMENTS_NEW: '/treatments/new',
+
   // Invoices (Facturación)
   INVOICES: '/invoices',
   INVOICES_DASHBOARD: '/invoices',
