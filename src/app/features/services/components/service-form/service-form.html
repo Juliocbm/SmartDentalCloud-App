@@ -1,0 +1,266 @@
+<div class="page-container container-medium">
+  <!-- Header with Action Buttons -->
+  <app-page-header
+    [title]="isEditMode() ? 'Editar Servicio' : 'Nuevo Servicio'"
+    [subtitle]="isEditMode() ? 'Modifica los datos del servicio dental' : 'Registra un nuevo servicio dental en el catálogo'"
+    [icon]="'fa-briefcase-medical'"
+    [showBackButton]="true"
+    [backRoute]="'/services'"
+    [breadcrumbs]="breadcrumbItems()">
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-save"></i>
+          {{ isEditMode() ? 'Actualizar Servicio' : 'Crear Servicio' }}
+        }
+      </button>
+    </div>
+  </app-page-header>
+
+  <div class="content-card">
+    <!-- Loading State -->
+    @if (loading() && isEditMode()) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando servicio...</p>
+      </div>
+    }
+
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ error() }}</span>
+        <button class="alert-close" (click)="error.set(null)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    }
+
+    <!-- Form -->
+    @if (!loading() || !isEditMode()) {
+      <form [formGroup]="form" class="standard-form">
+
+        <!-- Información Básica -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-info-circle section-icon"></i>
+            Información Básica
+          </h3>
+
+          <div class="form-row form-row-inline">
+            <div class="form-group">
+              <label for="name" class="form-label">Nombre del Servicio <span class="required">*</span></label>
+              <input
+                id="name"
+                type="text"
+                formControlName="name"
+                class="form-input"
+                [class.input-error]="isFieldInvalid('name')"
+                placeholder="Ej: Limpieza dental profunda"
+              />
+              @if (isFieldInvalid('name')) {
+                <span class="error-message">El nombre es requerido</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="category" class="form-label">Categoría</label>
+              <select
+                id="category"
+                formControlName="category"
+                class="form-input"
+              >
+                <option value="">Seleccionar categoría...</option>
+                @for (cat of categoryOptions; track cat.value) {
+                  <option [value]="cat.value">{{ cat.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="cost" class="form-label">Costo (MXN) <span class="required">*</span></label>
+              <input
+                id="cost"
+                type="number"
+                formControlName="cost"
+                class="form-input"
+                [class.input-error]="isFieldInvalid('cost')"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+              @if (isFieldInvalid('cost')) {
+                <span class="error-message">El costo es requerido y debe ser mayor o igual a 0</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="durationMinutes" class="form-label">Duración (minutos)</label>
+              <input
+                id="durationMinutes"
+                type="number"
+                formControlName="durationMinutes"
+                class="form-input"
+                placeholder="Ej: 60"
+                min="1"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="description" class="form-label">Descripción</label>
+              <textarea
+                id="description"
+                formControlName="description"
+                class="form-input form-textarea"
+                placeholder="Descripción del servicio..."
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Características Clínicas -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-stethoscope section-icon"></i>
+            Características Clínicas
+            <span class="optional-badge">Opcional</span>
+          </h3>
+
+          <div class="form-row form-row-inline">
+            <div class="form-group">
+              <label class="form-label checkbox-label">
+                <input type="checkbox" formControlName="requiresAnesthesia" class="form-checkbox" />
+                <span>Requiere Anestesia</span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label checkbox-label">
+                <input type="checkbox" formControlName="isMultiSession" class="form-checkbox" />
+                <span>Tratamiento Multi-sesión</span>
+              </label>
+            </div>
+          </div>
+
+          @if (form.get('isMultiSession')?.value) {
+            <div class="form-row">
+              <div class="form-group">
+                <label for="estimatedSessions" class="form-label">Sesiones Estimadas</label>
+                <input
+                  id="estimatedSessions"
+                  type="number"
+                  formControlName="estimatedSessions"
+                  class="form-input"
+                  placeholder="Ej: 3"
+                  min="2"
+                />
+              </div>
+            </div>
+          }
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label checkbox-label">
+                <input type="checkbox" formControlName="requiresFollowUp" class="form-checkbox" />
+                <span>Requiere Seguimiento</span>
+              </label>
+            </div>
+          </div>
+
+          @if (form.get('requiresFollowUp')?.value) {
+            <div class="form-row">
+              <div class="form-group">
+                <label for="followUpDays" class="form-label">Días para Seguimiento</label>
+                <input
+                  id="followUpDays"
+                  type="number"
+                  formControlName="followUpDays"
+                  class="form-input"
+                  placeholder="Ej: 7"
+                  min="1"
+                />
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- CFDI (Facturación) -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-file-invoice section-icon"></i>
+            Datos de Facturación (CFDI)
+            <span class="optional-badge">Opcional</span>
+          </h3>
+
+          <div class="form-row form-row-inline">
+            <div class="form-group">
+              <label for="claveProdServ" class="form-label">Clave Producto/Servicio SAT</label>
+              <input
+                id="claveProdServ"
+                type="text"
+                formControlName="claveProdServ"
+                class="form-input"
+                placeholder="Ej: 85121800"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="claveUnidad" class="form-label">Clave Unidad SAT</label>
+              <input
+                id="claveUnidad"
+                type="text"
+                formControlName="claveUnidad"
+                class="form-input"
+                placeholder="Ej: E48"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado y Notas -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-gear section-icon"></i>
+            Estado y Notas
+          </h3>
+
+          @if (isEditMode()) {
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label checkbox-label">
+                  <input type="checkbox" formControlName="isActive" class="form-checkbox" />
+                  <span>Servicio Activo</span>
+                </label>
+              </div>
+            </div>
+          }
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="notes" class="form-label">Notas Internas</label>
+              <textarea
+                id="notes"
+                formControlName="notes"
+                class="form-input form-textarea"
+                placeholder="Notas internas sobre este servicio..."
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    }
+  </div>
+</div>

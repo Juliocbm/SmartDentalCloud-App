@@ -63,6 +63,16 @@ export class SidebarComponent {
       ]
     },
     { 
+      id: 'services',
+      icon: 'fa-solid fa-briefcase-medical', 
+      label: 'Servicios', 
+      route: '/services',
+      children: [
+        { id: 'services-list', icon: 'fa-solid fa-list', label: 'Catálogo de Servicios', route: '/services' },
+        { id: 'services-new', icon: 'fa-solid fa-plus', label: 'Nuevo Servicio', route: '/services/new' }
+      ]
+    },
+    { 
       id: 'billing',
       icon: 'fa-solid fa-file-invoice-dollar', 
       label: 'Facturación', 

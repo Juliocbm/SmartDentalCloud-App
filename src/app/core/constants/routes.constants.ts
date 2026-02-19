@@ -34,6 +34,10 @@ export const ROUTES = {
   TREATMENTS: '/treatments',
   TREATMENTS_NEW: '/treatments/new',
 
+  // Services (Catálogo de Servicios)
+  SERVICES: '/services',
+  SERVICES_NEW: '/services/new',
+
   // Invoices (Facturación)
   INVOICES: '/invoices',
   INVOICES_DASHBOARD: '/invoices',
@@ -83,5 +87,7 @@ export const getDynamicRoute = {
   /**
    * Ruta de edición de proveedor
    */
-  supplierEdit: (supplierId: string) => `/inventory/suppliers/${supplierId}/edit`
+  supplierEdit: (supplierId: string) => `/inventory/suppliers/${supplierId}/edit`,
+
+  serviceEdit: (serviceId: string) => `/services/${serviceId}/edit`
 } as const;

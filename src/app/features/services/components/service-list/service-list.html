@@ -1,0 +1,245 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Catálogo de Servicios'"
+    [subtitle]="'Gestión de servicios dentales del consultorio'"
+    [icon]="'fa-briefcase-medical'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <a class="btn btn-primary" routerLink="/services/new">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Servicio
+      </a>
+    </div>
+  </app-page-header>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por nombre, categoría, descripción..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="filterStatus()"
+        (change)="onStatusFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los estados</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Inactivos</option>
+      </select>
+
+      <select
+        class="filter-select"
+        [value]="filterCategory()"
+        (change)="onCategoryFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todas las categorías</option>
+        @for (cat of categories(); track cat) {
+          <option [value]="cat">{{ cat }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando servicios...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadServices()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Empty -->
+  @if (!loading() && !error() && allServices().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-briefcase-medical"></i>
+      <h3>No hay servicios registrados</h3>
+      <p>Comienza registrando tu primer servicio dental</p>
+      <a class="btn btn-primary" routerLink="/services/new">
+        <i class="fa-solid fa-plus"></i>
+        Registrar Servicio
+      </a>
+    </div>
+  }
+
+  <!-- No results -->
+  @if (!loading() && !error() && filteredServices().length === 0 && allServices().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error() && filteredServices().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Servicio</th>
+            <th>Categoría</th>
+            <th>Costo</th>
+            <th>Duración</th>
+            <th>Estado</th>
+            <th>Características</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (service of paginatedServices(); track service.id) {
+            <tr [class.row-inactive]="!service.isActive">
+              <!-- Servicio -->
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-primary">
+                    <i class="fa-solid fa-briefcase-medical"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ service.name }}</div>
+                    @if (service.description) {
+                      <div class="info-subtitle">{{ service.description }}</div>
+                    }
+                  </div>
+                </div>
+              </td>
+
+              <!-- Categoría -->
+              <td>
+                @if (service.category) {
+                  <span class="badge badge-neutral">{{ service.category }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+
+              <!-- Costo -->
+              <td class="amount-cell">
+                {{ formatCurrency(service.cost) }}
+              </td>
+
+              <!-- Duración -->
+              <td>
+                @if (service.durationMinutes) {
+                  {{ service.durationMinutes }} min
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+
+              <!-- Estado -->
+              <td>
+                @if (service.isActive) {
+                  <span class="badge badge-success">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Activo
+                  </span>
+                } @else {
+                  <span class="badge badge-inactive">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    Inactivo
+                  </span>
+                }
+              </td>
+
+              <!-- Características -->
+              <td>
+                <div class="features-cell">
+                  @if (service.requiresAnesthesia) {
+                    <span class="badge badge-icon badge-warning" title="Requiere anestesia">
+                      <i class="fa-solid fa-syringe"></i>
+                    </span>
+                  }
+                  @if (service.isMultiSession) {
+                    <span class="badge badge-icon badge-info" title="Multi-sesión">
+                      <i class="fa-solid fa-layer-group"></i>
+                    </span>
+                  }
+                  @if (service.requiresFollowUp) {
+                    <span class="badge badge-icon badge-neutral" title="Requiere seguimiento">
+                      <i class="fa-solid fa-calendar-check"></i>
+                    </span>
+                  }
+                </div>
+              </td>
+
+              <!-- Acciones -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-sm btn-outline"
+                    [routerLink]="['/services', service.id, 'edit']"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                    Editar
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline btn-danger"
+                    (click)="deleteService(service)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando <strong>{{ (currentPage() - 1) * pageSize() + 1 }} -
+          {{ Math.min(currentPage() * pageSize(), totalItems()) }}</strong> de <strong>{{ totalItems() }}</strong> servicios
+        </span>
+
+        <div class="pagination-controls">
+          <button
+            class="btn-page"
+            (click)="onPageChange(currentPage() - 1)"
+            [disabled]="currentPage() === 1"
+          >
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+
+          @for (page of getPaginationPages(); track page) {
+            <button
+              class="btn-page"
+              [class.active]="page === currentPage()"
+              (click)="onPageChange(page)"
+            >
+              {{ page }}
+            </button>
+          }
+
+          <button
+            class="btn-page"
+            (click)="onPageChange(currentPage() + 1)"
+            [disabled]="currentPage() === totalPages()"
+          >
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
