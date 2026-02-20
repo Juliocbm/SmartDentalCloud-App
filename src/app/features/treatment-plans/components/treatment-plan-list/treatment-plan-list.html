@@ -1,0 +1,228 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Planes de Tratamiento'"
+    [subtitle]="'Gestión de planes de tratamiento para pacientes'"
+    [icon]="'fa-clipboard-list'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <a class="btn btn-primary" routerLink="/treatment-plans/new">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Plan
+      </a>
+    </div>
+  </app-page-header>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por título, paciente, diagnóstico..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="filterStatus()"
+        (change)="onStatusFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todos los estados</option>
+        @for (status of statusOptions; track status) {
+          <option [value]="status">{{ getStatusConfig(status).label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando planes de tratamiento...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <h3>Error al cargar planes</h3>
+      <p>{{ error() }}</p>
+      <button class="btn btn-outline" (click)="loadPlans()">
+        <i class="fa-solid fa-rotate-right"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredPlans().length === 0 && plans().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-clipboard-list"></i>
+      <h3>No hay planes de tratamiento</h3>
+      <p>Comienza creando el primer plan de tratamiento para un paciente</p>
+      <a class="btn btn-primary" routerLink="/treatment-plans/new">
+        <i class="fa-solid fa-plus"></i>
+        Crear Plan
+      </a>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredPlans().length === 0 && plans().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Plans Table -->
+  @if (!loading() && !error() && filteredPlans().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Paciente</th>
+            <th>Estado</th>
+            <th>Progreso</th>
+            <th>Costo Estimado</th>
+            <th>Fecha Estimada</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (plan of paginatedPlans(); track plan.id) {
+            <tr>
+              <!-- Plan -->
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-primary">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ plan.title }}</div>
+                    <div class="info-subtitle">{{ plan.planNumber }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Paciente -->
+              <td>
+                <span class="patient-name">{{ plan.patientName || 'Sin asignar' }}</span>
+              </td>
+
+              <!-- Estado -->
+              <td>
+                <span [class]="'badge ' + getStatusConfig(plan.status).class">
+                  <i [class]="'fa-solid ' + getStatusConfig(plan.status).icon"></i>
+                  {{ getStatusConfig(plan.status).label }}
+                </span>
+              </td>
+
+              <!-- Progreso -->
+              <td>
+                <div class="progress-cell">
+                  <div class="progress-bar-mini">
+                    <div
+                      class="progress-fill-mini"
+                      [style.width.%]="getProgressPercentage(plan)"
+                      [class.progress-complete]="getProgressPercentage(plan) >= 100"
+                    ></div>
+                  </div>
+                  <span class="progress-text">
+                    {{ plan.completedItems }}/{{ plan.totalItems }}
+                  </span>
+                </div>
+              </td>
+
+              <!-- Costo Estimado -->
+              <td>
+                <span class="cost-cell">{{ formatCurrency(plan.totalEstimatedCost) }}</span>
+              </td>
+
+              <!-- Fecha -->
+              <td class="date-cell">
+                {{ formatDate(plan.estimatedStartDate) }}
+              </td>
+
+              <!-- Acciones -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-sm btn-outline"
+                    [routerLink]="['/treatment-plans', plan.id]"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                    Ver
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (currentPage() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ currentPage() * pageSize() > totalItems() ? totalItems() : currentPage() * pageSize() }}</strong>
+          de <strong>{{ totalItems() }}</strong> planes
+        </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(1)"
+            >
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(currentPage() - 1)"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            @for (page of getPaginationPages(); track page) {
+              <button
+                class="btn-page"
+                [class.active]="page === currentPage()"
+                (click)="onPageChange(page)"
+              >
+                {{ page }}
+              </button>
+            }
+
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(currentPage() + 1)"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(totalPages())"
+            >
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

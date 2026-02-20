@@ -55,13 +55,13 @@
           <div class="info-item">
             <i class="fa-solid fa-calendar"></i>
             <span class="label">Emisión:</span>
-            <span class="value">{{ inv.issuedAt | date:'dd/MM/yyyy' }}</span>
+            <span class="value">{{ formatDate(inv.issuedAt) }}</span>
           </div>
           @if (inv.lastPaymentDate) {
             <div class="info-item">
               <i class="fa-solid fa-clock"></i>
               <span class="label">Último Pago:</span>
-              <span class="value">{{ inv.lastPaymentDate | date:'dd/MM/yyyy' }}</span>
+              <span class="value">{{ formatDate(inv.lastPaymentDate) }}</span>
             </div>
           }
         </div>
@@ -216,7 +216,7 @@
                 </div>
                 <div class="payment-date">
                   <i class="fa-solid fa-calendar-day"></i>
-                  {{ payment.paidAt | date:'dd/MM/yyyy' }}
+                  {{ formatDate(payment.paidAt) }}
                 </div>
               </div>
             }
@@ -246,7 +246,7 @@
             @if (inv.stampedAt) {
               <div class="info-row">
                 <span class="info-label">Fecha de Timbrado:</span>
-                <span class="info-value">{{ inv.stampedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                <span class="info-value">{{ formatDateTime(inv.stampedAt) }}</span>
               </div>
             }
             @if (inv.usoCFDI) {

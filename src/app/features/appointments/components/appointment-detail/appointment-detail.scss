@@ -406,6 +406,80 @@
   color: var(--warning-700);
 }
 
+// ===== Consultation Note Section =====
+.consultation-note-section {
+  .note-loading {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    color: var(--text-secondary);
+
+    i {
+      color: var(--primary-500);
+    }
+  }
+
+  .note-summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  .note-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md) 0;
+
+    &:not(:last-of-type) {
+      border-bottom: 1px solid var(--border-primary);
+    }
+
+    .note-field-label {
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    .note-field-value {
+      color: var(--text-primary);
+      line-height: var(--line-height-relaxed);
+      white-space: pre-wrap;
+    }
+  }
+
+  .note-meta {
+    display: flex;
+    gap: var(--spacing-xl);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-primary);
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+  }
+
+  .note-actions {
+    padding-top: var(--spacing-md);
+  }
+
+  .note-empty {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-tertiary);
+
+    i {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: var(--spacing-md);
+    }
+
+    p {
+      margin-bottom: var(--spacing-lg);
+      color: var(--text-secondary);
+    }
+  }
+}
+
 // ===== Responsive Design =====
 @media (max-width: 768px) {
   .detail-container {

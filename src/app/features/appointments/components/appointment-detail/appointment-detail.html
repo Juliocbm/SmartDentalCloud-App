@@ -129,6 +129,87 @@
         </div>
       </div>
 
+      <!-- Consultation Note Section (only for Completed appointments) -->
+      @if (apt.status === AppointmentStatus.Completed) {
+        <div class="info-section consultation-note-section">
+          <h3>
+            <i class="fa-solid fa-notes-medical"></i>
+            Nota Clínica
+          </h3>
+
+          @if (noteLoading()) {
+            <div class="note-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando nota...</span>
+            </div>
+          }
+
+          @if (!noteLoading() && noteExists() && consultationNote(); as note) {
+            <div class="note-summary">
+              @if (note.chiefComplaint) {
+                <div class="note-field">
+                  <span class="note-field-label">Motivo de Consulta:</span>
+                  <span class="note-field-value">{{ note.chiefComplaint }}</span>
+                </div>
+              }
+              @if (note.diagnosis) {
+                <div class="note-field">
+                  <span class="note-field-label">Diagnóstico:</span>
+                  <span class="note-field-value">{{ note.diagnosis }}</span>
+                </div>
+              }
+              @if (note.clinicalFindings) {
+                <div class="note-field">
+                  <span class="note-field-label">Hallazgos Clínicos:</span>
+                  <span class="note-field-value">{{ note.clinicalFindings }}</span>
+                </div>
+              }
+              @if (note.treatmentPlan) {
+                <div class="note-field">
+                  <span class="note-field-label">Plan de Tratamiento:</span>
+                  <span class="note-field-value">{{ note.treatmentPlan }}</span>
+                </div>
+              }
+              @if (note.notes) {
+                <div class="note-field">
+                  <span class="note-field-label">Notas Adicionales:</span>
+                  <span class="note-field-value">{{ note.notes }}</span>
+                </div>
+              }
+              <div class="note-meta">
+                <span>Creada: {{ formatNoteDateTime(note.createdAt) }}</span>
+                @if (note.createdByName) {
+                  <span>Por: {{ note.createdByName }}</span>
+                }
+              </div>
+              <div class="note-actions">
+                <a
+                  class="btn btn-outline"
+                  [routerLink]="['/appointments', apt.id, 'note']"
+                >
+                  <i class="fa-solid fa-pen"></i>
+                  Editar Nota Completa
+                </a>
+              </div>
+            </div>
+          }
+
+          @if (!noteLoading() && !noteExists()) {
+            <div class="note-empty">
+              <i class="fa-solid fa-file-medical"></i>
+              <p>No se ha documentado la nota clínica de esta cita</p>
+              <a
+                class="btn btn-primary"
+                [routerLink]="['/appointments', apt.id, 'note']"
+              >
+                <i class="fa-solid fa-plus"></i>
+                Crear Nota Clínica
+              </a>
+            </div>
+          }
+        </div>
+      }
+
       <div class="actions-section">
         <h3>
           <i class="fa-solid fa-tasks"></i>

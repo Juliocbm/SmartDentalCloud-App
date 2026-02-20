@@ -1,0 +1,188 @@
+<div class="page-container container-wide">
+  <!-- Header -->
+  <app-page-header
+    [title]="'Notas de Consulta'"
+    [subtitle]="'Documentación clínica de citas completadas'"
+    [icon]="'fa-notes-medical'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por paciente, doctor, motivo..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
+      />
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando citas completadas...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <h3>Error al cargar</h3>
+      <p>{{ error() }}</p>
+      <button class="btn btn-outline" (click)="loadAppointments()">
+        <i class="fa-solid fa-rotate-right"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredAppointments().length === 0 && appointments().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-notes-medical"></i>
+      <h3>No hay citas completadas</h3>
+      <p>Las notas de consulta se crean a partir de citas completadas</p>
+      <a class="btn btn-outline" routerLink="/appointments">
+        <i class="fa-solid fa-calendar"></i>
+        Ir a Citas
+      </a>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredAppointments().length === 0 && appointments().length > 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+  }
+
+  <!-- Appointments Table -->
+  @if (!loading() && !error() && filteredAppointments().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Doctor</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Motivo</th>
+            <th class="actions-column">Nota Clínica</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (apt of paginatedAppointments(); track apt.id) {
+            <tr>
+              <!-- Paciente -->
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-primary">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ apt.patientName }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Doctor -->
+              <td>
+                <span class="doctor-name">{{ apt.doctorName || '—' }}</span>
+              </td>
+
+              <!-- Fecha -->
+              <td class="date-cell">
+                {{ formatDate(apt.startAt) }}
+              </td>
+
+              <!-- Hora -->
+              <td class="date-cell">
+                {{ formatTime(apt.startAt) }}
+              </td>
+
+              <!-- Motivo -->
+              <td>
+                <span class="reason-text">{{ apt.reason }}</span>
+              </td>
+
+              <!-- Acción -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-sm btn-outline"
+                    [routerLink]="['/consultation-notes/appointment', apt.id]"
+                  >
+                    <i class="fa-solid fa-file-medical"></i>
+                    Ver / Crear Nota
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (currentPage() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ currentPage() * pageSize() > totalItems() ? totalItems() : currentPage() * pageSize() }}</strong>
+          de <strong>{{ totalItems() }}</strong> citas
+        </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(1)"
+            >
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(currentPage() - 1)"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            @for (page of getPaginationPages(); track page) {
+              <button
+                class="btn-page"
+                [class.active]="page === currentPage()"
+                (click)="onPageChange(page)"
+              >
+                {{ page }}
+              </button>
+            }
+
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(currentPage() + 1)"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(totalPages())"
+            >
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

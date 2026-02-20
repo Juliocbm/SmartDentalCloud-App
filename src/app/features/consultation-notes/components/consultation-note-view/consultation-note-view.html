@@ -1,0 +1,375 @@
+<div class="detail-container">
+
+  <!-- Loading -->
+  @if (mode() === 'loading') {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando nota de consulta...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (mode() === 'error') {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error</h2>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  }
+
+  <!-- ===== VIEW MODE ===== -->
+  @if (mode() === 'view' && note(); as n) {
+    <div class="detail-header">
+      <div class="header-top">
+        <button (click)="goBack()" class="btn-back">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver
+        </button>
+        <div class="header-actions">
+          <button class="btn btn-primary" (click)="onEdit()">
+            <i class="fa-solid fa-pen"></i>
+            Editar Nota
+          </button>
+        </div>
+      </div>
+
+      <div class="header-content">
+        <div class="title-section">
+          <h1>
+            <i class="fa-solid fa-notes-medical"></i>
+            Nota de Consulta
+          </h1>
+        </div>
+        <div class="header-info">
+          <div class="info-item">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span class="label">Creada:</span>
+            <span class="value">{{ formatDateTime(n.createdAt) }}</span>
+          </div>
+          @if (n.createdByName) {
+            <div class="info-item">
+              <i class="fa-solid fa-user-doctor"></i>
+              <span class="label">Por:</span>
+              <span class="value">{{ n.createdByName }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-body">
+      <!-- Motivo Principal -->
+      @if (n.chiefComplaint) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-comment-medical"></i>
+            Motivo de Consulta
+          </h3>
+          <div class="note-content">{{ n.chiefComplaint }}</div>
+        </div>
+      }
+
+      <!-- Hallazgos Clínicos -->
+      @if (n.clinicalFindings) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-stethoscope"></i>
+            Hallazgos Clínicos
+          </h3>
+          <div class="note-content">{{ n.clinicalFindings }}</div>
+        </div>
+      }
+
+      <!-- Diagnóstico -->
+      @if (n.diagnosis) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-diagnoses"></i>
+            Diagnóstico
+          </h3>
+          <div class="note-content">{{ n.diagnosis }}</div>
+        </div>
+      }
+
+      <!-- Plan de Tratamiento -->
+      @if (n.treatmentPlan) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-clipboard-list"></i>
+            Plan de Tratamiento
+          </h3>
+          <div class="note-content">{{ n.treatmentPlan }}</div>
+        </div>
+      }
+
+      <!-- Notas Adicionales -->
+      @if (n.notes) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-sticky-note"></i>
+            Notas Adicionales
+          </h3>
+          <div class="note-content">{{ n.notes }}</div>
+        </div>
+      }
+
+      <!-- Empty Note -->
+      @if (!n.chiefComplaint && !n.clinicalFindings && !n.diagnosis && !n.treatmentPlan && !n.notes) {
+        <div class="info-section">
+          <div class="empty-note">
+            <i class="fa-solid fa-file-pen"></i>
+            <p>Esta nota no tiene contenido aún</p>
+            <button class="btn btn-primary" (click)="onEdit()">
+              <i class="fa-solid fa-pen"></i>
+              Agregar Información
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ===== CREATE MODE ===== -->
+  @if (mode() === 'create') {
+    <div class="page-container container-medium">
+      <app-page-header
+        [title]="'Nueva Nota de Consulta'"
+        [subtitle]="'Documentar los hallazgos y diagnóstico de la consulta'"
+        [icon]="'fa-notes-medical'"
+        [showBackButton]="true"
+        [backRoute]="'/appointments'"
+        [breadcrumbs]="breadcrumbItems()">
+
+        <div actions class="header-form-actions">
+          <button type="button" class="btn btn-outline" (click)="goBack()" [disabled]="saving()">
+            <i class="fa-solid fa-times"></i>
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-primary" (click)="onCreate()" [disabled]="saving()">
+            @if (saving()) {
+              <span class="btn-spinner"></span>
+              Guardando...
+            } @else {
+              <i class="fa-solid fa-save"></i>
+              Crear Nota
+            }
+          </button>
+        </div>
+      </app-page-header>
+
+      <div class="content-card">
+        <form [formGroup]="form" class="standard-form">
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-comment-medical section-icon"></i>
+              Motivo de Consulta
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="chiefComplaint"
+                  class="form-input form-textarea"
+                  rows="3"
+                  placeholder="¿Cuál es el motivo principal de la consulta del paciente?"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-stethoscope section-icon"></i>
+              Hallazgos Clínicos
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="clinicalFindings"
+                  class="form-input form-textarea"
+                  rows="4"
+                  placeholder="Describe los hallazgos clínicos del examen..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-diagnoses section-icon"></i>
+              Diagnóstico
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="diagnosis"
+                  class="form-input form-textarea"
+                  rows="3"
+                  placeholder="Diagnóstico clínico..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-clipboard-list section-icon"></i>
+              Plan de Tratamiento
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="treatmentPlan"
+                  class="form-input form-textarea"
+                  rows="4"
+                  placeholder="Describe el plan de tratamiento recomendado..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-sticky-note section-icon"></i>
+              Notas Adicionales
+              <span class="optional-badge">Opcional</span>
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="notes"
+                  class="form-input form-textarea"
+                  rows="3"
+                  placeholder="Cualquier observación adicional..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- ===== EDIT MODE ===== -->
+  @if (mode() === 'edit') {
+    <div class="page-container container-medium">
+      <app-page-header
+        [title]="'Editar Nota de Consulta'"
+        [subtitle]="'Actualizar la documentación clínica'"
+        [icon]="'fa-notes-medical'"
+        [showBackButton]="true"
+        [backRoute]="'/appointments'"
+        [breadcrumbs]="breadcrumbItems()">
+
+        <div actions class="header-form-actions">
+          <button type="button" class="btn btn-outline" (click)="onCancelEdit()" [disabled]="saving()">
+            <i class="fa-solid fa-times"></i>
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-primary" (click)="onUpdate()" [disabled]="saving()">
+            @if (saving()) {
+              <span class="btn-spinner"></span>
+              Guardando...
+            } @else {
+              <i class="fa-solid fa-save"></i>
+              Guardar Cambios
+            }
+          </button>
+        </div>
+      </app-page-header>
+
+      <div class="content-card">
+        <form [formGroup]="form" class="standard-form">
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-comment-medical section-icon"></i>
+              Motivo de Consulta
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="chiefComplaint"
+                  class="form-input form-textarea"
+                  rows="3"
+                  placeholder="¿Cuál es el motivo principal de la consulta del paciente?"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-stethoscope section-icon"></i>
+              Hallazgos Clínicos
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="clinicalFindings"
+                  class="form-input form-textarea"
+                  rows="4"
+                  placeholder="Describe los hallazgos clínicos del examen..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-diagnoses section-icon"></i>
+              Diagnóstico
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="diagnosis"
+                  class="form-input form-textarea"
+                  rows="3"
+                  placeholder="Diagnóstico clínico..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-clipboard-list section-icon"></i>
+              Plan de Tratamiento
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="treatmentPlan"
+                  class="form-input form-textarea"
+                  rows="4"
+                  placeholder="Describe el plan de tratamiento recomendado..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-sticky-note section-icon"></i>
+              Notas Adicionales
+              <span class="optional-badge">Opcional</span>
+            </h3>
+            <div class="form-row">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <textarea
+                  formControlName="notes"
+                  class="form-input form-textarea"
+                  rows="3"
+                  placeholder="Cualquier observación adicional..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

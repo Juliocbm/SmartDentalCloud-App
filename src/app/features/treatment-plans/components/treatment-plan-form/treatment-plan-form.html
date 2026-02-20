@@ -1,0 +1,310 @@
+<div class="page-container container-medium">
+  <!-- Page Header con Actions -->
+  <app-page-header
+    [title]="'Nuevo Plan de Tratamiento'"
+    [subtitle]="'Crear un plan de tratamiento integral para un paciente'"
+    [icon]="'fa-clipboard-list'"
+    [showBackButton]="true"
+    [backRoute]="'/treatment-plans'"
+    [breadcrumbs]="breadcrumbItems()">
+
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-save"></i>
+          Crear Plan
+        }
+      </button>
+    </div>
+  </app-page-header>
+
+  <!-- Content Card -->
+  <div class="content-card">
+    <!-- Error Alert -->
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ error() }}</span>
+        <button class="alert-close" (click)="error.set(null)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    }
+
+    <!-- Form -->
+    <form [formGroup]="form" class="standard-form">
+
+      <!-- Sección: Paciente -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-user section-icon"></i>
+          Paciente
+        </h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <app-patient-autocomplete
+              [selectedPatientId]="selectedPatient()?.id || null"
+              [required]="true"
+              [disabled]="loading()"
+              (patientSelected)="onPatientSelected($event)"
+            >
+              Paciente
+            </app-patient-autocomplete>
+            @if (isFieldInvalid('patientId')) {
+              <span class="error-message">Seleccione un paciente</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Información del Plan -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-file-medical section-icon"></i>
+          Información del Plan
+        </h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="title" class="form-label">
+              Título del Plan <span class="required">*</span>
+            </label>
+            <input
+              id="title"
+              type="text"
+              formControlName="title"
+              class="form-input"
+              [class.input-error]="isFieldInvalid('title')"
+              placeholder="Ej: Plan de Ortodoncia Completa"
+            />
+            @if (isFieldInvalid('title')) {
+              <span class="error-message">El título es requerido (mínimo 3 caracteres)</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="diagnosis" class="form-label">Diagnóstico</label>
+            <textarea
+              id="diagnosis"
+              formControlName="diagnosis"
+              class="form-input form-textarea"
+              rows="3"
+              placeholder="Ej: Maloclusión dental clase II, apiñamiento moderado"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="description" class="form-label">Descripción</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              class="form-input form-textarea"
+              rows="3"
+              placeholder="Descripción general del plan de tratamiento..."
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Fechas -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-calendar section-icon"></i>
+          Fechas Estimadas
+          <span class="optional-badge">Opcional</span>
+        </h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="estimatedStartDate" class="form-label">Fecha de Inicio</label>
+            <input
+              id="estimatedStartDate"
+              type="date"
+              formControlName="estimatedStartDate"
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="estimatedEndDate" class="form-label">Fecha de Fin</label>
+            <input
+              id="estimatedEndDate"
+              type="date"
+              formControlName="estimatedEndDate"
+              class="form-input"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección: Items del Plan -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-list-check section-icon"></i>
+          Procedimientos del Plan
+          <span class="items-count">{{ items.length }} {{ items.length === 1 ? 'item' : 'items' }}</span>
+        </h3>
+
+        <div formArrayName="items" class="items-container">
+          @for (item of items.controls; track $index; let i = $index) {
+            <div class="plan-item-card" [formGroupName]="$index">
+              <div class="item-header">
+                <span class="item-number">#{{ i + 1 }}</span>
+                <span class="item-phase" *ngIf="item.get('treatmentPhase')?.value">
+                  {{ item.get('treatmentPhase')?.value }}
+                </span>
+                @if (items.length > 1) {
+                  <button
+                    type="button"
+                    class="btn-remove-item"
+                    (click)="removeItem(i)"
+                    title="Eliminar item"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                }
+              </div>
+
+              <div class="item-body">
+                <!-- Servicio y Descripción -->
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Servicio del Catálogo</label>
+                    <app-service-select
+                      [disabled]="loading()"
+                      (serviceSelected)="onItemServiceSelected(i, $event)"
+                    />
+                    <p class="field-hint">
+                      <i class="fa-solid fa-circle-info"></i>
+                      Opcional: selecciona un servicio para autocompletar
+                    </p>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">
+                      Descripción <span class="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      formControlName="description"
+                      class="form-input"
+                      [class.input-error]="isItemFieldInvalid(i, 'description')"
+                      placeholder="Descripción del procedimiento"
+                    />
+                    @if (isItemFieldInvalid(i, 'description')) {
+                      <span class="error-message">La descripción es requerida</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Costos y Prioridad -->
+                <div class="form-row form-row-3">
+                  <div class="form-group">
+                    <label class="form-label">
+                      Costo Estimado <span class="required">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      formControlName="estimatedCost"
+                      class="form-input"
+                      [class.input-error]="isItemFieldInvalid(i, 'estimatedCost')"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                    />
+                    @if (isItemFieldInvalid(i, 'estimatedCost')) {
+                      <span class="error-message">El costo es requerido</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Descuento</label>
+                    <input
+                      type="number"
+                      formControlName="discount"
+                      class="form-input"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Prioridad</label>
+                    <select formControlName="priority" class="form-input">
+                      @for (priority of priorityOptions; track priority) {
+                        <option [value]="priority">{{ priority }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Fase y Fecha -->
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Fase del Tratamiento</label>
+                    <input
+                      type="text"
+                      formControlName="treatmentPhase"
+                      class="form-input"
+                      placeholder="Ej: Fase 1: Diagnóstico"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Fecha Estimada</label>
+                    <input
+                      type="date"
+                      formControlName="estimatedDate"
+                      class="form-input"
+                    />
+                  </div>
+                </div>
+
+                <!-- Notas -->
+                <div class="form-row">
+                  <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Notas</label>
+                    <input
+                      type="text"
+                      formControlName="notes"
+                      class="form-input"
+                      placeholder="Notas adicionales sobre este procedimiento..."
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Add Item Button -->
+        <button type="button" class="btn btn-outline btn-add-item" (click)="addItem()">
+          <i class="fa-solid fa-plus"></i>
+          Agregar Procedimiento
+        </button>
+
+        <!-- Total Estimado -->
+        <div class="plan-total">
+          <span class="total-label">Total Estimado:</span>
+          <span class="total-amount">
+            {{ getTotalEstimated() | number:'1.2-2' }} MXN
+          </span>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

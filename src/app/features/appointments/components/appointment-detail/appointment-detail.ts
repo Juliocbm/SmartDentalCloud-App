@@ -1,15 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatus, AppointmentStatusConfig } from '../../models/appointment.models';
+import { ConsultationNotesService } from '../../../consultation-notes/services/consultation-notes.service';
+import { ConsultationNote } from '../../../consultation-notes/models/consultation-note.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './appointment-detail.html',
   styleUrls: ['./appointment-detail.scss']
 })
@@ -19,11 +21,17 @@ export class AppointmentDetailComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private notesService = inject(ConsultationNotesService);
 
   appointment = signal<Appointment | null>(null);
   loading = signal(true);
   error = signal<string | null>(null);
   actionLoading = signal(false);
+
+  // Consultation Note state
+  consultationNote = signal<ConsultationNote | null>(null);
+  noteLoading = signal(false);
+  noteExists = signal(false);
 
   AppointmentStatus = AppointmentStatus;
   statusConfig = AppointmentStatusConfig;
@@ -46,6 +54,10 @@ export class AppointmentDetailComponent implements OnInit {
       next: (appointment) => {
         this.appointment.set(appointment);
         this.loading.set(false);
+        // Load consultation note if appointment is completed
+        if (appointment.status === AppointmentStatus.Completed) {
+          this.loadConsultationNote(appointment.id);
+        }
       },
       error: (error) => {
         this.logger.error('Error loading appointment:', error);
@@ -205,5 +217,33 @@ export class AppointmentDetailComponent implements OnInit {
 
   onBack(): void {
     this.router.navigate(['/appointments']);
+  }
+
+  private loadConsultationNote(appointmentId: string): void {
+    this.noteLoading.set(true);
+    this.notesService.getByAppointment(appointmentId).subscribe({
+      next: (note) => {
+        this.consultationNote.set(note);
+        this.noteExists.set(true);
+        this.noteLoading.set(false);
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          this.noteExists.set(false);
+        }
+        this.noteLoading.set(false);
+      }
+    });
+  }
+
+  formatNoteDateTime(date: Date | undefined): string {
+    if (!date) return '—';
+    return new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(new Date(date));
   }
 }

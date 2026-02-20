@@ -7,6 +7,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent)
   },
   {
+    path: 'forgot-password',
+    loadComponent: () => import('./features/auth/forgot-password/forgot-password').then(m => m.ForgotPasswordComponent)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./features/auth/reset-password/reset-password').then(m => m.ResetPasswordComponent)
+  },
+  {
     path: '',
     loadComponent: () => import('./shared/components/layout/layout').then(m => m.LayoutComponent),
     canActivate: [authGuard],
@@ -37,12 +45,20 @@ export const routes: Routes = [
         loadChildren: () => import('./features/services/services.routes').then(m => m.SERVICES_ROUTES)
       },
       {
+        path: 'treatment-plans',
+        loadChildren: () => import('./features/treatment-plans/treatment-plans.routes').then(m => m.TREATMENT_PLANS_ROUTES)
+      },
+      {
         path: 'invoices',
         loadChildren: () => import('./features/invoices/invoices.routes').then(m => m.INVOICES_ROUTES)
       },
       {
         path: 'payments',
         loadChildren: () => import('./features/payments/payments.routes').then(m => m.PAYMENTS_ROUTES)
+      },
+      {
+        path: 'prescriptions',
+        loadChildren: () => import('./features/prescriptions/prescriptions.routes').then(m => m.PRESCRIPTIONS_ROUTES)
       },
       {
         path: 'dentists',
@@ -65,6 +81,11 @@ export const routes: Routes = [
         path: 'settings',
         loadComponent: () => import('./shared/components/coming-soon/coming-soon').then(m => m.ComingSoonComponent),
         data: { moduleName: 'Configuración', icon: 'fa-gear' }
+      },
+      {
+        path: 'change-password',
+        loadComponent: () => import('./features/auth/change-password/change-password').then(m => m.ChangePasswordComponent),
+        title: 'Cambiar Contraseña'
       }
     ]
   },

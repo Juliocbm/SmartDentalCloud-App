@@ -33,9 +33,20 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   searchTerm = signal('');
   filterMethod = signal<'all' | PaymentMethod>('all');
 
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(15);
+
   // Computed
   totalAmount = computed(() => {
     return this.paymentsService.calculateTotal(this.filteredPayments());
+  });
+
+  totalPages = computed(() => Math.ceil(this.filteredPayments().length / this.pageSize()));
+
+  paginatedPayments = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredPayments().slice(start, start + this.pageSize());
   });
 
   // Constants
@@ -69,7 +80,13 @@ export class PaymentListComponent implements OnInit, OnDestroy {
 
     this.paymentsService.getAll().subscribe({
       next: (data) => {
-        this.payments.set(data);
+        // Parse dates from API strings
+        const parsed = data.map(p => ({
+          ...p,
+          paidAt: new Date(p.paidAt),
+          createdAt: new Date(p.createdAt)
+        }));
+        this.payments.set(parsed);
         this.applyFilters();
         this.loading.set(false);
       },
@@ -89,7 +106,20 @@ export class PaymentListComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(p => p.paymentMethod === method);
     }
 
+    const search = this.searchTerm().toLowerCase().trim();
+    if (search) {
+      filtered = filtered.filter(p =>
+        p.reference?.toLowerCase().includes(search) ||
+        this.formatCurrency(p.amount).toLowerCase().includes(search) ||
+        this.getMethodConfig(p.paymentMethod).label.toLowerCase().includes(search)
+      );
+    }
+
+    // Sort by date descending
+    filtered.sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime());
+
     this.filteredPayments.set(filtered);
+    this.currentPage.set(1);
   }
 
   onSearchChange(value: string): void {
@@ -101,6 +131,31 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const pages: number[] = [];
+
+    if (total <= 5) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+    } else {
+      if (current <= 3) {
+        pages.push(1, 2, 3, 4, 5);
+      } else if (current >= total - 2) {
+        for (let i = total - 4; i <= total; i++) pages.push(i);
+      } else {
+        for (let i = current - 2; i <= current + 2; i++) pages.push(i);
+      }
+    }
+    return pages;
+  }
+
   getMethodConfig(method: string) {
     return PAYMENT_METHOD_CONFIG[method as PaymentMethod] || PAYMENT_METHOD_CONFIG[PaymentMethod.Other];
   }
@@ -110,5 +165,16 @@ export class PaymentListComponent implements OnInit, OnDestroy {
       style: 'currency',
       currency: 'MXN'
     }).format(value);
+  }
+
+  formatDate(date: Date): string {
+    return new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(new Date(date));
   }
 }

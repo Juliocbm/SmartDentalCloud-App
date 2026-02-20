@@ -1,0 +1,233 @@
+<div class="list-container">
+  <app-page-header
+    title="Recetas Médicas"
+    icon="fa-solid fa-prescription"
+    [breadcrumbs]="[
+      { label: 'Dashboard', route: '/dashboard' },
+      { label: 'Recetas Médicas' }
+    ]"
+  />
+
+  <!-- KPI Cards -->
+  @if (!loading() && !error()) {
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon primary">
+          <i class="fa-solid fa-prescription"></i>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ totalCount() }}</span>
+          <span class="kpi-label">Total Recetas</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon success">
+          <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ activeCount() }}</span>
+          <span class="kpi-label">Activas</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon info">
+          <i class="fa-solid fa-prescription-bottle-medical"></i>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ completedCount() }}</span>
+          <span class="kpi-label">Dispensadas</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="search-box">
+        <i class="fa-solid fa-search"></i>
+        <input
+          type="text"
+          placeholder="Buscar por paciente, médico, diagnóstico o medicamento..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="onSearchChange($event)"
+        />
+      </div>
+      <select
+        class="filter-select"
+        [ngModel]="statusFilter()"
+        (ngModelChange)="onStatusFilterChange($event)"
+      >
+        <option value="all">Todos los estados</option>
+        <option [value]="PrescriptionStatus.Active">Activas</option>
+        <option [value]="PrescriptionStatus.Completed">Dispensadas</option>
+        <option [value]="PrescriptionStatus.Cancelled">Canceladas</option>
+      </select>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-primary" (click)="createPrescription()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Receta
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando recetas...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && filteredPrescriptions().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-prescription"></i>
+      <h3>No se encontraron recetas</h3>
+      @if (searchTerm() || statusFilter() !== 'all') {
+        <p>Intenta ajustar los filtros de búsqueda</p>
+      } @else {
+        <p>Aún no hay recetas registradas</p>
+        <button class="btn btn-primary" (click)="createPrescription()">
+          <i class="fa-solid fa-plus"></i>
+          Crear Primera Receta
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error() && filteredPrescriptions().length > 0) {
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Paciente</th>
+            <th>Diagnóstico</th>
+            <th>Medicamentos</th>
+            <th>Prescrito por</th>
+            <th>Vigencia</th>
+            <th>Estado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (prescription of paginatedPrescriptions(); track prescription.id) {
+            <tr [class.expired-row]="isExpired(prescription)">
+              <td class="date-cell">
+                {{ formatDate(prescription.issuedAt) }}
+              </td>
+              <td>
+                <span class="patient-name">{{ prescription.patientName }}</span>
+              </td>
+              <td>
+                <span class="diagnosis-text">
+                  {{ prescription.diagnosis || '—' }}
+                </span>
+              </td>
+              <td>
+                <span class="medications-summary">
+                  {{ getMedicationsSummary(prescription) }}
+                </span>
+              </td>
+              <td>
+                <span class="doctor-name">{{ prescription.prescribedByName }}</span>
+              </td>
+              <td class="date-cell">
+                @if (prescription.expiresAt) {
+                  <span [class.text-danger]="isExpired(prescription)">
+                    {{ formatDate(prescription.expiresAt) }}
+                    @if (isExpired(prescription)) {
+                      <i class="fa-solid fa-triangle-exclamation" title="Expirada"></i>
+                    }
+                  </span>
+                } @else {
+                  —
+                }
+              </td>
+              <td>
+                <span class="badge" [class]="getStatusConfig(prescription.status).class">
+                  <i [class]="'fa-solid ' + getStatusConfig(prescription.status).icon"></i>
+                  {{ getStatusConfig(prescription.status).label }}
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button
+                  class="btn-icon"
+                  title="Ver detalle"
+                  (click)="viewDetail(prescription.id)"
+                >
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (currentPage() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ currentPage() * pageSize() > filteredPrescriptions().length ? filteredPrescriptions().length : currentPage() * pageSize() }}</strong>
+          de <strong>{{ filteredPrescriptions().length }}</strong> recetas
+        </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(1)"
+            >
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(currentPage() - 1)"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            @for (page of getPaginationPages(); track page) {
+              <button
+                class="btn-page"
+                [class.active]="page === currentPage()"
+                (click)="onPageChange(page)"
+              >
+                {{ page }}
+              </button>
+            }
+
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(currentPage() + 1)"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(totalPages())"
+            >
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

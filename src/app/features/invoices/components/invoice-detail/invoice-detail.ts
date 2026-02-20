@@ -128,4 +128,25 @@ export class InvoiceDetailComponent implements OnInit {
     const inv = this.invoice();
     return !!inv && inv.balance > 0 && inv.status !== InvoiceStatus.Cancelled;
   }
+
+  formatDate(date: Date | string): string {
+    if (!date) return '—';
+    return new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(new Date(date));
+  }
+
+  formatDateTime(date: Date | string): string {
+    if (!date) return '—';
+    return new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(new Date(date));
+  }
 }

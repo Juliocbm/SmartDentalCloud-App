@@ -1,0 +1,125 @@
+// ============================================
+// TreatmentPlanListComponent - Estilos Específicos
+// Container: usa .page-container.container-wide de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Filters: usa .filters-section de _components.scss
+// Table: usa .table-container, .table de _components.scss
+// Pagination: usa .table-footer, .btn-page de _components.scss
+// Botones: usa clases globales .btn de _components.scss
+// ============================================
+
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-lg) 0;
+
+  i {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+    display: block;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: var(--spacing-md) 0;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: var(--spacing-sm) 0;
+  }
+}
+
+.loading-state i {
+  color: var(--primary-500);
+}
+
+.error-state i {
+  color: var(--danger-500);
+}
+
+.empty-state i {
+  color: var(--text-tertiary);
+}
+
+.patient-name {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.date-cell {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.cost-cell {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+// ===== Progress Bar Mini =====
+.progress-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.progress-bar-mini {
+  flex: 1;
+  height: 6px;
+  background: var(--surface-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  min-width: 60px;
+  max-width: 100px;
+}
+
+.progress-fill-mini {
+  height: 100%;
+  background: var(--primary-500);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+
+  &.progress-complete {
+    background: var(--success-500);
+  }
+}
+
+.progress-text {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.actions-column {
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+// ===== Responsive =====
+@media (max-width: 768px) {
+  .filters-section {
+    flex-direction: column;
+
+    .search-box {
+      min-width: 100%;
+    }
+
+    .filter-actions {
+      width: 100%;
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+}

@@ -167,6 +167,15 @@
                         Cancelar
                       </button>
                     }
+                    @if (appointment.status === 'Completed') {
+                      <button
+                        class="btn btn-sm btn-outline"
+                        [routerLink]="['/appointments', appointment.id, 'note']"
+                      >
+                        <i class="fa-solid fa-notes-medical"></i>
+                        Nota Clínica
+                      </button>
+                    }
                   </div>
                 </td>
               </tr>

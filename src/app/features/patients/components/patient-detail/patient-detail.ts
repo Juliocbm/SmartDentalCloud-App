@@ -1,8 +1,11 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PatientsService } from '../../services/patients.service';
 import { Patient } from '../../models/patient.models';
+import { AttachedFile, FILE_CATEGORIES, getFileIcon, formatFileSize } from '../../models/attached-file.models';
+import { AttachedFilesService } from '../../services/attached-files.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { OdontogramComponent } from '../../../dental-chart/components/odontogram/odontogram';
@@ -10,7 +13,7 @@ import { OdontogramComponent } from '../../../dental-chart/components/odontogram
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, OdontogramComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
@@ -20,11 +23,24 @@ export class PatientDetailComponent implements OnInit {
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private attachedFilesService = inject(AttachedFilesService);
 
   patient = signal<Patient | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
-  activeTab = signal<'info' | 'medical' | 'odontogram' | 'dashboard' | 'history'>('info');
+  activeTab = signal<'info' | 'medical' | 'odontogram' | 'dashboard' | 'history' | 'files'>('info');
+
+  // Attached files state
+  files = signal<AttachedFile[]>([]);
+  filesLoading = signal(false);
+  showUploadForm = signal(false);
+  uploading = signal(false);
+  uploadCategory = signal('');
+  uploadDescription = signal('');
+  selectedFile = signal<File | null>(null);
+  FILE_CATEGORIES = FILE_CATEGORIES;
+  getFileIcon = getFileIcon;
+  formatFileSize = formatFileSize;
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -50,8 +66,99 @@ export class PatientDetailComponent implements OnInit {
     });
   }
 
-  setActiveTab(tab: 'info' | 'medical' | 'odontogram' | 'dashboard' | 'history'): void {
+  setActiveTab(tab: 'info' | 'medical' | 'odontogram' | 'dashboard' | 'history' | 'files'): void {
     this.activeTab.set(tab);
+    if (tab === 'files' && this.files().length === 0 && !this.filesLoading()) {
+      this.loadFiles();
+    }
+  }
+
+  // === Attached Files ===
+
+  private loadFiles(): void {
+    const patient = this.patient();
+    if (!patient) return;
+
+    this.filesLoading.set(true);
+    this.attachedFilesService.getByPatient(patient.id).subscribe({
+      next: (data) => {
+        const parsed = data.map(f => ({
+          ...f,
+          createdAt: new Date(f.createdAt)
+        }));
+        parsed.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        this.files.set(parsed);
+        this.filesLoading.set(false);
+      },
+      error: () => {
+        this.filesLoading.set(false);
+      }
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile.set(input.files[0]);
+    }
+  }
+
+  toggleUploadForm(): void {
+    this.showUploadForm.update(v => !v);
+    if (this.showUploadForm()) {
+      this.selectedFile.set(null);
+      this.uploadCategory.set('');
+      this.uploadDescription.set('');
+    }
+  }
+
+  uploadFile(): void {
+    const patient = this.patient();
+    const file = this.selectedFile();
+    if (!patient || !file || this.uploading()) return;
+
+    this.uploading.set(true);
+    this.attachedFilesService.upload(
+      patient.id,
+      file,
+      this.uploadCategory() || undefined,
+      this.uploadDescription().trim() || undefined
+    ).subscribe({
+      next: () => {
+        this.notifications.success('Archivo subido exitosamente');
+        this.showUploadForm.set(false);
+        this.uploading.set(false);
+        this.loadFiles();
+      },
+      error: () => {
+        this.notifications.error('Error al subir el archivo');
+        this.uploading.set(false);
+      }
+    });
+  }
+
+  async deleteFile(fileId: string): Promise<void> {
+    const confirmed = await this.notifications.confirm('¿Está seguro de eliminar este archivo?');
+    if (!confirmed) return;
+
+    this.attachedFilesService.delete(fileId).subscribe({
+      next: () => {
+        this.notifications.success('Archivo eliminado');
+        this.loadFiles();
+      },
+      error: () => {
+        this.notifications.error('Error al eliminar el archivo');
+      }
+    });
+  }
+
+  formatDateFile(date: Date | string): string {
+    if (!date) return '—';
+    return new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(new Date(date));
   }
 
   async toggleActive(): Promise<void> {
@@ -113,5 +220,9 @@ export class PatientDetailComponent implements OnInit {
   hasMedicalHistory(): boolean {
     const patient = this.patient();
     return !!(patient && (patient.allergies || patient.chronicDiseases || patient.currentMedications));
+  }
+
+  goBack(): void {
+    this.router.navigate(['/patients']);
   }
 }

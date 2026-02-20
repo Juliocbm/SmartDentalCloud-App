@@ -1,0 +1,201 @@
+<div class="detail-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando receta...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error al cargar la receta</h2>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  } @else if (prescription(); as rx) {
+
+    <!-- Header -->
+    <div class="detail-header">
+      <div class="header-top">
+        <button (click)="goBack()" class="btn-back">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver
+        </button>
+        <div class="header-actions">
+          <button class="btn btn-secondary" (click)="printPrescription()">
+            <i class="fa-solid fa-print"></i>
+            Imprimir
+          </button>
+        </div>
+      </div>
+
+      <div class="header-content">
+        <div class="title-section">
+          <h1>
+            <i class="fa-solid fa-prescription"></i>
+            Receta Médica
+          </h1>
+          <span class="status-badge" [class]="getStatusConfig(rx.status).class">
+            <i [class]="'fa-solid ' + getStatusConfig(rx.status).icon"></i>
+            {{ getStatusConfig(rx.status).label }}
+          </span>
+          @if (isExpired()) {
+            <span class="status-badge badge-warning">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              Expirada
+            </span>
+          }
+        </div>
+
+        <div class="header-info">
+          <div class="info-item">
+            <i class="fa-solid fa-user"></i>
+            <span class="label">Paciente:</span>
+            <span class="value">{{ rx.patientName }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-user-doctor"></i>
+            <span class="label">Prescrito por:</span>
+            <span class="value">{{ rx.prescribedByName }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-calendar"></i>
+            <span class="label">Emisión:</span>
+            <span class="value">{{ formatDate(rx.issuedAt) }}</span>
+          </div>
+          @if (rx.expiresAt) {
+            <div class="info-item">
+              <i class="fa-solid fa-clock"></i>
+              <span class="label">Vigencia:</span>
+              <span class="value" [class.text-danger]="isExpired()">{{ formatDate(rx.expiresAt) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-body">
+
+      <!-- Diagnosis -->
+      @if (rx.diagnosis) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-stethoscope"></i>
+            Diagnóstico
+          </h3>
+          <div class="info-card">
+            <p class="diagnosis-text">{{ rx.diagnosis }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- Medications -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-pills"></i>
+          Medicamentos
+          <span class="section-count">{{ rx.items.length }}</span>
+        </h3>
+
+        @if (rx.items.length > 0) {
+          <div class="medications-grid">
+            @for (item of rx.items; track item.id; let i = $index) {
+              <div class="medication-card">
+                <div class="medication-header">
+                  <span class="medication-number">{{ i + 1 }}</span>
+                  <div class="medication-title">
+                    <h4>{{ item.medicationName }}</h4>
+                    @if (item.activeIngredient) {
+                      <span class="active-ingredient">{{ item.activeIngredient }}</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="medication-details">
+                  <div class="detail-row">
+                    <span class="detail-label">
+                      <i class="fa-solid fa-syringe"></i>
+                      Dosis:
+                    </span>
+                    <span class="detail-value">{{ item.dosage }}</span>
+                  </div>
+
+                  <div class="detail-row">
+                    <span class="detail-label">
+                      <i class="fa-solid fa-repeat"></i>
+                      Frecuencia:
+                    </span>
+                    <span class="detail-value">{{ item.frequency }}</span>
+                  </div>
+
+                  <div class="detail-row">
+                    <span class="detail-label">
+                      <i class="fa-solid fa-calendar-days"></i>
+                      Duración:
+                    </span>
+                    <span class="detail-value">{{ item.duration }}</span>
+                  </div>
+
+                  <div class="detail-row">
+                    <span class="detail-label">
+                      <i class="fa-solid fa-hashtag"></i>
+                      Cantidad:
+                    </span>
+                    <span class="detail-value">{{ item.quantity }}</span>
+                  </div>
+
+                  @if (item.presentation) {
+                    <div class="detail-row">
+                      <span class="detail-label">
+                        <i class="fa-solid fa-box"></i>
+                        Presentación:
+                      </span>
+                      <span class="detail-value">{{ item.presentation }}</span>
+                    </div>
+                  }
+
+                  @if (item.route) {
+                    <div class="detail-row">
+                      <span class="detail-label">
+                        <i class="fa-solid fa-route"></i>
+                        Vía:
+                      </span>
+                      <span class="detail-value">{{ item.route }}</span>
+                    </div>
+                  }
+                </div>
+
+                @if (item.instructions) {
+                  <div class="medication-instructions">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>{{ item.instructions }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-inline">
+            <i class="fa-solid fa-pills"></i>
+            <p>No hay medicamentos registrados</p>
+          </div>
+        }
+      </div>
+
+      <!-- Notes -->
+      @if (rx.notes) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-note-sticky"></i>
+            Notas Adicionales
+          </h3>
+          <div class="info-card">
+            <p>{{ rx.notes }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

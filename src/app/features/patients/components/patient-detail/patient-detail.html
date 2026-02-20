@@ -1,58 +1,76 @@
-<div class="patient-detail-container">
-  <!-- Loading State -->
+<div class="detail-container">
   @if (loading()) {
     <div class="loading-state">
       <i class="fa-solid fa-spinner fa-spin"></i>
       <p>Cargando información del paciente...</p>
     </div>
-  }
-
-  <!-- Error State -->
-  @if (error()) {
+  } @else if (error()) {
     <div class="error-state">
       <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error al cargar el paciente</h2>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary" routerLink="/patients">Volver a la lista</button>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
     </div>
-  }
+  } @else if (patient(); as pat) {
 
-  <!-- Patient Detail -->
-  @if (!loading() && !error() && patient()) {
-  <div class="patient-detail">
     <!-- Header -->
     <div class="detail-header">
-      <div class="header-info">
-        <h1 class="patient-name">{{ getFullName() }}</h1>
-        <div class="patient-meta">
-          <span class="meta-item">
-            <i class="fa-solid fa-calendar"></i>
-            {{ getAge() }}
-          </span>
-          <span class="meta-item">
-            <i class="fa-solid fa-clock"></i>
-            Registrado: {{ formatDate(patient()!.createdAt) }}
-          </span>
-          <span class="badge" [class.badge-active]="patient()!.isActive" [class.badge-inactive]="!patient()!.isActive">
-            {{ patient()!.isActive ? 'Activo' : 'Inactivo' }}
-          </span>
+      <div class="header-top">
+        <button (click)="goBack()" class="btn-back">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver
+        </button>
+        <div class="header-actions">
+          <button class="btn btn-outline" (click)="editPatient()">
+            <i class="fa-solid fa-pen"></i>
+            Editar
+          </button>
+          @if (pat.isActive) {
+            <button class="btn btn-warning" (click)="toggleActive()">
+              <i class="fa-solid fa-toggle-off"></i>
+              Desactivar
+            </button>
+          } @else {
+            <button class="btn btn-success" (click)="toggleActive()">
+              <i class="fa-solid fa-toggle-on"></i>
+              Activar
+            </button>
+          }
         </div>
       </div>
-      <div class="header-actions">
-        <button class="btn btn-outline" (click)="editPatient()">
-          <i class="fa-solid fa-pen"></i>
-          Editar
-        </button>
-        @if (patient()!.isActive) {
-          <button class="btn btn-warning" (click)="toggleActive()">
-            <i class="fa-solid fa-toggle-off"></i>
-            Desactivar
-          </button>
-        } @else {
-          <button class="btn btn-success" (click)="toggleActive()">
-            <i class="fa-solid fa-toggle-on"></i>
-            Activar
-          </button>
-        }
+
+      <div class="header-content">
+        <div class="title-section">
+          <h1>
+            <i class="fa-solid fa-user"></i>
+            {{ getFullName() }}
+          </h1>
+          <span class="status-badge" [class.badge-active]="pat.isActive" [class.badge-inactive]="!pat.isActive">
+            {{ pat.isActive ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+        <div class="header-info">
+          <div class="info-item">
+            <i class="fa-solid fa-calendar"></i>
+            <span class="label">Edad:</span>
+            <span class="value">{{ getAge() }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-clock"></i>
+            <span class="label">Registrado:</span>
+            <span class="value">{{ formatDate(pat.createdAt) }}</span>
+          </div>
+          @if (pat.phoneNumber) {
+            <div class="info-item">
+              <i class="fa-solid fa-phone"></i>
+              <span class="label">Teléfono:</span>
+              <span class="value">{{ pat.phoneNumber }}</span>
+            </div>
+          }
+        </div>
       </div>
     </div>
 
@@ -82,6 +100,17 @@
         >
           <i class="fa-solid fa-tooth"></i>
           Odontograma
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'files'"
+          (click)="setActiveTab('files')"
+        >
+          <i class="fa-solid fa-paperclip"></i>
+          Archivos
+          @if (files().length > 0) {
+            <span class="tab-count">{{ files().length }}</span>
+          }
         </button>
       </div>
 
@@ -269,8 +298,150 @@
           />
         </div>
         }
+
+        <!-- Files Tab -->
+        @if (activeTab() === 'files') {
+        <div class="tab-panel">
+          <div class="files-header">
+            <h3>
+              <i class="fa-solid fa-paperclip"></i>
+              Archivos Adjuntos
+            </h3>
+            <button
+              type="button"
+              class="btn btn-outline btn-sm"
+              (click)="toggleUploadForm()"
+            >
+              @if (showUploadForm()) {
+                <i class="fa-solid fa-xmark"></i>
+                Cancelar
+              } @else {
+                <i class="fa-solid fa-upload"></i>
+                Subir Archivo
+              }
+            </button>
+          </div>
+
+          <!-- Upload Form -->
+          @if (showUploadForm()) {
+            <div class="upload-form">
+              <div class="form-group">
+                <label class="form-label">Archivo</label>
+                <input
+                  type="file"
+                  class="form-control-file"
+                  (change)="onFileSelected($event)"
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                />
+                @if (selectedFile()) {
+                  <span class="file-selected">
+                    <i class="fa-solid fa-check"></i>
+                    {{ selectedFile()!.name }} ({{ formatFileSize(selectedFile()!.size) }})
+                  </span>
+                }
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label class="form-label">Categoría</label>
+                  <select
+                    class="form-control"
+                    [ngModel]="uploadCategory()"
+                    (ngModelChange)="uploadCategory.set($event)"
+                  >
+                    <option value="">Sin categoría</option>
+                    @for (cat of FILE_CATEGORIES; track cat.value) {
+                      <option [value]="cat.value">{{ cat.label }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Descripción</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Descripción del archivo..."
+                    [ngModel]="uploadDescription()"
+                    (ngModelChange)="uploadDescription.set($event)"
+                  />
+                </div>
+              </div>
+              <div class="form-actions-right">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  [disabled]="!selectedFile() || uploading()"
+                  (click)="uploadFile()"
+                >
+                  @if (uploading()) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Subiendo...
+                  } @else {
+                    <i class="fa-solid fa-upload"></i>
+                    Subir
+                  }
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Loading -->
+          @if (filesLoading()) {
+            <div class="inline-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando archivos...</span>
+            </div>
+          }
+
+          <!-- Files List -->
+          @if (!filesLoading() && files().length > 0) {
+            <div class="files-grid">
+              @for (file of files(); track file.id) {
+                <div class="file-card">
+                  <div class="file-icon">
+                    <i [class]="'fa-solid ' + getFileIcon(file.fileType)"></i>
+                  </div>
+                  <div class="file-info">
+                    <a [href]="file.fileUrl" target="_blank" class="file-name">
+                      {{ file.fileName }}
+                    </a>
+                    <div class="file-meta">
+                      @if (file.category) {
+                        <span class="file-category">{{ file.category }}</span>
+                      }
+                      <span class="file-size">{{ formatFileSize(file.fileSize) }}</span>
+                      <span class="file-date">{{ formatDateFile(file.createdAt) }}</span>
+                    </div>
+                    @if (file.description) {
+                      <p class="file-description">{{ file.description }}</p>
+                    }
+                  </div>
+                  <button
+                    class="btn-icon-sm"
+                    title="Eliminar archivo"
+                    (click)="deleteFile(file.id)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Empty -->
+          @if (!filesLoading() && files().length === 0 && !showUploadForm()) {
+            <div class="empty-files">
+              <i class="fa-solid fa-folder-open"></i>
+              <h3>Sin Archivos</h3>
+              <p>Este paciente no tiene archivos adjuntos</p>
+              <button class="btn btn-primary" (click)="toggleUploadForm()">
+                <i class="fa-solid fa-upload"></i>
+                Subir Primer Archivo
+              </button>
+            </div>
+          }
+        </div>
+        }
       </div>
     </div>
-  </div>
   }
 </div>

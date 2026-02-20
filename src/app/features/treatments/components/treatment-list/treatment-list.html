@@ -42,19 +42,20 @@
 
   <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-container">
-      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
       <p>Cargando tratamientos...</p>
     </div>
   }
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
+    <div class="error-state">
       <i class="fa-solid fa-exclamation-triangle"></i>
+      <h3>Error al cargar tratamientos</h3>
       <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadTreatments()">
-        <i class="fa-solid fa-refresh"></i>
+      <button class="btn btn-outline" (click)="loadTreatments()">
+        <i class="fa-solid fa-rotate-right"></i>
         Reintentar
       </button>
     </div>
@@ -98,7 +99,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (treatment of filteredTreatments(); track treatment.id) {
+          @for (treatment of paginatedTreatments(); track treatment.id) {
             <tr>
               <!-- Paciente -->
               <td>
@@ -169,6 +170,13 @@
                     <i class="fa-solid fa-eye"></i>
                     Ver
                   </button>
+                  <button
+                    class="btn btn-sm btn-outline"
+                    [routerLink]="['/treatments', treatment.id, 'edit']"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                    Editar
+                  </button>                  
                 </div>
               </td>
             </tr>
@@ -176,11 +184,58 @@
         </tbody>
       </table>
 
-      <!-- Table Footer -->
-      <div class="table-footer centered">
-        <span class="results-count">
-          Mostrando <strong>{{ filteredTreatments().length }}</strong> de <strong>{{ treatments().length }}</strong> tratamientos
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (currentPage() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ currentPage() * pageSize() > totalItems() ? totalItems() : currentPage() * pageSize() }}</strong>
+          de <strong>{{ totalItems() }}</strong> tratamientos
         </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(1)"
+            >
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(currentPage() - 1)"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            @for (page of getPaginationPages(); track page) {
+              <button
+                class="btn-page"
+                [class.active]="page === currentPage()"
+                (click)="onPageChange(page)"
+              >
+                {{ page }}
+              </button>
+            }
+
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(currentPage() + 1)"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(totalPages())"
+            >
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
       </div>
     </div>
   }

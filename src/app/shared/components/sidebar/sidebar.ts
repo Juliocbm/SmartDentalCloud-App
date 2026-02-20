@@ -73,6 +73,26 @@ export class SidebarComponent {
       ]
     },
     { 
+      id: 'treatment-plans',
+      icon: 'fa-solid fa-clipboard-list', 
+      label: 'Planes de Tratamiento', 
+      route: '/treatment-plans',
+      children: [
+        { id: 'treatment-plans-list', icon: 'fa-solid fa-list', label: 'Lista de Planes', route: '/treatment-plans' },
+        { id: 'treatment-plans-new', icon: 'fa-solid fa-plus', label: 'Nuevo Plan', route: '/treatment-plans/new' }
+      ]
+    },
+    { 
+      id: 'prescriptions',
+      icon: 'fa-solid fa-prescription', 
+      label: 'Recetas', 
+      route: '/prescriptions',
+      children: [
+        { id: 'prescriptions-list', icon: 'fa-solid fa-list', label: 'Lista de Recetas', route: '/prescriptions' },
+        { id: 'prescriptions-new', icon: 'fa-solid fa-plus', label: 'Nueva Receta', route: '/prescriptions/new' }
+      ]
+    },
+    { 
       id: 'billing',
       icon: 'fa-solid fa-file-invoice-dollar', 
       label: 'Facturación', 

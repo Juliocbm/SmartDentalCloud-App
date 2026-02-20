@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 import { AppointmentsService } from './services/appointments.service';
 import { AppointmentsAnalyticsService } from './services/appointments-analytics.service';
+import { ConsultationNotesService } from '../consultation-notes/services/consultation-notes.service';
 
 export const APPOINTMENTS_ROUTES: Routes = [
   {
     path: '',
-    providers: [AppointmentsService, AppointmentsAnalyticsService],
+    providers: [AppointmentsService, AppointmentsAnalyticsService, ConsultationNotesService],
     children: [
       {
         path: '',
@@ -36,6 +37,11 @@ export const APPOINTMENTS_ROUTES: Routes = [
         path: ':id/edit',
         loadComponent: () => import('./components/appointment-form/appointment-form')
           .then(m => m.AppointmentFormComponent)
+      },
+      {
+        path: ':id/note',
+        loadComponent: () => import('../consultation-notes/components/consultation-note-view/consultation-note-view')
+          .then(m => m.ConsultationNoteViewComponent)
       }
     ]
   }

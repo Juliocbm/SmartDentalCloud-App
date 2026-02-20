@@ -1,0 +1,375 @@
+<div class="detail-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando plan de tratamiento...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error al cargar el plan</h2>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver a Planes
+      </button>
+    </div>
+  } @else if (plan(); as p) {
+
+    <!-- Header -->
+    <div class="detail-header">
+      <div class="header-top">
+        <button (click)="goBack()" class="btn-back">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver
+        </button>
+        <div class="header-actions">
+          @if (canApprove()) {
+            <button class="btn btn-success" (click)="onApprove()" [disabled]="actionLoading()">
+              <i class="fa-solid fa-circle-check"></i>
+              Aprobar
+            </button>
+            <button class="btn btn-danger" (click)="onShowReject()" [disabled]="actionLoading()">
+              <i class="fa-solid fa-circle-xmark"></i>
+              Rechazar
+            </button>
+          }
+          @if (canStart()) {
+            <button class="btn btn-primary" (click)="onStart()" [disabled]="actionLoading()">
+              <i class="fa-solid fa-play"></i>
+              Iniciar Plan
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="header-content">
+        <div class="title-section">
+          <h1>
+            <i class="fa-solid fa-clipboard-list"></i>
+            {{ p.title }}
+          </h1>
+          <span class="status-badge" [class]="getStatusConfig(p.status).class">
+            <i [class]="'fa-solid ' + getStatusConfig(p.status).icon"></i>
+            {{ getStatusConfig(p.status).label }}
+          </span>
+        </div>
+
+        <div class="header-info">
+          <div class="info-item">
+            <i class="fa-solid fa-hashtag"></i>
+            <span class="label">Plan:</span>
+            <span class="value">{{ p.planNumber }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-user"></i>
+            <span class="label">Paciente:</span>
+            <span class="value">{{ p.patientName || 'Sin asignar' }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-dollar-sign"></i>
+            <span class="label">Costo Estimado:</span>
+            <span class="value">{{ formatCurrency(p.totalEstimatedCost) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-body">
+
+      <!-- Progreso General -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-chart-line"></i>
+          Progreso General
+        </h3>
+        <div class="progress-overview">
+          <div class="progress-header">
+            <span class="progress-percentage">{{ getProgressPercentage() }}% completado</span>
+            <span class="progress-items">{{ p.completedItems }} de {{ p.totalItems }} procedimientos</span>
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [style.width.%]="getProgressPercentage()"
+              [class.progress-complete]="getProgressPercentage() >= 100"
+            ></div>
+          </div>
+          <div class="progress-stats">
+            <div class="stat-card">
+              <span class="stat-label">Estimado</span>
+              <span class="stat-value primary">{{ formatCurrency(p.totalEstimatedCost) }}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Costo Real</span>
+              <span class="stat-value">{{ formatCurrency(p.totalActualCost) }}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Pendientes</span>
+              <span class="stat-value warning">{{ p.pendingItems }}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">En Progreso</span>
+              <span class="stat-value info">{{ p.inProgressItems }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información General -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-info-circle"></i>
+          Información General
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Paciente:</span>
+            <span class="info-value">
+              <a [routerLink]="['/patients', p.patientId]" class="link-primary">
+                {{ p.patientName || 'Sin nombre' }}
+              </a>
+            </span>
+          </div>
+          @if (p.diagnosis) {
+            <div class="info-row">
+              <span class="info-label">Diagnóstico:</span>
+              <span class="info-value">{{ p.diagnosis }}</span>
+            </div>
+          }
+          @if (p.description) {
+            <div class="info-row">
+              <span class="info-label">Descripción:</span>
+              <span class="info-value">{{ p.description }}</span>
+            </div>
+          }
+          <div class="info-row">
+            <span class="info-label">Estado:</span>
+            <span class="info-value">
+              <span class="badge" [class]="getStatusConfig(p.status).class">
+                <i [class]="'fa-solid ' + getStatusConfig(p.status).icon"></i>
+                {{ getStatusConfig(p.status).label }}
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fechas -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-calendar-days"></i>
+          Fechas
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Inicio Estimado:</span>
+            <span class="info-value">{{ formatDate(p.estimatedStartDate) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Fin Estimado:</span>
+            <span class="info-value">{{ formatDate(p.estimatedEndDate) }}</span>
+          </div>
+          @if (p.actualStartDate) {
+            <div class="info-row">
+              <span class="info-label">Inicio Real:</span>
+              <span class="info-value">{{ formatDate(p.actualStartDate) }}</span>
+            </div>
+          }
+          @if (p.actualEndDate) {
+            <div class="info-row">
+              <span class="info-label">Fin Real:</span>
+              <span class="info-value">{{ formatDate(p.actualEndDate) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Aprobación / Rechazo -->
+      @if (p.approvedAt || p.rejectedAt) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-stamp"></i>
+            @if (p.approvedAt) {
+              Aprobación
+            } @else {
+              Rechazo
+            }
+          </h3>
+          <div class="info-card">
+            @if (p.approvedAt) {
+              <div class="info-row">
+                <span class="info-label">Aprobado:</span>
+                <span class="info-value">{{ formatDateTime(p.approvedAt) }}</span>
+              </div>
+              @if (p.approvedByName) {
+                <div class="info-row">
+                  <span class="info-label">Aprobado por:</span>
+                  <span class="info-value">{{ p.approvedByName }}</span>
+                </div>
+              }
+            }
+            @if (p.rejectedAt) {
+              <div class="info-row">
+                <span class="info-label">Rechazado:</span>
+                <span class="info-value">{{ formatDateTime(p.rejectedAt) }}</span>
+              </div>
+              @if (p.rejectedByName) {
+                <div class="info-row">
+                  <span class="info-label">Rechazado por:</span>
+                  <span class="info-value">{{ p.rejectedByName }}</span>
+                </div>
+              }
+              @if (p.rejectionReason) {
+                <div class="info-row">
+                  <span class="info-label">Razón:</span>
+                  <span class="info-value rejection-reason">{{ p.rejectionReason }}</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Procedimientos (Items) -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-list-check"></i>
+          Procedimientos del Plan
+          <span class="items-badge">{{ p.items.length }}</span>
+        </h3>
+
+        @if (p.items && p.items.length > 0) {
+          <div class="items-list">
+            @for (item of p.items; track item.id; let i = $index) {
+              <div class="detail-item-card">
+                <div class="detail-item-header">
+                  <span class="detail-item-number">#{{ i + 1 }}</span>
+                  @if (item.treatmentPhase) {
+                    <span class="detail-item-phase">{{ item.treatmentPhase }}</span>
+                  }
+                  <span [class]="'badge ' + getItemStatusConfig(item.status).class">
+                    <i [class]="'fa-solid ' + getItemStatusConfig(item.status).icon"></i>
+                    {{ getItemStatusConfig(item.status).label }}
+                  </span>
+                  <span [class]="'badge ' + getItemPriorityConfig(item.priority).class">
+                    <i [class]="'fa-solid ' + getItemPriorityConfig(item.priority).icon"></i>
+                    {{ getItemPriorityConfig(item.priority).label }}
+                  </span>
+                </div>
+
+                <div class="detail-item-body">
+                  <div class="detail-item-info">
+                    <div class="detail-item-title">{{ item.description }}</div>
+                    @if (item.serviceName) {
+                      <div class="detail-item-service">
+                        <i class="fa-solid fa-briefcase-medical"></i>
+                        {{ item.serviceName }}
+                      </div>
+                    }
+                    @if (item.notes) {
+                      <div class="detail-item-notes">{{ item.notes }}</div>
+                    }
+                  </div>
+
+                  <div class="detail-item-costs">
+                    <div class="cost-row">
+                      <span class="cost-label">Estimado:</span>
+                      <span class="cost-value">{{ formatCurrency(item.estimatedCost) }}</span>
+                    </div>
+                    @if (item.discount) {
+                      <div class="cost-row discount">
+                        <span class="cost-label">Descuento:</span>
+                        <span class="cost-value">-{{ formatCurrency(item.discount) }}</span>
+                      </div>
+                    }
+                    @if (item.actualCost != null) {
+                      <div class="cost-row">
+                        <span class="cost-label">Costo Real:</span>
+                        <span class="cost-value actual">{{ formatCurrency(item.actualCost) }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                @if (item.progressPercentage > 0) {
+                  <div class="detail-item-progress">
+                    <div class="progress-bar-mini">
+                      <div
+                        class="progress-fill-mini"
+                        [style.width.%]="item.progressPercentage"
+                        [class.progress-complete]="item.progressPercentage >= 100"
+                      ></div>
+                    </div>
+                    <span class="progress-text">{{ item.progressPercentage }}%</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-items">
+            <i class="fa-solid fa-clipboard"></i>
+            <p>No hay procedimientos en este plan</p>
+          </div>
+        }
+      </div>
+
+      <!-- Auditoría -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Auditoría
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Creado:</span>
+            <span class="info-value">{{ formatDateTime(p.createdAt) }}</span>
+          </div>
+          @if (p.createdByName) {
+            <div class="info-row">
+              <span class="info-label">Creado por:</span>
+              <span class="info-value">{{ p.createdByName }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Reject Modal -->
+    @if (showRejectModal()) {
+      <div class="modal-overlay" (click)="onCancelReject()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>
+              <i class="fa-solid fa-circle-xmark"></i>
+              Rechazar Plan de Tratamiento
+            </h3>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">
+                Razón del rechazo <span class="required">*</span>
+              </label>
+              <textarea
+                class="form-input form-textarea"
+                rows="4"
+                placeholder="Indique la razón por la cual se rechaza este plan..."
+                [value]="rejectReason()"
+                (input)="rejectReason.set($any($event.target).value)"
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-outline" (click)="onCancelReject()">Cancelar</button>
+            <button class="btn btn-danger" (click)="onConfirmReject()" [disabled]="actionLoading()">
+              <i class="fa-solid fa-circle-xmark"></i>
+              Confirmar Rechazo
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

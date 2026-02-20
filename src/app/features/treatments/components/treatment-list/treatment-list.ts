@@ -8,6 +8,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { TreatmentsService } from '../../services/treatments.service';
 import { Treatment, TreatmentStatus, TREATMENT_STATUS_CONFIG } from '../../models/treatment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-treatment-list',
@@ -19,6 +20,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 export class TreatmentListComponent implements OnInit, OnDestroy {
   private treatmentsService = inject(TreatmentsService);
   private logger = inject(LoggingService);
+  private notifications = inject(NotificationService);
   private searchSubject = new Subject<string>();
 
   // State
@@ -31,7 +33,19 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
   searchTerm = signal('');
   filterStatus = signal<'all' | TreatmentStatus>('all');
 
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
+  totalItems = signal(0);
+  totalPages = signal(0);
+
   // Computed
+  paginatedTreatments = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    return this.filteredTreatments().slice(start, end);
+  });
+
   statusCounts = computed(() => {
     const all = this.treatments();
     return {
@@ -106,6 +120,9 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
     }
 
     this.filteredTreatments.set(filtered);
+    this.totalItems.set(filtered.length);
+    this.totalPages.set(Math.ceil(filtered.length / this.pageSize()));
+    this.currentPage.set(1);
   }
 
   onSearchChange(value: string): void {
@@ -119,6 +136,31 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
 
   getStatusConfig(status: TreatmentStatus) {
     return TREATMENT_STATUS_CONFIG[status] || { label: status, class: 'badge-neutral', icon: 'fa-circle' };
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const pages: number[] = [];
+
+    if (total <= 5) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+    } else {
+      if (current <= 3) {
+        pages.push(1, 2, 3, 4, 5);
+      } else if (current >= total - 2) {
+        for (let i = total - 4; i <= total; i++) pages.push(i);
+      } else {
+        for (let i = current - 2; i <= current + 2; i++) pages.push(i);
+      }
+    }
+    return pages;
   }
 
   formatDate(date: Date): string {
