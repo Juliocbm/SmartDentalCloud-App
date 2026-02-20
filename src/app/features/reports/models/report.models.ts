@@ -23,3 +23,43 @@ export interface AccountsReceivableSummary {
   totalInvoices: number;
   overdueInvoices: number;
 }
+
+export interface IncomeReport {
+  totalIncome: number;
+  totalPending: number;
+  invoiceCount: number;
+  paymentCount: number;
+  dailyBreakdown: IncomeByDay[];
+}
+
+export interface IncomeByDay {
+  date: string;
+  amount: number;
+  count: number;
+}
+
+export interface TreatmentsSummary {
+  total: number;
+  inProgress: number;
+  completed: number;
+  cancelled: number;
+  onHold: number;
+  completionRate: number;
+  byType: TreatmentsByType[];
+}
+
+export interface TreatmentsByType {
+  serviceName: string;
+  count: number;
+  revenue: number;
+}
+
+export interface DentistProductivity {
+  dentistId: string;
+  dentistName: string;
+  appointmentsCompleted: number;
+  appointmentsCancelled: number;
+  treatmentsCompleted: number;
+  revenueGenerated: number;
+  avgAppointmentDuration: number;
+}

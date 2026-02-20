@@ -1,0 +1,50 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Notificaciones'"
+    [subtitle]="getUnreadCount() + ' sin leer'"
+    [icon]="'fa-bell'"
+    [breadcrumbs]="breadcrumbItems">
+    <div class="header-actions">
+      @if (getUnreadCount() > 0) {
+        <button class="btn btn-outline" (click)="markAllAsRead()">
+          <i class="fa-solid fa-check-double"></i>
+          Marcar todas como leídas
+        </button>
+      }
+    </div>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando notificaciones...</p>
+    </div>
+  } @else if (notifications().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-bell-slash"></i>
+      <h3>Sin notificaciones</h3>
+      <p>No tienes notificaciones por el momento.</p>
+    </div>
+  } @else {
+    <div class="notification-list">
+      @for (notif of notifications(); track notif.id) {
+        <div class="notification-item" [class.unread]="!notif.isRead" (click)="markAsRead(notif)">
+          <div class="notif-icon" [class]="getTypeConfig(notif.type).class">
+            <i [class]="'fa-solid ' + getTypeConfig(notif.type).icon"></i>
+          </div>
+          <div class="notif-content">
+            <div class="notif-title">{{ notif.title }}</div>
+            <div class="notif-message">{{ notif.message }}</div>
+            <div class="notif-time">
+              <i class="fa-solid fa-clock"></i>
+              {{ formatTimeAgo(notif.createdAt) }}
+            </div>
+          </div>
+          @if (!notif.isRead) {
+            <div class="notif-dot"></div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

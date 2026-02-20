@@ -9,6 +9,7 @@ import { TreatmentsService } from '../../services/treatments.service';
 import { Treatment, TreatmentStatus, TREATMENT_STATUS_CONFIG } from '../../models/treatment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { CsvExportService } from '../../../../shared/services/csv-export.service';
 
 @Component({
   selector: 'app-treatment-list',
@@ -21,6 +22,7 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
   private treatmentsService = inject(TreatmentsService);
   private logger = inject(LoggingService);
   private notifications = inject(NotificationService);
+  private csvExport = inject(CsvExportService);
   private searchSubject = new Subject<string>();
 
   // State
@@ -169,5 +171,16 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
       month: '2-digit',
       year: 'numeric'
     }).format(new Date(date));
+  }
+
+  exportToCsv(): void {
+    this.csvExport.export(this.filteredTreatments(), [
+      { header: 'Paciente', accessor: (t) => t.patientName },
+      { header: 'Servicio', accessor: (t) => t.serviceName },
+      { header: 'Estado', accessor: (t) => TREATMENT_STATUS_CONFIG[t.status]?.label || t.status },
+      { header: 'Fecha Inicio', accessor: (t) => this.formatDate(t.startDate) },
+      { header: 'Fecha Fin', accessor: (t) => t.endDate ? this.formatDate(t.endDate) : '' },
+      { header: 'Pieza Dental', accessor: (t) => t.toothNumber || '' }
+    ], 'tratamientos');
   }
 }

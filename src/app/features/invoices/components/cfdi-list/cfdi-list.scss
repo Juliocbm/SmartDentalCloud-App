@@ -1,0 +1,100 @@
+.filters-section {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  flex: 1;
+  min-width: 250px;
+
+  i { color: var(--text-muted); }
+
+  input {
+    border: none;
+    background: none;
+    outline: none;
+    flex: 1;
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+
+    &::placeholder { color: var(--text-muted); }
+  }
+}
+
+.filter-group {
+  select {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    background: var(--surface-primary);
+    color: var(--text-primary);
+    min-width: 180px;
+  }
+}
+
+.uuid-cell {
+  font-family: monospace;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.mono {
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+}
+
+.text-right {
+  text-align: right;
+  font-weight: var(--font-weight-semibold);
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.btn-xs {
+  padding: var(--spacing-xs) var(--spacing-sm) !important;
+  font-size: var(--font-size-xs) !important;
+}
+
+.results-count {
+  margin-top: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  text-align: right;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-4xl);
+  gap: var(--spacing-lg);
+  color: var(--text-secondary);
+
+  i { color: var(--primary-500); }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-4xl);
+  gap: var(--spacing-md);
+  color: var(--text-tertiary);
+
+  i { font-size: 3rem; }
+  h3 { margin: 0; color: var(--text-secondary); }
+  p { margin: 0; }
+}

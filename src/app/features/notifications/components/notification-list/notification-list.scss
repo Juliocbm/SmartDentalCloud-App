@@ -1,0 +1,101 @@
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: var(--surface-primary);
+  cursor: pointer;
+  transition: var(--transition-base);
+  position: relative;
+
+  &:hover { background: var(--surface-secondary); }
+
+  &.unread {
+    background: var(--primary-50);
+    &:hover { background: var(--primary-100); }
+  }
+}
+
+.notif-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+  font-size: 1rem;
+
+  &.notif-info { background: var(--info-50); color: var(--info-600); }
+  &.notif-success { background: var(--success-50); color: var(--success-600); }
+  &.notif-primary { background: var(--primary-50); color: var(--primary-600); }
+  &.notif-warning { background: var(--warning-50); color: var(--warning-600); }
+  &.notif-error { background: var(--error-50); color: var(--error-600); }
+}
+
+.notif-content {
+  flex: 1;
+
+  .notif-title {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+
+  .notif-message {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .notif-time {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    margin-top: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+}
+
+.notif-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-500);
+  flex-shrink: 0;
+  margin-top: var(--spacing-sm);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-4xl);
+  gap: var(--spacing-lg);
+  color: var(--text-secondary);
+  i { color: var(--primary-500); }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-4xl);
+  gap: var(--spacing-md);
+  color: var(--text-tertiary);
+  i { font-size: 3rem; }
+  h3 { margin: 0; color: var(--text-secondary); }
+  p { margin: 0; }
+}

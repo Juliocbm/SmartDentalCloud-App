@@ -86,8 +86,8 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: ':id',
-        loadComponent: () => import('./components/purchase-order-list/purchase-order-list').then(m => m.PurchaseOrderListComponent)
-        // TODO: Crear purchase-order-detail component
+        loadComponent: () => import('./components/purchase-order-detail/purchase-order-detail').then(m => m.PurchaseOrderDetailComponent),
+        title: 'Detalle de Orden de Compra'
       },
       {
         path: ':id/receive',

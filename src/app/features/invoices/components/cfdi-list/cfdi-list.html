@@ -1,0 +1,98 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Comprobantes Fiscales (CFDI)'"
+    [subtitle]="'Listado de comprobantes fiscales digitales'"
+    [icon]="'fa-file-signature'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search"></i>
+      <input type="text" placeholder="Buscar por UUID, folio, receptor..."
+        [ngModel]="searchTerm()" (ngModelChange)="onSearchChange($event)" />
+    </div>
+    <div class="filter-group">
+      <select class="form-control" [ngModel]="statusFilter()" (ngModelChange)="onStatusChange($event)">
+        <option value="">Todos los estados</option>
+        @for (opt of statusOptions; track opt) {
+          <option [value]="opt">{{ CFDI_STATUS_CONFIG[opt].label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando comprobantes...</p>
+    </div>
+  } @else if (filteredCfdis().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-file-signature"></i>
+      <h3>No hay comprobantes</h3>
+      <p>Los CFDIs se generan desde el detalle de cada factura.</p>
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Serie/Folio</th>
+            <th>Receptor</th>
+            <th>RFC Receptor</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>UUID</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cfdi of filteredCfdis(); track cfdi.id) {
+            <tr>
+              <td class="mono">{{ cfdi.serie || '' }}{{ cfdi.folio || '—' }}</td>
+              <td>{{ cfdi.receptorNombre }}</td>
+              <td class="mono">{{ cfdi.receptorRfc }}</td>
+              <td class="text-right">{{ formatCurrency(cfdi.total) }}</td>
+              <td>
+                <span [class]="'badge ' + getStatusConfig(cfdi.estado).class">
+                  <i [class]="'fa-solid ' + getStatusConfig(cfdi.estado).icon"></i>
+                  {{ getStatusConfig(cfdi.estado).label }}
+                </span>
+              </td>
+              <td>
+                @if (cfdi.uuid) {
+                  <span class="uuid-cell" [title]="cfdi.uuid">{{ cfdi.uuid.substring(0, 8) }}...</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td>{{ formatDate(cfdi.fecha) }}</td>
+              <td>
+                <div class="action-buttons">
+                  <a [routerLink]="['/invoices', cfdi.invoiceId]" class="btn btn-outline btn-xs" title="Ver Factura">
+                    <i class="fa-solid fa-file-invoice"></i>
+                  </a>
+                  @if (cfdi.uuid) {
+                    <a [href]="downloadXml(cfdi)" target="_blank" class="btn btn-outline btn-xs" title="Descargar XML">
+                      <i class="fa-solid fa-file-code"></i>
+                    </a>
+                    <a [href]="downloadPdf(cfdi)" target="_blank" class="btn btn-outline btn-xs" title="Descargar PDF">
+                      <i class="fa-solid fa-file-pdf"></i>
+                    </a>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="results-count">
+      {{ filteredCfdis().length }} comprobante(s)
+    </div>
+  }
+</div>

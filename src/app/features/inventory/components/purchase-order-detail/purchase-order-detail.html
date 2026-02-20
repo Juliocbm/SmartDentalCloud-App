@@ -1,0 +1,141 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Detalle de Orden de Compra'"
+    [subtitle]="order()?.orderNumber || ''"
+    [icon]="'fa-file-invoice'"
+    [breadcrumbs]="breadcrumbItems">
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando orden de compra...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      {{ error() }}
+    </div>
+  } @else if (order(); as po) {
+    <!-- Header Info -->
+    <div class="detail-grid">
+      <div class="info-card">
+        <div class="info-card-header">
+          <h3><i class="fa-solid fa-info-circle"></i> Información General</h3>
+          <span [class]="'badge ' + getStatusClass(po.status)">
+            {{ getStatusLabel(po.status) }}
+          </span>
+        </div>
+        <div class="info-rows">
+          <div class="info-row">
+            <span class="info-label">Número de Orden</span>
+            <span class="info-value mono">{{ po.orderNumber }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Proveedor</span>
+            <span class="info-value">{{ po.supplierName }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Fecha de Orden</span>
+            <span class="info-value">{{ formatDate(po.orderDate) }}</span>
+          </div>
+          @if (po.expectedDate) {
+            <div class="info-row">
+              <span class="info-label">Fecha Esperada</span>
+              <span class="info-value">{{ formatDate(po.expectedDate) }}</span>
+            </div>
+          }
+          @if (po.receivedDate) {
+            <div class="info-row">
+              <span class="info-label">Fecha de Recepción</span>
+              <span class="info-value">{{ formatDate(po.receivedDate) }}</span>
+            </div>
+          }
+          @if (po.notes) {
+            <div class="info-row">
+              <span class="info-label">Notas</span>
+              <span class="info-value">{{ po.notes }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-header">
+          <h3><i class="fa-solid fa-calculator"></i> Resumen Financiero</h3>
+        </div>
+        <div class="financial-summary">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>{{ formatCurrency(po.subtotal) }}</span>
+          </div>
+          <div class="summary-row">
+            <span>IVA</span>
+            <span>{{ formatCurrency(po.tax) }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>{{ formatCurrency(po.total) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Items Table -->
+    <div class="info-card mt-xl">
+      <div class="info-card-header">
+        <h3>
+          <i class="fa-solid fa-boxes-stacked"></i>
+          Items de la Orden
+          <span class="section-count">{{ po.items.length }}</span>
+        </h3>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Producto</th>
+              <th>Código</th>
+              <th class="text-center">Cantidad</th>
+              <th class="text-right">Costo Unit.</th>
+              <th class="text-right">Subtotal</th>
+              <th class="text-center">Recibido</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of po.items; track item.id; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td class="product-name">{{ item.productName || '—' }}</td>
+                <td class="mono">{{ item.productCode || '—' }}</td>
+                <td class="text-center">{{ item.quantity }} {{ item.unit || '' }}</td>
+                <td class="text-right">{{ formatCurrency(item.unitCost) }}</td>
+                <td class="text-right fw-semibold">{{ formatCurrency(item.subtotal) }}</td>
+                <td class="text-center">
+                  <div class="received-cell">
+                    <span [class]="item.receivedQuantity >= item.quantity ? 'text-success' : 'text-warning'">
+                      {{ item.receivedQuantity }}/{{ item.quantity }}
+                    </span>
+                    <div class="mini-progress">
+                      <div class="mini-progress-fill" [style.width.%]="getReceivedPercentage(item)"></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">{{ item.notes || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

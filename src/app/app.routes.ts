@@ -99,6 +99,16 @@ export const routes: Routes = [
         path: 'change-password',
         loadComponent: () => import('./features/auth/change-password/change-password').then(m => m.ChangePasswordComponent),
         title: 'Cambiar Contraseña'
+      },
+      {
+        path: 'notifications',
+        loadComponent: () => import('./features/notifications/components/notification-list/notification-list').then(m => m.NotificationListComponent),
+        title: 'Notificaciones'
+      },
+      {
+        path: 'audit-log',
+        loadComponent: () => import('./features/audit-log/components/audit-log-list/audit-log-list').then(m => m.AuditLogListComponent),
+        title: 'Auditoría'
       }
     ]
   },

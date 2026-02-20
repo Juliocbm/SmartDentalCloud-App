@@ -83,6 +83,28 @@ export const CFDI_STATUS_CONFIG: Record<string, CfdiStatusConfig> = {
   ErrorValidacion: { label: 'Error Validación', class: 'badge-error', icon: 'fa-exclamation-triangle' }
 };
 
+export interface CfdiSatStatus {
+  uuid: string;
+  estadoSat: string;
+  esCancelable: string;
+  estatusCancelacion: string;
+}
+
+export interface PacConfiguration {
+  pacProvider: string;
+  pacUsername?: string;
+  pacPassword?: string;
+  pacApiUrl?: string;
+  environment: string;
+  configured?: boolean;
+}
+
+export interface SendCfdiEmailRequest {
+  email: string;
+  includeXml?: boolean;
+  includePdf?: boolean;
+}
+
 export const MOTIVO_CANCELACION_OPTIONS = [
   { value: '01', label: '01 - Comprobante emitido con errores con relación' },
   { value: '02', label: '02 - Comprobante emitido con errores sin relación' },

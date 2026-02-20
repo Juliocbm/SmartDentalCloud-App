@@ -9,6 +9,7 @@ import { PatientsService } from '../../services/patients.service';
 import { Patient } from '../../models/patient.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { CsvExportService } from '../../../../shared/services/csv-export.service';
 
 @Component({
   selector: 'app-patient-list',
@@ -21,6 +22,7 @@ export class PatientListComponent implements OnInit, OnDestroy {
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private csvExport = inject(CsvExportService);
   private searchSubject = new Subject<string>();
 
   patients = signal<Patient[]>([]);
@@ -185,5 +187,15 @@ export class PatientListComponent implements OnInit, OnDestroy {
     }
     
     return pages;
+  }
+
+  exportToCsv(): void {
+    this.csvExport.export(this.patients(), [
+      { header: 'Nombre', accessor: (p) => `${p.firstName} ${p.lastName}` },
+      { header: 'Email', accessor: (p) => p.email },
+      { header: 'Teléfono', accessor: (p) => p.phoneNumber },
+      { header: 'Estado', accessor: (p) => p.isActive ? 'Activo' : 'Inactivo' },
+      { header: 'Fecha Registro', accessor: (p) => p.createdAt ? new Date(p.createdAt).toLocaleDateString('es-MX') : '' }
+    ], 'pacientes');
   }
 }

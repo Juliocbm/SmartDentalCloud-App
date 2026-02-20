@@ -19,6 +19,12 @@ export const INVOICES_ROUTES: Routes = [
         title: 'Facturas'
       },
       {
+        path: 'cfdi',
+        loadComponent: () =>
+          import('./components/cfdi-list/cfdi-list').then(m => m.CfdiListComponent),
+        title: 'Comprobantes CFDI'
+      },
+      {
         path: 'new',
         loadComponent: () =>
           import('./components/invoice-form/invoice-form').then(m => m.InvoiceFormComponent),

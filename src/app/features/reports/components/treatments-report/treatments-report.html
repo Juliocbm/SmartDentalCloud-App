@@ -1,0 +1,121 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Reporte de Tratamientos'"
+    [subtitle]="'Resumen por estado y tipo de servicio'"
+    [icon]="'fa-tooth'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  <div class="filters-section">
+    <div class="filter-group">
+      <label class="filter-label">Desde</label>
+      <input type="date" class="form-control" [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onDateChange()" />
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Hasta</label>
+      <input type="date" class="form-control" [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onDateChange()" />
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando reporte...</p>
+    </div>
+  } @else if (report(); as r) {
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon primary"><i class="fa-solid fa-tooth"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.total }}</span>
+          <span class="kpi-label">Total Tratamientos</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon info"><i class="fa-solid fa-spinner"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.inProgress }}</span>
+          <span class="kpi-label">En Progreso</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon success"><i class="fa-solid fa-check-circle"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.completed }}</span>
+          <span class="kpi-label">Completados</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon warning"><i class="fa-solid fa-chart-pie"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.completionRate }}%</span>
+          <span class="kpi-label">Tasa de Completitud</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Breakdown -->
+    <div class="card">
+      <h3><i class="fa-solid fa-chart-pie"></i> Distribución por Estado</h3>
+      <div class="status-bars">
+        @if (r.total > 0) {
+          <div class="status-bar-item">
+            <span class="status-label">En Progreso</span>
+            <div class="status-bar">
+              <div class="status-fill info" [style.width.%]="(r.inProgress / r.total) * 100"></div>
+            </div>
+            <span class="status-count">{{ r.inProgress }}</span>
+          </div>
+          <div class="status-bar-item">
+            <span class="status-label">Completados</span>
+            <div class="status-bar">
+              <div class="status-fill success" [style.width.%]="(r.completed / r.total) * 100"></div>
+            </div>
+            <span class="status-count">{{ r.completed }}</span>
+          </div>
+          <div class="status-bar-item">
+            <span class="status-label">Cancelados</span>
+            <div class="status-bar">
+              <div class="status-fill error" [style.width.%]="(r.cancelled / r.total) * 100"></div>
+            </div>
+            <span class="status-count">{{ r.cancelled }}</span>
+          </div>
+          <div class="status-bar-item">
+            <span class="status-label">En Espera</span>
+            <div class="status-bar">
+              <div class="status-fill warning" [style.width.%]="(r.onHold / r.total) * 100"></div>
+            </div>
+            <span class="status-count">{{ r.onHold }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- By Type -->
+    @if (r.byType.length > 0) {
+      <div class="card mt-xl">
+        <h3><i class="fa-solid fa-list"></i> Top Servicios</h3>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Servicio</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-right">Ingresos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of r.byType; track item.serviceName) {
+                <tr>
+                  <td>{{ item.serviceName }}</td>
+                  <td class="text-center">{{ item.count }}</td>
+                  <td class="text-right">{{ formatCurrency(item.revenue) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+</div>

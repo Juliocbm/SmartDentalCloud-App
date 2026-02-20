@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { InvoicesService } from '../../services/invoices.service';
 import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG, Payment } from '../../models/invoice.models';
-import { Cfdi, CFDI_STATUS_CONFIG, MOTIVO_CANCELACION_OPTIONS } from '../../models/cfdi.models';
+import { Cfdi, CfdiSatStatus, CFDI_STATUS_CONFIG, MOTIVO_CANCELACION_OPTIONS } from '../../models/cfdi.models';
 import { CfdiService } from '../../services/cfdi.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { PaymentFormModalComponent, PaymentFormModalData } from '../payment-form-modal/payment-form-modal';
@@ -43,6 +43,7 @@ export class InvoiceDetailComponent implements OnInit {
   showCancelForm = signal(false);
   cancelMotivo = signal('');
   cancelObservaciones = signal('');
+  satStatus = signal<CfdiSatStatus | null>(null);
 
   // Constants
   InvoiceStatus = InvoiceStatus;
@@ -283,6 +284,44 @@ export class InvoiceDetailComponent implements OnInit {
   canCancelarCfdi(): boolean {
     const cfdi = this.cfdi();
     return !!cfdi && cfdi.estado === 'Timbrado';
+  }
+
+  sendCfdiEmail(): void {
+    const cfdi = this.cfdi();
+    const inv = this.invoice();
+    if (!cfdi || !inv || this.cfdiActionLoading()) return;
+
+    const email = prompt('Enviar CFDI al email:', '');
+    if (!email) return;
+
+    this.cfdiActionLoading.set(true);
+    this.cfdiService.sendEmail(cfdi.id, { email, includeXml: true, includePdf: true }).subscribe({
+      next: () => {
+        this.notifications.success('CFDI enviado por email exitosamente');
+        this.cfdiActionLoading.set(false);
+      },
+      error: () => {
+        this.notifications.error('Error al enviar el CFDI por email');
+        this.cfdiActionLoading.set(false);
+      }
+    });
+  }
+
+  consultarSat(): void {
+    const cfdi = this.cfdi();
+    if (!cfdi || this.cfdiActionLoading()) return;
+
+    this.cfdiActionLoading.set(true);
+    this.cfdiService.getStatusSat(cfdi.id).subscribe({
+      next: (status) => {
+        this.satStatus.set(status);
+        this.cfdiActionLoading.set(false);
+      },
+      error: () => {
+        this.notifications.error('Error al consultar estado SAT');
+        this.cfdiActionLoading.set(false);
+      }
+    });
   }
 
   formatDateTime(date: Date | string): string {

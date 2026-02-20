@@ -9,6 +9,7 @@ import { InvoicesService } from '../../services/invoices.service';
 import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG } from '../../models/invoice.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { CsvExportService } from '../../../../shared/services/csv-export.service';
 
 @Component({
   selector: 'app-invoice-list',
@@ -21,6 +22,7 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
   private invoicesService = inject(InvoicesService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private csvExport = inject(CsvExportService);
   private searchSubject = new Subject<string>();
 
   // State
@@ -130,5 +132,16 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
       style: 'currency',
       currency: 'MXN'
     }).format(value);
+  }
+
+  exportToCsv(): void {
+    this.csvExport.export(this.filteredInvoices(), [
+      { header: 'Paciente', accessor: (i) => i.patientName },
+      { header: 'Total', accessor: (i) => i.totalAmount },
+      { header: 'Pagado', accessor: (i) => i.paidAmount },
+      { header: 'Balance', accessor: (i) => i.balance },
+      { header: 'Estado', accessor: (i) => INVOICE_STATUS_CONFIG[i.status]?.label || i.status },
+      { header: 'Fecha Emisión', accessor: (i) => new Date(i.issuedAt).toLocaleDateString('es-MX') }
+    ], 'facturas');
   }
 }

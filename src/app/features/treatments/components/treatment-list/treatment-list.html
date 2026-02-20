@@ -6,6 +6,10 @@
     [icon]="'fa-tooth'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      <button class="btn btn-outline" (click)="exportToCsv()">
+        <i class="fa-solid fa-file-csv"></i>
+        Exportar CSV
+      </button>
       <a class="btn btn-primary" routerLink="/treatments/new">
         <i class="fa-solid fa-plus"></i>
         Nuevo Tratamiento

@@ -803,6 +803,43 @@
   }
 }
 
+.sat-status-card {
+  margin-top: var(--spacing-lg);
+  background: var(--info-50);
+  border: 1px solid var(--info-200);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+
+  h5 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: var(--font-size-sm);
+    color: var(--info-700);
+  }
+
+  .sat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--spacing-md);
+  }
+
+  .sat-item {
+    .sat-label {
+      display: block;
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      margin-bottom: 2px;
+    }
+    .sat-value {
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+}
+
 .cfdi-cancel-form {
   margin-top: var(--spacing-xl);
   background: var(--error-50);

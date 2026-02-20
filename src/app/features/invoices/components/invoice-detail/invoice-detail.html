@@ -339,7 +339,7 @@
               }
             </div>
 
-            <!-- Download buttons for timbrado CFDIs -->
+            <!-- Download & action buttons for timbrado CFDIs -->
             @if (c.uuid) {
               <div class="cfdi-download-actions">
                 <a [href]="getXmlUrl()" target="_blank" class="btn btn-outline-sm">
@@ -350,7 +350,37 @@
                   <i class="fa-solid fa-file-pdf"></i>
                   Descargar PDF
                 </a>
+                <button class="btn btn-outline-sm" (click)="sendCfdiEmail()" [disabled]="cfdiActionLoading()">
+                  <i class="fa-solid fa-envelope"></i>
+                  Enviar por Email
+                </button>
+                <button class="btn btn-outline-sm" (click)="consultarSat()" [disabled]="cfdiActionLoading()">
+                  <i class="fa-solid fa-satellite-dish"></i>
+                  Consultar SAT
+                </button>
               </div>
+
+              @if (satStatus()) {
+                <div class="sat-status-card">
+                  <h5><i class="fa-solid fa-satellite-dish"></i> Estado SAT</h5>
+                  <div class="sat-grid">
+                    <div class="sat-item">
+                      <span class="sat-label">Estado</span>
+                      <span class="sat-value">{{ satStatus()!.estadoSat }}</span>
+                    </div>
+                    <div class="sat-item">
+                      <span class="sat-label">Cancelable</span>
+                      <span class="sat-value">{{ satStatus()!.esCancelable }}</span>
+                    </div>
+                    @if (satStatus()!.estatusCancelacion) {
+                      <div class="sat-item">
+                        <span class="sat-label">Estatus Cancelación</span>
+                        <span class="sat-value">{{ satStatus()!.estatusCancelacion }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
             }
           </div>
 

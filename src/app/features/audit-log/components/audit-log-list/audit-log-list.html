@@ -1,0 +1,83 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Registro de Auditoría'"
+    [subtitle]="'Historial de actividad del sistema'"
+    [icon]="'fa-shield-halved'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  <div class="filters-section">
+    <div class="filter-group">
+      <select class="form-control" [ngModel]="entityTypeFilter()" (ngModelChange)="entityTypeFilter.set($event); onFilterChange()">
+        <option value="">Todas las entidades</option>
+        <option value="Patient">Pacientes</option>
+        <option value="Appointment">Citas</option>
+        <option value="Treatment">Tratamientos</option>
+        <option value="Invoice">Facturas</option>
+        <option value="Payment">Pagos</option>
+        <option value="User">Usuarios</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <select class="form-control" [ngModel]="actionFilter()" (ngModelChange)="actionFilter.set($event); onFilterChange()">
+        <option value="">Todas las acciones</option>
+        <option value="Create">Crear</option>
+        <option value="Update">Actualizar</option>
+        <option value="Delete">Eliminar</option>
+        <option value="Login">Login</option>
+        <option value="Logout">Logout</option>
+      </select>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando registros...</p>
+    </div>
+  } @else if (logs().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-shield-halved"></i>
+      <h3>Sin registros</h3>
+      <p>No hay registros de auditoría para los filtros seleccionados.</p>
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fecha/Hora</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Entidad</th>
+            <th>ID Entidad</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logs(); track log.id) {
+            <tr>
+              <td class="mono text-sm">{{ formatDateTime(log.createdAt) }}</td>
+              <td>{{ log.userName }}</td>
+              <td>
+                <span [class]="'badge ' + getActionConfig(log.action).class">
+                  <i [class]="'fa-solid ' + getActionConfig(log.action).icon"></i>
+                  {{ log.action }}
+                </span>
+              </td>
+              <td>{{ log.entityType }}</td>
+              <td class="mono text-sm">
+                @if (log.entityId) {
+                  {{ log.entityId.substring(0, 8) }}...
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td class="text-muted text-sm">{{ log.ipAddress || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

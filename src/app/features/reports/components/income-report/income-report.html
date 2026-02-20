@@ -1,0 +1,74 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Reporte de Ingresos'"
+    [subtitle]="'Ingresos por período'"
+    [icon]="'fa-chart-line'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  <!-- Date Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label class="filter-label">Desde</label>
+      <input type="date" class="form-control" [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onDateChange()" />
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">Hasta</label>
+      <input type="date" class="form-control" [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onDateChange()" />
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando reporte...</p>
+    </div>
+  } @else if (report(); as r) {
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon success"><i class="fa-solid fa-money-bill-wave"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ formatCurrency(r.totalIncome) }}</span>
+          <span class="kpi-label">Total Cobrado</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon warning"><i class="fa-solid fa-clock"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ formatCurrency(r.totalPending) }}</span>
+          <span class="kpi-label">Pendiente de Cobro</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon info"><i class="fa-solid fa-file-invoice"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.invoiceCount }}</span>
+          <span class="kpi-label">Facturas Emitidas</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon primary"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.paymentCount }}</span>
+          <span class="kpi-label">Pagos Recibidos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Breakdown Chart -->
+    @if (r.dailyBreakdown.length > 0) {
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-chart-bar"></i> Ingresos Diarios</h3>
+        <div class="bar-chart">
+          @for (day of r.dailyBreakdown; track day.date) {
+            <div class="bar-group" [title]="formatDate(day.date) + ': ' + formatCurrency(day.amount)">
+              <div class="bar-fill" [style.height.%]="(day.amount / getMaxAmount()) * 100"></div>
+              <span class="bar-label">{{ formatDate(day.date) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

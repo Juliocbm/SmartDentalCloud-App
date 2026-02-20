@@ -1,0 +1,69 @@
+.filters-section {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    .filter-label {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .form-control {
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+    }
+  }
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.fw-semibold { font-weight: var(--font-weight-semibold); }
+
+.dentist-name {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  font-weight: var(--font-weight-medium);
+
+  .dentist-avatar {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-50);
+    color: var(--primary-600);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-4xl);
+  gap: var(--spacing-lg);
+  color: var(--text-secondary);
+  i { color: var(--primary-500); }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-4xl);
+  gap: var(--spacing-md);
+  color: var(--text-tertiary);
+  i { font-size: 3rem; }
+  h3 { margin: 0; color: var(--text-secondary); }
+  p { margin: 0; }
+}

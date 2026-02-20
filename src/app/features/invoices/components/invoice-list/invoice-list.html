@@ -6,6 +6,10 @@
     [icon]="'fa-file-invoice-dollar'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      <button class="btn btn-outline" (click)="exportToCsv()">
+        <i class="fa-solid fa-file-csv"></i>
+        Exportar CSV
+      </button>
       <a class="btn btn-primary" routerLink="/invoices/new">
         <i class="fa-solid fa-plus"></i>
         Nueva Factura

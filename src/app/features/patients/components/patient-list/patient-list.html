@@ -6,6 +6,10 @@
     [icon]="'fa-users'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      <button class="btn btn-outline" (click)="exportToCsv()">
+        <i class="fa-solid fa-file-csv"></i>
+        Exportar CSV
+      </button>
       <button class="btn btn-primary" routerLink="/patients/new">
         <i class="fa-solid fa-plus"></i>
         Nuevo Paciente
