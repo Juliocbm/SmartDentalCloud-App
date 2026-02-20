@@ -1,0 +1,22 @@
+<div class="report-container">
+  <app-page-header
+    title="Reportes"
+    icon="fa-solid fa-chart-bar"
+    [breadcrumbs]="[{ label: 'Reportes' }]"
+  />
+
+  <div class="reports-grid">
+    @for (report of reports; track report.route) {
+      <a [routerLink]="report.route" class="report-card">
+        <div class="report-icon" [class]="report.color">
+          <i [class]="'fa-solid ' + report.icon"></i>
+        </div>
+        <div class="report-content">
+          <h3>{{ report.title }}</h3>
+          <p>{{ report.description }}</p>
+        </div>
+        <i class="fa-solid fa-chevron-right report-arrow"></i>
+      </a>
+    }
+  </div>
+</div>

@@ -66,8 +66,7 @@ export const routes: Routes = [
       },
       {
         path: 'reports',
-        loadComponent: () => import('./shared/components/coming-soon/coming-soon').then(m => m.ComingSoonComponent),
-        data: { moduleName: 'Reportes', icon: 'fa-chart-bar' }
+        loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORTS_ROUTES)
       },
       {
         path: 'users',

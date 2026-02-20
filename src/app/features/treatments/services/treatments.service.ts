@@ -3,6 +3,8 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { Treatment, CreateTreatmentRequest, UpdateTreatmentRequest } from '../models/treatment.models';
 import { TreatmentFollowUp, CreateFollowUpRequest, UpdateFollowUpRequest } from '../models/treatment-followup.models';
+import { TreatmentMaterial, CreateTreatmentMaterialRequest } from '../models/treatment-material.models';
+import { TreatmentSession, CreateSessionRequest } from '../models/treatment-session.models';
 
 @Injectable()
 export class TreatmentsService {
@@ -48,5 +50,29 @@ export class TreatmentsService {
 
   deleteFollowUp(treatmentId: string, id: string): Observable<void> {
     return this.api.delete<void>(`/treatments/${treatmentId}/followups/${id}`);
+  }
+
+  // === Materials ===
+
+  getMaterials(treatmentId: string): Observable<TreatmentMaterial[]> {
+    return this.api.get<TreatmentMaterial[]>(`/treatments/${treatmentId}/materials`);
+  }
+
+  createMaterial(treatmentId: string, request: CreateTreatmentMaterialRequest): Observable<TreatmentMaterial> {
+    return this.api.post<TreatmentMaterial>(`/treatments/${treatmentId}/materials`, request);
+  }
+
+  deleteMaterial(treatmentId: string, id: string): Observable<void> {
+    return this.api.delete<void>(`/treatments/${treatmentId}/materials/${id}`);
+  }
+
+  // === Sessions ===
+
+  getSessions(treatmentId: string): Observable<TreatmentSession[]> {
+    return this.api.get<TreatmentSession[]>(`/treatments/${treatmentId}/sessions`);
+  }
+
+  createSession(treatmentId: string, request: CreateSessionRequest): Observable<TreatmentSession> {
+    return this.api.post<TreatmentSession>(`/treatments/${treatmentId}/sessions`, request);
   }
 }

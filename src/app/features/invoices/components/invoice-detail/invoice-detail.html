@@ -229,47 +229,213 @@
         }
       </div>
 
-      <!-- CFDI Info -->
-      @if (inv.usoCFDI || inv.metodoPago || inv.formaPago || inv.cfdiUUID) {
-        <div class="info-section">
+      <!-- CFDI Section -->
+      <div class="info-section">
+        <div class="section-header-actions">
           <h3>
             <i class="fa-solid fa-file-signature"></i>
-            Información Fiscal (CFDI)
+            Facturación Electrónica (CFDI)
           </h3>
-          <div class="info-card">
-            @if (inv.cfdiUUID) {
-              <div class="info-row">
-                <span class="info-label">UUID:</span>
-                <span class="info-value uuid-value">{{ inv.cfdiUUID }}</span>
-              </div>
+          <div class="cfdi-actions">
+            @if (canGenerateCfdi()) {
+              <button
+                class="btn btn-primary"
+                [disabled]="cfdiActionLoading()"
+                (click)="generateCfdi()"
+              >
+                @if (cfdiActionLoading()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-file-circle-plus"></i>
+                }
+                Generar CFDI
+              </button>
             }
-            @if (inv.stampedAt) {
-              <div class="info-row">
-                <span class="info-label">Fecha de Timbrado:</span>
-                <span class="info-value">{{ formatDateTime(inv.stampedAt) }}</span>
-              </div>
+            @if (canTimbrarCfdi()) {
+              <button
+                class="btn btn-success"
+                [disabled]="cfdiActionLoading()"
+                (click)="timbrarCfdi()"
+              >
+                @if (cfdiActionLoading()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-stamp"></i>
+                }
+                Timbrar
+              </button>
             }
-            @if (inv.usoCFDI) {
-              <div class="info-row">
-                <span class="info-label">Uso CFDI:</span>
-                <span class="info-value">{{ inv.usoCFDI }}</span>
-              </div>
-            }
-            @if (inv.metodoPago) {
-              <div class="info-row">
-                <span class="info-label">Método de Pago:</span>
-                <span class="info-value">{{ inv.metodoPago }}</span>
-              </div>
-            }
-            @if (inv.formaPago) {
-              <div class="info-row">
-                <span class="info-label">Forma de Pago:</span>
-                <span class="info-value">{{ inv.formaPago }}</span>
-              </div>
+            @if (canCancelarCfdi()) {
+              <button
+                class="btn btn-danger-outline"
+                (click)="toggleCancelForm()"
+              >
+                <i class="fa-solid fa-ban"></i>
+                Cancelar CFDI
+              </button>
             }
           </div>
         </div>
-      }
+
+        @if (cfdiLoading()) {
+          <div class="loading-inline">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Cargando información fiscal...</span>
+          </div>
+        } @else if (cfdi(); as c) {
+          <!-- CFDI Details -->
+          <div class="cfdi-detail-card">
+            <div class="cfdi-status-row">
+              <span class="badge" [class]="getCfdiStatusConfig(c.estado).class">
+                <i [class]="'fa-solid ' + getCfdiStatusConfig(c.estado).icon"></i>
+                {{ getCfdiStatusConfig(c.estado).label }}
+              </span>
+              @if (c.uuid) {
+                <span class="cfdi-uuid">
+                  <i class="fa-solid fa-fingerprint"></i>
+                  {{ c.uuid }}
+                </span>
+              }
+            </div>
+
+            <div class="cfdi-info-grid">
+              @if (c.serie || c.folio) {
+                <div class="cfdi-info-item">
+                  <span class="cfdi-label">Serie/Folio</span>
+                  <span class="cfdi-value">{{ c.serie || '' }}{{ c.folio || '' }}</span>
+                </div>
+              }
+              <div class="cfdi-info-item">
+                <span class="cfdi-label">Emisor</span>
+                <span class="cfdi-value">{{ c.emisorNombre }} ({{ c.emisorRfc }})</span>
+              </div>
+              <div class="cfdi-info-item">
+                <span class="cfdi-label">Receptor</span>
+                <span class="cfdi-value">{{ c.receptorNombre }} ({{ c.receptorRfc }})</span>
+              </div>
+              <div class="cfdi-info-item">
+                <span class="cfdi-label">Uso CFDI</span>
+                <span class="cfdi-value">{{ c.receptorUsoCfdi }}</span>
+              </div>
+              <div class="cfdi-info-item">
+                <span class="cfdi-label">Método Pago</span>
+                <span class="cfdi-value">{{ c.metodoPago }}</span>
+              </div>
+              @if (c.formaPago) {
+                <div class="cfdi-info-item">
+                  <span class="cfdi-label">Forma Pago</span>
+                  <span class="cfdi-value">{{ c.formaPago }}</span>
+                </div>
+              }
+              <div class="cfdi-info-item">
+                <span class="cfdi-label">Total</span>
+                <span class="cfdi-value">{{ formatCurrency(c.total) }}</span>
+              </div>
+              @if (c.fechaTimbrado) {
+                <div class="cfdi-info-item">
+                  <span class="cfdi-label">Timbrado</span>
+                  <span class="cfdi-value">{{ formatDateTime(c.fechaTimbrado) }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Download buttons for timbrado CFDIs -->
+            @if (c.uuid) {
+              <div class="cfdi-download-actions">
+                <a [href]="getXmlUrl()" target="_blank" class="btn btn-outline-sm">
+                  <i class="fa-solid fa-file-code"></i>
+                  Descargar XML
+                </a>
+                <a [href]="getPdfUrl()" target="_blank" class="btn btn-outline-sm">
+                  <i class="fa-solid fa-file-pdf"></i>
+                  Descargar PDF
+                </a>
+              </div>
+            }
+          </div>
+
+          <!-- Cancel Form -->
+          @if (showCancelForm()) {
+            <div class="cfdi-cancel-form">
+              <h4>
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                Cancelar CFDI
+              </h4>
+              <div class="form-group">
+                <label class="form-label">Motivo de Cancelación</label>
+                <select
+                  class="form-control"
+                  [ngModel]="cancelMotivo()"
+                  (ngModelChange)="cancelMotivo.set($event)"
+                >
+                  <option value="">Seleccionar motivo...</option>
+                  @for (opt of MOTIVO_CANCELACION_OPTIONS; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Observaciones</label>
+                <textarea
+                  class="form-control"
+                  rows="2"
+                  placeholder="Observaciones opcionales..."
+                  [ngModel]="cancelObservaciones()"
+                  (ngModelChange)="cancelObservaciones.set($event)"
+                ></textarea>
+              </div>
+              <div class="form-actions-row">
+                <button class="btn btn-secondary btn-sm" (click)="toggleCancelForm()">
+                  Cancelar
+                </button>
+                <button
+                  class="btn btn-danger btn-sm"
+                  [disabled]="!cancelMotivo() || cfdiActionLoading()"
+                  (click)="cancelarCfdi()"
+                >
+                  @if (cfdiActionLoading()) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                  } @else {
+                    <i class="fa-solid fa-ban"></i>
+                  }
+                  Confirmar Cancelación
+                </button>
+              </div>
+            </div>
+          }
+        } @else {
+          <!-- No CFDI yet -->
+          <div class="cfdi-empty">
+            @if (inv.usoCFDI || inv.metodoPago || inv.formaPago) {
+              <div class="info-card">
+                @if (inv.usoCFDI) {
+                  <div class="info-row">
+                    <span class="info-label">Uso CFDI:</span>
+                    <span class="info-value">{{ inv.usoCFDI }}</span>
+                  </div>
+                }
+                @if (inv.metodoPago) {
+                  <div class="info-row">
+                    <span class="info-label">Método de Pago:</span>
+                    <span class="info-value">{{ inv.metodoPago }}</span>
+                  </div>
+                }
+                @if (inv.formaPago) {
+                  <div class="info-row">
+                    <span class="info-label">Forma de Pago:</span>
+                    <span class="info-value">{{ inv.formaPago }}</span>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-inline">
+                <i class="fa-solid fa-file-signature"></i>
+                <p>No se ha generado CFDI para esta factura</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
     </div>
   }
 </div>
