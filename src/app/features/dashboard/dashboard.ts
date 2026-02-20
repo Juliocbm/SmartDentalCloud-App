@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { LoggingService } from '../../core/services/logging.service';
 import { CommonModule } from '@angular/common';
 import { DashboardService } from './services/dashboard.service';
@@ -14,7 +14,7 @@ import {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
@@ -79,7 +79,8 @@ export class DashboardComponent implements OnInit {
         icon: 'fa-calendar-check',
         color: 'primary',
         trend: 12,
-        trendDirection: 'up'
+        trendDirection: 'up',
+        route: '/appointments'
       },
       {
         label: 'Nuevos Pacientes',
@@ -87,7 +88,8 @@ export class DashboardComponent implements OnInit {
         icon: 'fa-user-plus',
         color: 'success',
         trend: 8,
-        trendDirection: 'up'
+        trendDirection: 'up',
+        route: '/patients'
       },
       {
         label: 'Ingresos del Mes',
@@ -95,13 +97,15 @@ export class DashboardComponent implements OnInit {
         icon: 'fa-dollar-sign',
         color: 'info',
         trend: 15,
-        trendDirection: 'up'
+        trendDirection: 'up',
+        route: '/invoices'
       },
       {
         label: 'Tratamientos Activos',
         value: stats.activeTreatmentPlans,
         icon: 'fa-tooth',
-        color: 'warning'
+        color: 'warning',
+        route: '/treatments'
       },
       {
         label: 'Productos con Stock Bajo',
@@ -109,13 +113,15 @@ export class DashboardComponent implements OnInit {
         icon: 'fa-exclamation-triangle',
         color: 'error',
         trend: stats.lowStockProducts > 0 ? -5 : 0,
-        trendDirection: stats.lowStockProducts > 0 ? 'down' : 'neutral'
+        trendDirection: stats.lowStockProducts > 0 ? 'down' : 'neutral',
+        route: '/inventory/alerts'
       },
       {
         label: 'Citas Pendientes',
         value: stats.pendingAppointments,
         icon: 'fa-clock',
-        color: 'neutral'
+        color: 'neutral',
+        route: '/appointments'
       }
     ]);
   }

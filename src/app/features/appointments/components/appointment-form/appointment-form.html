@@ -119,9 +119,48 @@
         </div>
       </div>
 
-      <div class="info-box">
-        <i class="fa-solid fa-info-circle"></i>
-        <span>La disponibilidad del horario se verificará al guardar la cita</span>
+      <div class="availability-section">
+        <button
+          type="button"
+          class="btn btn-outline btn-sm"
+          [disabled]="checkingAvailability() || !appointmentForm.get('userId')?.value || !appointmentForm.get('startAt')?.value"
+          (click)="checkAvailability()"
+        >
+          @if (checkingAvailability()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Verificando...
+          } @else {
+            <i class="fa-solid fa-calendar-check"></i>
+            Verificar Disponibilidad
+          }
+        </button>
+
+        @if (availabilityChecked()) {
+          <div class="slots-container">
+            @if (availabilitySlots().length === 0) {
+              <p class="slots-empty">No se encontraron horarios disponibles para la fecha seleccionada.</p>
+            } @else {
+              <p class="slots-title">Horarios disponibles:</p>
+              <div class="slots-grid">
+                @for (slot of availabilitySlots(); track slot.start) {
+                  <button
+                    type="button"
+                    class="slot-chip"
+                    [class.available]="slot.available"
+                    [class.unavailable]="!slot.available"
+                    [disabled]="!slot.available"
+                    (click)="selectSlot(slot)"
+                  >
+                    {{ formatSlotTime(slot.start) }} - {{ formatSlotTime(slot.end) }}
+                    @if (!slot.available) {
+                      <i class="fa-solid fa-lock"></i>
+                    }
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 

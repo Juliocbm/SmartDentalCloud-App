@@ -8,6 +8,13 @@ import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG } from '../../models/invo
 import { LoggingService } from '../../../../core/services/logging.service';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 
+interface AgingBucket {
+  label: string;
+  count: number;
+  total: number;
+  cssClass: string;
+}
+
 interface QuickAction {
   label: string;
   description: string;
@@ -101,6 +108,28 @@ export class InvoicesDashboardComponent implements OnInit {
 
   overdueInvoices = computed(() => {
     return this.invoices().filter(i => i.status === InvoiceStatus.Overdue || (i.balance > 0 && i.status !== InvoiceStatus.Paid && i.status !== InvoiceStatus.Cancelled));
+  });
+
+  accountsReceivable = computed(() => {
+    const pending = this.overdueInvoices();
+    const totalBalance = pending.reduce((sum, i) => sum + i.balance, 0);
+    const now = new Date();
+
+    const buckets: AgingBucket[] = [
+      { label: 'Vigente (0-30d)', count: 0, total: 0, cssClass: 'ar-current' },
+      { label: '31-60 días', count: 0, total: 0, cssClass: 'ar-warning' },
+      { label: '61-90 días', count: 0, total: 0, cssClass: 'ar-high' },
+      { label: '+90 días', count: 0, total: 0, cssClass: 'ar-critical' }
+    ];
+
+    for (const inv of pending) {
+      const days = Math.floor((now.getTime() - new Date(inv.issuedAt).getTime()) / (1000 * 60 * 60 * 24));
+      const idx = days <= 30 ? 0 : days <= 60 ? 1 : days <= 90 ? 2 : 3;
+      buckets[idx].count++;
+      buckets[idx].total += inv.balance;
+    }
+
+    return { totalBalance, totalCount: pending.length, buckets };
   });
 
   INVOICE_STATUS_CONFIG = INVOICE_STATUS_CONFIG;

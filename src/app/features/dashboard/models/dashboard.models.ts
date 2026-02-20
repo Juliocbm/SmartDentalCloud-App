@@ -52,6 +52,7 @@ export interface QuickStat {
   color: string;
   trend?: number;
   trendDirection?: 'up' | 'down' | 'neutral';
+  route?: string;
 }
 
 export interface LowStockProduct {

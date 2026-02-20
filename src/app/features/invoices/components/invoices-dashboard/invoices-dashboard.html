@@ -163,6 +163,41 @@
       </div>
     </div>
 
+    <!-- Cuentas por Cobrar (Accounts Receivable) -->
+    @if (accountsReceivable().totalCount > 0) {
+      <div class="section-card ar-widget">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            Cuentas por Cobrar
+          </h2>
+          <a routerLink="/reports/accounts-receivable" class="btn btn--sm btn--outline">
+            Ver Reporte Completo
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="ar-summary">
+          <div class="ar-total">
+            <span class="ar-total-label">Total Pendiente</span>
+            <span class="ar-total-value">{{ formatCurrency(accountsReceivable().totalBalance) }}</span>
+            <span class="ar-total-count">{{ accountsReceivable().totalCount }} factura{{ accountsReceivable().totalCount === 1 ? '' : 's' }}</span>
+          </div>
+          <div class="ar-aging-grid">
+            @for (bucket of accountsReceivable().buckets; track bucket.label) {
+              @if (bucket.count > 0) {
+                <div class="ar-bucket" [class]="bucket.cssClass">
+                  <span class="ar-bucket-label">{{ bucket.label }}</span>
+                  <span class="ar-bucket-amount">{{ formatCurrency(bucket.total) }}</span>
+                  <span class="ar-bucket-count">{{ bucket.count }} factura{{ bucket.count === 1 ? '' : 's' }}</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- Facturas Recientes -->
     <div class="analytics-grid">
       <div class="section-card" style="grid-column: 1 / -1;">

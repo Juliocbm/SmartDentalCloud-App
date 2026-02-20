@@ -1,0 +1,189 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <i class="fa-solid fa-user-circle"></i>
+    </div>
+    <div class="profile-identity">
+      <h1>{{ currentUser?.name }}</h1>
+      <p class="profile-email">{{ currentUser?.email }}</p>
+      @if (currentUser?.roles; as roles) {
+        @if (roles.length > 0) {
+          <div class="profile-roles">
+            @for (role of roles; track role) {
+              <span class="badge badge-primary">{{ role }}</span>
+            }
+          </div>
+        }
+      }
+    </div>
+    <div class="profile-actions">
+      <button class="btn btn-outline btn-sm" (click)="toggleEdit()">
+        @if (editing()) {
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        } @else {
+          <i class="fa-solid fa-pen"></i> Editar Perfil
+        }
+      </button>
+      <a routerLink="/change-password" class="btn btn-outline btn-sm">
+        <i class="fa-solid fa-key"></i> Cambiar Contraseña
+      </a>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando perfil...</p>
+    </div>
+  } @else if (editing()) {
+    <!-- Edit Mode -->
+    <div class="profile-form">
+      <div class="form-section">
+        <h3><i class="fa-solid fa-user"></i> Información Personal</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Teléfono</label>
+            <input type="tel" class="form-control" placeholder="Número de teléfono"
+              [ngModel]="phoneNumber()" (ngModelChange)="phoneNumber.set($event)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Alternativo</label>
+            <input type="email" class="form-control" placeholder="Email alternativo"
+              [ngModel]="alternateEmail()" (ngModelChange)="alternateEmail.set($event)" />
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Dirección</label>
+            <input type="text" class="form-control" placeholder="Dirección"
+              [ngModel]="address()" (ngModelChange)="address.set($event)" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3><i class="fa-solid fa-stethoscope"></i> Información Profesional</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Especialidad</label>
+            <input type="text" class="form-control" placeholder="Ej: Ortodoncia"
+              [ngModel]="specialty()" (ngModelChange)="specialty.set($event)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cédula Profesional</label>
+            <input type="text" class="form-control" placeholder="Número de cédula"
+              [ngModel]="professionalLicense()" (ngModelChange)="professionalLicense.set($event)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Años de Experiencia</label>
+            <input type="number" class="form-control" placeholder="0" min="0"
+              [ngModel]="yearsOfExperience()" (ngModelChange)="yearsOfExperience.set($event)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Formación Académica</label>
+            <input type="text" class="form-control" placeholder="Universidad, posgrado..."
+              [ngModel]="education()" (ngModelChange)="education.set($event)" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3><i class="fa-solid fa-phone-volume"></i> Contacto de Emergencia</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" placeholder="Nombre del contacto"
+              [ngModel]="emergencyContactName()" (ngModelChange)="emergencyContactName.set($event)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Teléfono</label>
+            <input type="tel" class="form-control" placeholder="Teléfono del contacto"
+              [ngModel]="emergencyContactPhone()" (ngModelChange)="emergencyContactPhone.set($event)" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3><i class="fa-solid fa-quote-left"></i> Biografía</h3>
+        <div class="form-group full-width">
+          <textarea class="form-control" rows="4" placeholder="Breve descripción profesional..."
+            [ngModel]="bio()" (ngModelChange)="bio.set($event)"></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" [disabled]="saving()" (click)="saveProfile()">
+          @if (saving()) {
+            <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+          } @else {
+            <i class="fa-solid fa-save"></i> Guardar Cambios
+          }
+        </button>
+      </div>
+    </div>
+  } @else {
+    <!-- View Mode -->
+    <div class="profile-sections">
+      <div class="profile-card">
+        <h3 class="card-title"><i class="fa-solid fa-user"></i> Información Personal</h3>
+        <div class="card-body">
+          <div class="info-row">
+            <span class="info-label">Teléfono</span>
+            <span class="info-value">{{ profile()?.phoneNumber || '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Email Alternativo</span>
+            <span class="info-value">{{ profile()?.alternateEmail || '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Dirección</span>
+            <span class="info-value">{{ profile()?.address || '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <h3 class="card-title"><i class="fa-solid fa-stethoscope"></i> Información Profesional</h3>
+        <div class="card-body">
+          <div class="info-row">
+            <span class="info-label">Especialidad</span>
+            <span class="info-value">{{ profile()?.specialty || '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Cédula Profesional</span>
+            <span class="info-value mono">{{ profile()?.professionalLicense || '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Años de Experiencia</span>
+            <span class="info-value">{{ profile()?.yearsOfExperience || '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Formación Académica</span>
+            <span class="info-value">{{ profile()?.education || '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <h3 class="card-title"><i class="fa-solid fa-phone-volume"></i> Contacto de Emergencia</h3>
+        <div class="card-body">
+          <div class="info-row">
+            <span class="info-label">Nombre</span>
+            <span class="info-value">{{ profile()?.emergencyContactName || '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Teléfono</span>
+            <span class="info-value">{{ profile()?.emergencyContactPhone || '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      @if (profile()?.bio) {
+        <div class="profile-card full-width">
+          <h3 class="card-title"><i class="fa-solid fa-quote-left"></i> Biografía</h3>
+          <div class="card-body">
+            <p class="bio-text">{{ profile()?.bio }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

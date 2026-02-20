@@ -9,8 +9,14 @@ export const TREATMENTS_ROUTES: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./components/treatment-list/treatment-list').then(m => m.TreatmentListComponent),
+          import('./components/treatment-dashboard/treatment-dashboard').then(m => m.TreatmentDashboardComponent),
         title: 'Tratamientos'
+      },
+      {
+        path: 'list',
+        loadComponent: () =>
+          import('./components/treatment-list/treatment-list').then(m => m.TreatmentListComponent),
+        title: 'Lista de Tratamientos'
       },
       {
         path: 'new',

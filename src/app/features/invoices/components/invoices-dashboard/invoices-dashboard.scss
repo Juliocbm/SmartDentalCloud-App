@@ -152,6 +152,103 @@
   }
 }
 
+// ===== Accounts Receivable Widget =====
+.ar-widget {
+  margin-bottom: var(--spacing-xl);
+}
+
+.ar-summary {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: var(--spacing-xl);
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ar-total {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xl);
+  background: var(--warning-50);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--warning-500);
+
+  .ar-total-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .ar-total-value {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--warning-700);
+  }
+
+  .ar-total-count {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+  }
+}
+
+.ar-aging-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.ar-bucket {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+
+  .ar-bucket-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .ar-bucket-amount {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .ar-bucket-count {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+  }
+
+  &.ar-current {
+    background: var(--success-50);
+    .ar-bucket-amount { color: var(--success-700); }
+  }
+
+  &.ar-warning {
+    background: var(--warning-50);
+    .ar-bucket-amount { color: var(--warning-700); }
+  }
+
+  &.ar-high {
+    background: rgba(var(--error-500-rgb, 239, 68, 68), 0.08);
+    .ar-bucket-amount { color: var(--error-600); }
+  }
+
+  &.ar-critical {
+    background: var(--error-50);
+    border-color: var(--error-200);
+    .ar-bucket-amount { color: var(--error-700); }
+  }
+}
+
 // ===== Responsive =====
 @media (max-width: 768px) {
   .recent-invoice-item {

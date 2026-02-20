@@ -1,0 +1,164 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Tratamientos'"
+    [subtitle]="'Panel de control del módulo de tratamientos'"
+    [icon]="'fa-tooth'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando datos de tratamientos...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error() }}</span>
+    </div>
+  } @else {
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper primary">
+          <i class="fa-solid fa-tooth"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ statusCounts().total }}</span>
+          <span class="kpi-label">Total Tratamientos</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper info">
+          <i class="fa-solid fa-spinner"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ statusCounts().inProgress }}</span>
+          <span class="kpi-label">En Progreso</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper success">
+          <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ statusCounts().completed }}</span>
+          <span class="kpi-label">Completados</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper warning">
+          <i class="fa-solid fa-pause-circle"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ statusCounts().onHold }}</span>
+          <span class="kpi-label">En Espera</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper error">
+          <i class="fa-solid fa-times-circle"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ statusCounts().cancelled }}</span>
+          <span class="kpi-label">Cancelados</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper success">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ completionRate() }}%</span>
+          <span class="kpi-label">Tasa de Completado</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-row">
+      <a routerLink="/treatments/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Tratamiento
+      </a>
+      <a routerLink="/treatments/list" class="btn btn-outline">
+        <i class="fa-solid fa-list"></i>
+        Ver Todos
+      </a>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="dashboard-grid">
+      <!-- Active Treatments -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-spinner"></i>
+            Tratamientos Activos
+          </h2>
+          <span class="section-count">{{ activeTreatments().length }}</span>
+        </div>
+
+        @if (activeTreatments().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-check-circle"></i>
+            <p>No hay tratamientos activos</p>
+          </div>
+        } @else {
+          <div class="treatment-list">
+            @for (tx of activeTreatments().slice(0, 8); track tx.id) {
+              <a [routerLink]="['/treatments', tx.id]" class="treatment-item">
+                <div class="treatment-info">
+                  <span class="treatment-service">{{ tx.serviceName }}</span>
+                  <span class="treatment-patient">{{ tx.patientName }}</span>
+                </div>
+                <div class="treatment-meta">
+                  @if (tx.toothNumber) {
+                    <span class="tooth-badge">
+                      <i class="fa-solid fa-tooth"></i> {{ tx.toothNumber }}
+                    </span>
+                  }
+                  <span class="treatment-date">{{ formatDate(tx.startDate) }}</span>
+                </div>
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Recent Treatments -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            Tratamientos Recientes
+          </h2>
+        </div>
+
+        @if (recentTreatments().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-tooth"></i>
+            <p>No hay tratamientos registrados</p>
+          </div>
+        } @else {
+          <div class="treatment-list">
+            @for (tx of recentTreatments(); track tx.id) {
+              <a [routerLink]="['/treatments', tx.id]" class="treatment-item">
+                <div class="treatment-info">
+                  <span class="treatment-service">{{ tx.serviceName }}</span>
+                  <span class="treatment-patient">{{ tx.patientName }}</span>
+                </div>
+                <div class="treatment-meta">
+                  <span [class]="'badge ' + getStatusConfig(tx.status).class">
+                    <i [class]="'fa-solid ' + getStatusConfig(tx.status).icon"></i>
+                    {{ getStatusConfig(tx.status).label }}
+                  </span>
+                </div>
+              </a>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

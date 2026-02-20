@@ -1,0 +1,102 @@
+<div class="detail-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando información del pago...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error</h2>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+      </button>
+    </div>
+  } @else if (payment(); as pay) {
+    <!-- Header -->
+    <div class="detail-header">
+      <button (click)="goBack()" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i> Volver a Pagos
+      </button>
+      <h1>
+        <i class="fa-solid fa-money-bill-wave"></i>
+        Detalle del Pago
+      </h1>
+    </div>
+
+    <!-- Amount Card -->
+    <div class="amount-card">
+      <div class="amount-icon">
+        <i class="fa-solid" [class]="getMethodConfig(pay.paymentMethod).icon"></i>
+      </div>
+      <div class="amount-info">
+        <span class="amount-label">Monto del Pago</span>
+        <span class="amount-value">{{ formatCurrency(pay.amount) }}</span>
+        <span class="amount-method">{{ getMethodConfig(pay.paymentMethod).label }}</span>
+      </div>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="info-grid">
+      <div class="info-card">
+        <h3 class="card-title">
+          <i class="fa-solid fa-calendar"></i>
+          Información del Pago
+        </h3>
+        <div class="card-content">
+          <div class="info-row">
+            <span class="info-label">Fecha de Pago</span>
+            <span class="info-value">{{ formatDate(pay.paidAt) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Método</span>
+            <span class="info-value">
+              <i class="fa-solid" [class]="getMethodConfig(pay.paymentMethod).icon"></i>
+              {{ getMethodConfig(pay.paymentMethod).label }}
+            </span>
+          </div>
+          @if (pay.reference) {
+            <div class="info-row">
+              <span class="info-label">Referencia</span>
+              <span class="info-value mono">{{ pay.reference }}</span>
+            </div>
+          }
+          <div class="info-row">
+            <span class="info-label">Registrado</span>
+            <span class="info-value">{{ formatDateTime(pay.createdAt) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3 class="card-title">
+          <i class="fa-solid fa-link"></i>
+          Referencias
+        </h3>
+        <div class="card-content">
+          <div class="info-row">
+            <span class="info-label">Factura</span>
+            <span class="info-value">
+              <a [routerLink]="['/invoices', pay.invoiceId]" class="link-primary">
+                <i class="fa-solid fa-file-invoice"></i> Ver Factura
+              </a>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Paciente</span>
+            <span class="info-value">
+              <a [routerLink]="['/patients', pay.patientId]" class="link-primary">
+                <i class="fa-solid fa-user"></i> Ver Paciente
+              </a>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">ID Pago</span>
+            <span class="info-value mono small">{{ pay.id }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -10,6 +10,7 @@ import { PatientAutocompleteComponent } from '../../../../shared/components/pati
 import { DentistSelectComponent } from '../../../../shared/components/dentist-select/dentist-select';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { DentistListItem } from '../../../../core/models/user.models';
+import { TimeSlot } from '../../models/appointment.models';
 
 @Component({
   selector: 'app-appointment-form',
@@ -40,6 +41,11 @@ export class AppointmentFormComponent implements OnInit {
   
   selectedPatient = signal<PatientSearchResult | null>(null);
   selectedDentist = signal<DentistListItem | null>(null);
+
+  // Availability
+  availabilitySlots = signal<TimeSlot[]>([]);
+  checkingAvailability = signal(false);
+  availabilityChecked = signal(false);
 
   backRoute = computed(() => this.contextService.context().returnUrl);
 
@@ -248,5 +254,43 @@ export class AppointmentFormComponent implements OnInit {
     } else {
       this.appointmentForm.patchValue({ userId: '' });
     }
+    this.availabilityChecked.set(false);
+  }
+
+  checkAvailability(): void {
+    const formValue = this.appointmentForm.value;
+    if (!formValue.userId || !formValue.startAt) return;
+
+    const date = new Date(formValue.startAt);
+    const startMs = new Date(formValue.startAt).getTime();
+    const endMs = formValue.endAt ? new Date(formValue.endAt).getTime() : startMs + 3600000;
+    const durationMin = Math.round((endMs - startMs) / 60000);
+
+    this.checkingAvailability.set(true);
+    this.availabilityChecked.set(false);
+
+    this.appointmentsService.getAvailability(date, formValue.userId, durationMin).subscribe({
+      next: (slots) => {
+        this.availabilitySlots.set(slots);
+        this.checkingAvailability.set(false);
+        this.availabilityChecked.set(true);
+      },
+      error: () => {
+        this.checkingAvailability.set(false);
+      }
+    });
+  }
+
+  selectSlot(slot: TimeSlot): void {
+    this.appointmentForm.patchValue({
+      startAt: this.formatDateTimeLocal(slot.start),
+      endAt: this.formatDateTimeLocal(slot.end)
+    });
+  }
+
+  formatSlotTime(date: Date): string {
+    return new Intl.DateTimeFormat('es-MX', {
+      hour: '2-digit', minute: '2-digit', hour12: false
+    }).format(date);
   }
 }

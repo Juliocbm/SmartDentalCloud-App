@@ -1,0 +1,165 @@
+<div class="register-page">
+  <div class="register-card">
+    <!-- Logo -->
+    <div class="register-logo">
+      <i class="fa-solid fa-tooth"></i>
+      <h1>SmartDental Cloud</h1>
+      <p>Registra tu consultorio y comienza tu prueba gratuita de 14 días</p>
+    </div>
+
+    @if (success()) {
+      <div class="success-state">
+        <i class="fa-solid fa-circle-check"></i>
+        <h2>¡Registro exitoso!</h2>
+        <p>Tu consultorio ha sido creado. Redirigiendo al dashboard...</p>
+      </div>
+    } @else {
+      <!-- Step Indicator -->
+      <div class="steps-indicator">
+        <div class="step" [class.active]="currentStep() >= 1" [class.done]="currentStep() > 1">
+          <span class="step-number">1</span>
+          <span class="step-label">Consultorio</span>
+        </div>
+        <div class="step-line" [class.active]="currentStep() > 1"></div>
+        <div class="step" [class.active]="currentStep() >= 2" [class.done]="currentStep() > 2">
+          <span class="step-number">2</span>
+          <span class="step-label">Administrador</span>
+        </div>
+        <div class="step-line" [class.active]="currentStep() > 2"></div>
+        <div class="step" [class.active]="currentStep() >= 3">
+          <span class="step-number">3</span>
+          <span class="step-label">Confirmar</span>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="alert alert-danger">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      <!-- Step 1: Tenant Info -->
+      @if (currentStep() === 1) {
+        <div class="step-content">
+          <h2>Datos del Consultorio</h2>
+          <div class="form-group">
+            <label class="form-label">Nombre del Consultorio <span class="required">*</span></label>
+            <input type="text" class="form-control" placeholder="Ej: Dental Care Monterrey"
+              [ngModel]="tenantName()" (ngModelChange)="tenantName.set($event)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subdominio <span class="required">*</span></label>
+            <div class="subdomain-input">
+              <input type="text" class="form-control" placeholder="mi-consultorio"
+                [ngModel]="subdomain()" (ngModelChange)="onSubdomainInput($event)" />
+              <span class="subdomain-suffix">.smartdentalcloud.com</span>
+            </div>
+            @if (subdomainPreview()) {
+              <span class="subdomain-preview">
+                <i class="fa-solid fa-globe"></i> {{ subdomainPreview() }}
+              </span>
+            }
+          </div>
+          <div class="form-group">
+            <label class="form-label">Zona Horaria</label>
+            <select class="form-control" [ngModel]="timeZone()" (ngModelChange)="timeZone.set($event)">
+              <option value="America/Mexico_City">Ciudad de México (CST)</option>
+              <option value="America/Cancun">Cancún (EST)</option>
+              <option value="America/Tijuana">Tijuana (PST)</option>
+              <option value="America/Hermosillo">Hermosillo (MST)</option>
+            </select>
+          </div>
+          <div class="step-actions">
+            <a routerLink="/login" class="btn btn-outline">Ya tengo cuenta</a>
+            <button class="btn btn-primary" [disabled]="!canProceedStep1()" (click)="nextStep()">
+              Siguiente <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 2: Admin Info -->
+      @if (currentStep() === 2) {
+        <div class="step-content">
+          <h2>Cuenta de Administrador</h2>
+          <div class="form-group">
+            <label class="form-label">Nombre Completo <span class="required">*</span></label>
+            <input type="text" class="form-control" placeholder="Dr. Juan Pérez"
+              [ngModel]="adminName()" (ngModelChange)="adminName.set($event)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email <span class="required">*</span></label>
+            <input type="email" class="form-control" placeholder="admin@consultorio.com"
+              [ngModel]="adminEmail()" (ngModelChange)="adminEmail.set($event)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña <span class="required">*</span></label>
+            <input type="password" class="form-control" placeholder="Mínimo 8 caracteres"
+              [ngModel]="adminPassword()" (ngModelChange)="adminPassword.set($event)" />
+            <span class="form-hint">Debe incluir mayúscula, minúscula, número y carácter especial</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirmar Contraseña <span class="required">*</span></label>
+            <input type="password" class="form-control" placeholder="Repite la contraseña"
+              [ngModel]="confirmPassword()" (ngModelChange)="confirmPassword.set($event)" />
+            @if (confirmPassword() && adminPassword() !== confirmPassword()) {
+              <span class="form-error">Las contraseñas no coinciden</span>
+            }
+          </div>
+          <div class="step-actions">
+            <button class="btn btn-outline" (click)="prevStep()">
+              <i class="fa-solid fa-arrow-left"></i> Anterior
+            </button>
+            <button class="btn btn-primary" [disabled]="!canProceedStep2()" (click)="nextStep()">
+              Siguiente <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 3: Confirm -->
+      @if (currentStep() === 3) {
+        <div class="step-content">
+          <h2>Confirmar Registro</h2>
+          <div class="summary-card">
+            <div class="summary-section">
+              <h4><i class="fa-solid fa-building"></i> Consultorio</h4>
+              <div class="summary-row">
+                <span>Nombre</span><strong>{{ tenantName() }}</strong>
+              </div>
+              <div class="summary-row">
+                <span>URL</span><strong>{{ subdomainPreview() }}</strong>
+              </div>
+            </div>
+            <div class="summary-section">
+              <h4><i class="fa-solid fa-user-shield"></i> Administrador</h4>
+              <div class="summary-row">
+                <span>Nombre</span><strong>{{ adminName() }}</strong>
+              </div>
+              <div class="summary-row">
+                <span>Email</span><strong>{{ adminEmail() }}</strong>
+              </div>
+            </div>
+            <div class="summary-section trial-info">
+              <i class="fa-solid fa-gift"></i>
+              <span>Incluye <strong>14 días de prueba gratuita</strong> con acceso completo</span>
+            </div>
+          </div>
+          <div class="step-actions">
+            <button class="btn btn-outline" (click)="prevStep()" [disabled]="loading()">
+              <i class="fa-solid fa-arrow-left"></i> Anterior
+            </button>
+            <button class="btn btn-primary" [disabled]="loading()" (click)="submit()">
+              @if (loading()) {
+                <i class="fa-solid fa-spinner fa-spin"></i> Registrando...
+              } @else {
+                <i class="fa-solid fa-rocket"></i> Crear Consultorio
+              }
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

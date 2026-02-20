@@ -34,7 +34,7 @@
     <div class="kpi-section">
       <div class="kpi-grid">
         @for (kpi of kpis(); track kpi.label) {
-          <div class="kpi-card">
+          <a class="kpi-card" [routerLink]="kpi.route || null">
             <div class="kpi-header">
               <div class="kpi-icon-wrapper" [style.background]="'var(--' + kpi.color + '-50)'">
                 <i class="fa-solid" [ngClass]="kpi.icon" [style.color]="'var(--' + kpi.color + '-600)'"></i>
@@ -61,7 +61,7 @@
               <div class="kpi-value">{{ kpi.value }}</div>
               <div class="kpi-label">{{ kpi.label }}</div>
             </div>
-          </div>
+          </a>
         }
       </div>
     </div>

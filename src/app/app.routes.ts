@@ -15,6 +15,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/reset-password/reset-password').then(m => m.ResetPasswordComponent)
   },
   {
+    path: 'register',
+    loadComponent: () => import('./features/onboarding/components/register/register').then(m => m.RegisterComponent),
+    title: 'Registrar Consultorio'
+  },
+  {
     path: '',
     loadComponent: () => import('./shared/components/layout/layout').then(m => m.LayoutComponent),
     canActivate: [authGuard],
@@ -79,6 +84,16 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadChildren: () => import('./features/settings/settings.routes').then(m => m.SETTINGS_ROUTES)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/users/components/my-profile/my-profile').then(m => m.MyProfileComponent),
+        title: 'Mi Perfil'
+      },
+      {
+        path: 'subscription',
+        loadComponent: () => import('./features/subscriptions/components/subscription-page/subscription-page').then(m => m.SubscriptionPageComponent),
+        title: 'Suscripción'
       },
       {
         path: 'change-password',
