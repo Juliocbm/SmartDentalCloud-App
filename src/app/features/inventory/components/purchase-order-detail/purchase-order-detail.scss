@@ -131,13 +131,3 @@
   }
 }
 
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--spacing-4xl);
-  gap: var(--spacing-lg);
-  color: var(--text-secondary);
-
-  i { color: var(--primary-500); }
-}

@@ -52,6 +52,32 @@ export const ROUTES = {
   INVOICES_LIST: '/invoices/list',
   INVOICES_NEW: '/invoices/new',
 
+  // Payments (Pagos)
+  PAYMENTS: '/payments',
+  PAYMENTS_NEW: '/payments/new',
+
+  // Reports (Reportes)
+  REPORTS: '/reports',
+  REPORTS_ACCOUNTS_RECEIVABLE: '/reports/accounts-receivable',
+  REPORTS_INCOME: '/reports/income',
+  REPORTS_TREATMENTS: '/reports/treatments',
+  REPORTS_DENTIST_PRODUCTIVITY: '/reports/dentist-productivity',
+
+  // Notifications (Notificaciones)
+  NOTIFICATIONS: '/notifications',
+
+  // Audit Log (Auditoría)
+  AUDIT_LOG: '/audit-log',
+
+  // Settings (Configuración)
+  SETTINGS: '/settings',
+
+  // Subscriptions (Suscripciones)
+  SUBSCRIPTION: '/subscription',
+
+  // CFDI
+  CFDI: '/invoices/cfdi',
+
   // Inventory (Inventario)
   INVENTORY: '/inventory',
   INVENTORY_CATEGORIES: '/inventory/categories',
@@ -99,5 +125,11 @@ export const getDynamicRoute = {
 
   serviceEdit: (serviceId: string) => `/services/${serviceId}/edit`,
 
-  treatmentPlanDetail: (planId: string) => `/treatment-plans/${planId}`
+  treatmentPlanDetail: (planId: string) => `/treatment-plans/${planId}`,
+
+  prescriptionDetail: (prescriptionId: string) => `/prescriptions/${prescriptionId}`,
+
+  invoiceDetail: (invoiceId: string) => `/invoices/${invoiceId}`,
+
+  roleEdit: (roleId: string) => `/users/roles/${roleId}/edit`
 } as const;

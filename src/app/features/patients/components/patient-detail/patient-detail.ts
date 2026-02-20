@@ -256,11 +256,9 @@ export class PatientDetailComponent implements OnInit {
   private populateTaxForm(): void {
     const pat = this.patient();
     if (!pat) return;
-    // Patient model may have taxInfo fields from the dashboard or extended response
-    const p = pat as any;
-    this.taxId.set(p.taxId || '');
-    this.legalName.set(p.legalName || '');
-    this.fiscalAddress.set(p.fiscalAddress || '');
+    this.taxId.set(pat.taxId || '');
+    this.legalName.set(pat.legalName || '');
+    this.fiscalAddress.set(pat.fiscalAddress || '');
   }
 
   toggleEditTax(): void {

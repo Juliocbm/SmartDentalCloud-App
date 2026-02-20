@@ -17,6 +17,7 @@ export class NotificationListComponent implements OnInit {
 
   notifications = signal<AppNotification[]>([]);
   loading = signal(false);
+  error = signal<string | null>(null);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -29,9 +30,10 @@ export class NotificationListComponent implements OnInit {
 
   private loadNotifications(): void {
     this.loading.set(true);
+    this.error.set(null);
     this.notifService.getNotifications().subscribe({
       next: (data) => { this.notifications.set(data); this.loading.set(false); },
-      error: () => this.loading.set(false)
+      error: () => { this.error.set('Error al cargar notificaciones'); this.loading.set(false); }
     });
   }
 

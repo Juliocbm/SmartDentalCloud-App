@@ -30,7 +30,12 @@
     </div>
   </div>
 
-  @if (loading()) {
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      {{ error() }}
+    </div>
+  } @else if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando registros...</p>

@@ -6,42 +6,30 @@
 // Action buttons: usa .btn-sm, .btn-outline de _components.scss
 
 // ===== Loading/Error/Empty States =====
+// Base: hereda .loading-container, .error-container, .empty-state de _components.scss
+// Solo overrides específicos de este componente
 .loading-container,
 .error-container,
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-4xl) var(--spacing-3xl);
-  text-align: center;
   min-height: 400px;
-  
+
   > i {
     font-size: var(--font-size-5xl);
     margin-bottom: var(--spacing-xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
-  
+
   h3 {
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
     margin: 0 0 var(--spacing-sm) 0;
   }
-  
+
   p {
-    color: var(--text-secondary);
     font-size: var(--font-size-base);
     margin: 0 0 var(--spacing-2xl) 0;
     max-width: 400px;
   }
-}
-
-.loading-container {
-  i { color: var(--primary-500); }
 }
 
 .error-container {
@@ -52,19 +40,9 @@
   i { color: var(--text-muted); }
 }
 
+// .spinner: usa el global de _components.scss
 .spinner {
-  border: 3px solid var(--border-secondary);
-  border-top: 3px solid var(--primary-500);
-  border-radius: var(--radius-full);
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
   margin-bottom: var(--spacing-xl);
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 // ===== Table Cell Content =====

@@ -1637,6 +1637,20 @@ textarea.form-control {
   }
 }
 
+.spinner {
+  border: 3px solid var(--border-secondary);
+  border-top: 3px solid var(--primary-500);
+  border-radius: var(--radius-full);
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .loading-small {
   display: flex;
   align-items: center;

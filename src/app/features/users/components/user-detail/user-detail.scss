@@ -4,17 +4,6 @@
   padding: var(--spacing-lg);
 }
 
-.loading-container,
-.error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-2xl);
-  text-align: center;
-  min-height: 400px;
-}
-
 .spinner {
   width: 48px;
   height: 48px;
@@ -29,8 +18,18 @@
   to { transform: rotate(360deg); }
 }
 
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-4xl);
+  text-align: center;
+  min-height: 400px;
+}
+
 .error-icon {
-  font-size: 64px;
+  font-size: var(--font-size-4xl);
   margin-bottom: var(--spacing-md);
 }
 
@@ -49,13 +48,13 @@
 
   .header-nav {
     .back-link {
-      color: #337ab7;
+      color: var(--primary-500);
       text-decoration: none;
-      font-size: 16px;
-      transition: color 0.2s ease-in-out;
+      font-size: var(--font-size-base);
+      transition: var(--transition-base);
 
       &:hover {
-        color: #23527c;
+        color: var(--primary-700);
         text-decoration: underline;
       }
     }
@@ -63,37 +62,37 @@
 
   .header-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--spacing-sm);
   }
 }
 
 .info-card {
-  background: #f7f7f7;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 24px;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xl);
   overflow: hidden;
 
   &.main-info {
     .card-header {
-      background: linear-gradient(135deg, #f7f7f7 0%, #337ab7 100%);
-      padding: 32px;
+      background: linear-gradient(135deg, var(--surface-secondary) 0%, var(--primary-500) 100%);
+      padding: var(--spacing-2xl);
       color: white;
     }
   }
 
   .card-header {
-    padding: 24px;
-    border-bottom: 1px solid #ddd;
+    padding: var(--spacing-xl);
+    border-bottom: 1px solid var(--border-primary);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--spacing-lg);
 
     .user-avatar {
-      font-size: 64px;
+      font-size: var(--font-size-4xl);
       width: 80px;
       height: 80px;
-      border-radius: 50%;
+      border-radius: var(--radius-full);
       background: rgba(255, 255, 255, 0.2);
       display: flex;
       align-items: center;
@@ -104,13 +103,13 @@
       flex: 1;
       
       .user-name {
-        font-size: 24px;
-        font-weight: bold;
-        margin: 0 0 8px 0;
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        margin: 0 0 var(--spacing-xs) 0;
       }
 
       .user-email {
-        font-size: 16px;
+        font-size: var(--font-size-base);
         opacity: 0.9;
         margin: 0;
       }
@@ -118,18 +117,18 @@
 
     .user-status-badge {
       .status-badge {
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: bold;
+        padding: var(--spacing-sm) var(--spacing-lg);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-bold);
 
         &.status-active {
-          background: #28a745;
+          background: var(--success-500);
           color: white;
         }
 
         &.status-inactive {
-          background: #dc3545;
+          background: var(--error-500);
           color: white;
         }
       }
@@ -138,54 +137,54 @@
     .card-title {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #337ab7;
+      gap: var(--spacing-sm);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-500);
       margin: 0;
       flex: 1;
 
       .card-icon {
-        font-size: 24px;
+        font-size: var(--font-size-xl);
       }
 
       .permissions-count {
-        font-size: 16px;
-        font-weight: normal;
-        padding: 8px 16px;
-        background: #337ab7;
-        color: #23527c;
-        border-radius: 8px;
-        margin-left: 16px;
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-normal);
+        padding: var(--spacing-sm) var(--spacing-lg);
+        background: var(--primary-100);
+        color: var(--primary-700);
+        border-radius: var(--radius-md);
+        margin-left: var(--spacing-lg);
       }
     }
   }
 
   .card-body {
-    padding: 24px;
+    padding: var(--spacing-xl);
   }
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
+  gap: var(--spacing-xl);
 
   .info-item {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--spacing-xs);
 
     .info-label {
-      font-size: 14px;
-      color: #666;
-      font-weight: medium;
+      font-size: var(--font-size-sm);
+      color: var(--text-tertiary);
+      font-weight: var(--font-weight-medium);
     }
 
     .info-value {
-      font-size: 16px;
-      color: #337ab7;
-      font-weight: medium;
+      font-size: var(--font-size-base);
+      color: var(--text-primary);
+      font-weight: var(--font-weight-medium);
     }
   }
 }
@@ -193,35 +192,35 @@
 .roles-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-lg);
 
   .role-item {
     .role-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-sm) var(--spacing-lg);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
 
       .role-icon {
-        font-size: 20px;
+        font-size: var(--font-size-lg);
       }
 
       &.badge-admin {
-        background: #337ab7;
-        color: #23527c;
+        background: var(--primary-100);
+        color: var(--primary-700);
       }
 
       &.badge-doctor {
-        background: #dc3545;
-        color: #fff;
+        background: var(--error-100);
+        color: var(--error-700);
       }
 
       &.badge-receptionist {
-        background: #ffc107;
-        color: #fff;
+        background: var(--warning-100);
+        color: var(--warning-700);
       }
 
       &.badge-assistant {

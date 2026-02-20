@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ApiService, QueryParams } from '../../../core/services/api.service';
 import { environment } from '../../../../environments/environment';
 import {
   Cfdi,
@@ -16,27 +16,26 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class CfdiService {
-  private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/cfdi`;
+  private api = inject(ApiService);
 
   getByInvoice(invoiceId: string): Observable<Cfdi[]> {
-    return this.http.get<Cfdi[]>(`${this.apiUrl}`, { params: { invoiceId } });
+    return this.api.get<Cfdi[]>('/cfdi', { invoiceId });
   }
 
   getById(id: string): Observable<Cfdi> {
-    return this.http.get<Cfdi>(`${this.apiUrl}/${id}`);
+    return this.api.get<Cfdi>(`/cfdi/${id}`);
   }
 
   generate(request: GenerateCfdiRequest): Observable<GenerateCfdiResult> {
-    return this.http.post<GenerateCfdiResult>(`${this.apiUrl}/generate`, request);
+    return this.api.post<GenerateCfdiResult>('/cfdi/generate', request);
   }
 
   timbrar(cfdiId: string): Observable<TimbrarCfdiResult> {
-    return this.http.post<TimbrarCfdiResult>(`${this.apiUrl}/${cfdiId}/timbrar`, {});
+    return this.api.post<TimbrarCfdiResult>(`/cfdi/${cfdiId}/timbrar`, {});
   }
 
   cancelar(cfdiId: string, request: CancelarCfdiRequest): Observable<CancelarCfdiResult> {
-    return this.http.post<CancelarCfdiResult>(`${this.apiUrl}/${cfdiId}/cancelar`, request);
+    return this.api.post<CancelarCfdiResult>(`/cfdi/${cfdiId}/cancelar`, request);
   }
 
   downloadXml(cfdiId: string): string {
@@ -48,26 +47,29 @@ export class CfdiService {
   }
 
   sendEmail(cfdiId: string, request: SendCfdiEmailRequest): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/${cfdiId}/send-email`, request);
+    return this.api.post<{ message: string }>(`/cfdi/${cfdiId}/send-email`, request);
   }
 
   getStatusSat(cfdiId: string): Observable<CfdiSatStatus> {
-    return this.http.get<CfdiSatStatus>(`${this.apiUrl}/${cfdiId}/status-sat`);
+    return this.api.get<CfdiSatStatus>(`/cfdi/${cfdiId}/status-sat`);
   }
 
   testConnection(): Observable<{ pacConnected: boolean; message: string }> {
-    return this.http.get<{ pacConnected: boolean; message: string }>(`${this.apiUrl}/test-connection`);
+    return this.api.get<{ pacConnected: boolean; message: string }>('/cfdi/test-connection');
   }
 
   getConfiguration(): Observable<PacConfiguration> {
-    return this.http.get<PacConfiguration>(`${this.apiUrl}/configuration`);
+    return this.api.get<PacConfiguration>('/cfdi/configuration');
   }
 
   updateConfiguration(config: PacConfiguration): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(`${this.apiUrl}/configuration`, config);
+    return this.api.put<{ message: string }>('/cfdi/configuration', config);
   }
 
   getAll(params?: { patientId?: string; estado?: string }): Observable<Cfdi[]> {
-    return this.http.get<Cfdi[]>(this.apiUrl, { params: params as any });
+    const queryParams: QueryParams = {};
+    if (params?.patientId) queryParams['patientId'] = params.patientId;
+    if (params?.estado) queryParams['estado'] = params.estado;
+    return this.api.get<Cfdi[]>('/cfdi', queryParams);
   }
 }

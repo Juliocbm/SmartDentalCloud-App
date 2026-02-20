@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { FullCalendarModule } from '@fullcalendar/angular';
+import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
 import { CalendarOptions, EventClickArg, DateSelectArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -26,6 +26,8 @@ export class AppointmentCalendarComponent implements OnInit {
   private usersService = inject(UsersService);
   private router = inject(Router);
   private logger = inject(LoggingService);
+
+  private calendarRef = viewChild(FullCalendarComponent);
 
   appointments = signal<Appointment[]>([]);
   loading = signal(true);
@@ -202,7 +204,7 @@ export class AppointmentCalendarComponent implements OnInit {
   }
 
   goToToday(): void {
-    const calendarApi = (document.querySelector('full-calendar') as any)?.getApi();
+    const calendarApi = this.calendarRef()?.getApi();
     if (calendarApi) {
       calendarApi.today();
     }

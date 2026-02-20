@@ -17,6 +17,7 @@ export class AuditLogListComponent implements OnInit {
 
   logs = signal<AuditLogEntry[]>([]);
   loading = signal(false);
+  error = signal<string | null>(null);
   entityTypeFilter = signal('');
   actionFilter = signal('');
 
@@ -31,13 +32,14 @@ export class AuditLogListComponent implements OnInit {
 
   loadLogs(): void {
     this.loading.set(true);
+    this.error.set(null);
     this.auditService.getLogs({
       entityType: this.entityTypeFilter() || undefined,
       action: this.actionFilter() || undefined,
       pageSize: 50
     }).subscribe({
       next: (data) => { this.logs.set(data); this.loading.set(false); },
-      error: () => this.loading.set(false)
+      error: () => { this.error.set('Error al cargar registros de auditoría'); this.loading.set(false); }
     });
   }
 

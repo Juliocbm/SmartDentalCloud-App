@@ -526,7 +526,7 @@
 }
 
 .surface-text {
-  font-size: 14px;
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   fill: var(--text-secondary);
   pointer-events: none;

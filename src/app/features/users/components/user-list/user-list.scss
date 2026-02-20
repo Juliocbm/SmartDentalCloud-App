@@ -68,27 +68,27 @@
 // Badges de roles: usa .badge de _components.scss + variantes de color específicas (backgrounds sólidos)
 .badge-admin {
   background: var(--primary-500);
-  color: #ffffff;
+  color: white;
 }
 
 .badge-doctor {
   background: var(--info-500);
-  color: #ffffff;
+  color: white;
 }
 
 .badge-receptionist {
   background: var(--warning-500);
-  color: #ffffff;
+  color: white;
 }
 
 .badge-assistant {
   background: var(--success-500);
-  color: #ffffff;
+  color: white;
 }
 
 .badge-default {
   background: var(--neutral-500);
-  color: #ffffff;
+  color: white;
 }
 
 .contact-cell {

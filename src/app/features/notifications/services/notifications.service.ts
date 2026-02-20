@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from '../../../core/services/api.service';
+import { ApiService, QueryParams } from '../../../core/services/api.service';
 import { AppNotification } from '../models/notification.models';
 
 @Injectable({ providedIn: 'root' })
@@ -8,8 +8,9 @@ export class NotificationsApiService {
   private api = inject(ApiService);
 
   getNotifications(unreadOnly?: boolean): Observable<AppNotification[]> {
-    const params = unreadOnly != null ? { unreadOnly } : {};
-    return this.api.get<AppNotification[]>('/notifications', params as any);
+    const params: QueryParams = {};
+    if (unreadOnly != null) params['unreadOnly'] = unreadOnly;
+    return this.api.get<AppNotification[]>('/notifications', params);
   }
 
   markAsRead(id: string): Observable<void> {

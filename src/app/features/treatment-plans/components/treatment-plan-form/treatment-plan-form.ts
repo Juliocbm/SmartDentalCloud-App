@@ -138,7 +138,7 @@ export class TreatmentPlanFormComponent implements OnInit {
       diagnosis: formValue.diagnosis || undefined,
       estimatedStartDate: formValue.estimatedStartDate || undefined,
       estimatedEndDate: formValue.estimatedEndDate || undefined,
-      items: formValue.items.map((item: any): CreateTreatmentPlanItemRequest => ({
+      items: formValue.items.map((item: CreateTreatmentPlanItemRequest) => ({
         serviceId: item.serviceId || undefined,
         description: item.description,
         notes: item.notes || undefined,

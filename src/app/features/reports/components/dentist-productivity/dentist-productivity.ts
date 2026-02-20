@@ -17,6 +17,7 @@ export class DentistProductivityComponent implements OnInit {
 
   data = signal<DentistProductivity[]>([]);
   loading = signal(false);
+  error = signal<string | null>(null);
   startDate = signal(this.getDefaultStart());
   endDate = signal(this.getDefaultEnd());
 
@@ -32,9 +33,10 @@ export class DentistProductivityComponent implements OnInit {
 
   loadReport(): void {
     this.loading.set(true);
+    this.error.set(null);
     this.reportsService.getDentistProductivity(this.startDate(), this.endDate()).subscribe({
       next: (data) => { this.data.set(data); this.loading.set(false); },
-      error: () => this.loading.set(false)
+      error: () => { this.error.set('Error al cargar productividad'); this.loading.set(false); }
     });
   }
 

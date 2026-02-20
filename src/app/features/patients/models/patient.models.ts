@@ -19,6 +19,11 @@ export interface Patient {
   smokingStatus: string | null;
   notes: string | null;
   
+  // Datos Fiscales
+  taxId: string | null;
+  legalName: string | null;
+  fiscalAddress: string | null;
+
   // Control
   isActive: boolean;
   createdAt: Date;

@@ -4,7 +4,7 @@
     [subtitle]="getUnreadCount() + ' sin leer'"
     [icon]="'fa-bell'"
     [breadcrumbs]="breadcrumbItems">
-    <div class="header-actions">
+    <div actions>
       @if (getUnreadCount() > 0) {
         <button class="btn btn-outline" (click)="markAllAsRead()">
           <i class="fa-solid fa-check-double"></i>
@@ -14,7 +14,12 @@
     </div>
   </app-page-header>
 
-  @if (loading()) {
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      {{ error() }}
+    </div>
+  } @else if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando notificaciones...</p>

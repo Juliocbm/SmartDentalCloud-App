@@ -17,6 +17,7 @@ export class TreatmentsReportComponent implements OnInit {
 
   report = signal<TreatmentsSummary | null>(null);
   loading = signal(false);
+  error = signal<string | null>(null);
   startDate = signal(this.getDefaultStart());
   endDate = signal(this.getDefaultEnd());
 
@@ -32,9 +33,10 @@ export class TreatmentsReportComponent implements OnInit {
 
   loadReport(): void {
     this.loading.set(true);
+    this.error.set(null);
     this.reportsService.getTreatmentsSummary(this.startDate(), this.endDate()).subscribe({
       next: (data) => { this.report.set(data); this.loading.set(false); },
-      error: () => this.loading.set(false)
+      error: () => { this.error.set('Error al cargar el reporte de tratamientos'); this.loading.set(false); }
     });
   }
 

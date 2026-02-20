@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
@@ -85,22 +85,23 @@ export class InvoiceFormComponent implements OnInit {
     }
   }
 
-  calculateItemSubtotal(item: any): number {
-    return (item.value.quantity || 0) * (item.value.unitPrice || 0);
+  calculateItemSubtotal(item: AbstractControl): number {
+    const v = item.value;
+    return (v.quantity || 0) * (v.unitPrice || 0);
   }
 
-  calculateItemDiscount(item: any): number {
+  calculateItemDiscount(item: AbstractControl): number {
     const subtotal = this.calculateItemSubtotal(item);
     return subtotal * ((item.value.discountPercentage || 0) / 100);
   }
 
-  calculateItemTax(item: any): number {
+  calculateItemTax(item: AbstractControl): number {
     const subtotal = this.calculateItemSubtotal(item);
     const discount = this.calculateItemDiscount(item);
     return (subtotal - discount) * ((item.value.taxRate || 0) / 100);
   }
 
-  calculateItemTotal(item: any): number {
+  calculateItemTotal(item: AbstractControl): number {
     const subtotal = this.calculateItemSubtotal(item);
     const discount = this.calculateItemDiscount(item);
     const tax = this.calculateItemTax(item);
@@ -129,7 +130,7 @@ export class InvoiceFormComponent implements OnInit {
       usoCFDI: formValue.usoCFDI || undefined,
       metodoPago: formValue.metodoPago || undefined,
       formaPago: formValue.formaPago || undefined,
-      items: formValue.items.map((item: any) => ({
+      items: formValue.items.map((item: CreateInvoiceItemRequest) => ({
         treatmentId: item.treatmentId || undefined,
         description: item.description,
         quantity: item.quantity,

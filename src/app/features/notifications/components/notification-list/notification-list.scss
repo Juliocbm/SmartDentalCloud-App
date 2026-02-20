@@ -78,24 +78,3 @@
   margin-top: var(--spacing-sm);
 }
 
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--spacing-4xl);
-  gap: var(--spacing-lg);
-  color: var(--text-secondary);
-  i { color: var(--primary-500); }
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--spacing-4xl);
-  gap: var(--spacing-md);
-  color: var(--text-tertiary);
-  i { font-size: 3rem; }
-  h3 { margin: 0; color: var(--text-secondary); }
-  p { margin: 0; }
-}
