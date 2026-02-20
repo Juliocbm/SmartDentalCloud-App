@@ -1,0 +1,174 @@
+<div class="detail-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando servicio...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" routerLink="/services">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver a Servicios
+      </button>
+    </div>
+  } @else if (service(); as svc) {
+
+    <div class="detail-header">
+      <div class="header-top">
+        <button class="btn-back" routerLink="/services">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver
+        </button>
+        <div class="header-actions">
+          <a [routerLink]="['/services', svc.id, 'edit']" class="btn btn-primary">
+            <i class="fa-solid fa-pen"></i>
+            Editar
+          </a>
+          <button class="btn btn-danger-outline" (click)="confirmDelete()">
+            <i class="fa-solid fa-trash"></i>
+            Eliminar
+          </button>
+        </div>
+      </div>
+
+      <div class="header-content">
+        <div class="title-section">
+          <h1>
+            <i class="fa-solid fa-tooth"></i>
+            {{ svc.name }}
+          </h1>
+          <span class="status-badge" [class.badge-success]="svc.isActive" [class.badge-neutral]="!svc.isActive">
+            <i [class]="svc.isActive ? 'fa-solid fa-check-circle' : 'fa-solid fa-pause-circle'"></i>
+            {{ svc.isActive ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+        @if (svc.description) {
+          <p class="service-description">{{ svc.description }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="detail-body">
+      <!-- Main Info -->
+      <div class="info-section">
+        <h3><i class="fa-solid fa-info-circle"></i> Información General</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Precio</span>
+            <span class="info-value price">{{ formatCurrency(svc.cost) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Duración</span>
+            <span class="info-value">{{ svc.durationMinutes ? svc.durationMinutes + ' min' : '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Categoría</span>
+            <span class="info-value">{{ getCategoryLabel(svc.category) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clinical Info -->
+      <div class="info-section">
+        <h3><i class="fa-solid fa-stethoscope"></i> Información Clínica</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Requiere Seguimiento</span>
+            <span class="info-value">
+              @if (svc.requiresFollowUp) {
+                <span class="tag tag-info">Sí — {{ svc.followUpDays }} días</span>
+              } @else {
+                <span class="tag tag-neutral">No</span>
+              }
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Requiere Anestesia</span>
+            <span class="info-value">
+              <span [class]="svc.requiresAnesthesia ? 'tag tag-warning' : 'tag tag-neutral'">
+                {{ svc.requiresAnesthesia ? 'Sí' : 'No' }}
+              </span>
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Multi-Sesión</span>
+            <span class="info-value">
+              @if (svc.isMultiSession) {
+                <span class="tag tag-info">Sí — {{ svc.estimatedSessions }} sesiones</span>
+              } @else {
+                <span class="tag tag-neutral">No</span>
+              }
+            </span>
+          </div>
+        </div>
+        @if (svc.notes) {
+          <div class="notes-section">
+            <span class="info-label">Notas</span>
+            <p class="notes-text">{{ svc.notes }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- CFDI -->
+      @if (svc.claveProdServ || svc.claveUnidad) {
+        <div class="info-section">
+          <h3><i class="fa-solid fa-file-signature"></i> Datos CFDI</h3>
+          <div class="info-grid">
+            @if (svc.claveProdServ) {
+              <div class="info-item">
+                <span class="info-label">Clave Prod/Serv SAT</span>
+                <span class="info-value mono">{{ svc.claveProdServ }}</span>
+              </div>
+            }
+            @if (svc.claveUnidad) {
+              <div class="info-item">
+                <span class="info-label">Clave Unidad SAT</span>
+                <span class="info-value mono">{{ svc.claveUnidad }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Audit -->
+      <div class="info-section">
+        <h3><i class="fa-solid fa-clock-rotate-left"></i> Auditoría</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Creado</span>
+            <span class="info-value">{{ formatDate(svc.createdAt) }}</span>
+          </div>
+          @if (svc.updatedAt) {
+            <div class="info-item">
+              <span class="info-label">Actualizado</span>
+              <span class="info-value">{{ formatDate(svc.updatedAt) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirm -->
+    @if (showDeleteConfirm()) {
+      <div class="delete-overlay">
+        <div class="delete-modal">
+          <h3><i class="fa-solid fa-exclamation-triangle"></i> Eliminar Servicio</h3>
+          <p>¿Estás seguro de que deseas eliminar <strong>{{ svc.name }}</strong>? Esta acción no se puede deshacer.</p>
+          <div class="delete-actions">
+            <button class="btn btn-secondary" (click)="cancelDelete()">Cancelar</button>
+            <button class="btn btn-danger" [disabled]="deleting()" (click)="deleteService()">
+              @if (deleting()) {
+                <i class="fa-solid fa-spinner fa-spin"></i>
+              } @else {
+                <i class="fa-solid fa-trash"></i>
+              }
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

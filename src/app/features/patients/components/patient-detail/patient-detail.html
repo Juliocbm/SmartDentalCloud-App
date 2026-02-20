@@ -103,6 +103,30 @@
         </button>
         <button 
           class="tab-button" 
+          [class.active]="activeTab() === 'fiscal'"
+          (click)="setActiveTab('fiscal')"
+        >
+          <i class="fa-solid fa-file-invoice"></i>
+          Datos Fiscales
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'financial'"
+          (click)="setActiveTab('financial')"
+        >
+          <i class="fa-solid fa-wallet"></i>
+          Resumen Financiero
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'history'"
+          (click)="setActiveTab('history')"
+        >
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Historial
+        </button>
+        <button 
+          class="tab-button" 
           [class.active]="activeTab() === 'files'"
           (click)="setActiveTab('files')"
         >
@@ -296,6 +320,297 @@
             [patientId]="patient()!.id"
             [patientName]="getFullName()"
           />
+        </div>
+        }
+
+        <!-- Fiscal Tab -->
+        @if (activeTab() === 'fiscal') {
+        <div class="tab-panel">
+          <div class="fiscal-header">
+            <h3>
+              <i class="fa-solid fa-file-invoice"></i>
+              Datos Fiscales
+            </h3>
+            <button class="btn btn-outline btn-sm" (click)="toggleEditTax()">
+              @if (editingTax()) {
+                <i class="fa-solid fa-xmark"></i> Cancelar
+              } @else {
+                <i class="fa-solid fa-pen"></i> Editar
+              }
+            </button>
+          </div>
+
+          @if (editingTax()) {
+            <div class="fiscal-form">
+              <div class="form-group">
+                <label class="form-label">RFC <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="XAXX010101000"
+                  [ngModel]="taxId()"
+                  (ngModelChange)="taxId.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Razón Social <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Nombre o razón social"
+                  [ngModel]="legalName()"
+                  (ngModelChange)="legalName.set($event)"
+                />
+              </div>
+              <div class="form-group full-width">
+                <label class="form-label">Domicilio Fiscal <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Calle, Colonia, CP, Ciudad, Estado"
+                  [ngModel]="fiscalAddress()"
+                  (ngModelChange)="fiscalAddress.set($event)"
+                />
+                <span class="form-hint">Incluye el código postal al final separado por coma para CFDI</span>
+              </div>
+              <div class="form-actions-right">
+                <button
+                  class="btn btn-primary btn-sm"
+                  [disabled]="savingTax() || !taxId().trim() || !legalName().trim()"
+                  (click)="saveTaxInfo()"
+                >
+                  @if (savingTax()) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                  } @else {
+                    <i class="fa-solid fa-save"></i>
+                  }
+                  Guardar
+                </button>
+              </div>
+            </div>
+          } @else {
+            @if (taxId()) {
+              <div class="fiscal-info">
+                <div class="info-row">
+                  <span class="info-label">RFC</span>
+                  <span class="info-value mono">{{ taxId() }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Razón Social</span>
+                  <span class="info-value">{{ legalName() }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Domicilio Fiscal</span>
+                  <span class="info-value">{{ fiscalAddress() || '—' }}</span>
+                </div>
+              </div>
+            } @else {
+              <div class="empty-fiscal">
+                <i class="fa-solid fa-file-invoice"></i>
+                <h3>Sin Datos Fiscales</h3>
+                <p>Este paciente no tiene información fiscal registrada. Es necesaria para generar CFDI.</p>
+                <button class="btn btn-primary" (click)="toggleEditTax()">
+                  <i class="fa-solid fa-plus"></i>
+                  Agregar Datos Fiscales
+                </button>
+              </div>
+            }
+          }
+        </div>
+        }
+
+        <!-- Financial Tab -->
+        @if (activeTab() === 'financial') {
+        <div class="tab-panel">
+          @if (financialLoading()) {
+            <div class="inline-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando resumen financiero...</span>
+            </div>
+          } @else if (financialSummary(); as fin) {
+            <div class="financial-kpis">
+              <div class="kpi-card success">
+                <span class="kpi-label">Total Facturado</span>
+                <span class="kpi-value">{{ formatCurrency(fin.totalBilled) }}</span>
+              </div>
+              <div class="kpi-card primary">
+                <span class="kpi-label">Total Pagado</span>
+                <span class="kpi-value">{{ formatCurrency(fin.totalPaid) }}</span>
+              </div>
+              <div class="kpi-card warning">
+                <span class="kpi-label">Saldo Pendiente</span>
+                <span class="kpi-value">{{ formatCurrency(fin.pendingBalance) }}</span>
+              </div>
+            </div>
+
+            @if (fin.lastPaymentDate) {
+              <p class="last-payment">Último pago: {{ formatDateShort(fin.lastPaymentDate) }}</p>
+            }
+
+            @if (fin.pendingInvoices && fin.pendingInvoices.length > 0) {
+              <div class="financial-section">
+                <h4><i class="fa-solid fa-file-invoice-dollar"></i> Facturas Pendientes</h4>
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th>Factura</th>
+                      <th>Fecha</th>
+                      <th>Total</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (inv of fin.pendingInvoices; track inv.id) {
+                      <tr>
+                        <td>
+                          <a [routerLink]="['/invoices', inv.id]" class="link-primary">{{ inv.invoiceNumber || 'Sin folio' }}</a>
+                        </td>
+                        <td>{{ formatDateShort(inv.date) }}</td>
+                        <td class="amount">{{ formatCurrency(inv.total) }}</td>
+                        <td><span class="badge badge-warning">{{ inv.status }}</span></td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+
+            @if (fin.recentPayments && fin.recentPayments.length > 0) {
+              <div class="financial-section">
+                <h4><i class="fa-solid fa-money-bill-wave"></i> Pagos Recientes</h4>
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Monto</th>
+                      <th>Método</th>
+                      <th>Referencia</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (pay of fin.recentPayments; track pay.id) {
+                      <tr>
+                        <td>{{ formatDateShort(pay.paymentDate) }}</td>
+                        <td class="amount success">{{ formatCurrency(pay.amount) }}</td>
+                        <td>{{ pay.paymentMethod }}</td>
+                        <td>{{ pay.reference || '—' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          } @else {
+            <div class="empty-financial">
+              <i class="fa-solid fa-wallet"></i>
+              <h3>Sin información financiera</h3>
+              <p>No se encontró resumen financiero para este paciente</p>
+            </div>
+          }
+        </div>
+        }
+
+        <!-- History Tab -->
+        @if (activeTab() === 'history') {
+        <div class="tab-panel">
+          @if (historyLoading()) {
+            <div class="inline-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando historial...</span>
+            </div>
+          } @else if (patientHistory(); as hist) {
+            <!-- Appointments -->
+            @if (hist.appointments && hist.appointments.length > 0) {
+              <div class="history-section">
+                <h4><i class="fa-solid fa-calendar-check"></i> Citas ({{ hist.appointments.length }})</h4>
+                <div class="timeline">
+                  @for (apt of hist.appointments; track apt.id) {
+                    <div class="timeline-item">
+                      <div class="timeline-dot" [class]="'dot-' + apt.status.toLowerCase()"></div>
+                      <div class="timeline-content">
+                        <div class="timeline-header">
+                          <span class="timeline-date">{{ formatDateShort(apt.date) }}</span>
+                          <span class="badge badge-sm" [class.badge-success]="apt.status === 'Completed'" [class.badge-warning]="apt.status === 'Scheduled'" [class.badge-neutral]="apt.status !== 'Completed' && apt.status !== 'Scheduled'">{{ apt.status }}</span>
+                        </div>
+                        <p class="timeline-text">{{ apt.reason }} — Dr. {{ apt.doctorName }}</p>
+                        @if (apt.notes) {
+                          <p class="timeline-notes">{{ apt.notes }}</p>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Treatments -->
+            @if (hist.treatments && hist.treatments.length > 0) {
+              <div class="history-section">
+                <h4><i class="fa-solid fa-tooth"></i> Tratamientos ({{ hist.treatments.length }})</h4>
+                <div class="timeline">
+                  @for (tx of hist.treatments; track tx.id) {
+                    <div class="timeline-item">
+                      <div class="timeline-dot" [class]="'dot-' + tx.status.toLowerCase()"></div>
+                      <div class="timeline-content">
+                        <div class="timeline-header">
+                          <span class="timeline-date">{{ formatDateShort(tx.startDate) }}</span>
+                          <span class="badge badge-sm" [class.badge-success]="tx.status === 'Completed'" [class.badge-info]="tx.status === 'InProgress'" [class.badge-neutral]="tx.status !== 'Completed' && tx.status !== 'InProgress'">{{ tx.status }}</span>
+                        </div>
+                        <p class="timeline-text">
+                          <a [routerLink]="['/treatments', tx.id]" class="link-primary">{{ tx.serviceName }}</a>
+                          @if (tx.toothNumber) { — Diente {{ tx.toothNumber }} }
+                        </p>
+                        @if (tx.notes) {
+                          <p class="timeline-notes">{{ tx.notes }}</p>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Invoices -->
+            @if (hist.invoices && hist.invoices.length > 0) {
+              <div class="history-section">
+                <h4><i class="fa-solid fa-file-invoice-dollar"></i> Facturas ({{ hist.invoices.length }})</h4>
+                <table class="mini-table">
+                  <thead>
+                    <tr>
+                      <th>Folio</th>
+                      <th>Fecha</th>
+                      <th>Total</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (inv of hist.invoices; track inv.id) {
+                      <tr>
+                        <td><a [routerLink]="['/invoices', inv.id]" class="link-primary">{{ inv.invoiceNumber || 'Sin folio' }}</a></td>
+                        <td>{{ formatDateShort(inv.date) }}</td>
+                        <td class="amount">{{ formatCurrency(inv.total) }}</td>
+                        <td><span class="badge badge-sm" [class.badge-success]="inv.status === 'Paid'" [class.badge-warning]="inv.status === 'Pending'" [class.badge-neutral]="inv.status !== 'Paid' && inv.status !== 'Pending'">{{ inv.status }}</span></td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+
+            @if ((!hist.appointments || hist.appointments.length === 0) && (!hist.treatments || hist.treatments.length === 0) && (!hist.invoices || hist.invoices.length === 0)) {
+              <div class="empty-history">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h3>Sin Historial</h3>
+                <p>Este paciente aún no tiene interacciones registradas</p>
+              </div>
+            }
+          } @else {
+            <div class="empty-history">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <h3>Sin Historial</h3>
+              <p>No se pudo cargar el historial del paciente</p>
+            </div>
+          }
         </div>
         }
 

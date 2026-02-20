@@ -1,0 +1,403 @@
+.settings-container {
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-2xl);
+}
+
+// ===== Loading =====
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: var(--spacing-lg);
+  color: var(--text-tertiary);
+
+  i {
+    font-size: var(--font-size-5xl);
+    color: var(--primary-500);
+  }
+}
+
+// ===== Layout =====
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--spacing-2xl);
+  align-items: start;
+}
+
+// ===== Navigation =====
+
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  position: sticky;
+  top: var(--spacing-2xl);
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-align: left;
+
+    i {
+      width: 20px;
+      text-align: center;
+      font-size: var(--font-size-base);
+    }
+
+    &:hover {
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+    }
+
+    &.active {
+      background: var(--primary-50);
+      color: var(--primary-700);
+      font-weight: var(--font-weight-semibold);
+
+      i {
+        color: var(--primary-600);
+      }
+    }
+  }
+}
+
+// ===== Content =====
+
+.settings-section {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+}
+
+.section-header {
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-xl);
+  border-bottom: 1px solid var(--border-primary);
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
+
+    i {
+      color: var(--primary-500);
+    }
+  }
+
+  .section-description {
+    margin: 0;
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+  }
+}
+
+// ===== Forms =====
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.form-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+
+  .required {
+    color: var(--error-500);
+  }
+}
+
+.form-control {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  transition: var(--transition-base);
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+select.form-control {
+  appearance: auto;
+}
+
+.form-hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.form-group-inline {
+  margin-bottom: var(--spacing-xl);
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-500);
+  }
+
+  .toggle-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-xl);
+  border-top: 1px solid var(--border-primary);
+}
+
+// ===== SMTP Status =====
+
+.smtp-status-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    white-space: nowrap;
+
+    i {
+      font-size: var(--font-size-lg);
+    }
+
+    &.active {
+      color: var(--success-600);
+    }
+  }
+
+  .status-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+  }
+}
+
+// ===== Alerts =====
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-xl);
+
+  &.alert-success {
+    background: var(--success-50);
+    color: var(--success-700);
+    border: 1px solid var(--success-100);
+  }
+
+  &.alert-error {
+    background: var(--error-50);
+    color: var(--error-700);
+    border: 1px solid var(--error-100);
+  }
+}
+
+// ===== Buttons =====
+
+.btn-danger-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: transparent;
+  color: var(--error-600);
+  border: 1px solid var(--error-300);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: var(--transition-base);
+
+  &:hover {
+    background: var(--error-50);
+    border-color: var(--error-500);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ===== Branding =====
+
+.branding-preview {
+  margin-bottom: var(--spacing-2xl);
+  display: flex;
+  justify-content: center;
+
+  .logo-preview {
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 300px;
+    min-height: 120px;
+
+    img {
+      max-width: 200px;
+      max-height: 60px;
+      object-fit: contain;
+    }
+  }
+
+  .logo-placeholder {
+    background: var(--surface-tertiary);
+    border: 2px dashed var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl) var(--spacing-4xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    color: var(--text-muted);
+
+    i {
+      font-size: var(--font-size-4xl);
+    }
+
+    span {
+      font-size: var(--font-size-sm);
+    }
+  }
+}
+
+// ===== Domain =====
+
+.domain-info {
+  display: flex;
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
+
+  .domain-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    .domain-label {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .domain-value {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-primary);
+      font-family: monospace;
+
+      &.active {
+        color: var(--success-600);
+      }
+    }
+  }
+}
+
+// ===== Responsive =====
+
+@media (max-width: 768px) {
+  .settings-container {
+    padding: var(--spacing-lg);
+  }
+
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    position: static;
+
+    .nav-item span {
+      display: none;
+    }
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .smtp-status-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .domain-info {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+}

@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PatientsService } from '../../services/patients.service';
-import { Patient } from '../../models/patient.models';
+import { Patient, UpdateTaxInfoRequest } from '../../models/patient.models';
 import { AttachedFile, FILE_CATEGORIES, getFileIcon, formatFileSize } from '../../models/attached-file.models';
+import { PatientFinancialSummary, PatientHistory } from '../../models/patient-dashboard.models';
 import { AttachedFilesService } from '../../services/attached-files.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
@@ -28,7 +29,22 @@ export class PatientDetailComponent implements OnInit {
   patient = signal<Patient | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
-  activeTab = signal<'info' | 'medical' | 'odontogram' | 'dashboard' | 'history' | 'files'>('info');
+  activeTab = signal<'info' | 'medical' | 'odontogram' | 'fiscal' | 'financial' | 'history' | 'files'>('info');
+
+  // Fiscal data state
+  taxId = signal('');
+  legalName = signal('');
+  fiscalAddress = signal('');
+  savingTax = signal(false);
+  editingTax = signal(false);
+
+  // Financial summary state
+  financialSummary = signal<PatientFinancialSummary | null>(null);
+  financialLoading = signal(false);
+
+  // History state
+  patientHistory = signal<PatientHistory | null>(null);
+  historyLoading = signal(false);
 
   // Attached files state
   files = signal<AttachedFile[]>([]);
@@ -66,10 +82,19 @@ export class PatientDetailComponent implements OnInit {
     });
   }
 
-  setActiveTab(tab: 'info' | 'medical' | 'odontogram' | 'dashboard' | 'history' | 'files'): void {
+  setActiveTab(tab: 'info' | 'medical' | 'odontogram' | 'fiscal' | 'financial' | 'history' | 'files'): void {
     this.activeTab.set(tab);
     if (tab === 'files' && this.files().length === 0 && !this.filesLoading()) {
       this.loadFiles();
+    }
+    if (tab === 'fiscal') {
+      this.populateTaxForm();
+    }
+    if (tab === 'financial' && !this.financialSummary() && !this.financialLoading()) {
+      this.loadFinancialSummary();
+    }
+    if (tab === 'history' && !this.patientHistory() && !this.historyLoading()) {
+      this.loadHistory();
     }
   }
 
@@ -224,5 +249,95 @@ export class PatientDetailComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/patients']);
+  }
+
+  // === Fiscal Data ===
+
+  private populateTaxForm(): void {
+    const pat = this.patient();
+    if (!pat) return;
+    // Patient model may have taxInfo fields from the dashboard or extended response
+    const p = pat as any;
+    this.taxId.set(p.taxId || '');
+    this.legalName.set(p.legalName || '');
+    this.fiscalAddress.set(p.fiscalAddress || '');
+  }
+
+  toggleEditTax(): void {
+    this.editingTax.update(v => !v);
+    if (this.editingTax()) this.populateTaxForm();
+  }
+
+  saveTaxInfo(): void {
+    const pat = this.patient();
+    if (!pat || this.savingTax()) return;
+
+    this.savingTax.set(true);
+    const data: UpdateTaxInfoRequest = {
+      patientId: pat.id,
+      taxId: this.taxId().trim(),
+      legalName: this.legalName().trim(),
+      fiscalAddress: this.fiscalAddress().trim()
+    };
+
+    this.patientsService.updateTaxInfo(pat.id, data).subscribe({
+      next: () => {
+        this.notifications.success('Datos fiscales actualizados');
+        this.editingTax.set(false);
+        this.savingTax.set(false);
+        this.loadPatient(pat.id);
+      },
+      error: () => {
+        this.notifications.error('Error al guardar datos fiscales');
+        this.savingTax.set(false);
+      }
+    });
+  }
+
+  // === Financial Summary ===
+
+  private loadFinancialSummary(): void {
+    const pat = this.patient();
+    if (!pat) return;
+
+    this.financialLoading.set(true);
+    this.patientsService.getFinancialSummary(pat.id).subscribe({
+      next: (data) => {
+        this.financialSummary.set(data);
+        this.financialLoading.set(false);
+      },
+      error: () => {
+        this.financialLoading.set(false);
+      }
+    });
+  }
+
+  // === History ===
+
+  private loadHistory(): void {
+    const pat = this.patient();
+    if (!pat) return;
+
+    this.historyLoading.set(true);
+    this.patientsService.getHistory(pat.id).subscribe({
+      next: (data) => {
+        this.patientHistory.set(data);
+        this.historyLoading.set(false);
+      },
+      error: () => {
+        this.historyLoading.set(false);
+      }
+    });
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value);
+  }
+
+  formatDateShort(date: Date | string | null): string {
+    if (!date) return '—';
+    return new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit', month: '2-digit', year: 'numeric'
+    }).format(new Date(date));
   }
 }

@@ -1,0 +1,137 @@
+<div class="page-container">
+  <app-page-header
+    title="Registrar Pago"
+    icon="fa-solid fa-money-bill-wave"
+    [breadcrumbs]="breadcrumbItems"
+  />
+
+  <div class="form-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <!-- Invoice Selection -->
+      <div class="form-group">
+        <label class="form-label">Factura <span class="required">*</span></label>
+        @if (loadingInvoices()) {
+          <div class="loading-inline">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Cargando facturas...</span>
+          </div>
+        } @else {
+          <select
+            class="form-control"
+            formControlName="invoiceId"
+            (change)="onInvoiceChange($any($event.target).value)"
+            [class.is-invalid]="isFieldInvalid('invoiceId')"
+          >
+            <option value="">Seleccionar factura pendiente...</option>
+            @for (inv of invoices(); track inv.id) {
+              <option [value]="inv.id">
+                {{ inv.patientName }}
+                @if (inv.serie && inv.folio) { — {{ inv.serie }}-{{ inv.folio }} }
+                — Saldo: {{ formatCurrency(inv.balance) }}
+              </option>
+            }
+          </select>
+          @if (isFieldInvalid('invoiceId')) {
+            <span class="field-error">{{ getFieldError('invoiceId') }}</span>
+          }
+        }
+      </div>
+
+      <!-- Selected Invoice Info -->
+      @if (selectedInvoice(); as inv) {
+        <div class="invoice-summary">
+          <div class="summary-item">
+            <span class="summary-label">Paciente</span>
+            <span class="summary-value">{{ inv.patientName }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Total Factura</span>
+            <span class="summary-value">{{ formatCurrency(inv.totalAmount) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Pagado</span>
+            <span class="summary-value success">{{ formatCurrency(inv.paidAmount) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Saldo Pendiente</span>
+            <span class="summary-value warning">{{ formatCurrency(inv.balance) }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Payment Details -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Monto <span class="required">*</span></label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="amount"
+            step="0.01"
+            [class.is-invalid]="isFieldInvalid('amount')"
+          />
+          @if (isFieldInvalid('amount')) {
+            <span class="field-error">{{ getFieldError('amount') }}</span>
+          }
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de Pago <span class="required">*</span></label>
+          <input
+            type="date"
+            class="form-control"
+            formControlName="paidAt"
+            [class.is-invalid]="isFieldInvalid('paidAt')"
+          />
+          @if (isFieldInvalid('paidAt')) {
+            <span class="field-error">{{ getFieldError('paidAt') }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Método de Pago <span class="required">*</span></label>
+          <div class="method-options">
+            @for (method of paymentMethods; track method) {
+              <label class="method-option" [class.selected]="form.get('paymentMethod')?.value === method">
+                <input type="radio" formControlName="paymentMethod" [value]="method" />
+                <i [class]="'fa-solid ' + PAYMENT_METHOD_CONFIG[method].icon"
+                   [style.color]="PAYMENT_METHOD_CONFIG[method].color"></i>
+                <span>{{ PAYMENT_METHOD_CONFIG[method].label }}</span>
+              </label>
+            }
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Referencia</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="reference"
+            placeholder="No. de transacción, cheque, etc."
+          />
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" routerLink="/payments">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-success"
+          [disabled]="form.invalid || saving()"
+        >
+          @if (saving()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          } @else {
+            <i class="fa-solid fa-check"></i>
+          }
+          Registrar Pago
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

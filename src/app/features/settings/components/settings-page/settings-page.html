@@ -1,0 +1,383 @@
+<div class="settings-container">
+  <app-page-header
+    title="Configuración"
+    icon="fa-solid fa-gear"
+    [breadcrumbs]="[{ label: 'Configuración' }]"
+  />
+
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando configuración...</p>
+    </div>
+  } @else {
+    <div class="settings-layout">
+      <!-- Sidebar Tabs -->
+      <nav class="settings-nav">
+        @for (tab of tabs; track tab.key) {
+          <button
+            class="nav-item"
+            [class.active]="activeTab() === tab.key"
+            (click)="setTab(tab.key)"
+          >
+            <i [class]="'fa-solid ' + tab.icon"></i>
+            <span>{{ tab.label }}</span>
+          </button>
+        }
+      </nav>
+
+      <!-- Content -->
+      <div class="settings-content">
+
+        <!-- General Tab -->
+        @if (activeTab() === 'general') {
+          <div class="settings-section">
+            <div class="section-header">
+              <h2>
+                <i class="fa-solid fa-gear"></i>
+                Configuración General
+              </h2>
+              <p class="section-description">Información básica del consultorio</p>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Nombre del Consultorio <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Mi Consultorio Dental"
+                  [ngModel]="generalName()"
+                  (ngModelChange)="generalName.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Razón Social</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Razón social para facturación"
+                  [ngModel]="generalLegalName()"
+                  (ngModelChange)="generalLegalName.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">RFC</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="XAXX010101000"
+                  [ngModel]="generalTaxId()"
+                  (ngModelChange)="generalTaxId.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Horario de Trabajo</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Lun-Vie 9:00-18:00"
+                  [ngModel]="generalWorkingHours()"
+                  (ngModelChange)="generalWorkingHours.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Zona Horaria</label>
+                <select
+                  class="form-control"
+                  [ngModel]="generalTimeZone()"
+                  (ngModelChange)="generalTimeZone.set($event)"
+                >
+                  @for (tz of TIMEZONE_OPTIONS; track tz.value) {
+                    <option [value]="tz.value">{{ tz.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Idioma</label>
+                <select
+                  class="form-control"
+                  [ngModel]="generalLanguage()"
+                  (ngModelChange)="generalLanguage.set($event)"
+                >
+                  @for (lang of LANGUAGE_OPTIONS; track lang.value) {
+                    <option [value]="lang.value">{{ lang.label }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button
+                class="btn btn-primary"
+                [disabled]="saving() || !generalName().trim()"
+                (click)="saveGeneral()"
+              >
+                @if (saving()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-save"></i>
+                }
+                Guardar Cambios
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- SMTP Tab -->
+        @if (activeTab() === 'smtp') {
+          <div class="settings-section">
+            <div class="section-header">
+              <h2>
+                <i class="fa-solid fa-envelope"></i>
+                Configuración de Correo (SMTP)
+              </h2>
+              <p class="section-description">Configura el servidor de correo para envío de notificaciones, recordatorios y facturas</p>
+            </div>
+
+            @if (smtpConfig(); as smtp) {
+              <div class="smtp-status-card">
+                <div class="status-indicator" [class.active]="smtp.isEnabled">
+                  <i [class]="smtp.isEnabled ? 'fa-solid fa-check-circle' : 'fa-solid fa-times-circle'"></i>
+                  {{ smtp.isEnabled ? 'SMTP Configurado' : 'SMTP Inactivo' }}
+                </div>
+                <div class="status-info">
+                  <span><strong>Servidor:</strong> {{ smtp.smtpHost }}:{{ smtp.smtpPort }}</span>
+                  <span><strong>Remitente:</strong> {{ smtp.fromEmail }}</span>
+                  @if (smtp.lastTestedAt) {
+                    <span><strong>Última prueba:</strong> {{ smtp.testStatus }}</span>
+                  }
+                </div>
+              </div>
+            }
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Servidor SMTP <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="smtp.gmail.com"
+                  [ngModel]="smtpHost()"
+                  (ngModelChange)="smtpHost.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Puerto <span class="required">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  [ngModel]="smtpPort()"
+                  (ngModelChange)="smtpPort.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Usuario <span class="required">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="usuario@dominio.com"
+                  [ngModel]="smtpUsername()"
+                  (ngModelChange)="smtpUsername.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Contraseña <span class="required">*</span></label>
+                <input
+                  type="password"
+                  class="form-control"
+                  placeholder="Contraseña o App Password"
+                  [ngModel]="smtpPassword()"
+                  (ngModelChange)="smtpPassword.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Remitente <span class="required">*</span></label>
+                <input
+                  type="email"
+                  class="form-control"
+                  placeholder="consultorio@dominio.com"
+                  [ngModel]="smtpFromEmail()"
+                  (ngModelChange)="smtpFromEmail.set($event)"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nombre Remitente</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Consultorio Dental"
+                  [ngModel]="smtpFromName()"
+                  (ngModelChange)="smtpFromName.set($event)"
+                />
+              </div>
+            </div>
+
+            <div class="form-group-inline">
+              <label class="toggle-label">
+                <input
+                  type="checkbox"
+                  [ngModel]="smtpUseSsl()"
+                  (ngModelChange)="smtpUseSsl.set($event)"
+                />
+                <span class="toggle-text">Usar SSL/TLS</span>
+              </label>
+            </div>
+
+            @if (smtpTestResult(); as result) {
+              <div class="alert" [class.alert-success]="result.success" [class.alert-error]="!result.success">
+                <i [class]="result.success ? 'fa-solid fa-check-circle' : 'fa-solid fa-exclamation-circle'"></i>
+                {{ result.message }}
+              </div>
+            }
+
+            <div class="form-actions">
+              <button
+                class="btn btn-secondary"
+                [disabled]="smtpTesting() || !smtpHost().trim()"
+                (click)="testSmtp()"
+              >
+                @if (smtpTesting()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-plug"></i>
+                }
+                Probar Conexión
+              </button>
+              <button
+                class="btn btn-primary"
+                [disabled]="saving() || !smtpHost().trim() || !smtpFromEmail().trim()"
+                (click)="saveSmtp()"
+              >
+                @if (saving()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-save"></i>
+                }
+                Guardar SMTP
+              </button>
+              @if (smtpConfig()) {
+                <button
+                  class="btn btn-danger-outline"
+                  [disabled]="saving()"
+                  (click)="deleteSmtp()"
+                >
+                  <i class="fa-solid fa-trash"></i>
+                  Eliminar Config
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Branding Tab -->
+        @if (activeTab() === 'branding') {
+          <div class="settings-section">
+            <div class="section-header">
+              <h2>
+                <i class="fa-solid fa-palette"></i>
+                Branding
+              </h2>
+              <p class="section-description">Personaliza la imagen de tu consultorio</p>
+            </div>
+
+            <div class="branding-preview">
+              @if (brandingLogoUrl()) {
+                <div class="logo-preview">
+                  <img [src]="brandingLogoUrl()" alt="Logo del consultorio" />
+                </div>
+              } @else {
+                <div class="logo-placeholder">
+                  <i class="fa-solid fa-image"></i>
+                  <span>Sin logo configurado</span>
+                </div>
+              }
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">URL del Logo</label>
+              <input
+                type="url"
+                class="form-control"
+                placeholder="https://ejemplo.com/mi-logo.png"
+                [ngModel]="brandingLogoUrl()"
+                (ngModelChange)="brandingLogoUrl.set($event)"
+              />
+              <span class="form-hint">Ingresa la URL de una imagen (PNG o SVG recomendado, máx. 200×60px)</span>
+            </div>
+
+            <div class="form-actions">
+              <button
+                class="btn btn-primary"
+                [disabled]="saving()"
+                (click)="saveBranding()"
+              >
+                @if (saving()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-save"></i>
+                }
+                Guardar Branding
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Domain Tab -->
+        @if (activeTab() === 'domain') {
+          <div class="settings-section">
+            <div class="section-header">
+              <h2>
+                <i class="fa-solid fa-globe"></i>
+                Dominio Personalizado
+              </h2>
+              <p class="section-description">Configura un dominio propio para acceder al sistema</p>
+            </div>
+
+            @if (settings(); as s) {
+              <div class="domain-info">
+                <div class="domain-item">
+                  <span class="domain-label">Subdominio actual</span>
+                  <span class="domain-value">{{ s.subdomain }}.smartdentalcloud.com</span>
+                </div>
+                @if (s.customDomain) {
+                  <div class="domain-item">
+                    <span class="domain-label">Dominio personalizado</span>
+                    <span class="domain-value active">{{ s.customDomain }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            <div class="form-group">
+              <label class="form-label">Dominio Personalizado</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="app.miconsultorio.com"
+                [ngModel]="domainCustom()"
+                (ngModelChange)="domainCustom.set($event)"
+              />
+              <span class="form-hint">Configura un registro CNAME apuntando a tu subdominio antes de guardar</span>
+            </div>
+
+            <div class="form-actions">
+              <button
+                class="btn btn-primary"
+                [disabled]="saving() || !domainCustom().trim()"
+                (click)="saveDomain()"
+              >
+                @if (saving()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-save"></i>
+                }
+                Guardar Dominio
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

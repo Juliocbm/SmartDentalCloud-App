@@ -11,6 +11,12 @@ export const PAYMENTS_ROUTES: Routes = [
         loadComponent: () =>
           import('./components/payment-list/payment-list').then(m => m.PaymentListComponent),
         title: 'Pagos'
+      },
+      {
+        path: 'new',
+        loadComponent: () =>
+          import('./components/payment-form/payment-form').then(m => m.PaymentFormComponent),
+        title: 'Registrar Pago'
       }
     ]
   }

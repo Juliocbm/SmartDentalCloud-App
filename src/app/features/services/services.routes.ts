@@ -19,6 +19,12 @@ export const SERVICES_ROUTES: Routes = [
         title: 'Nuevo Servicio'
       },
       {
+        path: ':id',
+        loadComponent: () =>
+          import('./components/service-detail/service-detail').then(m => m.ServiceDetailComponent),
+        title: 'Detalle de Servicio'
+      },
+      {
         path: ':id/edit',
         loadComponent: () =>
           import('./components/service-form/service-form').then(m => m.ServiceFormComponent),
