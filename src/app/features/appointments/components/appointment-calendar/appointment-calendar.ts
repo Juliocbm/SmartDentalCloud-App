@@ -272,9 +272,16 @@ export class AppointmentCalendarComponent implements OnInit {
     
     if (dentistId === 'all') {
       this.updateCalendarEvents(allAppointments);
+      // Reload clinic-wide schedule
+      this.loadWorkSchedule();
     } else {
       const filtered = allAppointments.filter(apt => apt.userId === dentistId);
       this.updateCalendarEvents(filtered);
+      // Load dentist-specific schedule (falls back to clinic defaults from backend)
+      this.settingsService.getDentistWorkSchedule(dentistId).subscribe({
+        next: (schedule) => this.applyWorkSchedule(schedule.days),
+        error: () => this.loadWorkSchedule() // Fallback to clinic schedule
+      });
     }
   }
 }

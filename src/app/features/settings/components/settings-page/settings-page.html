@@ -121,6 +121,13 @@
           </div>
         }
 
+        <!-- Dentist Schedule Tab -->
+        @if (activeTab() === 'dentist-schedule') {
+          <div class="settings-section">
+            <app-dentist-schedule-manager />
+          </div>
+        }
+
         <!-- SMTP Tab -->
         @if (activeTab() === 'smtp') {
           <div class="settings-section">

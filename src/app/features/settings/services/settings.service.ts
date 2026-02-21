@@ -57,4 +57,12 @@ export class SettingsService {
   updateWorkSchedule(schedule: WorkSchedule): Observable<WorkSchedule> {
     return this.api.put<WorkSchedule>('/tenants/work-schedule', schedule);
   }
+
+  getDentistWorkSchedule(userId: string): Observable<WorkSchedule> {
+    return this.api.get<WorkSchedule>(`/tenants/work-schedule/${userId}`);
+  }
+
+  updateDentistWorkSchedule(userId: string, schedule: WorkSchedule): Observable<WorkSchedule> {
+    return this.api.put<WorkSchedule>(`/tenants/work-schedule/${userId}`, schedule);
+  }
 }

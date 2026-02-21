@@ -291,8 +291,14 @@ export class AppointmentFormComponent implements OnInit {
     this.selectedDentist.set(dentist);
     if (dentist) {
       this.appointmentForm.patchValue({ userId: dentist.id });
+      // Load dentist-specific schedule for out-of-schedule warning
+      this.settingsService.getDentistWorkSchedule(dentist.id).subscribe({
+        next: (schedule) => this.workScheduleDays.set(schedule.days),
+        error: () => this.loadWorkSchedule() // Fallback to clinic schedule
+      });
     } else {
       this.appointmentForm.patchValue({ userId: '' });
+      this.loadWorkSchedule(); // Reset to clinic schedule
     }
     this.availabilityChecked.set(false);
   }

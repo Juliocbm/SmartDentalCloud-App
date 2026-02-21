@@ -2,9 +2,9 @@
   <div class="section-header">
     <div class="section-title">
       <i class="fa-solid fa-clock"></i>
-      <h3>Horario Laboral</h3>
+      <h3>{{ title() }}</h3>
     </div>
-    <p class="section-description">Configura los días y horarios de atención del consultorio</p>
+    <p class="section-description">{{ description() }}</p>
   </div>
 
   @if (loading()) {

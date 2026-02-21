@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SettingsService } from '../../services/settings.service';
@@ -23,6 +23,13 @@ export class WorkScheduleEditorComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private notifications = inject(NotificationService);
 
+  /** User ID del dentista. Null/undefined = horario del consultorio */
+  userId = input<string | null>(null);
+  /** Título personalizado */
+  title = input('Horario Laboral');
+  /** Descripción personalizada */
+  description = input('Configura los días y horarios de atención del consultorio');
+
   schedule = signal<DaySchedule[]>([]);
   loading = signal(false);
   saving = signal(false);
@@ -35,9 +42,14 @@ export class WorkScheduleEditorComponent implements OnInit {
     this.loadSchedule();
   }
 
-  private loadSchedule(): void {
+  loadSchedule(): void {
     this.loading.set(true);
-    this.settingsService.getWorkSchedule().subscribe({
+    const uid = this.userId();
+    const request$ = uid
+      ? this.settingsService.getDentistWorkSchedule(uid)
+      : this.settingsService.getWorkSchedule();
+
+    request$.subscribe({
       next: (data) => {
         this.schedule.set(this.sortDays(data.days));
         this.loading.set(false);
@@ -94,12 +106,17 @@ export class WorkScheduleEditorComponent implements OnInit {
     if (this.saving() || !this.isFormValid()) return;
     this.saving.set(true);
 
+    const uid = this.userId();
     const payload: WorkSchedule = {
-      userId: null,
+      userId: uid,
       days: this.schedule()
     };
 
-    this.settingsService.updateWorkSchedule(payload).subscribe({
+    const request$ = uid
+      ? this.settingsService.updateDentistWorkSchedule(uid, payload)
+      : this.settingsService.updateWorkSchedule(payload);
+
+    request$.subscribe({
       next: (data) => {
         this.schedule.set(this.sortDays(data.days));
         this.notifications.success('Horario laboral actualizado');
