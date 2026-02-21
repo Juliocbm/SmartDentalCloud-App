@@ -1,130 +1,101 @@
-.report-container {
-  padding: var(--space-lg);
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.loading-state, .error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-2xl);
-  color: var(--text-secondary);
-}
+// Component-specific styles only
+// Global: .page-container, .table, .loading-container, .empty-state from _components.scss
 
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
 }
 
 .kpi-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg);
+  padding: var(--spacing-xl);
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--spacing-lg);
 
-  &.wide {
+  &--wide {
     grid-column: span 2;
+  }
+
+  .kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+
+    &.primary { background: var(--primary-50); color: var(--primary-600); }
+    &.success { background: var(--success-50); color: var(--success-600); }
+    &.warning { background: var(--warning-50); color: var(--warning-600); }
+    &.error { background: var(--error-50); color: var(--error-600); }
+    &.info { background: var(--info-50); color: var(--info-600); }
+  }
+
+  .kpi-content {
+    display: flex;
+    flex-direction: column;
+
+    .kpi-value {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+    }
+
+    .kpi-label {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+    }
   }
 }
 
-.kpi-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-
-  &.primary { background: rgba(var(--primary-rgb), 0.1); color: var(--primary); }
-  &.success { background: rgba(var(--success-rgb), 0.1); color: var(--success); }
-  &.warning { background: rgba(var(--warning-rgb), 0.1); color: var(--warning); }
-  &.danger { background: rgba(var(--danger-rgb), 0.1); color: var(--danger); }
-  &.info { background: rgba(var(--info-rgb), 0.1); color: var(--info); }
-}
-
-.kpi-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.kpi-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.kpi-label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
-
-.report-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+.section-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-lg);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 
-  h3 {
+  &__title {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-md);
-    font-size: 1.1rem;
+    gap: var(--spacing-sm);
+    margin: 0 0 var(--spacing-lg) 0;
+    font-size: var(--font-size-base);
     color: var(--text-primary);
   }
 }
 
-.table-container {
-  overflow-x: auto;
+.text-muted {
+  color: var(--text-muted);
 }
 
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th, td {
-    padding: var(--space-sm) var(--space-md);
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  th {
-    font-weight: 600;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-  }
-
-  td {
-    font-size: 0.9rem;
-  }
+.amount-cell {
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
 }
 
 .stock-badge {
   padding: 2px 8px;
   border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
 
   &.stock-critical {
-    background: rgba(var(--danger-rgb), 0.1);
-    color: var(--danger);
+    background: var(--error-50);
+    color: var(--error-600);
   }
   &.stock-warning {
-    background: rgba(var(--warning-rgb), 0.1);
-    color: var(--warning);
+    background: var(--warning-50);
+    color: var(--warning-600);
   }
   &.stock-ok {
-    background: rgba(var(--success-rgb), 0.1);
-    color: var(--success);
+    background: var(--success-50);
+    color: var(--success-600);
   }
 }

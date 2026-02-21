@@ -1,78 +1,89 @@
-<div class="report-container">
+<div class="page-container container-wide">
   <app-page-header
-    title="Servicios Más Solicitados"
-    icon="fa-solid fa-ranking-star"
+    [title]="'Servicios Más Solicitados'"
+    [subtitle]="'Ranking de servicios por frecuencia de uso'"
+    [icon]="'fa-ranking-star'"
     [showBackButton]="true"
-    [breadcrumbs]="breadcrumbItems"
-  />
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
 
   <!-- Date Filters -->
-  <div class="filters-bar">
+  <div class="filters-section">
     <div class="filter-group">
-      <label>Desde</label>
+      <label class="filter-label">Desde</label>
       <input type="date" class="form-control" [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onDateChange()" />
     </div>
     <div class="filter-group">
-      <label>Hasta</label>
+      <label class="filter-label">Hasta</label>
       <input type="date" class="form-control" [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onDateChange()" />
     </div>
   </div>
 
+  <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando ranking de servicios...</p>
     </div>
-  } @else if (error()) {
-    <div class="error-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
       <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadReport()">Reintentar</button>
+      <button class="btn btn-secondary" (click)="loadReport()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
+      </button>
     </div>
-  } @else if (data().length === 0) {
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && data().length === 0) {
     <div class="empty-state">
       <i class="fa-solid fa-chart-simple"></i>
+      <h3>Sin datos</h3>
       <p>No hay datos de servicios en el período seleccionado</p>
     </div>
-  } @else {
+  }
 
-    <!-- Ranking Table -->
-    <div class="report-section">
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
+  <!-- Ranking Table -->
+  @if (!loading() && !error() && data().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="col-rank">#</th>
+            <th>Servicio</th>
+            <th>Categoría</th>
+            <th>Veces Usado</th>
+            <th>Ingresos Totales</th>
+            <th>Precio Promedio</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of data(); track item.serviceId; let i = $index) {
             <tr>
-              <th>#</th>
-              <th>Servicio</th>
-              <th>Categoría</th>
-              <th>Veces Usado</th>
-              <th>Ingresos Totales</th>
-              <th>Precio Promedio</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of data(); track item.serviceId; let i = $index) {
-              <tr>
-                <td>
-                  <span class="rank-badge" [class.top-3]="i < 3">{{ i + 1 }}</span>
-                </td>
-                <td><strong>{{ item.serviceName }}</strong></td>
-                <td>{{ item.categoryName || '—' }}</td>
-                <td>
-                  <div class="usage-bar-cell">
-                    <div class="usage-bar">
-                      <div class="usage-fill" [style.width]="(item.timesUsed / getMaxUsed() * 100) + '%'"></div>
-                    </div>
-                    <span>{{ item.timesUsed }}</span>
+              <td class="col-rank">
+                <span class="rank-badge" [class.rank-badge--top]="i < 3">{{ i + 1 }}</span>
+              </td>
+              <td><strong>{{ item.serviceName }}</strong></td>
+              <td class="text-muted">{{ item.categoryName || '—' }}</td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-bar">
+                    <div class="usage-bar__fill" [style.width.%]="item.timesUsed / getMaxUsed() * 100"></div>
                   </div>
-                </td>
-                <td>{{ formatCurrency(item.totalRevenue) }}</td>
-                <td>{{ formatCurrency(item.avgPrice) }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+                  <span class="usage-cell__count">{{ item.timesUsed }}</span>
+                </div>
+              </td>
+              <td class="amount-cell">{{ formatCurrency(item.totalRevenue) }}</td>
+              <td class="amount-cell">{{ formatCurrency(item.avgPrice) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
   }
 </div>

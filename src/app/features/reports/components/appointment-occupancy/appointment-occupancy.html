@@ -1,36 +1,45 @@
-<div class="report-container">
+<div class="page-container container-wide">
   <app-page-header
-    title="Ocupación de Agenda"
-    icon="fa-solid fa-calendar-check"
+    [title]="'Ocupación de Agenda'"
+    [subtitle]="'Análisis de ocupación y asistencia'"
+    [icon]="'fa-calendar-check'"
     [showBackButton]="true"
-    [breadcrumbs]="breadcrumbItems"
-  />
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
 
   <!-- Date Filters -->
-  <div class="filters-bar">
+  <div class="filters-section">
     <div class="filter-group">
-      <label>Desde</label>
+      <label class="filter-label">Desde</label>
       <input type="date" class="form-control" [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onDateChange()" />
     </div>
     <div class="filter-group">
-      <label>Hasta</label>
+      <label class="filter-label">Hasta</label>
       <input type="date" class="form-control" [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onDateChange()" />
     </div>
   </div>
 
+  <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando reporte de ocupación...</p>
     </div>
-  } @else if (error()) {
-    <div class="error-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadReport()">Reintentar</button>
-    </div>
-  } @else if (report(); as r) {
+  }
 
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadReport()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  @if (!loading() && !error() && report(); as r) {
     <!-- KPIs -->
     <div class="kpi-grid">
       <div class="kpi-card">
@@ -48,7 +57,7 @@
         </div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon danger"><i class="fa-solid fa-times-circle"></i></div>
+        <div class="kpi-icon error"><i class="fa-solid fa-times-circle"></i></div>
         <div class="kpi-content">
           <span class="kpi-value">{{ r.cancelledSlots }}</span>
           <span class="kpi-label">Canceladas</span>
@@ -79,10 +88,12 @@
 
     <!-- By Dentist -->
     @if (r.byDentist.length) {
-      <div class="report-section">
-        <h3><i class="fa-solid fa-user-doctor"></i> Ocupación por Dentista</h3>
+      <div class="section-card">
+        <h3 class="section-card__title">
+          <i class="fa-solid fa-user-doctor"></i> Ocupación por Dentista
+        </h3>
         <div class="table-container">
-          <table class="data-table">
+          <table class="table">
             <thead>
               <tr>
                 <th>Dentista</th>
@@ -100,9 +111,11 @@
                   <td>{{ d.completed }}</td>
                   <td>{{ d.cancelled }}</td>
                   <td>
-                    <div class="progress-bar-inline">
-                      <div class="progress-fill" [style.width]="d.occupancyRate + '%'"></div>
-                      <span>{{ d.occupancyRate }}%</span>
+                    <div class="progress-inline">
+                      <div class="progress-inline__bar">
+                        <div class="progress-inline__fill" [style.width.%]="d.occupancyRate"></div>
+                      </div>
+                      <span class="progress-inline__label">{{ d.occupancyRate }}%</span>
                     </div>
                   </td>
                 </tr>
@@ -115,16 +128,18 @@
 
     <!-- By Day of Week -->
     @if (r.byDay.length) {
-      <div class="report-section">
-        <h3><i class="fa-solid fa-calendar-week"></i> Distribución por Día</h3>
+      <div class="section-card">
+        <h3 class="section-card__title">
+          <i class="fa-solid fa-calendar-week"></i> Distribución por Día
+        </h3>
         <div class="day-chart">
           @for (day of r.byDay; track day.dayOfWeek) {
-            <div class="day-row">
-              <span class="day-label">{{ day.dayOfWeek }}</span>
-              <div class="day-bar-container">
-                <div class="day-bar" [style.width]="getBarWidth(day.totalAppointments, r.totalSlots)"></div>
+            <div class="day-chart__row">
+              <span class="day-chart__label">{{ day.dayOfWeek }}</span>
+              <div class="day-chart__bar-container">
+                <div class="day-chart__bar" [style.width]="getBarWidth(day.totalAppointments, r.totalSlots)"></div>
               </div>
-              <span class="day-value">{{ day.totalAppointments }} citas ({{ day.completed }} completadas)</span>
+              <span class="day-chart__value">{{ day.totalAppointments }} citas ({{ day.completed }} completadas)</span>
             </div>
           }
         </div>

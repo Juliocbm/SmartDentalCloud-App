@@ -1,24 +1,33 @@
-<div class="report-container">
+<div class="page-container container-wide">
   <app-page-header
-    title="Resumen de Inventario"
-    icon="fa-solid fa-boxes-stacked"
+    [title]="'Resumen de Inventario'"
+    [subtitle]="'Estado general del inventario'"
+    [icon]="'fa-boxes-stacked'"
     [showBackButton]="true"
-    [breadcrumbs]="breadcrumbItems"
-  />
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
 
+  <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando reporte de inventario...</p>
     </div>
-  } @else if (error()) {
-    <div class="error-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadReport()">Reintentar</button>
-    </div>
-  } @else if (report(); as r) {
+  }
 
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadReport()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  @if (!loading() && !error() && report(); as r) {
     <!-- KPIs -->
     <div class="kpi-grid">
       <div class="kpi-card">
@@ -43,13 +52,13 @@
         </div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon danger"><i class="fa-solid fa-times-circle"></i></div>
+        <div class="kpi-icon error"><i class="fa-solid fa-times-circle"></i></div>
         <div class="kpi-content">
           <span class="kpi-value">{{ r.outOfStockProducts }}</span>
           <span class="kpi-label">Sin Stock</span>
         </div>
       </div>
-      <div class="kpi-card wide">
+      <div class="kpi-card kpi-card--wide">
         <div class="kpi-icon info"><i class="fa-solid fa-coins"></i></div>
         <div class="kpi-content">
           <span class="kpi-value">{{ formatCurrency(r.totalValuation) }}</span>
@@ -60,10 +69,12 @@
 
     <!-- Low Stock Items -->
     @if (r.lowStockItems.length) {
-      <div class="report-section">
-        <h3><i class="fa-solid fa-triangle-exclamation"></i> Productos con Stock Bajo</h3>
+      <div class="section-card">
+        <h3 class="section-card__title">
+          <i class="fa-solid fa-triangle-exclamation"></i> Productos con Stock Bajo
+        </h3>
         <div class="table-container">
-          <table class="data-table">
+          <table class="table">
             <thead>
               <tr>
                 <th>Producto</th>
@@ -77,7 +88,7 @@
               @for (item of r.lowStockItems; track item.productId) {
                 <tr>
                   <td><strong>{{ item.productName }}</strong></td>
-                  <td>{{ item.categoryName || '—' }}</td>
+                  <td class="text-muted">{{ item.categoryName || '—' }}</td>
                   <td>
                     <span class="stock-badge" [class]="getStockClass(item.currentStock, item.minimumStock)">
                       {{ item.currentStock }}
@@ -95,10 +106,12 @@
 
     <!-- By Category -->
     @if (r.byCategory.length) {
-      <div class="report-section">
-        <h3><i class="fa-solid fa-tags"></i> Stock por Categoría</h3>
+      <div class="section-card">
+        <h3 class="section-card__title">
+          <i class="fa-solid fa-tags"></i> Stock por Categoría
+        </h3>
         <div class="table-container">
-          <table class="data-table">
+          <table class="table">
             <thead>
               <tr>
                 <th>Categoría</th>
@@ -113,7 +126,7 @@
                   <td><strong>{{ cat.categoryName }}</strong></td>
                   <td>{{ cat.productCount }}</td>
                   <td>{{ cat.totalStock }}</td>
-                  <td>{{ formatCurrency(cat.totalValue) }}</td>
+                  <td class="amount-cell">{{ formatCurrency(cat.totalValue) }}</td>
                 </tr>
               }
             </tbody>
