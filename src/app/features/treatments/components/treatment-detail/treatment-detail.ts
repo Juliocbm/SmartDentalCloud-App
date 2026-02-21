@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TreatmentsService } from '../../services/treatments.service';
@@ -12,11 +12,12 @@ import { Product } from '../../../inventory/models/product.models';
 import { AppointmentsService } from '../../../appointments/services/appointments.service';
 import { AppointmentListItem } from '../../../appointments/models/appointment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-treatment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
   templateUrl: './treatment-detail.html',
   styleUrl: './treatment-detail.scss'
 })
@@ -27,6 +28,13 @@ export class TreatmentDetailComponent implements OnInit {
   private productsService = inject(ProductsService);
   private appointmentsService = inject(AppointmentsService);
   private logger = inject(LoggingService);
+  private location = inject(Location);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Tratamientos', route: '/treatments' },
+    { label: 'Detalle' }
+  ];
 
   // State
   treatment = signal<Treatment | null>(null);
@@ -351,6 +359,6 @@ export class TreatmentDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/treatments']);
+    this.location.back();
   }
 }

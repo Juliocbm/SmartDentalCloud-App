@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TreatmentPlansService } from '../../services/treatment-plans.service';
 import {
@@ -12,11 +12,12 @@ import {
 } from '../../models/treatment-plan.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-treatment-plan-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   templateUrl: './treatment-plan-detail.html',
   styleUrl: './treatment-plan-detail.scss'
 })
@@ -26,6 +27,13 @@ export class TreatmentPlanDetailComponent implements OnInit {
   private plansService = inject(TreatmentPlansService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private location = inject(Location);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Planes de Tratamiento', route: '/treatment-plans' },
+    { label: 'Detalle' }
+  ];
 
   // State
   plan = signal<TreatmentPlan | null>(null);
@@ -251,6 +259,6 @@ export class TreatmentPlanDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/treatment-plans']);
+    this.location.back();
   }
 }

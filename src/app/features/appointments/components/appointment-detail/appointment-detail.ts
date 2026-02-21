@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatus, AppointmentStatusConfig } from '../../models/appointment.models';
@@ -7,11 +7,12 @@ import { ConsultationNotesService } from '../../../consultation-notes/services/c
 import { ConsultationNote } from '../../../consultation-notes/models/consultation-note.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   templateUrl: './appointment-detail.html',
   styleUrls: ['./appointment-detail.scss']
 })
@@ -22,6 +23,13 @@ export class AppointmentDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private notesService = inject(ConsultationNotesService);
+  private location = inject(Location);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Citas', route: '/appointments' },
+    { label: 'Detalle' }
+  ];
 
   appointment = signal<Appointment | null>(null);
   loading = signal(true);
@@ -216,7 +224,7 @@ export class AppointmentDetailComponent implements OnInit {
   }
 
   onBack(): void {
-    this.router.navigate(['/appointments']);
+    this.location.back();
   }
 
   private loadConsultationNote(appointmentId: string): void {

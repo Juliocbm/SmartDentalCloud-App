@@ -1,4 +1,30 @@
 <div class="detail-container">
+  <app-page-header
+    [title]="patient() ? (patient()!.firstName + ' ' + patient()!.lastName) : 'Paciente'"
+    [icon]="'fa-user'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      @if (patient(); as pat) {
+        <button class="btn btn-outline" (click)="editPatient()">
+          <i class="fa-solid fa-pen"></i>
+          Editar
+        </button>
+        @if (pat.isActive) {
+          <button class="btn btn-warning" (click)="toggleActive()">
+            <i class="fa-solid fa-toggle-off"></i>
+            Desactivar
+          </button>
+        } @else {
+          <button class="btn btn-success" (click)="toggleActive()">
+            <i class="fa-solid fa-toggle-on"></i>
+            Activar
+          </button>
+        }
+      }
+    </div>
+  </app-page-header>
+
   @if (loading()) {
     <div class="loading-state">
       <i class="fa-solid fa-spinner fa-spin"></i>
@@ -16,31 +42,8 @@
     </div>
   } @else if (patient(); as pat) {
 
-    <!-- Header -->
+    <!-- Header Info -->
     <div class="detail-header">
-      <div class="header-top">
-        <button (click)="goBack()" class="btn-back">
-          <i class="fa-solid fa-arrow-left"></i>
-          Volver
-        </button>
-        <div class="header-actions">
-          <button class="btn btn-outline" (click)="editPatient()">
-            <i class="fa-solid fa-pen"></i>
-            Editar
-          </button>
-          @if (pat.isActive) {
-            <button class="btn btn-warning" (click)="toggleActive()">
-              <i class="fa-solid fa-toggle-off"></i>
-              Desactivar
-            </button>
-          } @else {
-            <button class="btn btn-success" (click)="toggleActive()">
-              <i class="fa-solid fa-toggle-on"></i>
-              Activar
-            </button>
-          }
-        </div>
-      </div>
 
       <div class="header-content">
         <div class="title-section">

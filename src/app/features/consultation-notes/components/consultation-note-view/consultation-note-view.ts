@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
@@ -24,6 +24,7 @@ export class ConsultationNoteViewComponent implements OnInit {
   private notesService = inject(ConsultationNotesService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private location = inject(Location);
 
   // State
   mode = signal<ViewMode>('loading');
@@ -164,7 +165,7 @@ export class ConsultationNoteViewComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/appointments', this.appointmentId()]);
+    this.location.back();
   }
 
   formatDateTime(date: Date | undefined): string {

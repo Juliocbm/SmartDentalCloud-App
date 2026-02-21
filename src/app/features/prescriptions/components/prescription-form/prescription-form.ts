@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PrescriptionsService } from '../../services/prescriptions.service';
@@ -15,6 +15,7 @@ import { Patient } from '../../../patients/models/patient.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 
+
 @Component({
   selector: 'app-prescription-form',
   standalone: true,
@@ -25,6 +26,7 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
 export class PrescriptionFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private location = inject(Location);
   private prescriptionsService = inject(PrescriptionsService);
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);
@@ -193,6 +195,6 @@ export class PrescriptionFormComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/prescriptions']);
+    this.location.back();
   }
 }

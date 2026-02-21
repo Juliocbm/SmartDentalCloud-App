@@ -3,13 +3,8 @@
     [title]="'Detalle de Orden de Compra'"
     [subtitle]="order()?.orderNumber || ''"
     [icon]="'fa-file-invoice'"
+    [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div class="header-actions">
-      <button class="btn btn-outline" (click)="goBack()">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver
-      </button>
-    </div>
   </app-page-header>
 
   @if (loading()) {

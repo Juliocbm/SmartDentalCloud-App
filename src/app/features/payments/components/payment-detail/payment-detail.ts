@@ -1,14 +1,15 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PaymentsService } from '../../services/payments.service';
 import { Payment, PAYMENT_METHOD_CONFIG } from '../../models/payment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-payment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   templateUrl: './payment-detail.html',
   styleUrl: './payment-detail.scss'
 })
@@ -17,6 +18,13 @@ export class PaymentDetailComponent implements OnInit {
   private router = inject(Router);
   private paymentsService = inject(PaymentsService);
   private logger = inject(LoggingService);
+  private location = inject(Location);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Pagos', route: '/payments' },
+    { label: 'Detalle' }
+  ];
 
   payment = signal<Payment | null>(null);
   loading = signal(false);
@@ -65,6 +73,6 @@ export class PaymentDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/payments']);
+    this.location.back();
   }
 }

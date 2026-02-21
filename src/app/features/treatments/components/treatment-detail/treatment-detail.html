@@ -1,4 +1,21 @@
 <div class="detail-container">
+  <app-page-header
+    [title]="treatment()?.serviceName || 'Tratamiento'"
+    [icon]="'fa-tooth'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      @if (treatment(); as t) {
+        @if (t.status !== TreatmentStatus.Cancelled) {
+          <a class="btn btn-secondary" [routerLink]="['/treatments', t.id, 'edit']">
+            <i class="fa-solid fa-pen"></i>
+            Editar
+          </a>
+        }
+      }
+    </div>
+  </app-page-header>
+
   @if (loading()) {
     <div class="loading-state">
       <i class="fa-solid fa-spinner fa-spin"></i>
@@ -16,23 +33,8 @@
     </div>
   } @else if (treatment(); as t) {
 
-    <!-- Header -->
+    <!-- Header Info -->
     <div class="detail-header">
-      <div class="header-top">
-        <button (click)="goBack()" class="btn-back">
-          <i class="fa-solid fa-arrow-left"></i>
-          Volver
-        </button>
-        <div class="header-actions">
-          @if (t.status !== TreatmentStatus.Cancelled) {
-            <a class="btn btn-secondary" [routerLink]="['/treatments', t.id, 'edit']">
-              <i class="fa-solid fa-pen"></i>
-              Editar
-            </a>
-          }
-        </div>
-      </div>
-
       <div class="header-content">
         <div class="title-section">
           <h1>

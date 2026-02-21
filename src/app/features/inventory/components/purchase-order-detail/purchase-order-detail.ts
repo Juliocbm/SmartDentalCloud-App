@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PurchaseOrdersService } from '../../services/purchase-orders.service';
@@ -20,6 +20,7 @@ export class PurchaseOrderDetailComponent implements OnInit {
   private poService = inject(PurchaseOrdersService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private location = inject(Location);
 
   order = signal<PurchaseOrder | null>(null);
   loading = signal(false);
@@ -83,6 +84,6 @@ export class PurchaseOrderDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/inventory/purchase-orders']);
+    this.location.back();
   }
 }

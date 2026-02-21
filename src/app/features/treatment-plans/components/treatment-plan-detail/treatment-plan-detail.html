@@ -1,4 +1,29 @@
 <div class="detail-container">
+  <app-page-header
+    [title]="plan()?.title || 'Plan de Tratamiento'"
+    [icon]="'fa-clipboard-list'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      @if (canApprove()) {
+        <button class="btn btn-success" (click)="onApprove()" [disabled]="actionLoading()">
+          <i class="fa-solid fa-circle-check"></i>
+          Aprobar
+        </button>
+        <button class="btn btn-danger" (click)="onShowReject()" [disabled]="actionLoading()">
+          <i class="fa-solid fa-circle-xmark"></i>
+          Rechazar
+        </button>
+      }
+      @if (canStart()) {
+        <button class="btn btn-primary" (click)="onStart()" [disabled]="actionLoading()">
+          <i class="fa-solid fa-play"></i>
+          Iniciar Plan
+        </button>
+      }
+    </div>
+  </app-page-header>
+
   @if (loading()) {
     <div class="loading-state">
       <i class="fa-solid fa-spinner fa-spin"></i>
@@ -16,32 +41,8 @@
     </div>
   } @else if (plan(); as p) {
 
-    <!-- Header -->
+    <!-- Header Info -->
     <div class="detail-header">
-      <div class="header-top">
-        <button (click)="goBack()" class="btn-back">
-          <i class="fa-solid fa-arrow-left"></i>
-          Volver
-        </button>
-        <div class="header-actions">
-          @if (canApprove()) {
-            <button class="btn btn-success" (click)="onApprove()" [disabled]="actionLoading()">
-              <i class="fa-solid fa-circle-check"></i>
-              Aprobar
-            </button>
-            <button class="btn btn-danger" (click)="onShowReject()" [disabled]="actionLoading()">
-              <i class="fa-solid fa-circle-xmark"></i>
-              Rechazar
-            </button>
-          }
-          @if (canStart()) {
-            <button class="btn btn-primary" (click)="onStart()" [disabled]="actionLoading()">
-              <i class="fa-solid fa-play"></i>
-              Iniciar Plan
-            </button>
-          }
-        </div>
-      </div>
 
       <div class="header-content">
         <div class="title-section">

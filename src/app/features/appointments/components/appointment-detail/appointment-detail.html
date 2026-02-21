@@ -1,4 +1,19 @@
 <div class="detail-container">
+  <app-page-header
+    [title]="'Cita Médica'"
+    [icon]="'fa-calendar-check'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      @if (canReschedule()) {
+        <button (click)="onEdit()" class="btn btn-secondary" [disabled]="actionLoading()">
+          <i class="fa-solid fa-edit"></i>
+          Reagendar
+        </button>
+      }
+    </div>
+  </app-page-header>
+
   @if (loading()) {
     <div class="loading-state">
       <i class="fa-solid fa-spinner fa-spin"></i>
@@ -16,21 +31,6 @@
     </div>
   } @else if (appointment(); as apt) {
     <div class="detail-header">
-      <div class="header-top">
-        <button (click)="onBack()" class="btn-back">
-          <i class="fa-solid fa-arrow-left"></i>
-          Volver
-        </button>
-        
-        <div class="header-actions">
-          @if (canReschedule()) {
-            <button (click)="onEdit()" class="btn btn-secondary" [disabled]="actionLoading()">
-              <i class="fa-solid fa-edit"></i>
-              Reagendar
-            </button>
-          }
-        </div>
-      </div>
 
       <div class="header-content">
         <div class="title-section">

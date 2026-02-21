@@ -23,20 +23,20 @@
 
   <!-- ===== VIEW MODE ===== -->
   @if (mode() === 'view' && note(); as n) {
-    <div class="detail-header">
-      <div class="header-top">
-        <button (click)="goBack()" class="btn-back">
-          <i class="fa-solid fa-arrow-left"></i>
-          Volver
+    <app-page-header
+      [title]="'Nota de Consulta'"
+      [icon]="'fa-notes-medical'"
+      [showBackButton]="true"
+      [breadcrumbs]="breadcrumbItems()">
+      <div actions>
+        <button class="btn btn-primary" (click)="onEdit()">
+          <i class="fa-solid fa-pen"></i>
+          Editar Nota
         </button>
-        <div class="header-actions">
-          <button class="btn btn-primary" (click)="onEdit()">
-            <i class="fa-solid fa-pen"></i>
-            Editar Nota
-          </button>
-        </div>
       </div>
+    </app-page-header>
 
+    <div class="detail-header">
       <div class="header-content">
         <div class="title-section">
           <h1>

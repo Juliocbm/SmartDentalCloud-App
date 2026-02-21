@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { InvoicesService } from '../../services/invoices.service';
@@ -11,11 +11,12 @@ import { PaymentFormModalComponent, PaymentFormModalData } from '../payment-form
 import { PaymentsService } from '../../services/payments.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })
@@ -28,6 +29,13 @@ export class InvoiceDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private cfdiService = inject(CfdiService);
+  private location = inject(Location);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Facturas', route: '/invoices' },
+    { label: 'Detalle' }
+  ];
 
   // State
   invoice = signal<Invoice | null>(null);
@@ -110,7 +118,7 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/invoices']);
+    this.location.back();
   }
 
   printInvoice(): void {

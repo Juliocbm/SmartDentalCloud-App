@@ -1,4 +1,23 @@
 <div class="detail-container">
+  <app-page-header
+    [title]="service()?.name || 'Servicio'"
+    [icon]="'fa-briefcase-medical'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbs">
+    <div actions>
+      @if (service(); as svc) {
+        <a [routerLink]="['/services', svc.id, 'edit']" class="btn btn-primary">
+          <i class="fa-solid fa-pen"></i>
+          Editar
+        </a>
+        <button class="btn btn-danger-outline" (click)="confirmDelete()">
+          <i class="fa-solid fa-trash"></i>
+          Eliminar
+        </button>
+      }
+    </div>
+  </app-page-header>
+
   @if (loading()) {
     <div class="loading-state">
       <i class="fa-solid fa-spinner fa-spin"></i>
@@ -16,22 +35,6 @@
   } @else if (service(); as svc) {
 
     <div class="detail-header">
-      <div class="header-top">
-        <button class="btn-back" routerLink="/services">
-          <i class="fa-solid fa-arrow-left"></i>
-          Volver
-        </button>
-        <div class="header-actions">
-          <a [routerLink]="['/services', svc.id, 'edit']" class="btn btn-primary">
-            <i class="fa-solid fa-pen"></i>
-            Editar
-          </a>
-          <button class="btn btn-danger-outline" (click)="confirmDelete()">
-            <i class="fa-solid fa-trash"></i>
-            Eliminar
-          </button>
-        </div>
-      </div>
 
       <div class="header-content">
         <div class="title-section">

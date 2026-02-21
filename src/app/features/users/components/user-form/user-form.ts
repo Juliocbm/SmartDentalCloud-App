@@ -7,6 +7,7 @@ import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { Role } from '../../models/role.models';
+import { UserFormContextService } from '../../services/user-form-context.service';
 
 interface UserFormValue {
   name: string;
@@ -31,6 +32,9 @@ export class UserFormComponent implements OnInit {
   private usersService = inject(UsersService);
   private rolesService = inject(RolesService);
   private logger = inject(LoggingService);
+  private contextService = inject(UserFormContextService);
+
+  backRoute = computed(() => this.contextService.context().returnUrl);
 
   userForm!: FormGroup;
   roles = signal<Role[]>([]);
@@ -230,10 +234,12 @@ export class UserFormComponent implements OnInit {
   }
 
   cancel(): void {
+    const returnUrl = this.contextService.getCurrentContext().returnUrl;
+    this.contextService.resetContext();
     if (this.isEditMode()) {
       this.router.navigate(['/users', this.userId()]);
     } else {
-      this.router.navigate(['/users']);
+      this.router.navigate([returnUrl]);
     }
   }
 

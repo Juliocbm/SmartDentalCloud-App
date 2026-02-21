@@ -5,7 +5,7 @@
     [subtitle]="isEditMode() ? 'Modifica la información del usuario' : 'Registra un nuevo usuario del consultorio'"
     [icon]="isEditMode() ? 'fa-user-pen' : 'fa-user-plus'"
     [showBackButton]="true"
-    [backRoute]="'/users'"
+    [backRoute]="backRoute()"
     [breadcrumbs]="breadcrumbItems()">
     <!-- Action Buttons -->
     <div actions class="header-form-actions">

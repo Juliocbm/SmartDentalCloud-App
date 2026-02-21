@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PrescriptionsService } from '../../services/prescriptions.service';
 import {
@@ -7,11 +7,12 @@ import {
   PrescriptionStatus,
   PRESCRIPTION_STATUS_CONFIG
 } from '../../models/prescription.models';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-prescription-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   templateUrl: './prescription-detail.html',
   styleUrl: './prescription-detail.scss'
 })
@@ -19,6 +20,13 @@ export class PrescriptionDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private prescriptionsService = inject(PrescriptionsService);
+  private location = inject(Location);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Recetas', route: '/prescriptions' },
+    { label: 'Detalle' }
+  ];
 
   // State
   prescription = signal<Prescription | null>(null);
@@ -83,7 +91,7 @@ export class PrescriptionDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/prescriptions']);
+    this.location.back();
   }
 
   printPrescription(): void {

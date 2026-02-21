@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PatientsService } from '../../services/patients.service';
@@ -9,12 +9,13 @@ import { PatientFinancialSummary, PatientHistory } from '../../models/patient-da
 import { AttachedFilesService } from '../../services/attached-files.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { OdontogramComponent } from '../../../dental-chart/components/odontogram/odontogram';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent, PageHeaderComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
@@ -25,6 +26,13 @@ export class PatientDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private attachedFilesService = inject(AttachedFilesService);
+  private location = inject(Location);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Pacientes', route: '/patients' },
+    { label: 'Detalle' }
+  ];
 
   patient = signal<Patient | null>(null);
   loading = signal(false);
@@ -248,7 +256,7 @@ export class PatientDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/patients']);
+    this.location.back();
   }
 
   // === Fiscal Data ===

@@ -1,4 +1,11 @@
 <div class="detail-container">
+  <app-page-header
+    [title]="'Detalle del Pago'"
+    [icon]="'fa-money-bill-wave'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
   @if (loading()) {
     <div class="loading-state">
       <i class="fa-solid fa-spinner fa-spin"></i>
@@ -14,16 +21,6 @@
       </button>
     </div>
   } @else if (payment(); as pay) {
-    <!-- Header -->
-    <div class="detail-header">
-      <button (click)="goBack()" class="btn-back">
-        <i class="fa-solid fa-arrow-left"></i> Volver a Pagos
-      </button>
-      <h1>
-        <i class="fa-solid fa-money-bill-wave"></i>
-        Detalle del Pago
-      </h1>
-    </div>
 
     <!-- Amount Card -->
     <div class="amount-card">

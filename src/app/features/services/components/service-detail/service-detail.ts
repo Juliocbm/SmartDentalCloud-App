@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ServicesService } from '../../services/services.service';
 import { DentalServiceItem, SERVICE_CATEGORIES } from '../../models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -9,7 +9,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 @Component({
   selector: 'app-service-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   templateUrl: './service-detail.html',
   styleUrl: './service-detail.scss'
 })
@@ -18,6 +18,7 @@ export class ServiceDetailComponent implements OnInit {
   private router = inject(Router);
   private servicesService = inject(ServicesService);
   private notifications = inject(NotificationService);
+  private location = inject(Location);
 
   service = signal<DentalServiceItem | null>(null);
   loading = signal(false);
