@@ -304,6 +304,50 @@
                     <span class="progress-text">{{ item.progressPercentage }}%</span>
                   </div>
                 }
+
+                <!-- Item Actions -->
+                @if (p.status === TreatmentPlanStatus.InProgress && item.status !== ItemStatus.Completed && item.status !== ItemStatus.Cancelled) {
+                  <div class="detail-item-actions">
+                    @if (canStartItem(item.status)) {
+                      <button
+                        class="btn btn-sm btn-outline"
+                        (click)="onStartItem(item.id)"
+                        [disabled]="itemActionLoading() === item.id"
+                      >
+                        @if (itemActionLoading() === item.id) {
+                          <i class="fa-solid fa-spinner fa-spin"></i>
+                        } @else {
+                          <i class="fa-solid fa-play"></i>
+                        }
+                        Iniciar
+                      </button>
+                    }
+                    @if (canCompleteItem(item.status)) {
+                      <button
+                        class="btn btn-sm btn-success"
+                        (click)="onCompleteItem(item.id)"
+                        [disabled]="itemActionLoading() === item.id"
+                      >
+                        @if (itemActionLoading() === item.id) {
+                          <i class="fa-solid fa-spinner fa-spin"></i>
+                        } @else {
+                          <i class="fa-solid fa-check"></i>
+                        }
+                        Completar
+                      </button>
+                    }
+                    @if (canCancelItem(item.status)) {
+                      <button
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="onCancelItem(item.id)"
+                        [disabled]="itemActionLoading() === item.id"
+                      >
+                        <i class="fa-solid fa-ban"></i>
+                        Cancelar
+                      </button>
+                    }
+                  </div>
+                }
               </div>
             }
           </div>

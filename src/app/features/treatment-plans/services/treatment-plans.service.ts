@@ -3,8 +3,10 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import {
   TreatmentPlan,
+  TreatmentPlanItem,
   CreateTreatmentPlanRequest,
   RejectPlanRequest,
+  UpdateItemProgressRequest,
   TreatmentPlanProgress
 } from '../models/treatment-plan.models';
 
@@ -43,5 +45,9 @@ export class TreatmentPlansService {
 
   start(id: string): Observable<TreatmentPlan> {
     return this.api.post<TreatmentPlan>(`/treatmentplans/${id}/start`, {});
+  }
+
+  updateItemProgress(planId: string, itemId: string, request: UpdateItemProgressRequest): Observable<TreatmentPlanItem> {
+    return this.api.put<TreatmentPlanItem>(`/treatmentplans/${planId}/items/${itemId}/progress`, request);
   }
 }

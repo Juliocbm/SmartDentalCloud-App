@@ -141,6 +141,12 @@ export interface RejectPlanRequest {
   reason: string;
 }
 
+export interface UpdateItemProgressRequest {
+  status: string;
+  progressPercentage?: number;
+  completedTreatmentId?: string;
+}
+
 // ===== Progress DTO =====
 
 export interface TreatmentPlanProgress {

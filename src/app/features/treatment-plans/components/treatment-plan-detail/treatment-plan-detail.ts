@@ -5,6 +5,7 @@ import { TreatmentPlansService } from '../../services/treatment-plans.service';
 import {
   TreatmentPlan,
   TreatmentPlanStatus,
+  ItemStatus,
   TREATMENT_PLAN_STATUS_CONFIG,
   ITEM_PRIORITY_CONFIG,
   ITEM_STATUS_CONFIG
@@ -31,11 +32,13 @@ export class TreatmentPlanDetailComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   actionLoading = signal(false);
+  itemActionLoading = signal<string | null>(null);
   rejectReason = signal('');
   showRejectModal = signal(false);
 
   // Constants
   TreatmentPlanStatus = TreatmentPlanStatus;
+  ItemStatus = ItemStatus;
 
   ngOnInit(): void {
     const planId = this.route.snapshot.paramMap.get('id');
@@ -195,6 +198,56 @@ export class TreatmentPlanDetailComponent implements OnInit {
       style: 'currency',
       currency: 'MXN'
     }).format(value);
+  }
+
+  // ===== Item Progress Actions =====
+
+  canStartItem(itemStatus: string): boolean {
+    return itemStatus === ItemStatus.Pending;
+  }
+
+  canCompleteItem(itemStatus: string): boolean {
+    return itemStatus === ItemStatus.Pending || itemStatus === ItemStatus.InProgress;
+  }
+
+  canCancelItem(itemStatus: string): boolean {
+    return itemStatus !== ItemStatus.Completed && itemStatus !== ItemStatus.Cancelled;
+  }
+
+  async onStartItem(itemId: string): Promise<void> {
+    await this.updateItemStatus(itemId, ItemStatus.InProgress);
+  }
+
+  async onCompleteItem(itemId: string): Promise<void> {
+    const confirmed = await this.notifications.confirm('¿Marcar este procedimiento como completado?');
+    if (!confirmed) return;
+    await this.updateItemStatus(itemId, ItemStatus.Completed);
+  }
+
+  async onCancelItem(itemId: string): Promise<void> {
+    const confirmed = await this.notifications.confirm('¿Cancelar este procedimiento?');
+    if (!confirmed) return;
+    await this.updateItemStatus(itemId, ItemStatus.Cancelled);
+  }
+
+  private async updateItemStatus(itemId: string, status: string): Promise<void> {
+    const planId = this.plan()?.id;
+    if (!planId || this.itemActionLoading()) return;
+
+    this.itemActionLoading.set(itemId);
+
+    this.plansService.updateItemProgress(planId, itemId, { status }).subscribe({
+      next: () => {
+        this.notifications.success('Procedimiento actualizado.');
+        this.loadPlan(planId);
+        this.itemActionLoading.set(null);
+      },
+      error: (err) => {
+        this.logger.error('Error updating item progress:', err);
+        this.notifications.error('Error al actualizar el procedimiento.');
+        this.itemActionLoading.set(null);
+      }
+    });
   }
 
   goBack(): void {
