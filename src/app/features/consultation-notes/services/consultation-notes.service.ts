@@ -13,15 +13,15 @@ export class ConsultationNotesService {
   private api = inject(ApiService);
 
   getByAppointment(appointmentId: string): Observable<ConsultationNote> {
-    return this.api.get<ConsultationNote>(`/consultationnotes/by-appointment/${appointmentId}`);
+    return this.api.get<ConsultationNote>(`/consultation-notes/by-appointment/${appointmentId}`);
   }
 
   create(request: CreateConsultationNoteRequest): Observable<ConsultationNote> {
-    return this.api.post<ConsultationNote>('/consultationnotes', request);
+    return this.api.post<ConsultationNote>('/consultation-notes', request);
   }
 
   update(id: string, request: UpdateConsultationNoteRequest): Observable<void> {
-    return this.api.put<void>(`/consultationnotes/${id}`, request);
+    return this.api.put<void>(`/consultation-notes/${id}`, request);
   }
 
   // Fetch completed appointments to show in the list
