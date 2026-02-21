@@ -755,6 +755,26 @@ textarea.form-control {
   }
 }
 
+// ===== SCROLLABLE TABLE WRAPPER =====
+// Use inside .table-container to constrain table height with vertical scroll.
+// The thead becomes sticky so column headers remain visible while scrolling.
+// Usage: <div class="table-container"><div class="table-scroll"><table class="table">...</table></div></div>
+.table-scroll {
+  max-height: var(--table-scroll-max-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  .table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    th {
+      background: var(--surface-tertiary);
+    }
+  }
+}
+
 // ===== TABLE FOOTER =====
 .table-footer {
   padding: var(--spacing-md) var(--spacing-lg);

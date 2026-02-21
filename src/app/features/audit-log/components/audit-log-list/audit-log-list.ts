@@ -33,7 +33,7 @@ export class AuditLogListComponent implements OnInit {
 
   // Paginación
   currentPage = signal(1);
-  readonly pageSize = signal(25);
+  readonly pageSize = signal(15);
 
   // Detalle expandido
   expandedLogId = signal<string | null>(null);
@@ -70,7 +70,7 @@ export class AuditLogListComponent implements OnInit {
       action: this.actionFilter() || undefined,
       startDate: this.startDateFilter() || undefined,
       endDate: this.endDateFilter() || undefined,
-      pageSize: 100
+      pageSize: 200
     }).subscribe({
       next: (data) => { this.logs.set(data); this.loading.set(false); },
       error: () => { this.error.set('Error al cargar registros de auditoría'); this.loading.set(false); }
