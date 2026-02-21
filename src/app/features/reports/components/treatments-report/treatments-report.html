@@ -17,12 +17,28 @@
     </div>
   </div>
 
+  <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando reporte...</p>
     </div>
-  } @else if (report(); as r) {
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadReport()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  @if (!loading() && !error() && report(); as r) {
+    <!-- KPIs -->
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-icon primary"><i class="fa-solid fa-tooth"></i></div>
@@ -55,8 +71,10 @@
     </div>
 
     <!-- Status Breakdown -->
-    <div class="card">
-      <h3><i class="fa-solid fa-chart-pie"></i> Distribución por Estado</h3>
+    <div class="section-card">
+      <h3 class="section-card__title">
+        <i class="fa-solid fa-chart-pie"></i> Distribución por Estado
+      </h3>
       <div class="status-bars">
         @if (r.total > 0) {
           <div class="status-bar-item">
@@ -93,10 +111,12 @@
 
     <!-- By Type -->
     @if (r.byType.length > 0) {
-      <div class="card mt-xl">
-        <h3><i class="fa-solid fa-list"></i> Top Servicios</h3>
-        <div class="table-responsive">
-          <table class="data-table">
+      <div class="section-card section-card--mt">
+        <h3 class="section-card__title">
+          <i class="fa-solid fa-list"></i> Top Servicios
+        </h3>
+        <div class="table-container">
+          <table class="table">
             <thead>
               <tr>
                 <th>Servicio</th>
@@ -107,9 +127,9 @@
             <tbody>
               @for (item of r.byType; track item.serviceName) {
                 <tr>
-                  <td>{{ item.serviceName }}</td>
+                  <td><strong>{{ item.serviceName }}</strong></td>
                   <td class="text-center">{{ item.count }}</td>
-                  <td class="text-right">{{ formatCurrency(item.revenue) }}</td>
+                  <td class="text-right amount-cell">{{ formatCurrency(item.revenue) }}</td>
                 </tr>
               }
             </tbody>

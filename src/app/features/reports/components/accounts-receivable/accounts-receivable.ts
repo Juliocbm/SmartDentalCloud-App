@@ -5,7 +5,7 @@ import { RouterModule, Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ReportsService } from '../../services/reports.service';
 import { AccountsReceivableItem, AccountsReceivableSummary } from '../../models/report.models';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-accounts-receivable',
@@ -17,6 +17,12 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
 export class AccountsReceivableComponent implements OnInit {
   private reportsService = inject(ReportsService);
   private router = inject(Router);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Reportes', route: '/reports' },
+    { label: 'Cuentas por Cobrar' }
+  ];
 
   items = signal<AccountsReceivableItem[]>([]);
   loading = signal(false);

@@ -3,9 +3,11 @@
     [title]="'Productividad por Dentista'"
     [subtitle]="'Rendimiento y métricas por profesional'"
     [icon]="'fa-user-doctor'"
+    [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
+  <!-- Date Filters -->
   <div class="filters-section">
     <div class="filter-group">
       <label class="filter-label">Desde</label>
@@ -17,20 +19,39 @@
     </div>
   </div>
 
+  <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando reporte...</p>
     </div>
-  } @else if (data().length === 0) {
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadReport()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && data().length === 0) {
     <div class="empty-state">
       <i class="fa-solid fa-user-doctor"></i>
       <h3>Sin datos</h3>
       <p>No hay datos de productividad para el período seleccionado.</p>
     </div>
-  } @else {
-    <div class="table-responsive">
-      <table class="data-table">
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error() && data().length > 0) {
+    <div class="table-container">
+      <table class="table">
         <thead>
           <tr>
             <th>Dentista</th>
@@ -44,11 +65,13 @@
         <tbody>
           @for (d of data(); track d.dentistId) {
             <tr>
-              <td class="dentist-name">
-                <div class="dentist-avatar">
-                  <i class="fa-solid fa-user-doctor"></i>
+              <td>
+                <div class="dentist-cell">
+                  <div class="dentist-cell__avatar">
+                    <i class="fa-solid fa-user-doctor"></i>
+                  </div>
+                  <strong>{{ d.dentistName }}</strong>
                 </div>
-                {{ d.dentistName }}
               </td>
               <td class="text-center">
                 <span class="badge badge-success">{{ d.appointmentsCompleted }}</span>
@@ -57,7 +80,7 @@
                 <span class="badge badge-error">{{ d.appointmentsCancelled }}</span>
               </td>
               <td class="text-center">{{ d.treatmentsCompleted }}</td>
-              <td class="text-right fw-semibold">{{ formatCurrency(d.revenueGenerated) }}</td>
+              <td class="text-right amount-cell">{{ formatCurrency(d.revenueGenerated) }}</td>
               <td class="text-center">{{ d.avgAppointmentDuration }} min</td>
             </tr>
           }

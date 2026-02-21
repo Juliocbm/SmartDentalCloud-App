@@ -1,16 +1,20 @@
-// Filters: usa .filters-section + .filter-group de _components.scss
+// Component-specific styles only
+// Global: .page-container, .filters-section, .filter-group, .table-container, .table, .loading-container, .empty-state, .badge from _components.scss
 
 .text-center { text-align: center; }
 .text-right { text-align: right; }
-.fw-semibold { font-weight: var(--font-weight-semibold); }
 
-.dentist-name {
+.amount-cell {
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.dentist-cell {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  font-weight: var(--font-weight-medium);
 
-  .dentist-avatar {
+  &__avatar {
     width: 32px;
     height: 32px;
     display: flex;
@@ -20,6 +24,6 @@
     color: var(--primary-600);
     border-radius: var(--radius-full);
     font-size: var(--font-size-sm);
+    flex-shrink: 0;
   }
 }
-

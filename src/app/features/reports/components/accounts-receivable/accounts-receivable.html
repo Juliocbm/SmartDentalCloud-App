@@ -1,22 +1,21 @@
-<div class="report-container">
+<div class="page-container container-wide">
   <app-page-header
-    title="Cuentas por Cobrar"
-    icon="fa-solid fa-file-invoice-dollar"
-    [breadcrumbs]="[
-      { label: 'Reportes', route: '/reports' },
-      { label: 'Cuentas por Cobrar' }
-    ]"
-  />
+    [title]="'Cuentas por Cobrar'"
+    [subtitle]="'Facturas pendientes y vencidas'"
+    [icon]="'fa-file-invoice-dollar'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
 
   <!-- KPI Cards -->
-  <div class="kpi-row">
+  <div class="kpi-grid">
     <div class="kpi-card">
       <div class="kpi-icon primary">
         <i class="fa-solid fa-file-invoice"></i>
       </div>
       <div class="kpi-content">
-        <span class="kpi-label">Facturas Pendientes</span>
         <span class="kpi-value">{{ summary().totalInvoices }}</span>
+        <span class="kpi-label">Facturas Pendientes</span>
       </div>
     </div>
     <div class="kpi-card">
@@ -24,74 +23,75 @@
         <i class="fa-solid fa-coins"></i>
       </div>
       <div class="kpi-content">
-        <span class="kpi-label">Total por Cobrar</span>
         <span class="kpi-value">{{ formatCurrency(summary().totalBalance) }}</span>
+        <span class="kpi-label">Total por Cobrar</span>
       </div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-icon danger">
+      <div class="kpi-icon error">
         <i class="fa-solid fa-exclamation-triangle"></i>
       </div>
       <div class="kpi-content">
-        <span class="kpi-label">Vencidas</span>
         <span class="kpi-value">{{ summary().overdueInvoices }}</span>
+        <span class="kpi-label">Vencidas</span>
       </div>
     </div>
     <div class="kpi-card">
-      <div class="kpi-icon danger">
+      <div class="kpi-icon error">
         <i class="fa-solid fa-clock"></i>
       </div>
       <div class="kpi-content">
-        <span class="kpi-label">Monto Vencido</span>
         <span class="kpi-value">{{ formatCurrency(summary().totalOverdue) }}</span>
+        <span class="kpi-label">Monto Vencido</span>
       </div>
     </div>
   </div>
 
   <!-- Filters -->
-  <div class="filters-bar">
+  <div class="filters-section">
     <div class="search-box">
-      <i class="fa-solid fa-search"></i>
+      <i class="fa-solid fa-search search-icon"></i>
       <input
         type="text"
+        class="search-input"
         placeholder="Buscar por paciente o factura..."
         (input)="onSearchInput($any($event.target).value)"
       />
     </div>
-    <div class="filter-chips">
+    <div class="filter-actions">
       <button
-        class="chip"
-        [class.active]="minDaysOverdue() === null"
-        (click)="applyDaysFilter(null)"
-      >
+        class="btn btn-sm"
+        [class.btn-primary]="minDaysOverdue() === null"
+        [class.btn-outline]="minDaysOverdue() !== null"
+        (click)="applyDaysFilter(null)">
         Todas
       </button>
       <button
-        class="chip"
-        [class.active]="minDaysOverdue() === 1"
-        (click)="applyDaysFilter(1)"
-      >
+        class="btn btn-sm"
+        [class.btn-primary]="minDaysOverdue() === 1"
+        [class.btn-outline]="minDaysOverdue() !== 1"
+        (click)="applyDaysFilter(1)">
         Vencidas
       </button>
       <button
-        class="chip"
-        [class.active]="minDaysOverdue() === 30"
-        (click)="applyDaysFilter(30)"
-      >
+        class="btn btn-sm"
+        [class.btn-primary]="minDaysOverdue() === 30"
+        [class.btn-outline]="minDaysOverdue() !== 30"
+        (click)="applyDaysFilter(30)">
         +30 días
       </button>
       <button
-        class="chip"
-        [class.active]="minDaysOverdue() === 60"
-        (click)="applyDaysFilter(60)"
-      >
+        class="btn btn-sm"
+        [class.btn-primary]="minDaysOverdue() === 60"
+        [class.btn-outline]="minDaysOverdue() !== 60"
+        (click)="applyDaysFilter(60)">
         +60 días
       </button>
       <button
-        class="chip"
-        [class.active]="minDaysOverdue() === 90"
-        (click)="applyDaysFilter(90)"
-      >
+        class="btn btn-sm"
+        [class.btn-primary]="minDaysOverdue() === 90"
+        [class.btn-outline]="minDaysOverdue() !== 90"
+        (click)="applyDaysFilter(90)">
         +90 días
       </button>
     </div>
@@ -99,70 +99,71 @@
 
   <!-- Loading -->
   @if (loading()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando reporte...</p>
     </div>
   }
 
   <!-- Error -->
   @if (error()) {
-    <div class="error-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary" (click)="loadData()">Reintentar</button>
+      <button class="btn btn-secondary" (click)="loadData()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
+      </button>
     </div>
   }
 
   <!-- Table -->
   @if (!loading() && !error() && filteredItems().length > 0) {
-    <div class="table-card">
-      <div class="table-responsive">
-        <table class="report-table">
-          <thead>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Factura</th>
+            <th>Emisión</th>
+            <th>Total</th>
+            <th>Pagado</th>
+            <th>Saldo</th>
+            <th>Días Atraso</th>
+            <th>Último Pago</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filteredItems(); track item.invoiceId) {
             <tr>
-              <th>Paciente</th>
-              <th>Factura</th>
-              <th>Emisión</th>
-              <th>Total</th>
-              <th>Pagado</th>
-              <th>Saldo</th>
-              <th>Días Atraso</th>
-              <th>Último Pago</th>
+              <td>
+                <a class="link-cell" (click)="goToPatient(item.patientId)">
+                  {{ item.patientName }}
+                </a>
+              </td>
+              <td>
+                <a class="link-cell" (click)="goToInvoice(item.invoiceId)">
+                  {{ item.invoiceNumber || '—' }}
+                </a>
+              </td>
+              <td class="date-cell">{{ formatDate(item.issuedAt) }}</td>
+              <td class="amount-cell">{{ formatCurrency(item.totalAmount) }}</td>
+              <td class="amount-cell">{{ formatCurrency(item.paidAmount) }}</td>
+              <td class="balance-cell">{{ formatCurrency(item.balance) }}</td>
+              <td>
+                @if (item.daysOverdue > 0) {
+                  <span class="days-badge" [class]="getOverdueClass(item.daysOverdue)">
+                    {{ item.daysOverdue }} días
+                  </span>
+                } @else {
+                  <span class="badge badge-success">Al corriente</span>
+                }
+              </td>
+              <td class="date-cell">{{ formatDate(item.lastPaymentDate) }}</td>
             </tr>
-          </thead>
-          <tbody>
-            @for (item of filteredItems(); track item.invoiceId) {
-              <tr>
-                <td>
-                  <a class="link-cell" (click)="goToPatient(item.patientId)">
-                    {{ item.patientName }}
-                  </a>
-                </td>
-                <td>
-                  <a class="link-cell" (click)="goToInvoice(item.invoiceId)">
-                    {{ item.invoiceNumber || '—' }}
-                  </a>
-                </td>
-                <td>{{ formatDate(item.issuedAt) }}</td>
-                <td>{{ formatCurrency(item.totalAmount) }}</td>
-                <td>{{ formatCurrency(item.paidAmount) }}</td>
-                <td class="balance-cell">{{ formatCurrency(item.balance) }}</td>
-                <td>
-                  @if (item.daysOverdue > 0) {
-                    <span class="days-badge" [class]="getOverdueClass(item.daysOverdue)">
-                      {{ item.daysOverdue }} días
-                    </span>
-                  } @else {
-                    <span class="days-ok">Al corriente</span>
-                  }
-                </td>
-                <td>{{ formatDate(item.lastPaymentDate) }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+          }
+        </tbody>
+      </table>
     </div>
   }
 

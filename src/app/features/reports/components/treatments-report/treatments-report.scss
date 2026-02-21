@@ -39,25 +39,31 @@
   }
 }
 
-.card {
+.section-card {
   background: var(--surface-primary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
 
-  h3 {
+  &--mt { margin-top: var(--spacing-xl); }
+
+  &__title {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    margin: 0 0 var(--spacing-xl) 0;
+    gap: var(--spacing-sm);
+    margin: 0 0 var(--spacing-lg) 0;
     font-size: var(--font-size-base);
     color: var(--text-primary);
   }
 }
 
-.mt-xl { margin-top: var(--spacing-xl); }
 .text-center { text-align: center; }
 .text-right { text-align: right; }
+
+.amount-cell {
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
 
 .status-bars {
   display: flex;
