@@ -35,7 +35,7 @@ export class CategoryFormComponent implements OnInit {
   backRoute = computed(() => this.contextService.context().returnUrl);
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-    { label: 'Inicio', route: ROUTES.DASHBOARD, icon: 'fa-home' },
+    { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fa-home' },
     { label: 'Inventario', route: ROUTES.INVENTORY, icon: 'fa-boxes-stacked' },
     { label: 'Categorías', route: ROUTES.INVENTORY_CATEGORIES, icon: 'fa-tags' },
     { label: this.isEditMode() ? 'Editar' : 'Nueva' }

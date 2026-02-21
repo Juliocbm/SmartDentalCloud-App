@@ -58,7 +58,7 @@ export class ServiceListComponent implements OnInit, OnDestroy {
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
-    { label: 'Catálogo de Servicios' }
+    { label: 'Servicios' }
   ];
 
   Math = Math;

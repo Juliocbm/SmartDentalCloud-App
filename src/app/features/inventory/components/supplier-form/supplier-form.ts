@@ -31,7 +31,7 @@ export class SupplierFormComponent implements OnInit {
   error = signal<string | null>(null);
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-    { label: 'Inicio', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
     { label: 'Inventario', route: '/inventory', icon: 'fa-boxes-stacked' },
     { label: 'Proveedores', route: '/inventory/suppliers' },
     { label: this.isEditMode() ? 'Editar' : 'Nuevo' }

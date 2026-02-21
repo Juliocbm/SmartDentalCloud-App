@@ -88,7 +88,7 @@ export class AppointmentsDashboardComponent implements OnInit {
       route: ROUTES.APPOINTMENTS_CALENDAR
     },
     {
-      label: 'Lista de Citas',
+      label: 'Citas',
       description: 'Ver todas las citas',
       icon: 'fa-list',
       route: ROUTES.APPOINTMENTS

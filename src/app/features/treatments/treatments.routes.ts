@@ -17,7 +17,7 @@ export const TREATMENTS_ROUTES: Routes = [
         path: 'list',
         loadComponent: () =>
           import('./components/treatment-list/treatment-list').then(m => m.TreatmentListComponent),
-        title: 'Lista de Tratamientos'
+        title: 'Tratamientos'
       },
       {
         path: 'new',

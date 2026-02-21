@@ -32,7 +32,7 @@ export class CategoryListComponent implements OnInit {
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
 
   breadcrumbItems = signal<BreadcrumbItem[]>([
-    { label: 'Inicio', route: ROUTES.DASHBOARD, icon: 'fa-home' },
+    { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fa-home' },
     { label: 'Inventario', route: ROUTES.INVENTORY, icon: 'fa-boxes-stacked' },
     { label: 'Categorías' }
   ]);

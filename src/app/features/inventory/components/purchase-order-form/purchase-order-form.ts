@@ -42,7 +42,7 @@ export class PurchaseOrderFormComponent implements OnInit {
   error = signal<string | null>(null);
 
   breadcrumbItems = signal<BreadcrumbItem[]>([
-    { label: 'Inicio', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
     { label: 'Inventario', route: '/inventory', icon: 'fa-boxes-stacked' },
     { label: 'Órdenes de Compra', route: '/inventory/purchase-orders' },
     { label: 'Nueva Orden' }

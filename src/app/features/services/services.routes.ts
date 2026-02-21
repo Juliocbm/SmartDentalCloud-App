@@ -10,7 +10,7 @@ export const SERVICES_ROUTES: Routes = [
         path: '',
         loadComponent: () =>
           import('./components/service-list/service-list').then(m => m.ServiceListComponent),
-        title: 'Catálogo de Servicios'
+        title: 'Servicios'
       },
       {
         path: 'new',

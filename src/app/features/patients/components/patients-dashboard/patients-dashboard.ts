@@ -141,7 +141,7 @@ export class PatientsDashboardComponent implements OnInit {
       route: '/patients/new'
     },
     {
-      label: 'Lista de Pacientes',
+      label: 'Pacientes',
       description: 'Ver todos los pacientes',
       icon: 'fa-list',
       route: '/patients'

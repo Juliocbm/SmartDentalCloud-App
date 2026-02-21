@@ -50,7 +50,7 @@ export class InvoicesDashboardComponent implements OnInit {
       route: ROUTES.INVOICES_NEW
     },
     {
-      label: 'Lista de Facturas',
+      label: 'Facturas',
       description: 'Ver todas las facturas',
       icon: 'fa-list',
       route: ROUTES.INVOICES_LIST

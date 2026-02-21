@@ -36,7 +36,7 @@ export class SidebarComponent {
       route: '/patients/dashboard',
       hasDashboard: true,
       children: [
-        { id: 'patients-list', icon: 'fa-solid fa-list', label: 'Lista de Pacientes', route: '/patients' },
+        { id: 'patients-list', icon: 'fa-solid fa-list', label: 'Pacientes', route: '/patients' },
         { id: 'patients-new', icon: 'fa-solid fa-user-plus', label: 'Nuevo Paciente', route: '/patients/new' }
       ]
     },
@@ -48,7 +48,7 @@ export class SidebarComponent {
       hasDashboard: true,
       children: [
         { id: 'appointments-calendar', icon: 'fa-solid fa-calendar', label: 'Calendario', route: '/appointments/calendar' },
-        { id: 'appointments-list', icon: 'fa-solid fa-list', label: 'Lista de Citas', route: '/appointments' },
+        { id: 'appointments-list', icon: 'fa-solid fa-list', label: 'Citas', route: '/appointments' },
         { id: 'appointments-new', icon: 'fa-solid fa-calendar-plus', label: 'Nueva Cita', route: '/appointments/new' }
       ]
     },
@@ -58,7 +58,7 @@ export class SidebarComponent {
       label: 'Tratamientos', 
       route: '/treatments',
       children: [
-        { id: 'treatments-list', icon: 'fa-solid fa-list', label: 'Lista de Tratamientos', route: '/treatments' },
+        { id: 'treatments-list', icon: 'fa-solid fa-list', label: 'Tratamientos', route: '/treatments' },
         { id: 'treatments-new', icon: 'fa-solid fa-plus', label: 'Nuevo Tratamiento', route: '/treatments/new' }
       ]
     },
@@ -68,7 +68,7 @@ export class SidebarComponent {
       label: 'Servicios', 
       route: '/services',
       children: [
-        { id: 'services-list', icon: 'fa-solid fa-list', label: 'Catálogo de Servicios', route: '/services' },
+        { id: 'services-list', icon: 'fa-solid fa-list', label: 'Servicios', route: '/services' },
         { id: 'services-new', icon: 'fa-solid fa-plus', label: 'Nuevo Servicio', route: '/services/new' }
       ]
     },
@@ -78,8 +78,8 @@ export class SidebarComponent {
       label: 'Planes de Tratamiento', 
       route: '/treatment-plans',
       children: [
-        { id: 'treatment-plans-list', icon: 'fa-solid fa-list', label: 'Lista de Planes', route: '/treatment-plans' },
-        { id: 'treatment-plans-new', icon: 'fa-solid fa-plus', label: 'Nuevo Plan', route: '/treatment-plans/new' }
+        { id: 'treatment-plans-list', icon: 'fa-solid fa-list', label: 'Planes de Tratamiento', route: '/treatment-plans' },
+        { id: 'treatment-plans-new', icon: 'fa-solid fa-plus', label: 'Nuevo Plan de Tratamiento', route: '/treatment-plans/new' }
       ]
     },
     { 
@@ -88,7 +88,7 @@ export class SidebarComponent {
       label: 'Recetas', 
       route: '/prescriptions',
       children: [
-        { id: 'prescriptions-list', icon: 'fa-solid fa-list', label: 'Lista de Recetas', route: '/prescriptions' },
+        { id: 'prescriptions-list', icon: 'fa-solid fa-list', label: 'Recetas', route: '/prescriptions' },
         { id: 'prescriptions-new', icon: 'fa-solid fa-plus', label: 'Nueva Receta', route: '/prescriptions/new' }
       ]
     },

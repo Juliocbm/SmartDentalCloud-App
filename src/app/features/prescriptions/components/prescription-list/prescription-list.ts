@@ -24,7 +24,7 @@ export class PrescriptionListComponent implements OnInit {
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
-    { label: 'Recetas Médicas' }
+    { label: 'Recetas' }
   ];
 
   // State
