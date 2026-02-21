@@ -126,6 +126,7 @@ export class SidebarComponent {
     { id: 'users', icon: 'fa-solid fa-user-shield', label: 'Usuarios y Roles', route: '/users' },
     { id: 'reports', icon: 'fa-solid fa-chart-line', label: 'Reportes', route: '/reports' },
     { id: 'settings', icon: 'fa-solid fa-gear', label: 'Configuración', route: '/settings' },
+    { id: 'audit-log', icon: 'fa-solid fa-shield-halved', label: 'Auditoría', route: '/audit-log' },
   ]);
 
   // Menús filtrados por búsqueda

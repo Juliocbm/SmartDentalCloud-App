@@ -6,51 +6,95 @@
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
+  <!-- Filters -->
   <div class="filters-section">
-    <div class="filter-group">
-      <select class="form-control" [ngModel]="entityTypeFilter()" (ngModelChange)="entityTypeFilter.set($event); onFilterChange()">
+    <div class="filter-actions">
+      <select
+        class="filter-select"
+        [value]="entityTypeFilter()"
+        (change)="entityTypeFilter.set($any($event.target).value); onFilterChange()">
         <option value="">Todas las entidades</option>
-        <option value="Patient">Pacientes</option>
-        <option value="Appointment">Citas</option>
-        <option value="Treatment">Tratamientos</option>
-        <option value="Invoice">Facturas</option>
-        <option value="Payment">Pagos</option>
-        <option value="User">Usuarios</option>
+        @for (et of entityTypes; track et.value) {
+          <option [value]="et.value">{{ et.label }}</option>
+        }
       </select>
-    </div>
-    <div class="filter-group">
-      <select class="form-control" [ngModel]="actionFilter()" (ngModelChange)="actionFilter.set($event); onFilterChange()">
+
+      <select
+        class="filter-select"
+        [value]="actionFilter()"
+        (change)="actionFilter.set($any($event.target).value); onFilterChange()">
         <option value="">Todas las acciones</option>
-        <option value="Create">Crear</option>
-        <option value="Update">Actualizar</option>
-        <option value="Delete">Eliminar</option>
-        <option value="Login">Login</option>
-        <option value="Logout">Logout</option>
+        @for (a of actions; track a.value) {
+          <option [value]="a.value">{{ a.label }}</option>
+        }
       </select>
+
+      <input
+        type="date"
+        class="filter-select"
+        [value]="startDateFilter()"
+        (change)="startDateFilter.set($any($event.target).value); onFilterChange()"
+        title="Desde"
+      />
+      <input
+        type="date"
+        class="filter-select"
+        [value]="endDateFilter()"
+        (change)="endDateFilter.set($any($event.target).value); onFilterChange()"
+        title="Hasta"
+      />
+    </div>
+
+    <div class="filter-actions">
+      @if (hasActiveFilters()) {
+        <button class="btn btn-outline btn-sm" (click)="clearFilters()">
+          <i class="fa-solid fa-filter-circle-xmark"></i>
+          Limpiar filtros
+        </button>
+      }
+      <button class="btn btn-outline btn-sm" (click)="loadLogs()" [disabled]="loading()">
+        <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="loading()"></i>
+        Actualizar
+      </button>
     </div>
   </div>
 
-  @if (error()) {
-    <div class="alert alert-error">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      {{ error() }}
-    </div>
-  } @else if (loading()) {
+  <!-- Loading State -->
+  @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando registros...</p>
     </div>
-  } @else if (logs().length === 0) {
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadLogs()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && logs().length === 0) {
     <div class="empty-state">
       <i class="fa-solid fa-shield-halved"></i>
       <h3>Sin registros</h3>
       <p>No hay registros de auditoría para los filtros seleccionados.</p>
     </div>
-  } @else {
-    <div class="table-responsive">
-      <table class="data-table">
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error() && logs().length > 0) {
+    <div class="table-container">
+      <table class="table">
         <thead>
           <tr>
+            <th class="col-expand"></th>
             <th>Fecha/Hora</th>
             <th>Usuario</th>
             <th>Acción</th>
@@ -60,9 +104,19 @@
           </tr>
         </thead>
         <tbody>
-          @for (log of logs(); track log.id) {
-            <tr>
-              <td class="mono text-sm">{{ formatDateTime(log.createdAt) }}</td>
+          @for (log of paginatedLogs(); track log.id) {
+            <tr
+              class="audit-row"
+              [class.audit-row--expandable]="hasDetail(log)"
+              [class.audit-row--expanded]="isExpanded(log.id)"
+              (click)="hasDetail(log) ? toggleDetail(log.id) : null">
+              <td class="col-expand">
+                @if (hasDetail(log)) {
+                  <i class="fa-solid fa-chevron-right expand-icon"
+                     [class.expand-icon--open]="isExpanded(log.id)"></i>
+                }
+              </td>
+              <td class="date-cell">{{ formatDateTime(log.createdAt) }}</td>
               <td>{{ log.userName }}</td>
               <td>
                 <span [class]="'badge ' + getActionConfig(log.action).class">
@@ -71,18 +125,109 @@
                 </span>
               </td>
               <td>{{ log.entityType }}</td>
-              <td class="mono text-sm">
+              <td class="entity-id-cell">
                 @if (log.entityId) {
-                  {{ log.entityId.substring(0, 8) }}...
+                  <code>{{ log.entityId.substring(0, 8) }}...</code>
                 } @else {
                   <span class="text-muted">—</span>
                 }
               </td>
-              <td class="text-muted text-sm">{{ log.ipAddress || '—' }}</td>
+              <td class="text-muted">{{ log.ipAddress || '—' }}</td>
             </tr>
+
+            <!-- Detail Row -->
+            @if (isExpanded(log.id) && hasDetail(log)) {
+              <tr class="detail-row">
+                <td colspan="7">
+                  <div class="detail-panel">
+                    @if (log.oldValues) {
+                      <div class="detail-section">
+                        <h4 class="detail-title">
+                          <i class="fa-solid fa-clock-rotate-left"></i>
+                          Valores anteriores
+                        </h4>
+                        <div class="detail-grid">
+                          @for (key of getObjectKeys(parseJson(log.oldValues)); track key) {
+                            <div class="detail-item">
+                              <span class="detail-key">{{ key }}</span>
+                              <span class="detail-value">{{ parseJson(log.oldValues)?.[key] }}</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                    @if (log.newValues) {
+                      <div class="detail-section">
+                        <h4 class="detail-title">
+                          <i class="fa-solid fa-arrow-right"></i>
+                          Valores nuevos
+                        </h4>
+                        <div class="detail-grid">
+                          @for (key of getObjectKeys(parseJson(log.newValues)); track key) {
+                            <div class="detail-item">
+                              <span class="detail-key">{{ key }}</span>
+                              <span class="detail-value detail-value--new">{{ parseJson(log.newValues)?.[key] }}</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
           }
         </tbody>
       </table>
+
+      <!-- Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (currentPage() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ currentPage() * pageSize() > logs().length ? logs().length : currentPage() * pageSize() }}</strong>
+          de <strong>{{ logs().length }}</strong> registros
+        </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(1)">
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === 1"
+              (click)="onPageChange(currentPage() - 1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            @for (page of getPaginationPages(); track page) {
+              <button
+                class="btn-page"
+                [class.active]="page === currentPage()"
+                (click)="onPageChange(page)">
+                {{ page }}
+              </button>
+            }
+
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(currentPage() + 1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button
+              class="btn-page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="onPageChange(totalPages())">
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
+      </div>
     </div>
   }
 </div>

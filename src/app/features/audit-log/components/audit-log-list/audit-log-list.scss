@@ -1,5 +1,125 @@
-// Filters: usa .filters-section + .filter-group de _components.scss
+// Expand column
+.col-expand {
+  width: 32px;
+  text-align: center;
+  padding: var(--spacing-sm) !important;
+}
 
-.mono { font-family: monospace; }
-.text-sm { font-size: var(--font-size-sm); }
-.text-muted { color: var(--text-muted); }
+.expand-icon {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+
+  &--open {
+    transform: rotate(90deg);
+    color: var(--primary-600);
+  }
+}
+
+// Expandable rows
+.audit-row {
+  &--expandable {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--surface-secondary);
+    }
+  }
+
+  &--expanded {
+    background: var(--primary-50);
+  }
+}
+
+.date-cell {
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.entity-id-cell code {
+  font-size: var(--font-size-xs);
+  padding: 2px 6px;
+  background: var(--surface-tertiary);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+// Detail panel
+.detail-row {
+  background: var(--surface-secondary);
+
+  td {
+    padding: 0 !important;
+  }
+}
+
+.detail-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--border-primary);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.detail-section {
+  min-width: 0;
+}
+
+.detail-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  i {
+    font-size: var(--font-size-xs);
+  }
+}
+
+.detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.detail-item {
+  display: flex;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
+}
+
+.detail-key {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  color: var(--text-primary);
+  word-break: break-all;
+
+  &--new {
+    color: var(--success-700);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .detail-panel {
+    grid-template-columns: 1fr;
+  }
+}
