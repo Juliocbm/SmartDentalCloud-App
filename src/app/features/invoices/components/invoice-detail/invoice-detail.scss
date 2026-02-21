@@ -147,79 +147,23 @@
 }
 
 // ===== Invoice Items Table =====
+// Table: usa .table-container, .table de _components.scss
 
-.table-responsive {
-  overflow-x: auto;
-  margin: 0 calc(-1 * var(--spacing-2xl));
-  padding: 0 var(--spacing-2xl);
+.col-num {
+  width: 50px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-weight: var(--font-weight-medium);
 }
 
-.invoice-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  thead {
-    th {
-      padding: var(--spacing-md) var(--spacing-lg);
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-semibold);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-secondary);
-      background: var(--surface-secondary);
-      border-bottom: 2px solid var(--border-primary);
-      text-align: left;
-      white-space: nowrap;
-    }
-  }
-
-  tbody {
-    tr {
-      transition: var(--transition-fast);
-
-      &:hover {
-        background: var(--surface-secondary);
-      }
-
-      &:not(:last-child) td {
-        border-bottom: 1px solid var(--border-primary);
-      }
-    }
-
-    td {
-      padding: var(--spacing-md) var(--spacing-lg);
-      font-size: var(--font-size-sm);
-      color: var(--text-primary);
-      vertical-align: middle;
-    }
-  }
-
-  .col-num {
-    width: 50px;
-    text-align: center;
-    color: var(--text-tertiary);
-    font-weight: var(--font-weight-medium);
-  }
-
-  .col-desc { min-width: 200px; }
-  .col-qty { width: 80px; text-align: center; }
-  .col-price,
-  .col-discount,
-  .col-tax,
-  .col-total {
-    width: 130px;
-    text-align: right;
-  }
-
-  thead .col-qty,
-  thead .col-price,
-  thead .col-discount,
-  thead .col-tax,
-  thead .col-total {
-    text-align: right;
-  }
-
-  thead .col-num { text-align: center; }
+.col-desc { min-width: 200px; }
+.col-qty { width: 80px; text-align: center; }
+.col-price,
+.col-discount,
+.col-tax,
+.col-total {
+  width: 130px;
+  text-align: right;
 }
 
 .item-description {

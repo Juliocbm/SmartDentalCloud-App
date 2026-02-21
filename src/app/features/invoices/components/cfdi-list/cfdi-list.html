@@ -23,20 +23,27 @@
     </div>
   </div>
 
+  <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando comprobantes...</p>
     </div>
-  } @else if (filteredCfdis().length === 0) {
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && filteredCfdis().length === 0) {
     <div class="empty-state">
       <i class="fa-solid fa-file-signature"></i>
       <h3>No hay comprobantes</h3>
       <p>Los CFDIs se generan desde el detalle de cada factura.</p>
     </div>
-  } @else {
-    <div class="table-responsive">
-      <table class="data-table">
+  }
+
+  <!-- Table -->
+  @if (!loading() && filteredCfdis().length > 0) {
+    <div class="table-container">
+      <table class="table">
         <thead>
           <tr>
             <th>Serie/Folio</th>
@@ -89,10 +96,12 @@
           }
         </tbody>
       </table>
-    </div>
 
-    <div class="results-count">
-      {{ filteredCfdis().length }} comprobante(s)
+      <div class="table-footer centered">
+        <span class="results-count">
+          <strong>{{ filteredCfdis().length }}</strong> comprobante(s)
+        </span>
+      </div>
     </div>
   }
 </div>

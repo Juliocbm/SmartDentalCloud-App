@@ -1,12 +1,10 @@
-<div class="list-container">
+<div class="page-container container-wide">
   <app-page-header
-    title="Recetas Médicas"
-    icon="fa-solid fa-prescription"
-    [breadcrumbs]="[
-      { label: 'Dashboard', route: '/dashboard' },
-      { label: 'Recetas Médicas' }
-    ]"
-  />
+    [title]="'Recetas Médicas'"
+    [subtitle]="'Gestión de recetas médicas'"
+    [icon]="'fa-prescription'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
 
   <!-- KPI Cards -->
   @if (!loading() && !error()) {
@@ -41,18 +39,20 @@
     </div>
   }
 
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="toolbar-left">
-      <div class="search-box">
-        <i class="fa-solid fa-search"></i>
-        <input
-          type="text"
-          placeholder="Buscar por paciente, médico, diagnóstico o medicamento..."
-          [ngModel]="searchTerm()"
-          (ngModelChange)="onSearchChange($event)"
-        />
-      </div>
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por paciente, médico, diagnóstico o medicamento..."
+        [ngModel]="searchTerm()"
+        (ngModelChange)="onSearchChange($event)"
+      />
+    </div>
+
+    <div class="filter-actions">
       <select
         class="filter-select"
         [ngModel]="statusFilter()"
@@ -63,8 +63,7 @@
         <option [value]="PrescriptionStatus.Completed">Dispensadas</option>
         <option [value]="PrescriptionStatus.Cancelled">Canceladas</option>
       </select>
-    </div>
-    <div class="toolbar-right">
+
       <button class="btn btn-primary" (click)="createPrescription()">
         <i class="fa-solid fa-plus"></i>
         Nueva Receta
@@ -74,17 +73,21 @@
 
   <!-- Loading -->
   @if (loading()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando recetas...</p>
     </div>
   }
 
   <!-- Error -->
   @if (error()) {
-    <div class="error-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
       <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadPrescriptions()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
+      </button>
     </div>
   }
 
@@ -108,7 +111,7 @@
   <!-- Table -->
   @if (!loading() && !error() && filteredPrescriptions().length > 0) {
     <div class="table-container">
-      <table class="data-table">
+      <table class="table">
         <thead>
           <tr>
             <th>Fecha</th>

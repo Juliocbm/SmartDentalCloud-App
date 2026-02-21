@@ -9,7 +9,7 @@ import {
   PrescriptionStatus,
   PRESCRIPTION_STATUS_CONFIG
 } from '../../models/prescription.models';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-prescription-list',
@@ -21,6 +21,11 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
 export class PrescriptionListComponent implements OnInit {
   private prescriptionsService = inject(PrescriptionsService);
   private router = inject(Router);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Recetas Médicas' }
+  ];
 
   // State
   prescriptions = signal<Prescription[]>([]);
@@ -87,7 +92,7 @@ export class PrescriptionListComponent implements OnInit {
     });
   }
 
-  private loadPrescriptions(): void {
+  loadPrescriptions(): void {
     this.loading.set(true);
     this.error.set(null);
 
