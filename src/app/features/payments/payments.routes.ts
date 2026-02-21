@@ -1,10 +1,11 @@
 import { Routes } from '@angular/router';
 import { PaymentsService } from './services/payments.service';
+import { InvoicesService } from '../invoices/services/invoices.service';
 
 export const PAYMENTS_ROUTES: Routes = [
   {
     path: '',
-    providers: [PaymentsService],
+    providers: [PaymentsService, InvoicesService],
     children: [
       {
         path: '',

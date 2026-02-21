@@ -9,6 +9,8 @@ import { TreatmentMaterial, CreateTreatmentMaterialRequest } from '../../models/
 import { TreatmentSession, CreateSessionRequest, SESSION_STATUS_CONFIG } from '../../models/treatment-session.models';
 import { ProductsService } from '../../../inventory/services/products.service';
 import { Product } from '../../../inventory/models/product.models';
+import { AppointmentsService } from '../../../appointments/services/appointments.service';
+import { AppointmentListItem } from '../../../appointments/models/appointment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 
 @Component({
@@ -23,6 +25,7 @@ export class TreatmentDetailComponent implements OnInit {
   private router = inject(Router);
   private treatmentsService = inject(TreatmentsService);
   private productsService = inject(ProductsService);
+  private appointmentsService = inject(AppointmentsService);
   private logger = inject(LoggingService);
 
   // State
@@ -57,6 +60,8 @@ export class TreatmentDetailComponent implements OnInit {
   sessionDate = signal('');
   sessionDuration = signal<number | null>(null);
   sessionNotes = signal('');
+  selectedAppointmentId = signal('');
+  patientAppointments = signal<AppointmentListItem[]>([]);
 
   // Constants
   TreatmentStatus = TreatmentStatus;
@@ -251,7 +256,23 @@ export class TreatmentDetailComponent implements OnInit {
       this.sessionDate.set(new Date().toISOString().split('T')[0]);
       this.sessionDuration.set(null);
       this.sessionNotes.set('');
+      this.selectedAppointmentId.set('');
+      this.loadPatientAppointments();
     }
+  }
+
+  private loadPatientAppointments(): void {
+    const patientId = this.treatment()?.patientId;
+    if (!patientId) return;
+
+    this.appointmentsService.getByPatient(patientId).subscribe({
+      next: (data) => {
+        const upcoming = data
+          .filter(a => a.status === 'Scheduled' || a.status === 'Confirmed')
+          .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime());
+        this.patientAppointments.set(upcoming);
+      }
+    });
   }
 
   getNextSessionNumber(): number {
@@ -267,6 +288,7 @@ export class TreatmentDetailComponent implements OnInit {
     const request: CreateSessionRequest = {
       sessionNumber: this.getNextSessionNumber(),
       date: new Date(this.sessionDate()).toISOString(),
+      appointmentId: this.selectedAppointmentId() || undefined,
       duration: this.sessionDuration() || undefined,
       notes: this.sessionNotes().trim() || undefined
     };

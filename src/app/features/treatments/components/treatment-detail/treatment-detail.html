@@ -540,6 +540,21 @@
               </div>
             </div>
             <div class="form-group">
+              <label class="form-label">Cita Asociada <small style="color: var(--text-muted); font-weight: normal;">(Opcional)</small></label>
+              <select
+                class="form-control"
+                [ngModel]="selectedAppointmentId()"
+                (ngModelChange)="selectedAppointmentId.set($event)"
+              >
+                <option value="">Sin cita asociada</option>
+                @for (apt of patientAppointments(); track apt.id) {
+                  <option [value]="apt.id">
+                    {{ apt.displayDate }} {{ apt.displayTime }} — {{ apt.reason }}
+                  </option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
               <label class="form-label">Notas</label>
               <textarea
                 class="form-control"
