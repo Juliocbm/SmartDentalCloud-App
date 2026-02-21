@@ -2,15 +2,15 @@
 
   <!-- Loading -->
   @if (mode() === 'loading') {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando nota de consulta...</p>
     </div>
   }
 
   <!-- Error -->
   @if (mode() === 'error') {
-    <div class="error-state">
+    <div class="empty-state">
       <i class="fa-solid fa-exclamation-circle"></i>
       <h2>Error</h2>
       <p>{{ error() }}</p>

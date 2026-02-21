@@ -1,22 +1,6 @@
 // Base: usa .detail-container de _components.scss
 // Nota: .detail-header aquí es custom (border, btn-back simple, h1 más pequeño)
 
-// ===== States =====
-
-.loading-state,
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  gap: var(--spacing-lg);
-  color: var(--text-tertiary);
-
-  i { font-size: var(--font-size-5xl); color: var(--primary-500); }
-  p { margin: 0; }
-}
-
 // ===== Header =====
 
 .detail-header {

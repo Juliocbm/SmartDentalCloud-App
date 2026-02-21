@@ -17,12 +17,12 @@
   </app-page-header>
 
   @if (loading()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando tratamiento...</p>
     </div>
   } @else if (error()) {
-    <div class="error-state">
+    <div class="empty-state">
       <i class="fa-solid fa-exclamation-circle"></i>
       <h2>Error al cargar el tratamiento</h2>
       <p>{{ error() }}</p>

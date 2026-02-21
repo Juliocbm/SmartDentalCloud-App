@@ -1,21 +1,6 @@
 // Base: usa .detail-container de _components.scss
 // Nota: .detail-header, .info-card, .info-row aquí son custom (layout diferente al global)
 
-.loading-state,
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  gap: var(--spacing-lg);
-  text-align: center;
-
-  i { font-size: var(--font-size-4xl); color: var(--primary-500); }
-  h2 { margin: 0; color: var(--text-primary); }
-  p { margin: 0; color: var(--text-secondary); }
-}
-
 .detail-header {
   margin-bottom: var(--spacing-xl);
 

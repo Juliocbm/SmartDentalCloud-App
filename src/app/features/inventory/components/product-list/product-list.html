@@ -56,7 +56,7 @@
 
   <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-state">
+    <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin"></i>
       <p>Cargando productos...</p>
     </div>
@@ -64,7 +64,7 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="error-state">
+    <div class="empty-state">
       <i class="fa-solid fa-exclamation-circle"></i>
       <p>{{ error() }}</p>
       <button class="btn btn-primary" (click)="loadData()">

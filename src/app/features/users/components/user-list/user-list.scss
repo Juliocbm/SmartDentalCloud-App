@@ -9,8 +9,6 @@
 // Usa .filters-section de _components.scss
 
 // ===== States =====
-.loading-state,
-.error-state,
 .empty-state {
   text-align: center;
   padding: var(--spacing-4xl);
@@ -36,14 +34,6 @@
     margin: var(--spacing-sm) 0;
     font-size: var(--font-size-base);
   }
-}
-
-.loading-state i {
-  color: var(--primary-500);
-}
-
-.error-state i {
-  color: var(--error-500);
 }
 
 .empty-state i {

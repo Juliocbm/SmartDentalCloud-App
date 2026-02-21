@@ -46,20 +46,20 @@
 
   <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando tratamientos...</p>
     </div>
   }
 
   <!-- Error State -->
   @if (error()) {
-    <div class="error-state">
+    <div class="empty-state">
       <i class="fa-solid fa-exclamation-triangle"></i>
       <h3>Error al cargar tratamientos</h3>
       <p>{{ error() }}</p>
-      <button class="btn btn-outline" (click)="loadTreatments()">
-        <i class="fa-solid fa-rotate-right"></i>
+      <button class="btn btn-secondary" (click)="loadTreatments()">
+        <i class="fa-solid fa-arrows-rotate"></i>
         Reintentar
       </button>
     </div>

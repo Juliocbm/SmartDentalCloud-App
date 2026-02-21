@@ -56,19 +56,19 @@
 
   <!-- Loading State -->
   @if (loading()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando usuarios...</p>
     </div>
   }
 
   <!-- Error State -->
   @if (error()) {
-    <div class="error-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary" (click)="loadData()">
-        <i class="fa-solid fa-refresh"></i>
+      <button class="btn btn-secondary" (click)="loadData()">
+        <i class="fa-solid fa-arrows-rotate"></i>
         Reintentar
       </button>
     </div>

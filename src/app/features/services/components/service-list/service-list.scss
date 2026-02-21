@@ -6,8 +6,6 @@
 // Botones: usa clases globales .btn de _components.scss
 // ============================================
 
-.loading-state,
-.error-state,
 .empty-state {
   text-align: center;
   padding: var(--spacing-xl) var(--spacing-lg);
@@ -31,14 +29,6 @@
     color: var(--text-secondary);
     margin: var(--spacing-sm) 0;
   }
-}
-
-.loading-state i {
-  color: var(--primary-500);
-}
-
-.error-state i {
-  color: var(--danger-500);
 }
 
 .empty-state i {
