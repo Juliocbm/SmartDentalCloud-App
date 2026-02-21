@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-reports-dashboard',
@@ -11,6 +11,11 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
   styleUrl: './reports-dashboard.scss'
 })
 export class ReportsDashboardComponent {
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Reportes' }
+  ];
+
   reports = [
     {
       title: 'Cuentas por Cobrar',

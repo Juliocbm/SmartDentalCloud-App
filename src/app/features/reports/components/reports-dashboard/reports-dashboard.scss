@@ -1,8 +1,4 @@
-.report-container {
-  max-width: var(--layout-max-width);
-  margin: 0 auto;
-  padding: var(--spacing-2xl);
-}
+// Global: .page-container from _components.scss
 
 .reports-grid {
   display: grid;
@@ -54,6 +50,14 @@
       background: var(--error-100);
       color: var(--error-600);
     }
+    &.info {
+      background: var(--info-50);
+      color: var(--info-600);
+    }
+    &.secondary {
+      background: var(--surface-tertiary);
+      color: var(--text-secondary);
+    }
   }
 
   .report-content {
@@ -86,10 +90,6 @@
 }
 
 @media (max-width: 480px) {
-  .report-container {
-    padding: var(--spacing-lg);
-  }
-
   .reports-grid {
     grid-template-columns: 1fr;
   }

@@ -1,9 +1,10 @@
-<div class="report-container">
+<div class="page-container container-wide">
   <app-page-header
-    title="Reportes"
-    icon="fa-solid fa-chart-bar"
-    [breadcrumbs]="[{ label: 'Reportes' }]"
-  />
+    [title]="'Reportes'"
+    [subtitle]="'Panel de reportes y análisis'"
+    [icon]="'fa-chart-bar'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
 
   <div class="reports-grid">
     @for (report of reports; track report.route) {
