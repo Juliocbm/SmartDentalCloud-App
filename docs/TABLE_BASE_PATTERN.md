@@ -556,15 +556,56 @@ Orden de elementos dentro del `page-container`:
 
 ## 11. Componentes Que Siguen Este Patrón
 
+### Listas CRUD (con paginación)
+
 | Componente | `pageSize` | Scroll | Acciones |
 |------------|-----------|--------|----------|
 | `patient-list` | 10 | No | Ver, Editar, Toggle, Eliminar |
-| `payment-list` | 15 | No | Ver Factura |
 | `service-list` | 10 | No | Editar, Eliminar |
 | `treatment-list` | 10 | No | Ver, Editar |
+| `treatment-plan-list` | 10 | No | Ver |
 | `prescription-list` | 10 | No | Ver Detalle (btn-icon) |
+| `consultation-note-list` | 10 | No | Ver |
+| `user-list` | 10 | No | Ver, Editar, Eliminar |
+| `invoice-list` | 10 | No | Ver |
+| `payment-list` | 15 | No | Ver Factura |
+| `appointment-list` | — | No | Ver, Editar |
 | `audit-log-list` | 15 | Sí (.table-scroll) | Expandir detalle |
-| `accounts-receivable` | Sin paginación | No | Ir a Paciente, Ir a Factura |
+
+### Listas de Inventario (con paginación)
+
+| Componente | `pageSize` | Scroll | Acciones |
+|------------|-----------|--------|----------|
+| `category-list` | 10 | No | Editar, Eliminar |
+| `product-list` | 10 | No | Ver, Editar |
+| `supplier-list` | 10 | No | Ver, Editar |
+| `purchase-order-list` | 10 | No | Ver |
+| `stock-alerts` | 10 | No | Ajustar Stock |
+
+### Tablas en Detalle (sin paginación)
+
+| Componente | Contexto |
+|------------|----------|
+| `invoice-detail` | Items de la factura |
+| `purchase-order-detail` | Items de la orden |
+| `cfdi-list` | Lista de CFDIs dentro de facturación |
+
+### Tablas en Reportes (sin paginación)
+
+| Componente | Contexto |
+|------------|----------|
+| `accounts-receivable` | Cuentas por cobrar |
+| `top-services` | Ranking de servicios |
+| `dentist-productivity` | Productividad por dentista |
+| `appointment-occupancy` | Ocupación por dentista |
+| `inventory-report` | Stock bajo + Stock por categoría (2 tablas) |
+| `treatments-report` | Top servicios dentro del reporte |
+
+### Tablas en Dashboard (sin paginación)
+
+| Componente | Contexto |
+|------------|----------|
+| `dashboard` | Próximas citas + Pagos recientes (2 tablas) |
 
 ---
 
