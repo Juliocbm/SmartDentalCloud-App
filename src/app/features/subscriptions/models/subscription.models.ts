@@ -27,6 +27,10 @@ export const SUBSCRIPTION_STATUS_CONFIG: Record<string, { label: string; class: 
   'Expired': { label: 'Expirada', class: 'badge-neutral', icon: 'fa-calendar-xmark' }
 };
 
+export interface StripeConfig {
+  publishableKey: string;
+}
+
 export const AVAILABLE_PLANS: SubscriptionPlan[] = [
   {
     id: 'basic',

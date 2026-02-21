@@ -63,3 +63,66 @@ export interface DentistProductivity {
   revenueGenerated: number;
   avgAppointmentDuration: number;
 }
+
+export interface InventorySummary {
+  totalProducts: number;
+  activeProducts: number;
+  lowStockProducts: number;
+  outOfStockProducts: number;
+  totalValuation: number;
+  lowStockItems: LowStockItem[];
+  byCategory: CategoryStock[];
+}
+
+export interface LowStockItem {
+  productId: string;
+  productName: string;
+  categoryName?: string;
+  currentStock: number;
+  minimumStock: number;
+  unitCost: number;
+}
+
+export interface CategoryStock {
+  categoryName: string;
+  productCount: number;
+  totalStock: number;
+  totalValue: number;
+}
+
+export interface AppointmentOccupancy {
+  totalSlots: number;
+  bookedSlots: number;
+  completedSlots: number;
+  cancelledSlots: number;
+  noShowSlots: number;
+  occupancyRate: number;
+  completionRate: number;
+  byDentist: OccupancyByDentist[];
+  byDay: OccupancyByDay[];
+}
+
+export interface OccupancyByDentist {
+  dentistId: string;
+  dentistName: string;
+  totalAppointments: number;
+  completed: number;
+  cancelled: number;
+  occupancyRate: number;
+}
+
+export interface OccupancyByDay {
+  dayOfWeek: string;
+  totalAppointments: number;
+  completed: number;
+  avgPerDay: number;
+}
+
+export interface TopService {
+  serviceId: string;
+  serviceName: string;
+  categoryName?: string;
+  timesUsed: number;
+  totalRevenue: number;
+  avgPrice: number;
+}

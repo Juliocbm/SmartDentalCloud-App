@@ -1,0 +1,125 @@
+<div class="report-container">
+  <app-page-header
+    title="Resumen de Inventario"
+    icon="fa-solid fa-boxes-stacked"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems"
+  />
+
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando reporte de inventario...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadReport()">Reintentar</button>
+    </div>
+  } @else if (report(); as r) {
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon primary"><i class="fa-solid fa-box"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.totalProducts }}</span>
+          <span class="kpi-label">Total Productos</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon success"><i class="fa-solid fa-check-circle"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.activeProducts }}</span>
+          <span class="kpi-label">Activos</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon warning"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.lowStockProducts }}</span>
+          <span class="kpi-label">Stock Bajo</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon danger"><i class="fa-solid fa-times-circle"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.outOfStockProducts }}</span>
+          <span class="kpi-label">Sin Stock</span>
+        </div>
+      </div>
+      <div class="kpi-card wide">
+        <div class="kpi-icon info"><i class="fa-solid fa-coins"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ formatCurrency(r.totalValuation) }}</span>
+          <span class="kpi-label">Valorización Total</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Low Stock Items -->
+    @if (r.lowStockItems.length) {
+      <div class="report-section">
+        <h3><i class="fa-solid fa-triangle-exclamation"></i> Productos con Stock Bajo</h3>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Stock Actual</th>
+                <th>Mínimo</th>
+                <th>Costo Unit.</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of r.lowStockItems; track item.productId) {
+                <tr>
+                  <td><strong>{{ item.productName }}</strong></td>
+                  <td>{{ item.categoryName || '—' }}</td>
+                  <td>
+                    <span class="stock-badge" [class]="getStockClass(item.currentStock, item.minimumStock)">
+                      {{ item.currentStock }}
+                    </span>
+                  </td>
+                  <td>{{ item.minimumStock }}</td>
+                  <td>{{ formatCurrency(item.unitCost) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- By Category -->
+    @if (r.byCategory.length) {
+      <div class="report-section">
+        <h3><i class="fa-solid fa-tags"></i> Stock por Categoría</h3>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Categoría</th>
+                <th>Productos</th>
+                <th>Stock Total</th>
+                <th>Valor Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (cat of r.byCategory; track cat.categoryName) {
+                <tr>
+                  <td><strong>{{ cat.categoryName }}</strong></td>
+                  <td>{{ cat.productCount }}</td>
+                  <td>{{ cat.totalStock }}</td>
+                  <td>{{ formatCurrency(cat.totalValue) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+</div>

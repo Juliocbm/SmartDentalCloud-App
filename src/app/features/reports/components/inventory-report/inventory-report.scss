@@ -1,0 +1,130 @@
+.report-container {
+  padding: var(--space-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-2xl);
+  color: var(--text-secondary);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+
+  &.wide {
+    grid-column: span 2;
+  }
+}
+
+.kpi-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+
+  &.primary { background: rgba(var(--primary-rgb), 0.1); color: var(--primary); }
+  &.success { background: rgba(var(--success-rgb), 0.1); color: var(--success); }
+  &.warning { background: rgba(var(--warning-rgb), 0.1); color: var(--warning); }
+  &.danger { background: rgba(var(--danger-rgb), 0.1); color: var(--danger); }
+  &.info { background: rgba(var(--info-rgb), 0.1); color: var(--info); }
+}
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.kpi-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.report-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    font-size: 1.1rem;
+    color: var(--text-primary);
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: var(--space-sm) var(--space-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  th {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+
+  td {
+    font-size: 0.9rem;
+  }
+}
+
+.stock-badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.85rem;
+
+  &.stock-critical {
+    background: rgba(var(--danger-rgb), 0.1);
+    color: var(--danger);
+  }
+  &.stock-warning {
+    background: rgba(var(--warning-rgb), 0.1);
+    color: var(--warning);
+  }
+  &.stock-ok {
+    background: rgba(var(--success-rgb), 0.1);
+    color: var(--success);
+  }
+}

@@ -1,0 +1,134 @@
+<div class="report-container">
+  <app-page-header
+    title="Ocupación de Agenda"
+    icon="fa-solid fa-calendar-check"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems"
+  />
+
+  <!-- Date Filters -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Desde</label>
+      <input type="date" class="form-control" [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onDateChange()" />
+    </div>
+    <div class="filter-group">
+      <label>Hasta</label>
+      <input type="date" class="form-control" [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onDateChange()" />
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando reporte de ocupación...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadReport()">Reintentar</button>
+    </div>
+  } @else if (report(); as r) {
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon primary"><i class="fa-solid fa-calendar"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.totalSlots }}</span>
+          <span class="kpi-label">Total Citas</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon success"><i class="fa-solid fa-check-circle"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.completedSlots }}</span>
+          <span class="kpi-label">Completadas</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon danger"><i class="fa-solid fa-times-circle"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.cancelledSlots }}</span>
+          <span class="kpi-label">Canceladas</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon warning"><i class="fa-solid fa-user-slash"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.noShowSlots }}</span>
+          <span class="kpi-label">No Show</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon info"><i class="fa-solid fa-chart-pie"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.occupancyRate }}%</span>
+          <span class="kpi-label">Tasa de Ocupación</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon success"><i class="fa-solid fa-bullseye"></i></div>
+        <div class="kpi-content">
+          <span class="kpi-value">{{ r.completionRate }}%</span>
+          <span class="kpi-label">Tasa de Completación</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- By Dentist -->
+    @if (r.byDentist.length) {
+      <div class="report-section">
+        <h3><i class="fa-solid fa-user-doctor"></i> Ocupación por Dentista</h3>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Dentista</th>
+                <th>Total Citas</th>
+                <th>Completadas</th>
+                <th>Canceladas</th>
+                <th>Tasa</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of r.byDentist; track d.dentistId) {
+                <tr>
+                  <td><strong>{{ d.dentistName }}</strong></td>
+                  <td>{{ d.totalAppointments }}</td>
+                  <td>{{ d.completed }}</td>
+                  <td>{{ d.cancelled }}</td>
+                  <td>
+                    <div class="progress-bar-inline">
+                      <div class="progress-fill" [style.width]="d.occupancyRate + '%'"></div>
+                      <span>{{ d.occupancyRate }}%</span>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- By Day of Week -->
+    @if (r.byDay.length) {
+      <div class="report-section">
+        <h3><i class="fa-solid fa-calendar-week"></i> Distribución por Día</h3>
+        <div class="day-chart">
+          @for (day of r.byDay; track day.dayOfWeek) {
+            <div class="day-row">
+              <span class="day-label">{{ day.dayOfWeek }}</span>
+              <div class="day-bar-container">
+                <div class="day-bar" [style.width]="getBarWidth(day.totalAppointments, r.totalSlots)"></div>
+              </div>
+              <span class="day-value">{{ day.totalAppointments }} citas ({{ day.completed }} completadas)</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

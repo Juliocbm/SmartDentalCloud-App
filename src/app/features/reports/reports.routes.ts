@@ -25,5 +25,20 @@ export const REPORTS_ROUTES: Routes = [
     path: 'dentist-productivity',
     loadComponent: () => import('./components/dentist-productivity/dentist-productivity').then(m => m.DentistProductivityComponent),
     title: 'Productividad por Dentista'
+  },
+  {
+    path: 'inventory',
+    loadComponent: () => import('./components/inventory-report/inventory-report').then(m => m.InventoryReportComponent),
+    title: 'Resumen de Inventario'
+  },
+  {
+    path: 'appointment-occupancy',
+    loadComponent: () => import('./components/appointment-occupancy/appointment-occupancy').then(m => m.AppointmentOccupancyComponent),
+    title: 'Ocupación de Agenda'
+  },
+  {
+    path: 'top-services',
+    loadComponent: () => import('./components/top-services/top-services').then(m => m.TopServicesComponent),
+    title: 'Servicios Más Solicitados'
   }
 ];

@@ -69,6 +69,11 @@
 
         @if (sub.status !== 'Canceled' && sub.status !== 'Expired') {
           <div class="plan-actions">
+            @if (stripeReady()) {
+              <button class="btn btn-secondary btn-sm" (click)="openPaymentMethodUpdate()">
+                <i class="fa-solid fa-credit-card"></i> Actualizar Método de Pago
+              </button>
+            }
             <button class="btn btn-outline btn-danger btn-sm" (click)="showCancelConfirm.set(true)">
               <i class="fa-solid fa-ban"></i> Cancelar Suscripción
             </button>
@@ -113,12 +118,93 @@
               <i class="fa-solid fa-check-circle"></i> Plan Actual
             </button>
           } @else {
-            <button class="btn btn-primary">
+            <button class="btn btn-primary" [disabled]="!stripeReady()" (click)="openCheckout(plan)">
               <i class="fa-solid fa-arrow-up"></i> Cambiar Plan
             </button>
           }
         </div>
       }
+    </div>
+  }
+
+  <!-- Checkout Modal -->
+  @if (showCheckoutModal() && selectedPlan(); as plan) {
+    <div class="modal-backdrop" (click)="closeCheckout()">
+      <div class="modal-content modal-checkout" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-credit-card"></i> Suscribirse a {{ plan.name }}</h3>
+          <button class="btn-close-modal" (click)="closeCheckout()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="checkout-plan-summary">
+            <span class="checkout-plan-name">Plan {{ plan.name }}</span>
+            <span class="checkout-plan-price">{{ formatCurrency(plan.monthlyPrice) }}/mes</span>
+          </div>
+          <div class="stripe-element-container">
+            <label class="form-label">Datos de Tarjeta</label>
+            <div id="stripe-card-element" class="stripe-card-input"></div>
+          </div>
+          @if (checkoutError()) {
+            <div class="alert alert-error">
+              <i class="fa-solid fa-exclamation-circle"></i>
+              {{ checkoutError() }}
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" (click)="closeCheckout()" [disabled]="subscribing()">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" (click)="processCheckout()" [disabled]="subscribing()">
+            @if (subscribing()) {
+              <i class="fa-solid fa-spinner fa-spin"></i> Procesando...
+            } @else {
+              <i class="fa-solid fa-lock"></i> Suscribirse por {{ formatCurrency(plan.monthlyPrice) }}/mes
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Update Payment Method Modal -->
+  @if (showPaymentMethodModal()) {
+    <div class="modal-backdrop" (click)="closePaymentMethodModal()">
+      <div class="modal-content modal-checkout" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-credit-card"></i> Actualizar Método de Pago</h3>
+          <button class="btn-close-modal" (click)="closePaymentMethodModal()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="text-secondary">Ingresa los datos de tu nueva tarjeta. Los próximos cobros usarán este método de pago.</p>
+          <div class="stripe-element-container">
+            <label class="form-label">Nueva Tarjeta</label>
+            <div id="stripe-payment-method-element" class="stripe-card-input"></div>
+          </div>
+          @if (checkoutError()) {
+            <div class="alert alert-error">
+              <i class="fa-solid fa-exclamation-circle"></i>
+              {{ checkoutError() }}
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" (click)="closePaymentMethodModal()" [disabled]="updatingPaymentMethod()">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" (click)="updatePaymentMethod()" [disabled]="updatingPaymentMethod()">
+            @if (updatingPaymentMethod()) {
+              <i class="fa-solid fa-spinner fa-spin"></i> Actualizando...
+            } @else {
+              <i class="fa-solid fa-save"></i> Guardar Método de Pago
+            }
+          </button>
+        </div>
+      </div>
     </div>
   }
 
