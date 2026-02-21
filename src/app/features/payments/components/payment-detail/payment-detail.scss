@@ -1,8 +1,5 @@
-.detail-container {
-  max-width: var(--layout-max-width);
-  margin: 0 auto;
-  padding: var(--spacing-2xl);
-}
+// Base: usa .detail-container de _components.scss
+// Nota: .detail-header, .info-card, .info-row aquí son custom (layout diferente al global)
 
 .loading-state,
 .error-state {

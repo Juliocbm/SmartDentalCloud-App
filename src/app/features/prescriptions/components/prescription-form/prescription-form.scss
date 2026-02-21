@@ -1,113 +1,30 @@
-.form-container {
-  max-width: var(--layout-max-width);
-  margin: 0 auto;
-  padding: var(--spacing-2xl);
-}
+// ============================================
+// PrescriptionFormComponent - Estilos Específicos
+// Base: usa .page-container.container-medium, .content-card,
+//       .standard-form, .form-section, .form-group, .form-input,
+//       .form-row, .header-form-actions de _components.scss
+// ============================================
 
-.prescription-form {
+// Section header con botón a la derecha
+.section-header-row {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2xl);
-}
-
-.form-section {
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-2xl);
-  box-shadow: var(--shadow-sm);
-
-  h3 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    font-size: var(--font-size-xl);
-    color: var(--text-primary);
-    margin: 0 0 var(--spacing-xl) 0;
-
-    i {
-      color: var(--primary-500);
-    }
-
-    .section-count {
-      background: var(--primary-100);
-      color: var(--primary-700);
-      padding: var(--spacing-xs) var(--spacing-md);
-      border-radius: var(--radius-full);
-      font-size: var(--font-size-sm);
-    }
-  }
-
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-xl);
-
-    h3 {
-      margin: 0;
-    }
-  }
-}
-
-.form-group {
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: var(--spacing-lg);
 
-  &:last-child {
-    margin-bottom: 0;
+  .section-title {
+    margin: 0;
+    padding: 0;
+    border: none;
   }
 }
 
-.form-label {
-  display: block;
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-sm);
+.section-count {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
-
-  &.required::after {
-    content: ' *';
-    color: var(--error-500);
-  }
-}
-
-.form-control {
-  width: 100%;
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  color: var(--text-primary);
-  background: var(--surface-primary);
-  transition: border-color var(--transition-base);
-  box-sizing: border-box;
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-  }
-
-  &::placeholder {
-    color: var(--text-tertiary);
-  }
-}
-
-textarea.form-control {
-  resize: vertical;
-  min-height: 60px;
-}
-
-select.form-control {
-  cursor: pointer;
-}
-
-.form-row {
-  display: grid;
-  gap: var(--spacing-lg);
-
-  &.cols-2 {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 // Patient search
@@ -303,36 +220,12 @@ select.form-control {
   }
 }
 
-// Form actions
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-md);
-  padding: var(--spacing-xl) 0;
-}
-
+// Responsive
 @media (max-width: 768px) {
-  .form-container {
-    padding: var(--spacing-lg);
-  }
-
-  .form-row.cols-2 {
-    grid-template-columns: 1fr;
-  }
-
-  .form-section .section-header {
+  .section-header-row {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-md);
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-
-    .btn {
-      width: 100%;
-      justify-content: center;
-    }
   }
 
   .selected-patient {

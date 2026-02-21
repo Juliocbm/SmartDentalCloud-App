@@ -114,14 +114,6 @@
   color: var(--text-tertiary);
 }
 
-// ===== Footer Actions =====
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-md);
-}
-
 // ===== Responsive =====
 
 @media (max-width: 480px) {
@@ -133,14 +125,5 @@
     flex-direction: column;
     text-align: center;
     gap: var(--spacing-sm);
-  }
-
-  .modal-actions {
-    flex-direction: column-reverse;
-
-    .btn {
-      width: 100%;
-      justify-content: center;
-    }
   }
 }

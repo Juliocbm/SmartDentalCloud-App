@@ -8,6 +8,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatusConfig } from '../../models/appointment.models';
 import { UsersService } from '../../../../core/services/users.service';
@@ -17,7 +18,7 @@ import { DentistListItem } from '../../../../core/models/user.models';
 @Component({
   selector: 'app-appointment-calendar',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, RouterLink, PageHeaderComponent],
+  imports: [CommonModule, FullCalendarModule, RouterLink, PageHeaderComponent, ModalComponent],
   templateUrl: './appointment-calendar.html',
   styleUrl: './appointment-calendar.scss'
 })

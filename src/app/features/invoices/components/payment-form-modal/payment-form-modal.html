@@ -78,13 +78,14 @@
   </form>
 
   <!-- Footer -->
-  <div modal-footer class="modal-actions">
-    <button type="button" class="btn btn-secondary" (click)="onClose()" [disabled]="loading()">
+  <div modal-footer>
+    <button type="button" class="btn btn-outline" (click)="onClose()" [disabled]="loading()">
+      <i class="fa-solid fa-times"></i>
       Cancelar
     </button>
-    <button type="button" class="btn btn-success" (click)="onSubmit()" [disabled]="loading() || form.invalid">
+    <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading() || form.invalid">
       @if (loading()) {
-        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span class="btn-spinner"></span>
         Registrando...
       } @else {
         <i class="fa-solid fa-check"></i>

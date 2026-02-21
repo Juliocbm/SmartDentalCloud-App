@@ -5,3 +5,32 @@ a.kpi-card {
   color: inherit;
   cursor: pointer;
 }
+
+.dashboard-loading {
+  text-align: center;
+  padding: var(--spacing-4xl);
+
+  p {
+    margin-top: var(--spacing-lg);
+  }
+}
+
+.patient-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--primary-100);
+  color: var(--primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}

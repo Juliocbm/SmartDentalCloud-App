@@ -1,8 +1,5 @@
-.detail-container {
-  max-width: var(--layout-max-width);
-  margin: 0 auto;
-  padding: var(--spacing-2xl);
-}
+// Base: usa .detail-container de _components.scss
+// Nota: .detail-header aquí es custom (border, btn-back simple, h1 más pequeño)
 
 // ===== States =====
 
@@ -258,8 +255,8 @@
 
 // ===== Responsive =====
 
+// Responsive: .detail-container manejado globalmente
 @media (max-width: 768px) {
-  .detail-container { padding: var(--spacing-lg); }
   .info-grid { grid-template-columns: 1fr; }
   .header-actions { flex-direction: column; gap: var(--spacing-sm); }
 }

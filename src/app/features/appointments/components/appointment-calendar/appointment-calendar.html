@@ -58,23 +58,23 @@
         <div class="legend">
           <span class="legend-title">Estados:</span>
           <span class="legend-item">
-            <span class="color-dot" style="background-color: #3b82f6;"></span>
+            <span class="color-dot dot-scheduled"></span>
             Programada
           </span>
           <span class="legend-item">
-            <span class="color-dot" style="background-color: #10b981;"></span>
+            <span class="color-dot dot-confirmed"></span>
             Confirmada
           </span>
           <span class="legend-item">
-            <span class="color-dot" style="background-color: #6b7280;"></span>
+            <span class="color-dot dot-completed"></span>
             Completada
           </span>
           <span class="legend-item">
-            <span class="color-dot" style="background-color: #ef4444;"></span>
+            <span class="color-dot dot-cancelled"></span>
             Cancelada
           </span>
           <span class="legend-item">
-            <span class="color-dot" style="background-color: #f59e0b;"></span>
+            <span class="color-dot dot-no-show"></span>
             No asistió
           </span>
         </div>
@@ -87,48 +87,41 @@
   }
 
   @if (showQuickCreateModal()) {
-    <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3>
-            <i class="fa-solid fa-calendar-plus"></i>
-            Nueva Cita
-          </h3>
-          <button (click)="closeModal()" class="close-btn">
-            <i class="fa-solid fa-times"></i>
-          </button>
+    <app-modal
+      title="Nueva Cita"
+      subtitle="Crear cita rápida desde el calendario"
+      icon="fa-calendar-plus"
+      size="sm"
+      (closed)="closeModal()">
+
+      <div class="slot-info">
+        <div class="info-row">
+          <i class="fa-solid fa-calendar"></i>
+          <span>{{ selectedSlot()?.start | date:'EEEE, dd MMMM yyyy' }}</span>
         </div>
-        
-        <div class="modal-body">
-          <div class="slot-info">
-            <div class="info-row">
-              <i class="fa-solid fa-calendar"></i>
-              <span>{{ selectedSlot()?.start | date:'EEEE, dd MMMM yyyy' }}</span>
-            </div>
-            <div class="info-row">
-              <i class="fa-solid fa-clock"></i>
-              <span>
-                {{ selectedSlot()?.start | date:'HH:mm' }} - 
-                {{ selectedSlot()?.end | date:'HH:mm' }}
-              </span>
-            </div>
-          </div>
-          
-          <p class="help-text">
-            Se abrirá el formulario completo con la fecha y hora preseleccionadas
-          </p>
-        </div>
-        
-        <div class="modal-footer">
-          <button (click)="closeModal()" class="btn btn-secondary">
-            Cancelar
-          </button>
-          <button (click)="navigateToFullForm()" class="btn btn-primary">
-            <i class="fa-solid fa-arrow-right"></i>
-            Continuar
-          </button>
+        <div class="info-row">
+          <i class="fa-solid fa-clock"></i>
+          <span>
+            {{ selectedSlot()?.start | date:'HH:mm' }} - 
+            {{ selectedSlot()?.end | date:'HH:mm' }}
+          </span>
         </div>
       </div>
-    </div>
+
+      <p class="help-text">
+        Se abrirá el formulario completo con la fecha y hora preseleccionadas
+      </p>
+
+      <div modal-footer>
+        <button type="button" class="btn btn-outline" (click)="closeModal()">
+          <i class="fa-solid fa-times"></i>
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="navigateToFullForm()">
+          <i class="fa-solid fa-arrow-right"></i>
+          Continuar
+        </button>
+      </div>
+    </app-modal>
   }
 </div>

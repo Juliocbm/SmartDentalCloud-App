@@ -1,291 +1,23 @@
-<div class="form-container">
+<div class="page-container container-medium">
   <app-page-header
     title="Nueva Receta Médica"
-    icon="fa-solid fa-prescription"
+    subtitle="Crea una receta con medicamentos y dosificación"
+    icon="fa-prescription"
+    [showBackButton]="true"
+    backRoute="/prescriptions"
     [breadcrumbs]="[
       { label: 'Dashboard', route: '/dashboard' },
       { label: 'Recetas', route: '/prescriptions' },
       { label: 'Nueva Receta' }
-    ]"
-  />
-
-  <form class="prescription-form" (ngSubmit)="onSubmit()">
-
-    <!-- Patient Selection -->
-    <div class="form-section">
-      <h3>
-        <i class="fa-solid fa-user"></i>
-        Paciente
-      </h3>
-
-      <div class="form-group">
-        <label class="form-label required">Paciente</label>
-        @if (selectedPatient(); as patient) {
-          <div class="selected-patient">
-            <div class="patient-info">
-              <i class="fa-solid fa-user-check"></i>
-              <span class="patient-name">{{ patient.firstName }} {{ patient.lastName }}</span>
-              @if (patient.email) {
-                <span class="patient-email">{{ patient.email }}</span>
-              }
-            </div>
-            <button type="button" class="btn-clear" (click)="clearPatient()">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-        } @else {
-          <div class="patient-search-wrapper">
-            <div class="search-input">
-              <i class="fa-solid fa-search"></i>
-              <input
-                type="text"
-                placeholder="Buscar paciente por nombre o email..."
-                [ngModel]="patientSearch()"
-                (ngModelChange)="onPatientSearchChange($event)"
-                name="patientSearch"
-                autocomplete="off"
-              />
-              @if (loadingPatients()) {
-                <i class="fa-solid fa-spinner fa-spin"></i>
-              }
-            </div>
-            @if (showPatientDropdown()) {
-              <div class="patient-dropdown">
-                @for (patient of filteredPatients(); track patient.id) {
-                  <button
-                    type="button"
-                    class="dropdown-item"
-                    (click)="selectPatient(patient)"
-                  >
-                    <i class="fa-solid fa-user"></i>
-                    <div>
-                      <span class="item-name">{{ patient.firstName }} {{ patient.lastName }}</span>
-                      @if (patient.email) {
-                        <span class="item-email">{{ patient.email }}</span>
-                      }
-                    </div>
-                  </button>
-                }
-              </div>
-            }
-          </div>
-        }
-      </div>
-    </div>
-
-    <!-- Diagnosis -->
-    <div class="form-section">
-      <h3>
-        <i class="fa-solid fa-stethoscope"></i>
-        Diagnóstico
-      </h3>
-
-      <div class="form-group">
-        <label class="form-label">Diagnóstico</label>
-        <textarea
-          class="form-control"
-          placeholder="Diagnóstico del paciente..."
-          rows="3"
-          [ngModel]="diagnosis()"
-          (ngModelChange)="diagnosis.set($event)"
-          name="diagnosis"
-        ></textarea>
-      </div>
-    </div>
-
-    <!-- Medications -->
-    <div class="form-section">
-      <div class="section-header">
-        <h3>
-          <i class="fa-solid fa-pills"></i>
-          Medicamentos
-          <span class="section-count">{{ items().length }}</span>
-        </h3>
-        <button type="button" class="btn btn-outline" (click)="addItem()">
-          <i class="fa-solid fa-plus"></i>
-          Agregar Medicamento
-        </button>
-      </div>
-
-      @for (item of items(); track $index; let i = $index) {
-        <div class="medication-form-card">
-          <div class="medication-form-header">
-            <span class="medication-number">{{ i + 1 }}</span>
-            <span class="medication-form-title">Medicamento {{ i + 1 }}</span>
-            @if (items().length > 1) {
-              <button type="button" class="btn-remove" (click)="removeItem(i)">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            }
-          </div>
-
-          <div class="medication-form-body">
-            <!-- Row 1: Name + Active Ingredient -->
-            <div class="form-row cols-2">
-              <div class="form-group">
-                <label class="form-label required">Nombre del Medicamento</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Ej: Amoxicilina"
-                  [ngModel]="item.medicationName"
-                  (ngModelChange)="updateItem(i, 'medicationName', $event)"
-                  [name]="'medicationName_' + i"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Principio Activo</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Ej: Amoxicilina trihidratada"
-                  [ngModel]="item.activeIngredient"
-                  (ngModelChange)="updateItem(i, 'activeIngredient', $event)"
-                  [name]="'activeIngredient_' + i"
-                />
-              </div>
-            </div>
-
-            <!-- Row 2: Presentation + Route -->
-            <div class="form-row cols-2">
-              <div class="form-group">
-                <label class="form-label">Presentación</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Ej: Cápsulas 500mg"
-                  [ngModel]="item.presentation"
-                  (ngModelChange)="updateItem(i, 'presentation', $event)"
-                  [name]="'presentation_' + i"
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Vía de Administración</label>
-                <select
-                  class="form-control"
-                  [ngModel]="item.route"
-                  (ngModelChange)="updateItem(i, 'route', $event)"
-                  [name]="'route_' + i"
-                >
-                  @for (opt of ROUTE_OPTIONS; track opt.value) {
-                    <option [value]="opt.value">{{ opt.label }}</option>
-                  }
-                </select>
-              </div>
-            </div>
-
-            <!-- Row 3: Dosage + Quantity -->
-            <div class="form-row cols-2">
-              <div class="form-group">
-                <label class="form-label required">Dosis</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Ej: 500mg"
-                  [ngModel]="item.dosage"
-                  (ngModelChange)="updateItem(i, 'dosage', $event)"
-                  [name]="'dosage_' + i"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-label required">Cantidad</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  min="1"
-                  [ngModel]="item.quantity"
-                  (ngModelChange)="updateItem(i, 'quantity', +$event)"
-                  [name]="'quantity_' + i"
-                  required
-                />
-              </div>
-            </div>
-
-            <!-- Row 4: Frequency + Duration -->
-            <div class="form-row cols-2">
-              <div class="form-group">
-                <label class="form-label required">Frecuencia</label>
-                <select
-                  class="form-control"
-                  [ngModel]="item.frequency"
-                  (ngModelChange)="updateItem(i, 'frequency', $event)"
-                  [name]="'frequency_' + i"
-                  required
-                >
-                  <option value="">Seleccionar...</option>
-                  @for (opt of FREQUENCY_OPTIONS; track opt.value) {
-                    <option [value]="opt.value">{{ opt.label }}</option>
-                  }
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label required">Duración</label>
-                <select
-                  class="form-control"
-                  [ngModel]="item.duration"
-                  (ngModelChange)="updateItem(i, 'duration', $event)"
-                  [name]="'duration_' + i"
-                  required
-                >
-                  <option value="">Seleccionar...</option>
-                  @for (opt of DURATION_OPTIONS; track opt.value) {
-                    <option [value]="opt.value">{{ opt.label }}</option>
-                  }
-                </select>
-              </div>
-            </div>
-
-            <!-- Instructions -->
-            <div class="form-group">
-              <label class="form-label">Instrucciones Especiales</label>
-              <textarea
-                class="form-control"
-                placeholder="Ej: Tomar después de los alimentos..."
-                rows="2"
-                [ngModel]="item.instructions"
-                (ngModelChange)="updateItem(i, 'instructions', $event)"
-                [name]="'instructions_' + i"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- Notes -->
-    <div class="form-section">
-      <h3>
-        <i class="fa-solid fa-note-sticky"></i>
-        Notas Adicionales
-      </h3>
-
-      <div class="form-group">
-        <label class="form-label">Notas</label>
-        <textarea
-          class="form-control"
-          placeholder="Observaciones o indicaciones generales..."
-          rows="3"
-          [ngModel]="notes()"
-          (ngModelChange)="notes.set($event)"
-          name="notes"
-        ></textarea>
-      </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="form-actions">
-      <button type="button" class="btn btn-secondary" (click)="goBack()">
+    ]">
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="goBack()">
+        <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="!isFormValid() || saving()"
-      >
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="!isFormValid() || saving()">
         @if (saving()) {
-          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span class="btn-spinner"></span>
           Guardando...
         } @else {
           <i class="fa-solid fa-check"></i>
@@ -293,6 +25,267 @@
         }
       </button>
     </div>
+  </app-page-header>
 
-  </form>
+  <div class="content-card">
+    <form class="standard-form">
+
+      <!-- Patient Selection -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-user section-icon"></i>
+          Paciente
+          <span class="required">*</span>
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label">Paciente</label>
+          @if (selectedPatient(); as patient) {
+            <div class="selected-patient">
+              <div class="patient-info">
+                <i class="fa-solid fa-user-check"></i>
+                <span class="patient-name">{{ patient.firstName }} {{ patient.lastName }}</span>
+                @if (patient.email) {
+                  <span class="patient-email">{{ patient.email }}</span>
+                }
+              </div>
+              <button type="button" class="btn-clear" (click)="clearPatient()">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          } @else {
+            <div class="patient-search-wrapper">
+              <div class="search-input">
+                <i class="fa-solid fa-search"></i>
+                <input
+                  type="text"
+                  placeholder="Buscar paciente por nombre o email..."
+                  [ngModel]="patientSearch()"
+                  (ngModelChange)="onPatientSearchChange($event)"
+                  name="patientSearch"
+                  autocomplete="off"
+                />
+                @if (loadingPatients()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                }
+              </div>
+              @if (showPatientDropdown()) {
+                <div class="patient-dropdown">
+                  @for (patient of filteredPatients(); track patient.id) {
+                    <button
+                      type="button"
+                      class="dropdown-item"
+                      (click)="selectPatient(patient)"
+                    >
+                      <i class="fa-solid fa-user"></i>
+                      <div>
+                        <span class="item-name">{{ patient.firstName }} {{ patient.lastName }}</span>
+                        @if (patient.email) {
+                          <span class="item-email">{{ patient.email }}</span>
+                        }
+                      </div>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Diagnosis -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-stethoscope section-icon"></i>
+          Diagnóstico
+          <span class="optional-badge">Opcional</span>
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label">Diagnóstico</label>
+          <textarea
+            class="form-input form-textarea"
+            placeholder="Diagnóstico del paciente..."
+            rows="3"
+            [ngModel]="diagnosis()"
+            (ngModelChange)="diagnosis.set($event)"
+            name="diagnosis"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Medications -->
+      <div class="form-section">
+        <div class="section-header-row">
+          <h3 class="section-title">
+            <i class="fa-solid fa-pills section-icon"></i>
+            Medicamentos
+            <span class="section-count">{{ items().length }}</span>
+          </h3>
+          <button type="button" class="btn btn-outline btn-sm" (click)="addItem()">
+            <i class="fa-solid fa-plus"></i>
+            Agregar
+          </button>
+        </div>
+
+        @for (item of items(); track $index; let i = $index) {
+          <div class="medication-form-card">
+            <div class="medication-form-header">
+              <span class="medication-number">{{ i + 1 }}</span>
+              <span class="medication-form-title">Medicamento {{ i + 1 }}</span>
+              @if (items().length > 1) {
+                <button type="button" class="btn-remove" (click)="removeItem(i)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              }
+            </div>
+
+            <div class="medication-form-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Nombre del Medicamento <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Ej: Amoxicilina"
+                    [ngModel]="item.medicationName"
+                    (ngModelChange)="updateItem(i, 'medicationName', $event)"
+                    [name]="'medicationName_' + i"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Principio Activo</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Ej: Amoxicilina trihidratada"
+                    [ngModel]="item.activeIngredient"
+                    (ngModelChange)="updateItem(i, 'activeIngredient', $event)"
+                    [name]="'activeIngredient_' + i"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Presentación</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Ej: Cápsulas 500mg"
+                    [ngModel]="item.presentation"
+                    (ngModelChange)="updateItem(i, 'presentation', $event)"
+                    [name]="'presentation_' + i"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Vía de Administración</label>
+                  <select
+                    class="form-input"
+                    [ngModel]="item.route"
+                    (ngModelChange)="updateItem(i, 'route', $event)"
+                    [name]="'route_' + i"
+                  >
+                    @for (opt of ROUTE_OPTIONS; track opt.value) {
+                      <option [value]="opt.value">{{ opt.label }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Dosis <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Ej: 500mg"
+                    [ngModel]="item.dosage"
+                    (ngModelChange)="updateItem(i, 'dosage', $event)"
+                    [name]="'dosage_' + i"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Cantidad <span class="required">*</span></label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    min="1"
+                    [ngModel]="item.quantity"
+                    (ngModelChange)="updateItem(i, 'quantity', +$event)"
+                    [name]="'quantity_' + i"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Frecuencia <span class="required">*</span></label>
+                  <select
+                    class="form-input"
+                    [ngModel]="item.frequency"
+                    (ngModelChange)="updateItem(i, 'frequency', $event)"
+                    [name]="'frequency_' + i"
+                  >
+                    <option value="">Seleccionar...</option>
+                    @for (opt of FREQUENCY_OPTIONS; track opt.value) {
+                      <option [value]="opt.value">{{ opt.label }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Duración <span class="required">*</span></label>
+                  <select
+                    class="form-input"
+                    [ngModel]="item.duration"
+                    (ngModelChange)="updateItem(i, 'duration', $event)"
+                    [name]="'duration_' + i"
+                  >
+                    <option value="">Seleccionar...</option>
+                    @for (opt of DURATION_OPTIONS; track opt.value) {
+                      <option [value]="opt.value">{{ opt.label }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Instrucciones Especiales</label>
+                <textarea
+                  class="form-input form-textarea"
+                  placeholder="Ej: Tomar después de los alimentos..."
+                  rows="2"
+                  [ngModel]="item.instructions"
+                  (ngModelChange)="updateItem(i, 'instructions', $event)"
+                  [name]="'instructions_' + i"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Notes -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-note-sticky section-icon"></i>
+          Notas Adicionales
+          <span class="optional-badge">Opcional</span>
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label">Notas</label>
+          <textarea
+            class="form-input form-textarea"
+            placeholder="Observaciones o indicaciones generales..."
+            rows="3"
+            [ngModel]="notes()"
+            (ngModelChange)="notes.set($event)"
+            name="notes"
+          ></textarea>
+        </div>
+      </div>
+
+    </form>
+  </div>
 </div>

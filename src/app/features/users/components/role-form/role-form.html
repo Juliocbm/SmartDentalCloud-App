@@ -7,6 +7,21 @@
     [showBackButton]="true"
     [backRoute]="'/users/roles'"
     [breadcrumbs]="breadcrumbItems()">
+    <div actions class="header-form-actions">
+      <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid" [class.fa-floppy-disk]="isEditMode()" [class.fa-plus]="!isEditMode()"></i>
+          {{ isEditMode() ? 'Guardar Cambios' : 'Crear Rol' }}
+        }
+      </button>
+    </div>
   </app-page-header>
 
   <div class="content-card">
@@ -22,14 +37,14 @@
     }
 
     <!-- Form -->
-    <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="role-form">
+    <form [formGroup]="roleForm" class="standard-form">
     
     <!-- Basic Information Section -->
     <div class="form-section">
-      <h2 class="section-title">
+      <h3 class="section-title">
         <i class="fa-solid fa-id-card section-icon"></i>
         Información del Rol
-      </h2>
+      </h3>
 
       <div class="form-group">
         <label for="name" class="form-label">
@@ -78,11 +93,11 @@
 
     <!-- Permissions Section -->
     <div class="form-section">
-      <h2 class="section-title">
+      <h3 class="section-title">
         <i class="fa-solid fa-shield-halved section-icon"></i>
         Permisos del Rol
         <span class="required">*</span>
-      </h2>
+      </h3>
       <p class="section-description">
         Selecciona los permisos que tendrá este rol. Los usuarios con este rol podrán realizar únicamente las acciones marcadas.
       </p>
@@ -100,30 +115,6 @@
       }
     </div>
 
-    <!-- Form Actions -->
-    <div class="form-actions">
-      <button
-        type="button"
-        class="btn btn-secondary"
-        (click)="cancel()"
-        [disabled]="loading()"
-      >
-        Cancelar
-      </button>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="loading()"
-      >
-        @if (loading()) {
-          <span class="btn-spinner"></span>
-          Guardando...
-        } @else {
-          <i class="fa-solid" [class.fa-floppy-disk]="isEditMode()" [class.fa-plus]="!isEditMode()"></i>
-          {{ isEditMode() ? 'Guardar Cambios' : 'Crear Rol' }}
-        }
-      </button>
-    </div>
     </form>
   </div>
 </div>

@@ -24,9 +24,9 @@
 
   @if (loading()) {
     <div class="content-section">
-      <div style="text-align: center; padding: 4rem;">
+      <div class="dashboard-loading">
         <div class="spinner spinner-lg"></div>
-        <p class="text-secondary" style="margin-top: 1rem;">Cargando dashboard...</p>
+        <p class="text-secondary">Cargando dashboard...</p>
       </div>
     </div>
   } @else {
@@ -99,8 +99,8 @@
                 @for (appointment of upcomingAppointments(); track appointment.id) {
                   <tr>
                     <td>
-                      <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-100); color: var(--primary-600); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem;">
+                      <div class="patient-cell">
+                        <div class="avatar-sm">
                           {{ appointment.patientName.charAt(0) }}
                         </div>
                         <strong>{{ appointment.patientName }}</strong>

@@ -342,7 +342,7 @@
   border-radius: var(--radius-md);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-lg);
-  color: #fff;
+  color: white;
   flex-shrink: 0;
 }
 
@@ -492,7 +492,7 @@
   &.active {
     background: var(--primary-500);
     border-color: var(--primary-500);
-    color: #fff;
+    color: white;
   }
 
   &:disabled {
