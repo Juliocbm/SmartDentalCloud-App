@@ -86,34 +86,8 @@
   font-weight: var(--font-weight-medium);
 }
 
-// ===== States =====
-.empty-state {
-  text-align: center;
-  padding: var(--spacing-4xl);
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  margin: var(--spacing-lg) 0;
-
-  i {
-    font-size: 4rem;
-    margin-bottom: var(--spacing-md);
-    display: block;
-  }
-
-  h3 {
-    font-size: var(--font-size-2xl);
-    color: var(--text-primary);
-    margin: var(--spacing-md) 0;
-    font-weight: var(--font-weight-semibold);
-  }
-
-  p {
-    color: var(--text-secondary);
-    margin: var(--spacing-sm) 0;
-    font-size: var(--font-size-base);
-  }
-}
-
+// Empty: usa .empty-state de _components.scss
+// Override: ícono verde cuando no hay alertas (estado positivo)
 .empty-state i {
   color: var(--success-500);
 }

@@ -1609,6 +1609,41 @@ textarea.form-control {
   }
 }
 
+// ===== ESTADO VACÍO / ERROR =====
+// Usado para: empty state, error state, no-results state.
+// Los componentes NO deben redefinir esta clase.
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-lg) 0;
+
+  i {
+    font-size: var(--font-size-5xl);
+    margin-bottom: var(--spacing-md);
+    display: block;
+    color: var(--text-tertiary);
+  }
+
+  h3 {
+    font-size: var(--font-size-2xl);
+    color: var(--text-primary);
+    margin: var(--spacing-md) 0;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin: var(--spacing-sm) 0;
+    font-size: var(--font-size-base);
+  }
+
+  .btn {
+    margin-top: var(--spacing-lg);
+  }
+}
+
 .spinner {
   border: 3px solid var(--border-secondary);
   border-top: 3px solid var(--primary-500);

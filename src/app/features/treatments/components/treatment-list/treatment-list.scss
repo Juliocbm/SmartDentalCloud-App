@@ -8,34 +8,7 @@
 // Botones: usa clases globales .btn de _components.scss
 // ============================================
 
-.empty-state {
-  text-align: center;
-  padding: var(--spacing-xl) var(--spacing-lg);
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  margin: var(--spacing-lg) 0;
-
-  i {
-    font-size: 3rem;
-    margin-bottom: var(--spacing-md);
-    display: block;
-  }
-
-  h3 {
-    font-size: 1.5rem;
-    color: var(--text-primary);
-    margin: var(--spacing-md) 0;
-  }
-
-  p {
-    color: var(--text-secondary);
-    margin: var(--spacing-sm) 0;
-  }
-}
-
-.empty-state i {
-  color: var(--text-tertiary);
-}
+// Empty: usa .empty-state de _components.scss
 
 .date-cell {
   color: var(--text-secondary);

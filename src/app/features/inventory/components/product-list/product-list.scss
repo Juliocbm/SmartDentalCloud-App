@@ -8,37 +8,7 @@
 // Badges: usa .badge de _components.scss
 // ============================================
 
-// ===== States =====
-.empty-state {
-  text-align: center;
-  padding: var(--spacing-4xl);
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  margin: var(--spacing-lg) 0;
-
-  i {
-    font-size: 4rem;
-    margin-bottom: var(--spacing-md);
-    display: block;
-  }
-
-  h3 {
-    font-size: var(--font-size-2xl);
-    color: var(--text-primary);
-    margin: var(--spacing-md) 0;
-    font-weight: var(--font-weight-semibold);
-  }
-
-  p {
-    color: var(--text-secondary);
-    margin: var(--spacing-sm) 0;
-    font-size: var(--font-size-base);
-  }
-}
-
-.empty-state i {
-  color: var(--text-tertiary);
-}
+// Empty: usa .empty-state de _components.scss
 
 // ===== Table Cell Content =====
 

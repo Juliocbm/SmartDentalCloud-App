@@ -18,36 +18,38 @@
   <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
-      <div class="spinner"></div>
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando roles...</p>
     </div>
   }
 
   <!-- Error State -->
-  @else if (error()) {
-    <div class="error-container">
-      <i class="fa-solid fa-triangle-exclamation error-icon"></i>
-      <p class="error-message">{{ error() }}</p>
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
       <button class="btn btn-secondary" (click)="loadRoles()">
+        <i class="fa-solid fa-arrows-rotate"></i>
         Reintentar
       </button>
     </div>
   }
 
   <!-- Empty State -->
-  @else if (roles().length === 0) {
+  @if (!loading() && !error() && roles().length === 0) {
     <div class="empty-state">
-      <i class="fa-solid fa-shield-halved empty-icon"></i>
+      <i class="fa-solid fa-shield-halved"></i>
       <h3>No hay roles configurados</h3>
       <p>Crea el primer rol personalizado para tu consultorio</p>
       <a routerLink="/users/roles/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
         Crear Primer Rol
       </a>
     </div>
   }
 
   <!-- Roles Grid -->
-  @else {
+  @if (!loading() && !error() && roles().length > 0) {
     <div class="roles-grid">
       @for (role of roles(); track role.id) {
         <div class="role-card">

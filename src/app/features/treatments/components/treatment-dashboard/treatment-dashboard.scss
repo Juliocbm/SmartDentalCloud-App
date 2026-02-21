@@ -181,17 +181,5 @@
   }
 }
 
-// ===== Empty State =====
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-2xl);
-  gap: var(--spacing-md);
-  color: var(--text-tertiary);
-
-  i { font-size: var(--font-size-3xl); }
-  p { margin: 0; font-size: var(--font-size-sm); }
-}
+// Empty: usa .empty-state de _components.scss
 

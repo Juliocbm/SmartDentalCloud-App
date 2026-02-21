@@ -5,44 +5,10 @@
 // Badges: usa .badge, .badge-info, .badge-success, .badge-error, .badge-warning, .badge-secondary de _components.scss
 // Action buttons: usa .btn-sm, .btn-outline de _components.scss
 
-// ===== Loading/Error/Empty States =====
-// Base: hereda .loading-container, .error-container, .empty-state de _components.scss
-// Solo overrides específicos de este componente
-.loading-container,
-.error-container,
-.empty-state {
-  min-height: 400px;
-
-  > i {
-    font-size: var(--font-size-5xl);
-    margin-bottom: var(--spacing-xl);
-  }
-
-  h3 {
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-semibold);
-    color: var(--text-primary);
-    margin: 0 0 var(--spacing-sm) 0;
-  }
-
-  p {
-    font-size: var(--font-size-base);
-    margin: 0 0 var(--spacing-2xl) 0;
-    max-width: 400px;
-  }
-}
-
-.error-container {
-  i { color: var(--error-500); }
-}
-
-.empty-state {
-  i { color: var(--text-muted); }
-}
-
-// .spinner: usa el global de _components.scss
-.spinner {
-  margin-bottom: var(--spacing-xl);
+// Empty/Loading: usa .empty-state, .loading-container de _components.scss
+// Override: ícono muted en empty-state
+.empty-state i {
+  color: var(--text-muted);
 }
 
 // ===== Table Cell Content =====
