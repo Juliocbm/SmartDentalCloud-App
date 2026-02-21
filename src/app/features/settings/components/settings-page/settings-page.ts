@@ -2,6 +2,7 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
+import { WorkScheduleEditorComponent } from '../work-schedule-editor/work-schedule-editor';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import {
@@ -13,12 +14,12 @@ import {
   LANGUAGE_OPTIONS
 } from '../../models/settings.models';
 
-type SettingsTab = 'general' | 'smtp' | 'branding' | 'domain';
+type SettingsTab = 'general' | 'schedule' | 'smtp' | 'branding' | 'domain';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss'
 })
@@ -64,6 +65,7 @@ export class SettingsPageComponent implements OnInit {
 
   tabs: { key: SettingsTab; label: string; icon: string }[] = [
     { key: 'general', label: 'General', icon: 'fa-gear' },
+    { key: 'schedule', label: 'Horario', icon: 'fa-clock' },
     { key: 'smtp', label: 'Correo (SMTP)', icon: 'fa-envelope' },
     { key: 'branding', label: 'Branding', icon: 'fa-palette' },
     { key: 'domain', label: 'Dominio', icon: 'fa-globe' }

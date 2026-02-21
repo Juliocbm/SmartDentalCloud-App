@@ -72,16 +72,6 @@
                 />
               </div>
               <div class="form-group">
-                <label class="form-label">Horario de Trabajo</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Lun-Vie 9:00-18:00"
-                  [ngModel]="generalWorkingHours()"
-                  (ngModelChange)="generalWorkingHours.set($event)"
-                />
-              </div>
-              <div class="form-group">
                 <label class="form-label">Zona Horaria</label>
                 <select
                   class="form-control"
@@ -121,6 +111,13 @@
                 Guardar Cambios
               </button>
             </div>
+          </div>
+        }
+
+        <!-- Schedule Tab -->
+        @if (activeTab() === 'schedule') {
+          <div class="settings-section">
+            <app-work-schedule-editor />
           </div>
         }
 

@@ -14,6 +14,8 @@ import { Appointment, AppointmentStatusConfig } from '../../models/appointment.m
 import { UsersService } from '../../../../core/services/users.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { DentistListItem } from '../../../../core/models/user.models';
+import { SettingsService } from '../../../settings/services/settings.service';
+import { DaySchedule, DAY_TO_FULLCALENDAR } from '../../../settings/models/work-schedule.models';
 
 @Component({
   selector: 'app-appointment-calendar',
@@ -25,6 +27,7 @@ import { DentistListItem } from '../../../../core/models/user.models';
 export class AppointmentCalendarComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);
   private usersService = inject(UsersService);
+  private settingsService = inject(SettingsService);
   private router = inject(Router);
   private logger = inject(LoggingService);
 
@@ -94,8 +97,44 @@ export class AppointmentCalendarComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.loadWorkSchedule();
     this.loadDentists();
     this.loadAppointments();
+  }
+
+  private loadWorkSchedule(): void {
+    this.settingsService.getWorkSchedule().subscribe({
+      next: (schedule) => this.applyWorkSchedule(schedule.days),
+      error: () => this.logger.warn('Could not load work schedule, using defaults')
+    });
+  }
+
+  private applyWorkSchedule(days: DaySchedule[]): void {
+    const openDays = days.filter(d => d.isOpen);
+    if (openDays.length === 0) return;
+
+    const businessHours = openDays.map(d => ({
+      daysOfWeek: [DAY_TO_FULLCALENDAR[d.dayOfWeek]],
+      startTime: d.startTime!,
+      endTime: d.endTime!
+    }));
+
+    const allStarts = openDays.map(d => d.startTime!).sort();
+    const allEnds = openDays.map(d => d.endTime!).sort();
+    const slotMinTime = allStarts[0] + ':00';
+    const slotMaxTime = allEnds[allEnds.length - 1] + ':00';
+
+    const weekends = openDays.some(d =>
+      d.dayOfWeek === 'saturday' || d.dayOfWeek === 'sunday'
+    );
+
+    this.calendarOptions.update(options => ({
+      ...options,
+      businessHours,
+      slotMinTime,
+      slotMaxTime,
+      weekends
+    }));
   }
 
   loadAppointments(): void {

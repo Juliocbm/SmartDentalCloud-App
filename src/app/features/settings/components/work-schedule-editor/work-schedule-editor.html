@@ -1,0 +1,95 @@
+<div class="work-schedule-editor">
+  <div class="section-header">
+    <div class="section-title">
+      <i class="fa-solid fa-clock"></i>
+      <h3>Horario Laboral</h3>
+    </div>
+    <p class="section-description">Configura los días y horarios de atención del consultorio</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando horario...</p>
+    </div>
+  } @else {
+    <div class="schedule-table">
+      <div class="schedule-header">
+        <span class="col-day">Día</span>
+        <span class="col-toggle">Abierto</span>
+        <span class="col-time">Hora Inicio</span>
+        <span class="col-time">Hora Fin</span>
+      </div>
+
+      @for (day of schedule(); track day.dayOfWeek) {
+        <div class="schedule-row" [class.closed]="!day.isOpen" [class.error]="hasValidationError(day)">
+          <span class="col-day">
+            <span class="day-label">{{ DAY_LABELS[day.dayOfWeek] }}</span>
+          </span>
+
+          <span class="col-toggle">
+            <label class="toggle">
+              <input
+                type="checkbox"
+                [checked]="day.isOpen"
+                (change)="toggleDay(day.dayOfWeek)" />
+              <span class="toggle-slider"></span>
+            </label>
+          </span>
+
+          <span class="col-time">
+            @if (day.isOpen) {
+              <select
+                class="time-select"
+                [ngModel]="day.startTime"
+                (ngModelChange)="updateStartTime(day.dayOfWeek, $event)">
+                @for (time of timeOptions; track time) {
+                  <option [value]="time">{{ time }}</option>
+                }
+              </select>
+            } @else {
+              <span class="time-disabled">—</span>
+            }
+          </span>
+
+          <span class="col-time">
+            @if (day.isOpen) {
+              <select
+                class="time-select"
+                [ngModel]="day.endTime"
+                (ngModelChange)="updateEndTime(day.dayOfWeek, $event)">
+                @for (time of timeOptions; track time) {
+                  <option [value]="time">{{ time }}</option>
+                }
+              </select>
+            } @else {
+              <span class="time-disabled">—</span>
+            }
+          </span>
+
+          @if (hasValidationError(day)) {
+            <span class="validation-error">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              La hora de fin debe ser posterior al inicio
+            </span>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="schedule-actions">
+      <button
+        class="btn btn-primary"
+        [disabled]="saving() || !isFormValid()"
+        (click)="save()">
+        @if (saving()) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-floppy-disk"></i>
+          Guardar Horario
+        }
+      </button>
+    </div>
+  }
+</div>

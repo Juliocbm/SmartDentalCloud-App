@@ -119,6 +119,13 @@
         </div>
       </div>
 
+      @if (isOutsideWorkSchedule()) {
+        <div class="alert alert-warning schedule-warning">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Esta cita está fuera del horario laboral configurado</span>
+        </div>
+      }
+
       <div class="availability-section">
         <button
           type="button"

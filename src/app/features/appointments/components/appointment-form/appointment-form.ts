@@ -11,6 +11,8 @@ import { DentistSelectComponent } from '../../../../shared/components/dentist-se
 import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { DentistListItem } from '../../../../core/models/user.models';
 import { TimeSlot } from '../../models/appointment.models';
+import { SettingsService } from '../../../settings/services/settings.service';
+import { DaySchedule, DAY_ORDER } from '../../../settings/models/work-schedule.models';
 
 @Component({
   selector: 'app-appointment-form',
@@ -31,6 +33,7 @@ export class AppointmentFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private appointmentsService = inject(AppointmentsService);
   private contextService = inject(AppointmentFormContextService);
+  private settingsService = inject(SettingsService);
   private logger = inject(LoggingService);
 
   appointmentForm!: FormGroup;
@@ -47,6 +50,9 @@ export class AppointmentFormComponent implements OnInit {
   checkingAvailability = signal(false);
   availabilityChecked = signal(false);
 
+  // Work schedule
+  workScheduleDays = signal<DaySchedule[]>([]);
+
   backRoute = computed(() => this.contextService.context().returnUrl);
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -59,6 +65,40 @@ export class AppointmentFormComponent implements OnInit {
     this.initForm();
     this.loadContext();
     this.checkEditMode();
+    this.loadWorkSchedule();
+  }
+
+  private loadWorkSchedule(): void {
+    this.settingsService.getWorkSchedule().subscribe({
+      next: (schedule) => this.workScheduleDays.set(schedule.days),
+      error: () => {} // Silent — use no schedule
+    });
+  }
+
+  isOutsideWorkSchedule(): boolean {
+    const days = this.workScheduleDays();
+    if (days.length === 0) return false;
+
+    const startAtValue = this.appointmentForm?.get('startAt')?.value;
+    if (!startAtValue) return false;
+
+    const startAt = new Date(startAtValue);
+    if (isNaN(startAt.getTime())) return false;
+
+    // Map JS day (0=Sun) to our day names
+    const jsDay = startAt.getDay();
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = dayNames[jsDay];
+
+    const daySchedule = days.find(d => d.dayOfWeek === dayName);
+    if (!daySchedule) return false;
+    if (!daySchedule.isOpen) return true;
+
+    const hours = startAt.getHours().toString().padStart(2, '0');
+    const minutes = startAt.getMinutes().toString().padStart(2, '0');
+    const timeStr = `${hours}:${minutes}`;
+
+    return timeStr < daySchedule.startTime! || timeStr >= daySchedule.endTime!;
   }
 
   private loadContext(): void {

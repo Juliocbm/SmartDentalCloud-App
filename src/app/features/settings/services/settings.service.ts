@@ -12,6 +12,7 @@ import {
   TestSmtpRequest,
   SmtpTestResult
 } from '../models/settings.models';
+import { WorkSchedule } from '../models/work-schedule.models';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
@@ -47,5 +48,13 @@ export class SettingsService {
 
   deleteSmtpConfiguration(): Observable<void> {
     return this.api.delete<void>('/tenants/smtp-configuration');
+  }
+
+  getWorkSchedule(): Observable<WorkSchedule> {
+    return this.api.get<WorkSchedule>('/tenants/work-schedule');
+  }
+
+  updateWorkSchedule(schedule: WorkSchedule): Observable<WorkSchedule> {
+    return this.api.put<WorkSchedule>('/tenants/work-schedule', schedule);
   }
 }

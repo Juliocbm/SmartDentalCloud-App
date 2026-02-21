@@ -30,6 +30,24 @@
   }
 }
 
+// ===== Schedule Warning =====
+.schedule-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--warning-50, #fffbeb);
+  border: 1px solid var(--warning-200, #fde68a);
+  border-radius: var(--radius-md);
+  color: var(--warning-700, #b45309);
+  font-size: var(--font-size-sm);
+
+  i {
+    flex-shrink: 0;
+  }
+}
+
 // ===== Availability Check =====
 .availability-section {
   margin-top: var(--spacing-lg);
