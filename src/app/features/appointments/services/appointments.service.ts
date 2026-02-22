@@ -27,8 +27,8 @@ export class AppointmentsService {
   create(request: CreateAppointmentRequest): Observable<Appointment> {
     return this.api.post<Appointment>('/appointments', {
       ...request,
-      startAt: request.startAt.toISOString(),
-      endAt: request.endAt.toISOString()
+      startAt: this.toLocalDateTimeString(request.startAt),
+      endAt: this.toLocalDateTimeString(request.endAt)
     }).pipe(
       map(apt => this.mapDates(apt))
     );
@@ -36,8 +36,8 @@ export class AppointmentsService {
 
   reschedule(id: string, request: RescheduleAppointmentRequest): Observable<void> {
     return this.api.patch<void>(`/appointments/${id}/reschedule`, {
-      newStartAt: request.newStartAt.toISOString(),
-      newEndAt: request.newEndAt.toISOString()
+      newStartAt: this.toLocalDateTimeString(request.newStartAt),
+      newEndAt: this.toLocalDateTimeString(request.newEndAt)
     });
   }
 
@@ -61,7 +61,7 @@ export class AppointmentsService {
 
   getByDate(date: Date, userId?: string): Observable<AppointmentListItem[]> {
     return this.api.get<Appointment[]>('/appointments', {
-      date: date.toISOString(),
+      date: this.toLocalDateString(date),
       userId
     }).pipe(
       map(appointments => appointments.map(apt => this.toListItem(this.mapDates(apt))))
@@ -76,8 +76,8 @@ export class AppointmentsService {
 
   getMyAppointments(startDate?: Date, endDate?: Date): Observable<AppointmentListItem[]> {
     const params: QueryParams = {};
-    if (startDate) params['startDate'] = startDate.toISOString();
-    if (endDate) params['endDate'] = endDate.toISOString();
+    if (startDate) params['startDate'] = this.toLocalDateTimeString(startDate);
+    if (endDate) params['endDate'] = this.toLocalDateTimeString(endDate);
     
     return this.api.get<Appointment[]>('/appointments/my-appointments', params).pipe(
       map(appointments => appointments.map(apt => this.toListItem(this.mapDates(apt))))
@@ -86,8 +86,8 @@ export class AppointmentsService {
 
   getByRange(startDate: Date, endDate: Date, userId?: string, status?: string): Observable<AppointmentListItem[]> {
     return this.api.get<Appointment[]>('/appointments/range', {
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
+      startDate: this.toLocalDateTimeString(startDate),
+      endDate: this.toLocalDateTimeString(endDate),
       userId,
       status
     }).pipe(
@@ -121,8 +121,8 @@ export class AppointmentsService {
 
   getStatistics(startDate?: Date, endDate?: Date, userId?: string): Observable<AppointmentStatistics> {
     const params: QueryParams = {};
-    if (startDate) params['startDate'] = startDate.toISOString();
-    if (endDate) params['endDate'] = endDate.toISOString();
+    if (startDate) params['startDate'] = this.toLocalDateString(startDate);
+    if (endDate) params['endDate'] = this.toLocalDateString(endDate);
     if (userId) params['userId'] = userId;
 
     return this.api.get<AppointmentStatistics>('/appointments/statistics', params);
@@ -165,5 +165,22 @@ export class AppointmentsService {
       day: 'numeric',
       month: 'short'
     }).format(date);
+  }
+
+  private toLocalDateTimeString(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    const h = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const s = String(date.getSeconds()).padStart(2, '0');
+    return `${y}-${m}-${d}T${h}:${min}:${s}`;
+  }
+
+  private toLocalDateString(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 }

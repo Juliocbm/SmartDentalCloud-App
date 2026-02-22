@@ -101,7 +101,7 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
 
   onDateChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.selectedDate.set(new Date(input.value));
+    this.selectedDate.set(new Date(input.value + 'T00:00:00'));
     this.loadAppointments();
   }
 
@@ -145,7 +145,10 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
   }
 
   formatDateForInput(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   getStatusConfig(status: AppointmentStatus) {
