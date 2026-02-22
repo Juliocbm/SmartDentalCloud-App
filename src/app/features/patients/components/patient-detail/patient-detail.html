@@ -6,17 +6,20 @@
     [breadcrumbs]="breadcrumbItems">
     <div actions>
       @if (patient(); as pat) {
+        <span class="status-badge" [class.badge-active]="pat.isActive" [class.badge-inactive]="!pat.isActive">
+          {{ pat.isActive ? 'Activo' : 'Inactivo' }}
+        </span>
         <button class="btn btn-outline" (click)="editPatient()">
           <i class="fa-solid fa-pen"></i>
           Editar
         </button>
         @if (pat.isActive) {
-          <button class="btn btn-warning" (click)="toggleActive()">
+          <button class="btn btn-outline btn-danger" (click)="toggleActive()">
             <i class="fa-solid fa-toggle-off"></i>
             Desactivar
           </button>
         } @else {
-          <button class="btn btn-success" (click)="toggleActive()">
+          <button class="btn btn-outline btn-success" (click)="toggleActive()">
             <i class="fa-solid fa-toggle-on"></i>
             Activar
           </button>
@@ -42,43 +45,8 @@
     </div>
   } @else if (patient(); as pat) {
 
-    <!-- Header Info -->
-    <div class="detail-header">
-
-      <div class="header-content">
-        <div class="title-section">
-          <h1>
-            <i class="fa-solid fa-user"></i>
-            {{ getFullName() }}
-          </h1>
-          <span class="status-badge" [class.badge-active]="pat.isActive" [class.badge-inactive]="!pat.isActive">
-            {{ pat.isActive ? 'Activo' : 'Inactivo' }}
-          </span>
-        </div>
-        <div class="header-info">
-          <div class="info-item">
-            <i class="fa-solid fa-calendar"></i>
-            <span class="label">Edad:</span>
-            <span class="value">{{ getAge() }}</span>
-          </div>
-          <div class="info-item">
-            <i class="fa-solid fa-clock"></i>
-            <span class="label">Registrado:</span>
-            <span class="value">{{ formatDate(pat.createdAt) }}</span>
-          </div>
-          @if (pat.phoneNumber) {
-            <div class="info-item">
-              <i class="fa-solid fa-phone"></i>
-              <span class="label">Teléfono:</span>
-              <span class="value">{{ pat.phoneNumber }}</span>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-
     <!-- Tabs Navigation -->
-    <div class="tabs-container">
+    <div class="tabs-bar">
       <div class="tabs-nav">
         <button 
           class="tab-button" 
@@ -140,171 +108,127 @@
           }
         </button>
       </div>
+    </div>
 
-      <!-- Tab Content -->
-      <div class="tab-content">
-        <!-- Info Tab -->
-        @if (activeTab() === 'info') {
-        <div class="tab-panel">
-          <div class="info-grid">
-            <!-- Datos Personales Card -->
+    <div class="detail-body">
+      <!-- Info Tab -->
+      @if (activeTab() === 'info') {
+        <div class="info-two-col">
+          <div class="info-section">
+            <h3>
+              <i class="fa-solid fa-user"></i>
+              Datos Personales
+            </h3>
             <div class="info-card">
-              <h3 class="card-title">
-                <i class="fa-solid fa-user"></i>
-                Datos Personales
-              </h3>
-              <div class="card-content">
-                <div class="info-row">
-                  <span class="info-label">Nombre Completo:</span>
-                  <span class="info-value">{{ getFullName() }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Fecha de Nacimiento:</span>
-                  <span class="info-value">{{ formatDate(patient()!.dateOfBirth) }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Edad:</span>
-                  <span class="info-value">{{ getAge() }}</span>
-                </div>
-                @if (patient()!.gender) {
-                  <div class="info-row">
-                    <span class="info-label">Género:</span>
-                    <span class="info-value">{{ patient()!.gender }}</span>
-                  </div>
-                }
+              <div class="info-row">
+                <span class="info-label">Nombre Completo:</span>
+                <span class="info-value">{{ getFullName() }}</span>
               </div>
+              <div class="info-row">
+                <span class="info-label">Fecha de Nacimiento:</span>
+                <span class="info-value">{{ formatDate(patient()!.dateOfBirth) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Edad:</span>
+                <span class="info-value">{{ getAge() }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Registrado:</span>
+                <span class="info-value">{{ formatDate(patient()!.createdAt) }}</span>
+              </div>
+              @if (patient()!.gender) {
+                <div class="info-row">
+                  <span class="info-label">Género:</span>
+                  <span class="info-value">{{ patient()!.gender }}</span>
+                </div>
+              }
             </div>
+          </div>
 
-            <!-- Datos de Contacto Card -->
+          <div class="info-section">
+            <h3>
+              <i class="fa-solid fa-address-book"></i>
+              Información de Contacto
+            </h3>
             <div class="info-card">
-              <h3 class="card-title">
-                <i class="fa-solid fa-address-book"></i>
-                Información de Contacto
-              </h3>
-              <div class="card-content">
-                @if (patient()!.phoneNumber) {
-                  <div class="info-row">
-                    <span class="info-label">
-                      <i class="fa-solid fa-phone"></i>
-                      Teléfono:
-                    </span>
-                    <span class="info-value">{{ patient()!.phoneNumber }}</span>
-                  </div>
-                }
-                @if (patient()!.email) {
-                  <div class="info-row">
-                    <span class="info-label">
-                      <i class="fa-solid fa-envelope"></i>
-                      Email:
-                    </span>
-                    <span class="info-value">{{ patient()!.email }}</span>
-                  </div>
-                }
-                @if (patient()!.address) {
-                  <div class="info-row">
-                    <span class="info-label">
-                      <i class="fa-solid fa-location-dot"></i>
-                      Dirección:
-                    </span>
-                    <span class="info-value">{{ patient()!.address }}</span>
-                  </div>
-                }
-                @if (!patient()!.phoneNumber && !patient()!.email && !patient()!.address) {
-                  <div class="info-empty">
-                    <i class="fa-solid fa-circle-info"></i>
-                    Sin información de contacto registrada
-                  </div>
-                }
-              </div>
+              @if (patient()!.phoneNumber) {
+                <div class="info-row">
+                  <span class="info-label">Teléfono:</span>
+                  <span class="info-value">{{ patient()!.phoneNumber }}</span>
+                </div>
+              }
+              @if (patient()!.email) {
+                <div class="info-row">
+                  <span class="info-label">Email:</span>
+                  <span class="info-value">{{ patient()!.email }}</span>
+                </div>
+              }
+              @if (patient()!.address) {
+                <div class="info-row">
+                  <span class="info-label">Dirección:</span>
+                  <span class="info-value">{{ patient()!.address }}</span>
+                </div>
+              }
+              @if (!patient()!.phoneNumber && !patient()!.email && !patient()!.address) {
+                <div class="info-empty">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Sin información de contacto registrada
+                </div>
+              }
             </div>
           </div>
         </div>
-        }
+      }
 
-        <!-- Medical Tab -->
-        @if (activeTab() === 'medical') {
-        <div class="tab-panel">
-          <!-- Allergies Alert -->
-          @if (hasAllergies()) {
-          <div class="medical-alert">
-            <i class="fa-solid fa-exclamation-triangle"></i>
-            <div>
-              <strong>⚠️ ALERGIAS</strong>
-              <p>{{ patient()!.allergies }}</p>
+      <!-- Medical Tab -->
+      @if (activeTab() === 'medical') {
+        @if (hasMedicalHistory()) {
+          <div class="info-section">
+            <h3>
+              <i class="fa-solid fa-heartbeat"></i>
+              Historia Médica
+            </h3>
+            <div class="info-card">
+              @if (patient()!.bloodType) {
+                <div class="info-row">
+                  <span class="info-label">Tipo de Sangre:</span>
+                  <span class="info-value">{{ patient()!.bloodType }}</span>
+                </div>
+              }
+              @if (hasAllergies()) {
+                <div class="info-row">
+                  <span class="info-label">Alergias:</span>
+                  <span class="info-value">{{ patient()!.allergies }}</span>
+                </div>
+              }
+              @if (patient()!.chronicDiseases) {
+                <div class="info-row">
+                  <span class="info-label">Enfermedades Crónicas:</span>
+                  <span class="info-value">{{ patient()!.chronicDiseases }}</span>
+                </div>
+              }
+              @if (patient()!.currentMedications) {
+                <div class="info-row">
+                  <span class="info-label">Medicamentos Actuales:</span>
+                  <span class="info-value">{{ patient()!.currentMedications }}</span>
+                </div>
+              }
+              @if (patient()!.smokingStatus) {
+                <div class="info-row">
+                  <span class="info-label">Estado Fumador:</span>
+                  <span class="info-value">{{ patient()!.smokingStatus }}</span>
+                </div>
+              }
+              @if (patient()!.notes) {
+                <div class="info-row">
+                  <span class="info-label">Notas Médicas:</span>
+                  <span class="info-value">{{ patient()!.notes }}</span>
+                </div>
+              }
             </div>
           </div>
-          }
-
-          <div class="medical-grid">
-            <!-- Blood Type -->
-            @if (patient()!.bloodType) {
-            <div class="info-card">
-              <h3 class="card-title">
-                <i class="fa-solid fa-droplet"></i>
-                Tipo de Sangre
-              </h3>
-              <div class="card-content">
-                <div class="blood-type-badge">{{ patient()!.bloodType }}</div>
-              </div>
-            </div>
-            }
-
-            <!-- Chronic Diseases -->
-            @if (patient()!.chronicDiseases) {
-            <div class="info-card">
-              <h3 class="card-title">
-                <i class="fa-solid fa-notes-medical"></i>
-                Enfermedades Crónicas
-              </h3>
-              <div class="card-content">
-                <p>{{ patient()!.chronicDiseases }}</p>
-              </div>
-            </div>
-            }
-
-            <!-- Current Medications -->
-            @if (patient()!.currentMedications) {
-            <div class="info-card">
-              <h3 class="card-title">
-                <i class="fa-solid fa-pills"></i>
-                Medicamentos Actuales
-              </h3>
-              <div class="card-content">
-                <p>{{ patient()!.currentMedications }}</p>
-              </div>
-            </div>
-            }
-
-            <!-- Smoking Status -->
-            @if (patient()!.smokingStatus) {
-            <div class="info-card">
-              <h3 class="card-title">
-                <i class="fa-solid fa-smoking"></i>
-                Estado Fumador
-              </h3>
-              <div class="card-content">
-                <p>{{ patient()!.smokingStatus }}</p>
-              </div>
-            </div>
-            }
-
-            <!-- Notes -->
-            @if (patient()!.notes) {
-            <div class="info-card full-width">
-              <h3 class="card-title">
-                <i class="fa-solid fa-file-lines"></i>
-                Notas Médicas
-              </h3>
-              <div class="card-content">
-                <p>{{ patient()!.notes }}</p>
-              </div>
-            </div>
-            }
-          </div>
-
-          <!-- Empty State -->
-          @if (!hasMedicalHistory()) {
-          <div class="empty-medical">
+        } @else {
+          <div class="empty-state">
             <i class="fa-solid fa-heartbeat"></i>
             <h3>Sin Historia Médica</h3>
             <p>Este paciente no tiene información médica registrada</p>
@@ -313,23 +237,22 @@
               Agregar Historia Médica
             </button>
           </div>
-          }
-        </div>
         }
-        <!-- Odontogram Tab -->
-        @if (activeTab() === 'odontogram') {
-        <div class="tab-panel">
+      }
+      <!-- Odontogram Tab -->
+      @if (activeTab() === 'odontogram') {
+        <div class="info-section">
           <app-odontogram
             [patientId]="patient()!.id"
             [patientName]="getFullName()"
           />
         </div>
-        }
+      }
 
-        <!-- Fiscal Tab -->
-        @if (activeTab() === 'fiscal') {
-        <div class="tab-panel">
-          <div class="fiscal-header">
+      <!-- Fiscal Tab -->
+      @if (activeTab() === 'fiscal') {
+        <div class="info-section">
+          <div class="section-header-with-action">
             <h3>
               <i class="fa-solid fa-file-invoice"></i>
               Datos Fiscales
@@ -393,22 +316,22 @@
             </div>
           } @else {
             @if (taxId()) {
-              <div class="fiscal-info">
+              <div class="info-card">
                 <div class="info-row">
-                  <span class="info-label">RFC</span>
+                  <span class="info-label">RFC:</span>
                   <span class="info-value mono">{{ taxId() }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Razón Social</span>
+                  <span class="info-label">Razón Social:</span>
                   <span class="info-value">{{ legalName() }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Domicilio Fiscal</span>
+                  <span class="info-label">Domicilio Fiscal:</span>
                   <span class="info-value">{{ fiscalAddress() || '—' }}</span>
                 </div>
               </div>
             } @else {
-              <div class="empty-fiscal">
+              <div class="empty-state empty-state-sm">
                 <i class="fa-solid fa-file-invoice"></i>
                 <h3>Sin Datos Fiscales</h3>
                 <p>Este paciente no tiene información fiscal registrada. Es necesaria para generar CFDI.</p>
@@ -420,11 +343,11 @@
             }
           }
         </div>
-        }
+      }
 
-        <!-- Financial Tab -->
-        @if (activeTab() === 'financial') {
-        <div class="tab-panel">
+      <!-- Financial Tab -->
+      @if (activeTab() === 'financial') {
+        <div class="info-section">
           @if (financialLoading()) {
             <div class="inline-loading">
               <i class="fa-solid fa-spinner fa-spin"></i>
@@ -504,18 +427,18 @@
               </div>
             }
           } @else {
-            <div class="empty-financial">
+            <div class="empty-state empty-state-sm">
               <i class="fa-solid fa-wallet"></i>
               <h3>Sin información financiera</h3>
               <p>No se encontró resumen financiero para este paciente</p>
             </div>
           }
         </div>
-        }
+      }
 
-        <!-- History Tab -->
-        @if (activeTab() === 'history') {
-        <div class="tab-panel">
+      <!-- History Tab -->
+      @if (activeTab() === 'history') {
+        <div class="info-section">
           @if (historyLoading()) {
             <div class="inline-loading">
               <i class="fa-solid fa-spinner fa-spin"></i>
@@ -601,25 +524,25 @@
             }
 
             @if ((!hist.appointments || hist.appointments.length === 0) && (!hist.treatments || hist.treatments.length === 0) && (!hist.invoices || hist.invoices.length === 0)) {
-              <div class="empty-history">
+              <div class="empty-state empty-state-sm">
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 <h3>Sin Historial</h3>
                 <p>Este paciente aún no tiene interacciones registradas</p>
               </div>
             }
           } @else {
-            <div class="empty-history">
+            <div class="empty-state empty-state-sm">
               <i class="fa-solid fa-clock-rotate-left"></i>
               <h3>Sin Historial</h3>
               <p>No se pudo cargar el historial del paciente</p>
             </div>
           }
         </div>
-        }
+      }
 
-        <!-- Files Tab -->
-        @if (activeTab() === 'files') {
-        <div class="tab-panel">
+      <!-- Files Tab -->
+      @if (activeTab() === 'files') {
+        <div class="info-section">
           <div class="files-header">
             <h3>
               <i class="fa-solid fa-paperclip"></i>
@@ -747,7 +670,7 @@
 
           <!-- Empty -->
           @if (!filesLoading() && files().length === 0 && !showUploadForm()) {
-            <div class="empty-files">
+            <div class="empty-state empty-state-sm">
               <i class="fa-solid fa-folder-open"></i>
               <h3>Sin Archivos</h3>
               <p>Este paciente no tiene archivos adjuntos</p>
@@ -758,8 +681,7 @@
             </div>
           }
         </div>
-        }
-      </div>
+      }
     </div>
   }
 </div>
