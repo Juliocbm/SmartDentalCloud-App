@@ -105,15 +105,15 @@ export class AppointmentsService {
   }
 
   getAvailability(date: Date, userId?: string, durationMinutes: number = 60): Observable<TimeSlot[]> {
-    return this.api.get<{ start: string; end: string; available: boolean }[]>('/appointments/availability', {
+    return this.api.get<{ startTime: string; endTime: string; isAvailable: boolean }[]>('/appointments/availability', {
       date: date.toISOString(),
       userId,
       durationMinutes
     }).pipe(
       map(slots => slots.map(slot => ({
-        start: new Date(slot.start),
-        end: new Date(slot.end),
-        available: slot.available
+        start: new Date(slot.startTime),
+        end: new Date(slot.endTime),
+        available: slot.isAvailable
       })))
     );
   }
