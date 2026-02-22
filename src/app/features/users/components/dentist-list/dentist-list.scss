@@ -1,281 +1,74 @@
 // ============================================
 // DentistListComponent - Estilos Específicos
-// Usa estilos globales de _components.scss y _layout.scss
+// Base: .table-container, .table, .info-cell, .avatar, .badge, .btn de _components.scss
+// Layout: .page-container.container-wide de _layout.scss
 // ============================================
 
-.dentist-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-lg);
+// ===== Table Cell Content =====
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-}
+.specialty-cell {
+  min-width: 140px;
 
-.dentist-card {
-  background: var(--surface-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: all var(--transition-base);
-
-  &:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-  }
-
-  &.card-inactive {
-    opacity: 0.85;
-    border-color: var(--border-secondary);
-    
-    .card-header {
-      background: linear-gradient(135deg, var(--gray-100) 0%, var(--surface-primary) 100%);
-    }
-    
-    .dentist-avatar {
-      background: var(--gray-400);
-    }
-  }
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-primary);
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--surface-primary) 100%);
-}
-
-.dentist-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--primary-500);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: var(--font-size-2xl);
-  flex-shrink: 0;
-}
-
-.dentist-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.dentist-name {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  margin: 0 0 var(--spacing-xs) 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dentist-email {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.status-badge {
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  
-  &.badge-success {
-    background: var(--success-100);
-    color: var(--success-700);
-  }
-  
-  &.badge-error {
-    background: var(--error-100);
-    color: var(--error-700);
-  }
-}
-
-.card-body {
-  padding: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.info-row {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-md);
-}
-
-.info-icon {
-  width: 20px;
-  color: var(--primary-500);
-  font-size: var(--font-size-base);
-  margin-top: 2px;
-  flex-shrink: 0;
-}
-
-.info-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-}
-
-.info-label {
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-  font-weight: var(--font-weight-medium);
-}
-
-.info-value {
-  font-size: var(--font-size-sm);
-  color: var(--text-primary);
-  font-weight: var(--font-weight-medium);
-  
-  &.text-muted {
+  .text-muted {
     color: var(--text-tertiary);
+    font-size: var(--font-size-xs);
     font-style: italic;
   }
 }
 
-.card-footer {
-  display: flex;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-top: 1px solid var(--border-primary);
-  background: linear-gradient(to bottom, var(--surface-secondary) 0%, var(--gray-50) 100%);
-  align-items: stretch;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+.contact-cell {
+  min-width: 140px;
 
-  .btn {
-    flex: 1;
-    min-width: 0;
+  .contact-item {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: var(--spacing-xs);
-    white-space: nowrap;
-    font-weight: var(--font-weight-medium);
-    transition: all var(--transition-base);
+    font-size: var(--font-size-sm);
 
     i {
-      font-size: var(--font-size-base);
-      flex-shrink: 0;
-    }
-
-    .btn-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+      color: var(--text-tertiary);
+      font-size: var(--font-size-xs);
+      width: 14px;
     }
   }
 
-  // Botón principal (40% del espacio)
-  .action-main {
-    flex: 1.8;
-    font-weight: var(--font-weight-semibold);
-  }
-
-  // Botones secundarios (20% cada uno)
-  .action-secondary {
-    flex: 1;
-  }
-
-  // Botón de toggle con colores distintivos
-  .action-toggle {
-    flex: 1;
-    
-    // Activo - Verde (estado positivo)
-    &.btn-success {
-      background: var(--success-50);
-      color: var(--success-700);
-      border-color: var(--success-200);
-
-      &:hover {
-        background: var(--success-100);
-        border-color: var(--success-300);
-      }
-    }
-
-    // Inactivo - Amarillo/Advertencia
-    &.btn-warning {
-      background: var(--warning-50);
-      color: var(--warning-700);
-      border-color: var(--warning-200);
-
-      &:hover {
-        background: var(--warning-100);
-        border-color: var(--warning-300);
-      }
-    }
+  .text-muted {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-xs);
+    font-style: italic;
   }
 }
 
-// Responsive: Tablet (ocultar algunos textos)
-@media (max-width: 768px) {
-  .card-footer {
-    .action-secondary .btn-text {
-      display: none;
-    }
-    
-    .action-secondary {
-      min-width: 44px;
-    }
-  }
-}
-
-// Responsive: Móvil (solo iconos)
-@media (max-width: 480px) {
-  .card-footer {
-    gap: var(--spacing-xs);
-    
-    .btn-text {
-      display: none;
-    }
-
-    .btn {
-      min-width: 44px;
-      padding: var(--spacing-xs);
-    }
-
-    .action-main {
-      flex: 1.2;
-    }
-
-    .action-secondary,
-    .action-toggle {
-      flex: 1;
-    }
-  }
-}
-
-.results-summary {
-  margin-top: var(--spacing-xl);
-  padding: var(--spacing-md);
-  text-align: center;
-}
-
-.results-count {
-  font-size: var(--font-size-sm);
+.date-cell {
   color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  min-width: 90px;
+}
 
-  strong {
-    color: var(--primary-600);
-    font-weight: var(--font-weight-semibold);
+.status-cell {
+  min-width: 100px;
+}
+
+.actions-column {
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+// ===== Responsive =====
+@media (max-width: 768px) {
+  .specialty-cell,
+  .date-cell {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-cell {
+    display: none;
   }
 }

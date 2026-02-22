@@ -1,143 +1,191 @@
-<div class="page-container container-medium">
-  <!-- Loading State -->
+<div class="detail-container">
+  <app-page-header
+    [title]="user() ? user()!.name : 'Usuario'"
+    [icon]="'fa-user-md'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      @if (user(); as currentUser) {
+        <span class="status-badge" [class.badge-active]="currentUser.isActive" [class.badge-inactive]="!currentUser.isActive">
+          {{ currentUser.isActive ? 'Activo' : 'Inactivo' }}
+        </span>
+        <button class="btn btn-outline" (click)="editUser()">
+          <i class="fa-solid fa-pen"></i>
+          Editar
+        </button>
+        @if (currentUser.isActive) {
+          <button class="btn btn-outline btn-danger" (click)="toggleUserActive()">
+            <i class="fa-solid fa-toggle-off"></i>
+            Desactivar
+          </button>
+        } @else {
+          <button class="btn btn-outline btn-success" (click)="toggleUserActive()">
+            <i class="fa-solid fa-toggle-on"></i>
+            Activar
+          </button>
+        }
+      }
+    </div>
+  </app-page-header>
+
   @if (loading()) {
     <div class="loading-container">
-      <div class="spinner"></div>
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando usuario...</p>
     </div>
-  }
-
-  <!-- Error State -->
-  @else if (error()) {
-    <div class="error-container">
-      <div class="error-icon">⚠️</div>
-      <p class="error-message">{{ error() }}</p>
-      <a routerLink="/users" class="btn btn-secondary">Volver a lista</a>
+  } @else if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h3>Error al cargar el usuario</h3>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
     </div>
-  }
+  } @else if (user(); as currentUser) {
 
-  <!-- User Detail -->
-  @else if (user(); as currentUser) {
-    <!-- Header with Actions -->
-    <div class="detail-header">
-      <div class="header-nav">
-        <a routerLink="/users" class="back-link">
-          ← Volver a usuarios
-        </a>
-      </div>
-      <div class="header-actions">
-        <a [routerLink]="['/users', currentUser.id, 'edit']" class="btn btn-primary">
-          ✏️ Editar
-        </a>
-        <button
-          (click)="toggleUserActive()"
-          class="btn"
-          [class.btn-warning]="currentUser.isActive"
-          [class.btn-success]="!currentUser.isActive"
-        >
-          {{ currentUser.isActive ? '🚫 Desactivar' : '✅ Activar' }}
-        </button>
-      </div>
-    </div>
+    <div class="detail-body">
+      <!-- User Info: two columns -->
+      <div class="info-two-col">
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-user"></i>
+            Datos del Usuario
+          </h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ currentUser.name }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span class="info-value">{{ currentUser.email }}</span>
+            </div>
+            @if (currentUser.profile?.phoneNumber) {
+              <div class="info-row">
+                <span class="info-label">Teléfono:</span>
+                <span class="info-value">{{ currentUser.profile?.phoneNumber }}</span>
+              </div>
+            }
+            <div class="info-row">
+              <span class="info-label">Registrado:</span>
+              <span class="info-value">{{ currentUser.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
 
-    <!-- User Info Card -->
-    <div class="info-card main-info">
-      <div class="card-header">
-        <div class="user-avatar">
-          👤
-        </div>
-        <div class="user-title">
-          <h1 class="user-name">{{ currentUser.name }}</h1>
-          <p class="user-email">{{ currentUser.email }}</p>
-        </div>
-        <div class="user-status-badge">
-          @if (currentUser.isActive) {
-            <span class="status-badge status-active">✅ Activo</span>
-          } @else {
-            <span class="status-badge status-inactive">❌ Inactivo</span>
-          }
-        </div>
-      </div>
-      
-      <div class="card-body">
-        <div class="info-grid">
-          @if (currentUser.profile?.phoneNumber) {
-            <div class="info-item">
-              <span class="info-label">📱 Teléfono</span>
-              <span class="info-value">{{ currentUser.profile?.phoneNumber }}</span>
-            </div>
-          }
-          
-          @if (currentUser.profile?.specialty) {
-            <div class="info-item">
-              <span class="info-label">🩺 Especialidad</span>
-              <span class="info-value">{{ currentUser.profile?.specialty }}</span>
-            </div>
-          }
-          
-          @if (currentUser.profile?.professionalLicense) {
-            <div class="info-item">
-              <span class="info-label">📜 Cédula Profesional</span>
-              <span class="info-value">{{ currentUser.profile?.professionalLicense }}</span>
-            </div>
-          }
-          
-          <div class="info-item">
-            <span class="info-label">📅 Registrado</span>
-            <span class="info-value">{{ currentUser.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-stethoscope"></i>
+            Información Profesional
+          </h3>
+          <div class="info-card">
+            @if (currentUser.profile?.specialty) {
+              <div class="info-row">
+                <span class="info-label">Especialidad:</span>
+                <span class="info-value">{{ currentUser.profile?.specialty }}</span>
+              </div>
+            }
+            @if (currentUser.profile?.professionalLicense) {
+              <div class="info-row">
+                <span class="info-label">Cédula Profesional:</span>
+                <span class="info-value">{{ currentUser.profile?.professionalLicense }}</span>
+              </div>
+            }
+            @if (currentUser.profile?.education) {
+              <div class="info-row">
+                <span class="info-label">Educación:</span>
+                <span class="info-value">{{ currentUser.profile?.education }}</span>
+              </div>
+            }
+            @if (currentUser.profile?.yearsOfExperience) {
+              <div class="info-row">
+                <span class="info-label">Experiencia:</span>
+                <span class="info-value">{{ currentUser.profile?.yearsOfExperience }} años</span>
+              </div>
+            }
+            @if (!currentUser.profile?.specialty && !currentUser.profile?.professionalLicense && !currentUser.profile?.education && !currentUser.profile?.yearsOfExperience) {
+              <div class="info-empty">
+                <i class="fa-solid fa-circle-info"></i>
+                Sin información profesional registrada
+              </div>
+            }
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Roles Card -->
-    <div class="info-card">
-      <div class="card-header">
-        <h2 class="card-title">
-          <span class="card-icon">🔑</span>
+      <!-- Additional info (address, bio) -->
+      @if (currentUser.profile?.address || currentUser.profile?.bio) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-circle-info"></i>
+            Información Adicional
+          </h3>
+          <div class="info-card">
+            @if (currentUser.profile?.address) {
+              <div class="info-row">
+                <span class="info-label">Dirección:</span>
+                <span class="info-value">{{ currentUser.profile?.address }}</span>
+              </div>
+            }
+            @if (currentUser.profile?.bio) {
+              <div class="info-row">
+                <span class="info-label">Biografía:</span>
+                <span class="info-value">{{ currentUser.profile?.bio }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Roles -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-key"></i>
           Roles Asignados
-        </h2>
-      </div>
-      <div class="card-body">
+        </h3>
         @if (currentUser.roles.length > 0) {
           <div class="roles-list">
             @for (role of currentUser.roles; track role.id) {
               <div class="role-item">
                 <span [class]="'role-badge ' + getRoleBadgeClass(role.name)">
-                  <span class="role-icon">{{ getRoleIcon(role.name) }}</span>
                   {{ role.name }}
                 </span>
                 @if (role.description) {
-                  <p class="role-description">{{ role.description }}</p>
+                  <span class="role-description">{{ role.description }}</span>
                 }
               </div>
             }
           </div>
         } @else {
-          <p class="empty-message">Sin roles asignados</p>
+          <div class="empty-state empty-state-sm">
+            <i class="fa-solid fa-key"></i>
+            <h3>Sin Roles</h3>
+            <p>Este usuario no tiene roles asignados</p>
+          </div>
         }
       </div>
-    </div>
 
-    <!-- Permissions Card -->
-    <div class="info-card">
-      <div class="card-header">
-        <h2 class="card-title">
-          <span class="card-icon">🔐</span>
+      <!-- Permissions -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-shield-halved"></i>
           Permisos Efectivos
-          <span class="permissions-count">{{ currentUser.permissions.length }}</span>
-        </h2>
-      </div>
-      <div class="card-body">
+          @if (currentUser.permissions.length > 0) {
+            <span class="permissions-count">{{ currentUser.permissions.length }}</span>
+          }
+        </h3>
         @if (currentUser.permissions.length > 0) {
           <div class="permissions-grid">
             @for (entry of groupPermissionsByCategory(currentUser.permissions) | keyvalue; track entry.key) {
               <div class="permission-group">
-                <h3 class="group-title">{{ entry.key }}</h3>
+                <h4 class="group-title">{{ entry.key }}</h4>
                 <div class="permissions-list">
                   @for (permission of entry.value; track permission) {
-                    <span class="permission-chip">
-                      ✓ {{ permission.split('.')[1] }}
+                    <span class="permission-item">
+                      <i class="fa-solid fa-check"></i>
+                      {{ translateAction(permission) }}
                     </span>
                   }
                 </div>
@@ -145,52 +193,13 @@
             }
           </div>
         } @else {
-          <p class="empty-message">Sin permisos asignados</p>
+          <div class="empty-state empty-state-sm">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h3>Sin Permisos</h3>
+            <p>Este usuario no tiene permisos asignados</p>
+          </div>
         }
       </div>
     </div>
-
-    <!-- Additional Profile Info -->
-    @if (currentUser.profile?.address || currentUser.profile?.education || currentUser.profile?.bio) {
-      <div class="info-card">
-        <div class="card-header">
-          <h2 class="card-title">
-            <span class="card-icon">💼</span>
-            Información Adicional
-          </h2>
-        </div>
-        <div class="card-body">
-          <div class="additional-info">
-            @if (currentUser.profile?.address) {
-              <div class="info-block">
-                <h4 class="info-block-title">📍 Dirección</h4>
-                <p class="info-block-content">{{ currentUser.profile?.address }}</p>
-              </div>
-            }
-            
-            @if (currentUser.profile?.education) {
-              <div class="info-block">
-                <h4 class="info-block-title">🎓 Educación</h4>
-                <p class="info-block-content">{{ currentUser.profile?.education }}</p>
-              </div>
-            }
-            
-            @if (currentUser.profile?.yearsOfExperience) {
-              <div class="info-block">
-                <h4 class="info-block-title">⏱️ Experiencia</h4>
-                <p class="info-block-content">{{ currentUser.profile?.yearsOfExperience }} años</p>
-              </div>
-            }
-            
-            @if (currentUser.profile?.bio) {
-              <div class="info-block">
-                <h4 class="info-block-title">📝 Biografía</h4>
-                <p class="info-block-content">{{ currentUser.profile?.bio }}</p>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    }
   }
 </div>

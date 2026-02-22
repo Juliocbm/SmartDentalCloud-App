@@ -42,18 +42,19 @@
   <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
-      <div class="spinner"></div>
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando dentistas...</p>
     </div>
   }
 
   <!-- Error State -->
   @if (error()) {
-    <div class="alert alert-danger">
-      <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-      <span class="alert-message">{{ error() }}</span>
-      <button class="alert-close" (click)="error.set(null)">
-        <i class="fa-solid fa-xmark"></i>
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadData()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
       </button>
     </div>
   }
@@ -64,10 +65,10 @@
       <i class="fa-solid fa-user-doctor"></i>
       <h3>No hay dentistas registrados</h3>
       <p>Comienza agregando el primer dentista del consultorio</p>
-      <a class="btn btn-primary" routerLink="/users/new">
+      <button class="btn btn-primary" (click)="navigateToNewDentist()">
         <i class="fa-solid fa-plus"></i>
         Agregar Primer Dentista
-      </a>
+      </button>
     </div>
   }
 
@@ -77,128 +78,162 @@
       <i class="fa-solid fa-filter-circle-xmark"></i>
       <h3>Sin resultados</h3>
       <p>No se encontraron dentistas con los filtros aplicados</p>
+      <button class="btn btn-primary" (click)="navigateToNewDentist()">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Dentista
+      </button>
     </div>
   }
 
-  <!-- Dentists Cards Grid -->
+  <!-- Dentists Table -->
   @if (!loading() && !error() && filteredDentists().length > 0) {
-    <div class="dentist-cards-grid">
-      @for (dentist of filteredDentists(); track dentist.id) {
-        <div class="dentist-card" [class.card-inactive]="!dentist.isActive">
-          <!-- Card Header -->
-          <div class="card-header">
-            <div class="dentist-avatar">
-              <i class="fa-solid fa-user-doctor"></i>
-            </div>
-            <div class="dentist-info">
-              <h3 class="dentist-name">{{ dentist.name }}</h3>
-              <p class="dentist-email">{{ dentist.email }}</p>
-            </div>
-           <!--  <span 
-              class="status-badge" 
-              [class.badge-success]="dentist.isActive"
-              [class.badge-error]="!dentist.isActive"
-            >
-              {{ dentist.isActive ? 'Activo' : 'Inactivo' }}
-            </span> -->
-          </div>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Dentista</th>
+            <th>Especialidad</th>
+            <th>Contacto</th>
+            <th>Registro</th>
+            <th>Estado</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dentist of paginatedDentists(); track dentist.id) {
+            <tr [class.row-inactive]="!dentist.isActive">
+              <!-- Dentista -->
+              <td>
+                <div class="info-cell">
+                  <div class="avatar avatar-primary">
+                    <i class="fa-solid fa-user-doctor"></i>
+                  </div>
+                  <div class="info-content">
+                    <div class="info-title">{{ dentist.name }}</div>
+                    <div class="info-subtitle">{{ dentist.email }}</div>
+                  </div>
+                </div>
+              </td>
 
-          <!-- Card Body -->
-          <div class="card-body">
-            <!-- Especialidad -->
-            <div class="info-row">
-              <i class="fa-solid fa-stethoscope info-icon"></i>
-              <div class="info-content">
-                <span class="info-label">Especialidad</span>
+              <!-- Especialidad -->
+              <td class="specialty-cell">
                 @if (dentist.profile?.specialty) {
-                  <span class="info-value">{{ dentist.profile?.specialty }}</span>
+                  <span class="specialty-tag">
+                    <i class="fa-solid fa-stethoscope"></i>
+                    {{ dentist.profile?.specialty }}
+                  </span>
                 } @else {
-                  <span class="info-value text-muted">Sin especificar</span>
+                  <span class="text-muted">Sin especificar</span>
                 }
-              </div>
-            </div>
+              </td>
 
-            <!-- Teléfono -->
-            <div class="info-row">
-              <i class="fa-solid fa-phone info-icon"></i>
-              <div class="info-content">
-                <span class="info-label">Teléfono</span>
+              <!-- Contacto -->
+              <td class="contact-cell">
                 @if (dentist.profile?.phoneNumber) {
-                  <span class="info-value">{{ dentist.profile?.phoneNumber }}</span>
+                  <div class="contact-item">
+                    <i class="fa-solid fa-phone"></i>
+                    {{ dentist.profile?.phoneNumber }}
+                  </div>
                 } @else {
-                  <span class="info-value text-muted">Sin teléfono</span>
+                  <span class="text-muted">Sin teléfono</span>
                 }
-              </div>
-            </div>
+              </td>
 
-            <!-- Fecha de Registro -->
-            <div class="info-row">
-              <i class="fa-solid fa-calendar info-icon"></i>
-              <div class="info-content">
-                <span class="info-label">Registro</span>
-                <span class="info-value">{{ dentist.createdAt | date:'dd/MM/yyyy' }}</span>
-              </div>
-            </div>
+              <!-- Registro -->
+              <td class="date-cell">
+                {{ dentist.createdAt | date:'dd/MM/yyyy' }}
+              </td>
+
+              <!-- Estado -->
+              <td class="status-cell">
+                <span
+                  class="badge"
+                  [class.badge-success]="dentist.isActive"
+                  [class.badge-error]="!dentist.isActive"
+                >
+                  <i class="fa-solid" [class.fa-circle-check]="dentist.isActive" [class.fa-circle-xmark]="!dentist.isActive"></i>
+                  {{ dentist.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+
+              <!-- Acciones -->
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-sm btn-primary"
+                    (click)="createAppointmentForDentist(dentist)"
+                    [disabled]="!dentist.isActive"
+                    [title]="!dentist.isActive ? 'Dentista inactivo' : 'Agendar nueva cita'"
+                  >
+                    <i class="fa-solid fa-calendar-plus"></i>
+                    Nueva Cita
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline"
+                    [routerLink]="['/users', dentist.id]"
+                    title="Ver perfil"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                    Ver
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline"
+                    (click)="editDentist(dentist.id)"
+                    title="Editar"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                    Editar
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline"
+                    [class.btn-warning]="dentist.isActive"
+                    [class.btn-success]="!dentist.isActive"
+                    (click)="toggleDentistActive(dentist)"
+                    [title]="dentist.isActive ? 'Desactivar dentista' : 'Activar dentista'"
+                  >
+                    <i class="fa-solid" [class.fa-toggle-on]="dentist.isActive" [class.fa-toggle-off]="!dentist.isActive"></i>
+                    {{ dentist.isActive ? 'Desactivar' : 'Activar' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (currentPage() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ currentPage() * pageSize() > filteredDentists().length ? filteredDentists().length : currentPage() * pageSize() }}</strong>
+          de <strong>{{ filteredDentists().length }}</strong> dentistas
+        </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(1)">
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(currentPage() - 1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            @for (page of getPaginationPages(); track page) {
+              <button class="btn-page" [class.active]="page === currentPage()" (click)="onPageChange(page)">
+                {{ page }}
+              </button>
+            }
+
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(currentPage() + 1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(totalPages())">
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
           </div>
-
-          <!-- Card Footer -->
-          <div class="card-footer">
-            <!-- Acción Principal -->
-            <button
-              type="button"
-              class="btn btn-sm btn-primary action-main"
-              (click)="createAppointmentForDentist(dentist)"
-              [disabled]="!dentist.isActive"
-              [title]="!dentist.isActive ? 'Dentista inactivo' : 'Crear nueva cita'"
-            >
-              <i class="fa-solid fa-calendar-plus"></i>
-              <span class="btn-text">Nueva Cita</span>
-            </button>
-
-            <!-- Ver Perfil -->
-            <button
-              type="button"
-              class="btn btn-sm btn-outline action-secondary"
-              [routerLink]="['/users', dentist.id]"
-              title="Ver perfil completo"
-            >
-              <i class="fa-solid fa-eye"></i>
-              <span class="btn-text">Perfil</span>
-            </button>
-
-            <!-- Editar -->
-            <button
-              type="button"
-              class="btn btn-sm btn-outline action-secondary"
-              [routerLink]="['/users', dentist.id, 'edit']"
-              title="Editar información del dentista"
-            >
-              <i class="fa-solid fa-pen"></i>
-              <span class="btn-text">Editar</span>
-            </button>
-
-            <!-- Toggle Estado -->
-            <button
-              type="button"
-              class="btn btn-sm action-toggle"
-              [class.btn-success]="dentist.isActive"
-              [class.btn-warning]="!dentist.isActive"
-              (click)="toggleDentistActive(dentist)"
-              [title]="dentist.isActive ? 'Desactivar dentista' : 'Activar dentista'"
-            >
-              <i class="fa-solid" [class.fa-toggle-on]="dentist.isActive" [class.fa-toggle-off]="!dentist.isActive"></i>
-              <span class="btn-text">{{ dentist.isActive ? 'Activo' : 'Inactivo' }}</span>
-            </button>
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- Results Summary -->
-    <div class="results-summary">
-      <span class="results-count">
-        Mostrando <strong>{{ filteredDentists().length }}</strong> de <strong>{{ dentists().length }}</strong> dentistas
-      </span>
+        }
+      </div>
     </div>
   }
 </div>

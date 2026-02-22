@@ -1,15 +1,16 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { CommonModule, Location } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../services/users.service';
 import { User } from '../../models/user.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 
 @Component({
   selector: 'app-user-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   templateUrl: './user-detail.html',
   styleUrls: ['./user-detail.scss']
 })
@@ -19,6 +20,13 @@ export class UserDetailComponent implements OnInit {
   private usersService = inject(UsersService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private location = inject(Location);
+
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Usuarios', route: '/users' },
+    { label: 'Detalle' }
+  ];
 
   user = signal<User | null>(null);
   loading = signal(true);
@@ -48,6 +56,16 @@ export class UserDetailComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  goBack(): void {
+    this.location.back();
+  }
+
+  editUser(): void {
+    const user = this.user();
+    if (!user) return;
+    this.router.navigate(['/users', user.id, 'edit']);
   }
 
   async toggleUserActive(): Promise<void> {
@@ -99,12 +117,41 @@ export class UserDetailComponent implements OnInit {
       'payments': 'Pagos',
       'users': 'Usuarios',
       'roles': 'Roles',
-      'consultation_notes': 'Notas',
+      'consultation_notes': 'Notas Clínicas',
       'attached_files': 'Archivos',
       'settings': 'Configuración',
-      'reports': 'Reportes'
+      'reports': 'Reportes',
+      'dental_charts': 'Odontograma',
+      'treatment_plans': 'Planes de Tratamiento',
+      'prescriptions': 'Recetas',
+      'notifications': 'Notificaciones',
+      'tenants': 'Clínica',
+      'suppliers': 'Proveedores',
+      'inventory': 'Inventario'
     };
     return categoryMap[category] || category;
+  }
+
+  translateAction(permissionKey: string): string {
+    const action = permissionKey.split('.')[1];
+    const actionMap: Record<string, string> = {
+      'view': 'Ver',
+      'create': 'Crear',
+      'edit': 'Editar',
+      'delete': 'Eliminar',
+      'cancel': 'Cancelar',
+      'cancel_own': 'Cancelar propias',
+      'cancel_any': 'Cancelar cualquiera',
+      'view_history': 'Ver historial',
+      'view_financial': 'Ver financiero',
+      'activate': 'Activar',
+      'deactivate': 'Desactivar',
+      'export': 'Exportar',
+      'upload': 'Subir',
+      'manage': 'Gestionar',
+      'approve': 'Aprobar'
+    };
+    return actionMap[action] || action;
   }
 
   groupPermissionsByCategory(permissions: string[]): Map<string, string[]> {

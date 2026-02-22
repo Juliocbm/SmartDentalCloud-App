@@ -47,11 +47,15 @@ export class UserFormComponent implements OnInit {
   error = signal<string | null>(null);
   showPassword = signal(false);
 
-  breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
-    { label: 'Usuarios', route: '/users', icon: 'fa-users' },
-    { label: this.isEditMode() ? 'Editar' : 'Nuevo' }
-  ]);
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => {
+    const ctx = this.contextService.context();
+    const isDentist = ctx.contextRole === 'Dentista';
+    return [
+      { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+      { label: isDentist ? 'Dentistas' : 'Usuarios', route: isDentist ? '/dentists' : '/users', icon: isDentist ? 'fa-user-doctor' : 'fa-users' },
+      { label: this.isEditMode() ? 'Editar' : 'Nuevo' }
+    ];
+  });
 
   ngOnInit(): void {
     this.initForm();

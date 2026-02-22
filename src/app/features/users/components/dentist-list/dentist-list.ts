@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -41,6 +41,19 @@ export class DentistListComponent implements OnInit, OnDestroy {
   
   searchTerm = signal('');
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
+
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
+
+  paginatedDentists = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredDentists().slice(start, start + this.pageSize());
+  });
+
+  totalPages = computed(() =>
+    Math.ceil(this.filteredDentists().length / this.pageSize()) || 1
+  );
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -113,6 +126,7 @@ export class DentistListComponent implements OnInit, OnDestroy {
     }
 
     this.filteredDentists.set(filtered);
+    this.currentPage.set(1);
   }
 
   onSearchChange(value: string): void {
@@ -146,9 +160,32 @@ export class DentistListComponent implements OnInit, OnDestroy {
     });
   }
 
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const maxVisible = 5;
+    const pages: number[] = [];
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    const end = Math.min(total, start + maxVisible - 1);
+    start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  }
+
   navigateToNewDentist(): void {
     this.userContextService.setContext(DENTIST_CONTEXT);
     this.router.navigate(['/users/new']);
+  }
+
+  editDentist(dentistId: string): void {
+    this.userContextService.setContext(DENTIST_CONTEXT);
+    this.router.navigate(['/users', dentistId, 'edit']);
   }
 
   createAppointmentForDentist(dentist: User): void {
