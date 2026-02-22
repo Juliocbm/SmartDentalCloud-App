@@ -105,8 +105,9 @@ export class AppointmentsService {
   }
 
   getAvailability(date: Date, userId?: string, durationMinutes: number = 60): Observable<TimeSlot[]> {
+    const localDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     return this.api.get<{ startTime: string; endTime: string; isAvailable: boolean }[]>('/appointments/availability', {
-      date: date.toISOString(),
+      date: localDate,
       userId,
       durationMinutes
     }).pipe(
