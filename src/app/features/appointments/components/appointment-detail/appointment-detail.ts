@@ -135,10 +135,10 @@ export class AppointmentDetailComponent implements OnInit {
     if (!confirmed) return;
 
     this.actionLoading.set(true);
-    this.appointmentsService.getById(apt.id).subscribe({
-      next: (updated) => {
-        this.appointment.set(updated);
+    this.appointmentsService.confirm(apt.id).subscribe({
+      next: () => {
         this.notifications.success('Cita confirmada correctamente.');
+        this.loadAppointment(apt.id);
         this.actionLoading.set(false);
       },
       error: () => {
@@ -221,6 +221,12 @@ export class AppointmentDetailComponent implements OnInit {
     const apt = this.appointment();
     if (!apt) return;
     this.router.navigate(['/patients', apt.patientId]);
+  }
+
+  onViewDoctor(): void {
+    const apt = this.appointment();
+    if (!apt?.userId) return;
+    this.router.navigate(['/users', apt.userId]);
   }
 
   onBack(): void {

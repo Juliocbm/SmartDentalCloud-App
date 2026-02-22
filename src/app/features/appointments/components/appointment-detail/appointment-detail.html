@@ -30,20 +30,16 @@
       </button>
     </div>
   } @else if (appointment(); as apt) {
-    <div class="detail-header">
 
+    <!-- Header: Status + Date/Time + Action Buttons -->
+    <div class="detail-header">
       <div class="header-content">
         <div class="title-section">
-          <h1>
-            <i class="fa-solid fa-calendar-check"></i>
-            Cita Médica
-          </h1>
           <span class="status-badge" [ngClass]="getStatusConfig(apt.status).bgColor">
             <i class="fa-solid" [ngClass]="getStatusConfig(apt.status).icon"></i>
             {{ getStatusConfig(apt.status).label }}
           </span>
         </div>
-        
         <div class="header-info">
           <div class="info-item">
             <i class="fa-solid fa-calendar"></i>
@@ -62,41 +58,95 @@
           </div>
         </div>
       </div>
+      <div class="header-action-bar">
+        @if (canConfirm()) {
+          <button (click)="onConfirm()" class="btn btn-success" [disabled]="actionLoading()">
+            <i class="fa-solid fa-check-circle"></i> Confirmar
+          </button>
+        }
+        @if (canComplete()) {
+          <button (click)="onComplete()" class="btn btn-primary" [disabled]="actionLoading()">
+            <i class="fa-solid fa-check"></i> Completar
+          </button>
+        }
+        @if (canMarkNoShow()) {
+          <button (click)="onMarkNoShow()" class="btn btn-warning" [disabled]="actionLoading()">
+            <i class="fa-solid fa-exclamation-triangle"></i> No Show
+          </button>
+        }
+        @if (canCancel()) {
+          <button (click)="onCancel()" class="btn btn-danger" [disabled]="actionLoading()">
+            <i class="fa-solid fa-times-circle"></i> Cancelar
+          </button>
+        }
+      </div>
     </div>
 
+    <!-- Terminal status banner -->
+    @if (apt.status === AppointmentStatus.Completed) {
+      <div class="status-banner status-banner--success">
+        <i class="fa-solid fa-check-circle"></i>
+        <span>Esta cita ha sido completada</span>
+      </div>
+    }
+    @if (apt.status === AppointmentStatus.Cancelled) {
+      <div class="status-banner status-banner--error">
+        <i class="fa-solid fa-ban"></i>
+        <span>Esta cita ha sido cancelada</span>
+      </div>
+    }
+    @if (apt.status === AppointmentStatus.NoShow) {
+      <div class="status-banner status-banner--warning">
+        <i class="fa-solid fa-user-slash"></i>
+        <span>El paciente no se presentó a esta cita</span>
+      </div>
+    }
+
     <div class="detail-body">
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-user"></i>
-          Información del Paciente
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Nombre:</span>
-            <span class="info-value">{{ apt.patientName }}</span>
+      <!-- Patient & Doctor -->
+      <div class="info-two-col">
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-user"></i>
+            Paciente
+          </h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ apt.patientName }}</span>
+            </div>
+            <div class="info-row">
+              <button (click)="onViewPatient()" class="link-primary">
+                <i class="fa-solid fa-external-link-alt"></i>
+                Ver perfil del paciente
+              </button>
+            </div>
           </div>
-          <div class="info-actions">
-            <button (click)="onViewPatient()" class="btn-link">
-              <i class="fa-solid fa-external-link-alt"></i>
-              Ver perfil del paciente
-            </button>
+        </div>
+
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-user-md"></i>
+            Doctor
+          </h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ apt.doctorName || 'No asignado' }}</span>
+            </div>
+            @if (apt.userId) {
+              <div class="info-row">
+                <button (click)="onViewDoctor()" class="link-primary">
+                  <i class="fa-solid fa-external-link-alt"></i>
+                  Ver perfil del doctor
+                </button>
+              </div>
+            }
           </div>
         </div>
       </div>
 
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-user-md"></i>
-          Información del Doctor
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Doctor:</span>
-            <span class="info-value">{{ apt.doctorName || 'No asignado' }}</span>
-          </div>
-        </div>
-      </div>
-
+      <!-- Appointment Details -->
       <div class="info-section">
         <h3>
           <i class="fa-solid fa-notes-medical"></i>
@@ -105,23 +155,20 @@
         <div class="info-card">
           <div class="info-row">
             <span class="info-label">Motivo:</span>
-            <span class="info-value">{{ apt.reason }}</span>
+            <span class="info-value">{{ apt.reason || '—' }}</span>
           </div>
-          
           @if (apt.notes) {
             <div class="info-row">
               <span class="info-label">Notas:</span>
               <span class="info-value notes-text">{{ apt.notes }}</span>
             </div>
           }
-
           @if (apt.cancellationReason) {
             <div class="info-row alert-row">
               <span class="info-label">Motivo de cancelación:</span>
               <span class="info-value">{{ apt.cancellationReason }}</span>
             </div>
           }
-
           <div class="info-row">
             <span class="info-label">Fecha de creación:</span>
             <span class="info-value">{{ formatDate(apt.createdAt) }}</span>
@@ -209,72 +256,6 @@
           }
         </div>
       }
-
-      <div class="actions-section">
-        <h3>
-          <i class="fa-solid fa-tasks"></i>
-          Acciones
-        </h3>
-        <div class="action-buttons">
-          @if (canConfirm()) {
-            <button 
-              (click)="onConfirm()" 
-              class="btn btn-success"
-              [disabled]="actionLoading()"
-            >
-              <i class="fa-solid fa-check-circle"></i>
-              Confirmar Cita
-            </button>
-          }
-
-          @if (canComplete()) {
-            <button 
-              (click)="onComplete()" 
-              class="btn btn-primary"
-              [disabled]="actionLoading()"
-            >
-              <i class="fa-solid fa-check"></i>
-              Marcar como Completada
-            </button>
-          }
-
-          @if (canMarkNoShow()) {
-            <button 
-              (click)="onMarkNoShow()" 
-              class="btn btn-warning"
-              [disabled]="actionLoading()"
-            >
-              <i class="fa-solid fa-exclamation-triangle"></i>
-              Marcar No Show
-            </button>
-          }
-
-          @if (canCancel()) {
-            <button 
-              (click)="onCancel()" 
-              class="btn btn-danger"
-              [disabled]="actionLoading()"
-            >
-              <i class="fa-solid fa-times-circle"></i>
-              Cancelar Cita
-            </button>
-          }
-
-          @if (apt.status === AppointmentStatus.Completed) {
-            <div class="completed-message">
-              <i class="fa-solid fa-check-circle"></i>
-              <span>Esta cita ha sido completada</span>
-            </div>
-          }
-
-          @if (apt.status === AppointmentStatus.Cancelled) {
-            <div class="cancelled-message">
-              <i class="fa-solid fa-ban"></i>
-              <span>Esta cita ha sido cancelada</span>
-            </div>
-          }
-        </div>
-      </div>
     </div>
   }
 </div>
