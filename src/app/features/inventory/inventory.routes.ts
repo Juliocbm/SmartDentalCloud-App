@@ -42,6 +42,11 @@ export const INVENTORY_ROUTES: Routes = [
         loadComponent: () => import('./components/category-form/category-form').then(m => m.CategoryFormComponent)
       },
       {
+        path: ':id',
+        loadComponent: () => import('./components/category-detail/category-detail').then(m => m.CategoryDetailComponent),
+        title: 'Detalle de Categoría'
+      },
+      {
         path: ':id/edit',
         loadComponent: () => import('./components/category-form/category-form').then(m => m.CategoryFormComponent)
       }

@@ -1,0 +1,78 @@
+<div class="detail-container">
+  <app-page-header
+    [title]="category() ? category()!.name : 'Categoría'"
+    [icon]="'fa-tag'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      @if (category(); as cat) {
+        <span class="status-badge" [class.badge-active]="cat.isActive" [class.badge-inactive]="!cat.isActive">
+          {{ cat.isActive ? 'Activa' : 'Inactiva' }}
+        </span>
+        <button class="btn btn-outline" (click)="editCategory()">
+          <i class="fa-solid fa-pen"></i>
+          Editar
+        </button>
+      }
+    </div>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando categoría...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <h3>Error al cargar la categoría</h3>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  }
+
+  @if (!loading() && !error() && category(); as cat) {
+    <div class="detail-body">
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-tag"></i>
+          Información de la Categoría
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Nombre:</span>
+            <span class="info-value">{{ cat.name }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Descripción:</span>
+            <span class="info-value">{{ cat.description || '—' }}</span>
+          </div>
+          @if (cat.parentCategoryName) {
+            <div class="info-row">
+              <span class="info-label">Categoría padre:</span>
+              <span class="info-value">{{ cat.parentCategoryName }}</span>
+            </div>
+          }
+          <div class="info-row">
+            <span class="info-label">Estado:</span>
+            <span class="info-value">
+              <span class="badge" [class.badge-success]="cat.isActive" [class.badge-error]="!cat.isActive">
+                <i class="fa-solid" [class.fa-circle-check]="cat.isActive" [class.fa-circle-xmark]="!cat.isActive"></i>
+                {{ cat.isActive ? 'Activa' : 'Inactiva' }}
+              </span>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Fecha de creación:</span>
+            <span class="info-value">{{ cat.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
