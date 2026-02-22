@@ -80,9 +80,13 @@
   <!-- No Results State -->
   @if (!loading() && !error() && filteredInvoices().length === 0 && invoices().length > 0) {
     <div class="empty-state">
-      <i class="fa-solid fa-filter"></i>
-      <h3>No se encontraron resultados</h3>
-      <p>Intenta ajustar los filtros de búsqueda</p>
+      <i class="fa-solid fa-filter-circle-xmark"></i>
+      <h3>Sin resultados</h3>
+      <p>No se encontraron facturas con los filtros aplicados</p>
+      <a routerLink="/invoices/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Factura
+      </a>
     </div>
   }
 

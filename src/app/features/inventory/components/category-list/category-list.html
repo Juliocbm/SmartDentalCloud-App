@@ -79,9 +79,9 @@
   <!-- No Results State -->
   @if (!loading() && !error() && filteredCategories().length === 0 && categories().length > 0) {
     <div class="empty-state">
-      <i class="fa-solid fa-filter"></i>
-      <h3>No se encontraron resultados</h3>
-      <p>Intenta ajustar los filtros de búsqueda</p>
+      <i class="fa-solid fa-filter-circle-xmark"></i>
+      <h3>Sin resultados</h3>
+      <p>No se encontraron categorías con los filtros aplicados</p>
     </div>
   }
 

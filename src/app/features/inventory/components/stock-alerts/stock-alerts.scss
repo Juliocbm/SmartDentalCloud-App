@@ -88,8 +88,9 @@
 
 // Empty: usa .empty-state de _components.scss
 // Override: ícono verde cuando no hay alertas (estado positivo)
-.empty-state i {
+.empty-state > i {
   color: var(--success-500);
+  background: var(--success-50);
 }
 
 // ===== Table Cell Content =====

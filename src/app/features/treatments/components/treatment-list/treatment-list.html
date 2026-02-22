@@ -81,9 +81,13 @@
   <!-- No Results State -->
   @if (!loading() && !error() && filteredTreatments().length === 0 && treatments().length > 0) {
     <div class="empty-state">
-      <i class="fa-solid fa-filter"></i>
-      <h3>No se encontraron resultados</h3>
-      <p>Intenta ajustar los filtros de búsqueda</p>
+      <i class="fa-solid fa-filter-circle-xmark"></i>
+      <h3>Sin resultados</h3>
+      <p>No se encontraron tratamientos con los filtros aplicados</p>
+      <a routerLink="/treatments/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Tratamiento
+      </a>
     </div>
   }
 

@@ -86,9 +86,13 @@
   <!-- No results -->
   @if (!loading() && !error() && filteredServices().length === 0 && allServices().length > 0) {
     <div class="empty-state">
-      <i class="fa-solid fa-filter"></i>
-      <h3>No se encontraron resultados</h3>
-      <p>Intenta ajustar los filtros de búsqueda</p>
+      <i class="fa-solid fa-filter-circle-xmark"></i>
+      <h3>Sin resultados</h3>
+      <p>No se encontraron servicios con los filtros aplicados</p>
+      <a routerLink="/services/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Servicio
+      </a>
     </div>
   }
 

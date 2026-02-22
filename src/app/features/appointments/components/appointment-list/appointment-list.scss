@@ -6,10 +6,6 @@
 // Action buttons: usa .btn-sm, .btn-outline de _components.scss
 
 // Empty/Loading: usa .empty-state, .loading-container de _components.scss
-// Override: ícono muted en empty-state
-.empty-state i {
-  color: var(--text-muted);
-}
 
 // ===== Table Cell Content =====
 .time-cell {

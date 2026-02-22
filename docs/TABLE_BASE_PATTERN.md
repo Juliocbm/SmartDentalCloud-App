@@ -370,6 +370,27 @@ getPaginationPages(): number[] {
 
 Siempre implementar los **4 estados** antes de la tabla, **nunca** anidar con `@else if`:
 
+### Diseño visual del `.empty-state` (global en `_components.scss`)
+
+- **Layout**: `display: flex` centrado vertical y horizontal
+- **Ícono**: Dentro de un **círculo decorativo** (56×56px, fondo `--surface-tertiary`, `border-radius: full`)
+- **Borde**: `1px solid var(--border-primary)` para separación visual
+- **Tipografía**: `h3` en `font-size-lg`, `p` en `text-tertiary` con `max-width: 360px`
+- **Botón CTA**: `.btn-primary` se renderiza automáticamente como **outline** (fondo transparente, borde azul) dentro de `.empty-state`
+- **Variante compacta**: `.empty-state-sm` para usar dentro de cards/secciones con menos padding
+
+### Redacción estandarizada
+
+| Estado | Ícono | Título | Descripción | CTA |
+|--------|-------|--------|-------------|-----|
+| **Vacío** (sin datos) | Ícono de la entidad (`fa-{entity}`) | "No hay {entidad plural}" | "Comienza creando {tu primer/la primera} {entidad}" | ✅ Botón "Nueva/o {Entidad}" |
+| **Sin resultados** (filtros) | `fa-filter-circle-xmark` | "Sin resultados" | "No se encontraron {entidad} con los filtros aplicados" | ✅ Botón "Nueva/o {Entidad}" (donde aplica) |
+| **Error** | `fa-exclamation-triangle` | (opcional) "Error al cargar" | `{{ error() }}` | ✅ Botón "Reintentar" |
+
+> **Nota**: Entidades dependientes (pagos, notas de consulta, alertas de stock) **no** incluyen CTA en el estado vacío ni en sin resultados, ya que se generan desde otro módulo.
+
+### HTML estándar
+
 ```html
 <!-- Loading State -->
 @if (loading()) {
@@ -394,28 +415,50 @@ Siempre implementar los **4 estados** antes de la tabla, **nunca** anidar con `@
 <!-- Empty State (sin datos) -->
 @if (!loading() && !error() && items().length === 0) {
   <div class="empty-state">
-    <i class="fa-solid fa-inbox"></i>
-    <h3>Sin registros</h3>
-    <p>Mensaje contextual de vacío</p>
-    <button class="btn btn-primary" routerLink="/items/new">
+    <i class="fa-solid fa-{entity-icon}"></i>
+    <h3>No hay {entidad plural}</h3>
+    <p>Comienza creando {tu primer/la primera} {entidad}</p>
+    <a routerLink="/{entity}/new" class="btn btn-primary">
       <i class="fa-solid fa-plus"></i>
-      Crear Primero
-    </button>
+      {Nuevo/Nueva} {Entidad}
+    </a>
   </div>
 }
 
 <!-- No Results State (filtros sin coincidencias) -->
 @if (!loading() && !error() && filteredItems().length === 0 && items().length > 0) {
   <div class="empty-state">
-    <i class="fa-solid fa-filter"></i>
-    <h3>No se encontraron resultados</h3>
-    <p>Intenta ajustar los filtros de búsqueda</p>
+    <i class="fa-solid fa-filter-circle-xmark"></i>
+    <h3>Sin resultados</h3>
+    <p>No se encontraron {entidad plural} con los filtros aplicados</p>
+    <a routerLink="/{entity}/new" class="btn btn-primary">
+      <i class="fa-solid fa-plus"></i>
+      {Nuevo/Nueva} {Entidad}
+    </a>
   </div>
 }
 
 <!-- Table (solo si hay datos) -->
 @if (!loading() && !error() && filteredItems().length > 0) {
   <div class="table-container">...</div>
+}
+```
+
+### Overrides de color de ícono por contexto
+
+Cuando el empty state necesita un ícono de color diferente al neutro por defecto, sobreescribir en el SCSS del componente:
+
+```scss
+// Ejemplo: ícono verde para estado positivo (stock-alerts sin alertas)
+.empty-state > i {
+  color: var(--success-500);
+  background: var(--success-50);
+}
+
+// Ejemplo: ícono rojo para estado de error (auth)
+.empty-state > i {
+  color: var(--error-500);
+  background: var(--error-50);
 }
 ```
 

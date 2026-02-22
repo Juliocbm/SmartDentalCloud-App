@@ -92,19 +92,24 @@
   }
 
   <!-- Empty State -->
-  @if (!loading() && !error() && filteredPrescriptions().length === 0) {
+  @if (!loading() && !error() && filteredPrescriptions().length === 0 && !(searchTerm() || statusFilter() !== 'all')) {
     <div class="empty-state">
       <i class="fa-solid fa-prescription"></i>
-      <h3>No se encontraron recetas</h3>
-      @if (searchTerm() || statusFilter() !== 'all') {
-        <p>Intenta ajustar los filtros de búsqueda</p>
-      } @else {
-        <p>Aún no hay recetas registradas</p>
-        <button class="btn btn-primary" (click)="createPrescription()">
-          <i class="fa-solid fa-plus"></i>
-          Crear Primera Receta
-        </button>
-      }
+      <h3>No hay recetas registradas</h3>
+      <p>Comienza creando la primera receta para un paciente</p>
+      <button class="btn btn-primary" (click)="createPrescription()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Receta
+      </button>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && filteredPrescriptions().length === 0 && (searchTerm() || statusFilter() !== 'all')) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter-circle-xmark"></i>
+      <h3>Sin resultados</h3>
+      <p>No se encontraron recetas con los filtros aplicados</p>
     </div>
   }
 

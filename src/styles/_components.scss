@@ -1612,35 +1612,92 @@ textarea.form-control {
 // ===== ESTADO VACÍO / ERROR =====
 // Usado para: empty state, error state, no-results state.
 // Los componentes NO deben redefinir esta clase.
+// Estructura HTML esperada:
+//   <div class="empty-state">
+//     <i class="fa-solid fa-icon"></i>
+//     <h3>Título</h3>
+//     <p>Descripción</p>
+//     <a class="btn btn-primary">Acción</a>   <!-- opcional -->
+//   </div>
 .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: var(--spacing-3xl) var(--spacing-xl);
+  padding: var(--spacing-3xl) var(--spacing-2xl);
   background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   margin: var(--spacing-lg) 0;
 
-  i {
-    font-size: var(--font-size-5xl);
-    margin-bottom: var(--spacing-md);
-    display: block;
+  // Ícono directo — se muestra dentro de un círculo decorativo
+  > i {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    background: var(--surface-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
     color: var(--text-tertiary);
+    margin-bottom: var(--spacing-lg);
   }
 
   h3 {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-lg);
     color: var(--text-primary);
-    margin: var(--spacing-md) 0;
+    margin: 0 0 var(--spacing-xs) 0;
     font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
   }
 
   p {
-    color: var(--text-secondary);
-    margin: var(--spacing-sm) 0;
+    color: var(--text-tertiary);
+    margin: 0;
+    font-size: var(--font-size-sm);
+    max-width: 360px;
+    line-height: var(--line-height-normal);
+  }
+
+  // Botón de acción — estilo ghost/outline por defecto dentro del empty state
+  .btn {
+    margin-top: var(--spacing-xl);
+  }
+
+  .btn-primary {
+    background: transparent;
+    border-color: var(--primary-500);
+    color: var(--primary-500);
+
+    &:hover:not(:disabled) {
+      background: var(--primary-50);
+      border-color: var(--primary-600);
+      color: var(--primary-600);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+  }
+}
+
+// Variante compacta para empty states dentro de cards/secciones
+.empty-state-sm {
+  padding: var(--spacing-xl) var(--spacing-lg);
+
+  > i {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+    margin-bottom: var(--spacing-md);
+  }
+
+  h3 {
     font-size: var(--font-size-base);
   }
 
-  .btn {
-    margin-top: var(--spacing-lg);
+  p {
+    font-size: var(--font-size-xs);
   }
 }
 

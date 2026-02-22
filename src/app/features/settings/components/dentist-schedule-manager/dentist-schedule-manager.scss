@@ -27,8 +27,9 @@
     }
   }
 
+  // Empty: usa .empty-state global de _components.scss
+
   .loading-state,
-  .empty-state,
   .select-prompt {
     display: flex;
     flex-direction: column;
