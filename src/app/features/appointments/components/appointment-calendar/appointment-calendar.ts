@@ -18,6 +18,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { DentistListItem } from '../../../../core/models/user.models';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { DaySchedule, DAY_TO_FULLCALENDAR } from '../../../settings/models/work-schedule.models';
+import { ScheduleException, EXCEPTION_TYPE_LABELS } from '../../../settings/models/schedule-exception.models';
 
 @Component({
   selector: 'app-appointment-calendar',
@@ -43,6 +44,8 @@ export class AppointmentCalendarComponent implements OnInit {
   selectedSlot = signal<{ start: Date; end: Date } | null>(null);
   dentists = signal<DentistListItem[]>([]);
   selectedDoctorId = signal<string>('all');
+  scheduleExceptions = signal<ScheduleException[]>([]);
+  visibleRange = signal<{ start: string; end: string } | null>(null);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -64,6 +67,7 @@ export class AppointmentCalendarComponent implements OnInit {
     slotDuration: '00:30:00',
     slotLabelInterval: '01:00',
     allDaySlot: false,
+    allDayText: '',
     height: 'auto',
     expandRows: true,
     nowIndicator: true,
@@ -75,8 +79,11 @@ export class AppointmentCalendarComponent implements OnInit {
       start: new Date()
     },
     selectAllow: (selectInfo) => {
+      // Never allow creating appointments from the all-day row
+      if (selectInfo.allDay) return false;
       const now = new Date();
-      return selectInfo.start >= now;
+      if (selectInfo.start < now) return false;
+      return !this.isDateBlockedByException(selectInfo.start);
     },
     businessHours: {
       daysOfWeek: [1, 2, 3, 4, 5],
@@ -85,6 +92,12 @@ export class AppointmentCalendarComponent implements OnInit {
     },
     eventClick: this.handleEventClick.bind(this),
     select: this.handleDateSelect.bind(this),
+    datesSet: (dateInfo) => {
+      const start = dateInfo.start.toISOString().split('T')[0];
+      const end = dateInfo.end.toISOString().split('T')[0];
+      this.visibleRange.set({ start, end });
+      this.applyScheduleExceptions();
+    },
     events: [],
     eventTimeFormat: {
       hour: '2-digit',
@@ -101,6 +114,7 @@ export class AppointmentCalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadWorkSchedule();
+    this.loadScheduleExceptions();
     this.loadDentists();
     this.loadAppointments();
   }
@@ -109,6 +123,136 @@ export class AppointmentCalendarComponent implements OnInit {
     this.settingsService.getWorkSchedule().subscribe({
       next: (schedule) => this.applyWorkSchedule(schedule.days),
       error: () => this.logger.warn('Could not load work schedule, using defaults')
+    });
+  }
+
+  private loadScheduleExceptions(): void {
+    const from = new Date();
+    from.setDate(from.getDate() - 30);
+    const to = new Date();
+    to.setDate(to.getDate() + 90);
+
+    const fromStr = from.toISOString().split('T')[0];
+    const toStr = to.toISOString().split('T')[0];
+
+    this.settingsService.getScheduleExceptions(fromStr, toStr).subscribe({
+      next: (exceptions) => {
+        this.scheduleExceptions.set(exceptions);
+        this.applyScheduleExceptions();
+      },
+      error: () => this.logger.warn('Could not load schedule exceptions')
+    });
+  }
+
+  private applyScheduleExceptions(): void {
+    const allExceptions = this.scheduleExceptions();
+    const selectedDentist = this.selectedDoctorId();
+    const exceptionEvents: any[] = [];
+
+    for (const ex of allExceptions) {
+      const isClosed = ex.type !== 'modifiedHours';
+      const isClinicWide = !ex.userId;
+      const isDentistSpecific = !!ex.userId;
+
+      // Determine visibility based on dentist filter
+      let showAsFull = false;
+      let showAsSubtle = false;
+
+      if (selectedDentist === 'all') {
+        // Viewing all: clinic-wide = full, dentist-specific = subtle indicator
+        showAsFull = isClinicWide;
+        showAsSubtle = isDentistSpecific && isClosed;
+      } else {
+        // Viewing specific dentist: clinic-wide = full, this dentist's = full, others = hidden
+        if (isClinicWide) {
+          showAsFull = true;
+        } else if (ex.userId === selectedDentist) {
+          showAsFull = true;
+        }
+        // else: hide (not relevant to this dentist)
+      }
+
+      if (showAsFull) {
+        // Background shading for the entire day column
+        exceptionEvents.push({
+          id: 'exception-bg-' + ex.id,
+          start: ex.date,
+          end: ex.date,
+          allDay: true,
+          display: 'background',
+          backgroundColor: isClosed ? '#fee2e2' : '#fef3c7',
+          classNames: [isClosed ? 'exception-closed-bg' : 'exception-modified-bg']
+        });
+
+        // Visible all-day banner
+        const scope = isClinicWide ? '' : ` (${ex.userName})`;
+        exceptionEvents.push({
+          id: 'exception-' + ex.id,
+          title: isClosed ? `🚫 ${ex.reason}${scope}` : `⏰ ${ex.reason}${scope}`,
+          start: ex.date,
+          end: ex.date,
+          allDay: true,
+          display: 'block',
+          backgroundColor: isClosed ? '#dc2626' : '#d97706',
+          borderColor: isClosed ? '#dc2626' : '#d97706',
+          textColor: '#ffffff',
+          classNames: [isClosed ? 'exception-closed-banner' : 'exception-modified-banner'],
+          editable: false
+        });
+      } else if (showAsSubtle) {
+        // Subtle indicator: small muted banner visible in "Todos" view
+        exceptionEvents.push({
+          id: 'exception-' + ex.id,
+          title: `${ex.userName}: ${ex.reason}`,
+          start: ex.date,
+          end: ex.date,
+          allDay: true,
+          display: 'block',
+          backgroundColor: '#94a3b8',
+          borderColor: '#94a3b8',
+          textColor: '#ffffff',
+          classNames: ['exception-subtle-banner'],
+          editable: false
+        });
+      }
+    }
+
+    // Toggle allDaySlot: show only when there are visible banner events IN the current view range
+    const range = this.visibleRange();
+    const hasVisibleBanners = exceptionEvents.some(e => {
+      if (e.display !== 'block') return false;
+      if (!range) return true; // No range yet, show if any exist
+      return e.start >= range.start && e.start < range.end;
+    });
+
+    this.calendarOptions.update(options => ({
+      ...options,
+      allDaySlot: hasVisibleBanners,
+      events: [...(Array.isArray(options.events) ? options.events.filter(
+        (e: any) => !e.id?.startsWith('exception-')
+      ) : []), ...exceptionEvents]
+    }));
+  }
+
+  /**
+   * Checks if a date is fully blocked by an exception for the current dentist context.
+   * Used by selectAllow and handleDateSelect.
+   */
+  private isDateBlockedByException(date: Date): boolean {
+    const dateStr = date.toISOString().split('T')[0];
+    const selectedDentist = this.selectedDoctorId();
+
+    return this.scheduleExceptions().some(ex => {
+      if (ex.date !== dateStr) return false;
+      if (ex.type === 'modifiedHours') return false; // Modified hours don't block
+
+      // Clinic-wide closure blocks everyone
+      if (!ex.userId) return true;
+
+      // Dentist-specific closure blocks only when viewing that dentist
+      if (selectedDentist !== 'all' && ex.userId === selectedDentist) return true;
+
+      return false;
     });
   }
 
@@ -185,7 +329,12 @@ export class AppointmentCalendarComponent implements OnInit {
 
     this.calendarOptions.update(options => ({
       ...options,
-      events
+      events: [
+        ...events,
+        ...(Array.isArray(options.events) ? options.events.filter(
+          (e: any) => e.id?.startsWith('exception-')
+        ) : [])
+      ]
     }));
   }
 
@@ -201,11 +350,17 @@ export class AppointmentCalendarComponent implements OnInit {
   }
 
   handleEventClick(clickInfo: EventClickArg): void {
-    const appointmentId = clickInfo.event.id;
-    this.router.navigate(['/appointments', appointmentId, 'edit']);
+    const eventId = clickInfo.event.id;
+    // Ignore clicks on exception events
+    if (eventId.startsWith('exception-')) return;
+    this.router.navigate(['/appointments', eventId, 'edit']);
   }
 
   handleDateSelect(selectInfo: DateSelectArg): void {
+    // Never open modal from all-day row or blocked days
+    if (selectInfo.allDay) return;
+    if (this.isDateBlockedByException(selectInfo.start)) return;
+
     this.selectedSlot.set({
       start: selectInfo.start,
       end: selectInfo.end
@@ -296,5 +451,8 @@ export class AppointmentCalendarComponent implements OnInit {
         error: () => this.loadWorkSchedule() // Fallback to clinic schedule
       });
     }
+
+    // Re-apply exceptions with new dentist context
+    this.applyScheduleExceptions();
   }
 }

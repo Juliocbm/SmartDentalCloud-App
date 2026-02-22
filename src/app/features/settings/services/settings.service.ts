@@ -13,6 +13,11 @@ import {
   SmtpTestResult
 } from '../models/settings.models';
 import { WorkSchedule } from '../models/work-schedule.models';
+import {
+  ScheduleException,
+  CreateScheduleExceptionRequest,
+  UpdateScheduleExceptionRequest
+} from '../models/schedule-exception.models';
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
@@ -64,5 +69,27 @@ export class SettingsService {
 
   updateDentistWorkSchedule(userId: string, schedule: WorkSchedule): Observable<WorkSchedule> {
     return this.api.put<WorkSchedule>(`/tenants/work-schedule/${userId}`, schedule);
+  }
+
+  // === Schedule Exceptions ===
+
+  getScheduleExceptions(from?: string, to?: string, userId?: string): Observable<ScheduleException[]> {
+    const params: Record<string, string> = {};
+    if (from) params['from'] = from;
+    if (to) params['to'] = to;
+    if (userId) params['userId'] = userId;
+    return this.api.get<ScheduleException[]>('/schedule-exceptions', params);
+  }
+
+  createScheduleException(request: CreateScheduleExceptionRequest): Observable<ScheduleException> {
+    return this.api.post<ScheduleException>('/schedule-exceptions', request);
+  }
+
+  updateScheduleException(id: string, request: UpdateScheduleExceptionRequest): Observable<ScheduleException> {
+    return this.api.put<ScheduleException>(`/schedule-exceptions/${id}`, request);
+  }
+
+  deleteScheduleException(id: string): Observable<void> {
+    return this.api.delete<void>(`/schedule-exceptions/${id}`);
   }
 }

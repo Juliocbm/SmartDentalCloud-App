@@ -1,0 +1,186 @@
+// ============================================
+// ScheduleExceptionsManagerComponent - Estilos Específicos
+// Container: usa estilos de settings-page
+// Table: usa .table-container, .table de _components.scss
+// Empty: usa .empty-state de _components.scss
+// Modal: usa .modal-overlay, .modal-content de _components.scss
+// ============================================
+
+.exceptions-container {
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+
+    .section-title {
+      h2 {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        margin: 0;
+        font-size: var(--font-size-xl);
+        color: var(--text-primary);
+
+        i {
+          color: var(--primary-500);
+        }
+      }
+    }
+
+    .section-description {
+      color: var(--text-tertiary);
+      font-size: var(--font-size-sm);
+      margin: var(--spacing-xs) 0 0;
+    }
+  }
+}
+
+// ===== Table Cell Styles =====
+
+.date-cell {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.time-cell {
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.applies-to {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+
+  &.applies-clinic {
+    color: var(--primary-500);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.actions-column {
+  .action-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+  }
+}
+
+// ===== Modal =====
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.modal-content {
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.2s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--border-primary);
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: 0;
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+
+    i {
+      color: var(--primary-500);
+    }
+  }
+}
+
+.modal-body {
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-top: 1px solid var(--border-primary);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+
+  label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.form-check {
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary-500);
+    }
+  }
+}
+
+.form-error {
+  color: var(--error-500);
+  font-size: var(--font-size-xs);
+  margin: 0;
+}
+
+// ===== Animations =====
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}

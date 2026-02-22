@@ -51,6 +51,10 @@ export class AppointmentsService {
     return this.api.patch<void>(`/appointments/${id}/complete`, {});
   }
 
+  confirm(id: string): Observable<void> {
+    return this.api.patch<void>(`/appointments/${id}/confirm`, {});
+  }
+
   markAsNoShow(id: string): Observable<void> {
     return this.api.patch<void>(`/appointments/${id}/no-show`, {});
   }

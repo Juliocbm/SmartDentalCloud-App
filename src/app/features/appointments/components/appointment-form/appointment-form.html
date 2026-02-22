@@ -120,7 +120,14 @@
         </div>
       </div>
 
-      @if (isOutsideWorkSchedule()) {
+      @if (getActiveException(); as exception) {
+        <div class="alert schedule-warning" [class.alert-danger]="exception.type !== 'modifiedHours'" [class.alert-warning]="exception.type === 'modifiedHours'">
+          <i class="fa-solid" [class.fa-ban]="exception.type !== 'modifiedHours'" [class.fa-clock]="exception.type === 'modifiedHours'"></i>
+          <span>{{ getExceptionWarningMessage() }}</span>
+        </div>
+      }
+
+      @if (isOutsideWorkSchedule() && !getActiveException()) {
         <div class="alert alert-warning schedule-warning">
           <i class="fa-solid fa-triangle-exclamation"></i>
           <span>Esta cita está fuera del horario laboral configurado</span>

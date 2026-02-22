@@ -130,6 +130,11 @@
       font-size: var(--font-size-base);
     }
     
+    .legend-separator {
+      color: var(--border-primary);
+      font-size: var(--font-size-sm);
+    }
+
     .legend-item {
       display: flex;
       align-items: center;
@@ -147,6 +152,8 @@
         &.dot-completed { background-color: var(--neutral-500); }
         &.dot-cancelled { background-color: var(--error-500); }
         &.dot-no-show   { background-color: var(--warning-500); }
+        &.dot-closed    { background-color: #dc2626; }
+        &.dot-modified  { background-color: #d97706; }
       }
     }
   }
@@ -370,6 +377,69 @@
       
       .fc-highlight {
         background-color: var(--primary-100);
+      }
+
+      // === Schedule Exception Styles ===
+
+      // All-day slot: compact height
+      .fc-daygrid-body {
+        .fc-daygrid-day-frame {
+          min-height: auto;
+        }
+      }
+
+      // Background shading for closed/modified days
+      .exception-closed-bg {
+        opacity: 0.35 !important;
+      }
+
+      .exception-modified-bg {
+        opacity: 0.3 !important;
+      }
+
+      // Subtle banner for dentist-specific exceptions in "Todos" view
+      .exception-subtle-banner {
+        border-radius: var(--radius-sm) !important;
+        font-size: 0.65rem !important;
+        font-weight: var(--font-weight-medium) !important;
+        padding: 1px var(--spacing-xs) !important;
+        cursor: default !important;
+        box-shadow: none !important;
+        opacity: 0.75;
+
+        &:hover {
+          transform: none !important;
+        }
+
+        .fc-event-title {
+          font-size: 0.65rem !important;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      // All-day banner events
+      .exception-closed-banner,
+      .exception-modified-banner {
+        border-radius: var(--radius-sm) !important;
+        font-size: var(--font-size-xs) !important;
+        font-weight: var(--font-weight-semibold) !important;
+        padding: 2px var(--spacing-xs) !important;
+        cursor: default !important;
+        box-shadow: none !important;
+
+        &:hover {
+          transform: none !important;
+          opacity: 1 !important;
+        }
+
+        .fc-event-title {
+          font-size: var(--font-size-xs) !important;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
     }
   }

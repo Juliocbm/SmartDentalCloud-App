@@ -1,221 +1,87 @@
 // ============================================
 // AppointmentDetailComponent - Estilos
-// Base: usa .detail-container, .detail-header, .detail-body,
-//       .info-section, .info-card de _components.scss
+// Usa clases globales de _components.scss:
+//   .detail-container, .detail-header, .detail-body,
+//   .info-section, .info-card, .info-row, .link-primary,
+//   .header-action-bar, .status-banner, .info-two-col,
+//   .alert-row, button.link-primary
+// Solo overrides específicos de esta pantalla aquí
 // ============================================
 
-// Override específico: text-transform en .value
+// ===== Header: capitalize date values =====
 .detail-header .header-content .header-info .info-item .value {
   text-transform: capitalize;
 }
 
-// Overrides específicos de info-card para este componente
-.info-card {
-  .info-row {
-    .info-value.notes-text {
-      white-space: pre-wrap;
-      line-height: var(--line-height-relaxed);
-    }
-
-    &.alert-row {
-      background: var(--error-bg);
-      padding: var(--spacing-md);
-      border-radius: var(--radius-md);
-      border-bottom: none;
-
-      .info-label {
-        color: var(--error-600);
-      }
-
-      .info-value {
-        color: var(--error-700);
-      }
-    }
-  }
-
-  .info-actions {
-    margin-top: var(--spacing-sm);
-  }
+// ===== Notes text override =====
+.info-card .info-row .info-value.notes-text {
+  white-space: pre-wrap;
+  line-height: var(--line-height-relaxed);
 }
 
-.btn-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) 0;
-  background: transparent;
-  border: none;
-  color: var(--primary-500);
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  transition: var(--transition-base);
-
-  &:hover {
-    color: var(--primary-600);
-    text-decoration: underline;
-  }
-
-  i {
-    font-size: var(--font-size-xs);
-  }
-}
-
-.actions-section {
-  .action-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-lg);
-
-    .btn {
-      flex: 1;
-      min-width: 200px;
-      justify-content: center;
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
-    .completed-message,
-    .cancelled-message {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-md);
-      padding: var(--spacing-lg);
-      border-radius: var(--radius-md);
-      font-weight: var(--font-weight-medium);
-
-      i {
-        font-size: var(--font-size-2xl);
-      }
-    }
-
-    .completed-message {
-      background: var(--success-bg);
-      color: var(--success-600);
-    }
-
-    .cancelled-message {
-      background: var(--error-bg);
-      color: var(--error-600);
-    }
-  }
-}
-
+// ===== Buttons =====
 .btn {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-xl);
+  padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
   border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: var(--transition-base);
 
-  i {
-    font-size: var(--font-size-base);
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   &.btn-primary {
     background: var(--primary-500);
     color: white;
-
-    &:hover:not(:disabled) {
-      background: var(--primary-600);
-      box-shadow: var(--shadow-md);
-    }
+    &:hover:not(:disabled) { background: var(--primary-600); }
   }
 
   &.btn-secondary {
     background: var(--surface-secondary);
     color: var(--text-primary);
     border: 1px solid var(--border-primary);
-
-    &:hover:not(:disabled) {
-      background: var(--surface-tertiary);
-    }
+    &:hover:not(:disabled) { background: var(--surface-tertiary); }
   }
 
   &.btn-success {
     background: var(--success-500);
     color: white;
-
-    &:hover:not(:disabled) {
-      background: var(--success-600);
-      box-shadow: var(--shadow-md);
-    }
+    &:hover:not(:disabled) { background: var(--success-600); }
   }
 
   &.btn-warning {
     background: var(--warning-500);
     color: white;
-
-    &:hover:not(:disabled) {
-      background: var(--warning-600);
-      box-shadow: var(--shadow-md);
-    }
+    &:hover:not(:disabled) { background: var(--warning-600); }
   }
 
   &.btn-danger {
     background: var(--error-500);
     color: white;
+    &:hover:not(:disabled) { background: var(--error-600); }
+  }
 
-    &:hover:not(:disabled) {
-      background: var(--error-600);
-      box-shadow: var(--shadow-md);
-    }
+  &.btn-outline {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    &:hover:not(:disabled) { background: var(--surface-tertiary); }
   }
 }
 
-// ===== Clases de utilidad para badges de estado =====
-.bg-blue-100 {
-  background: var(--primary-100);
-  color: var(--primary-700);
-}
-
-.text-blue-800 {
-  color: var(--primary-700);
-}
-
-.bg-green-100 {
-  background: var(--success-100);
-  color: var(--success-700);
-}
-
-.text-green-800 {
-  color: var(--success-700);
-}
-
-.bg-gray-100 {
-  background: var(--neutral-100);
-  color: var(--neutral-700);
-}
-
-.text-gray-800 {
-  color: var(--neutral-700);
-}
-
-.bg-red-100 {
-  background: var(--error-100);
-  color: var(--error-700);
-}
-
-.text-red-800 {
-  color: var(--error-700);
-}
-
-.bg-yellow-100 {
-  background: var(--warning-100);
-  color: var(--warning-700);
-}
-
-.text-yellow-800 {
-  color: var(--warning-700);
-}
+// ===== Status Badge Utilities =====
+.bg-blue-100 { background: var(--primary-100); color: var(--primary-700); }
+.bg-green-100 { background: var(--success-100); color: var(--success-700); }
+.bg-gray-100 { background: var(--neutral-100); color: var(--neutral-700); }
+.bg-red-100 { background: var(--error-100); color: var(--error-700); }
+.bg-yellow-100 { background: var(--warning-100); color: var(--warning-700); }
 
 // ===== Consultation Note Section =====
 .consultation-note-section {
@@ -225,10 +91,7 @@
     gap: var(--spacing-md);
     padding: var(--spacing-lg);
     color: var(--text-secondary);
-
-    i {
-      color: var(--primary-500);
-    }
+    i { color: var(--primary-500); }
   }
 
   .note-summary {
@@ -269,9 +132,7 @@
     font-size: var(--font-size-sm);
   }
 
-  .note-actions {
-    padding-top: var(--spacing-md);
-  }
+  .note-actions { padding-top: var(--spacing-md); }
 
   .note-empty {
     text-align: center;
@@ -291,17 +152,3 @@
   }
 }
 
-// Responsive: .detail-container, .detail-header, .info-section, .info-card
-// manejados globalmente en _components.scss
-@media (max-width: 768px) {
-  .actions-section {
-    .action-buttons {
-      flex-direction: column;
-
-      .btn {
-        width: 100%;
-        min-width: auto;
-      }
-    }
-  }
-}

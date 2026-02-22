@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { WorkScheduleEditorComponent } from '../work-schedule-editor/work-schedule-editor';
 import { DentistScheduleManagerComponent } from '../dentist-schedule-manager/dentist-schedule-manager';
+import { ScheduleExceptionsManagerComponent } from '../schedule-exceptions-manager/schedule-exceptions-manager';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import {
@@ -15,12 +16,12 @@ import {
   LANGUAGE_OPTIONS
 } from '../../models/settings.models';
 
-type SettingsTab = 'general' | 'schedule' | 'dentist-schedule' | 'smtp' | 'branding' | 'domain';
+type SettingsTab = 'general' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'smtp' | 'branding' | 'domain';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss'
 })
@@ -68,6 +69,7 @@ export class SettingsPageComponent implements OnInit {
     { key: 'general', label: 'General', icon: 'fa-gear' },
     { key: 'schedule', label: 'Horario', icon: 'fa-clock' },
     { key: 'dentist-schedule', label: 'Horarios Dentistas', icon: 'fa-user-doctor' },
+    { key: 'exceptions', label: 'Excepciones', icon: 'fa-calendar-xmark' },
     { key: 'smtp', label: 'Correo (SMTP)', icon: 'fa-envelope' },
     { key: 'branding', label: 'Branding', icon: 'fa-palette' },
     { key: 'domain', label: 'Dominio', icon: 'fa-globe' }

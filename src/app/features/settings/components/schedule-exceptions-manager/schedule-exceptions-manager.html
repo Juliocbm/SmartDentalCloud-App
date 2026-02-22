@@ -1,0 +1,248 @@
+<div class="exceptions-container">
+  <div class="section-header">
+    <div class="section-title">
+      <h2>
+        <i class="fa-solid fa-calendar-xmark"></i>
+        Excepciones de Horario
+      </h2>
+      <p class="section-description">
+        Configura días festivos, vacaciones y bloqueos puntuales
+      </p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <i class="fa-solid fa-plus"></i>
+      Nueva Excepción
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando excepciones...</p>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && exceptions().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-calendar-check"></i>
+      <h3>No hay excepciones configuradas</h3>
+      <p>Agrega días festivos, vacaciones o bloqueos para gestionar excepciones al horario regular</p>
+      <button class="btn btn-primary" (click)="openCreateModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Excepción
+      </button>
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!loading() && exceptions().length > 0) {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Motivo</th>
+            <th>Horario</th>
+            <th>Aplica a</th>
+            <th>Recurrente</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (exception of exceptions(); track exception.id) {
+            <tr>
+              <td class="date-cell">{{ formatDate(exception.date) }}</td>
+              <td>
+                <span class="badge" [class]="EXCEPTION_TYPE_COLORS[exception.type]">
+                  <i [class]="EXCEPTION_TYPE_ICONS[exception.type]"></i>
+                  {{ EXCEPTION_TYPE_LABELS[exception.type] }}
+                </span>
+              </td>
+              <td>{{ exception.reason }}</td>
+              <td class="time-cell">{{ getTimeRange(exception) }}</td>
+              <td>
+                <span class="applies-to" [class.applies-clinic]="!exception.userId">
+                  @if (exception.userId) {
+                    <i class="fa-solid fa-user-doctor"></i>
+                    {{ exception.userName }}
+                  } @else {
+                    <i class="fa-solid fa-building"></i>
+                    Clínica
+                  }
+                </span>
+              </td>
+              <td>
+                @if (exception.isRecurringYearly) {
+                  <span class="badge badge-info">
+                    <i class="fa-solid fa-rotate"></i>
+                    Anual
+                  </span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button class="btn-icon btn-icon-edit" title="Editar" (click)="openEditModal(exception)">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button class="btn-icon btn-icon-delete" title="Eliminar" (click)="deleteException(exception)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="table-footer centered">
+        <span class="results-count">
+          <strong>{{ exceptions().length }}</strong> excepciones configuradas
+        </span>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Modal Form -->
+@if (showModal()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <i class="fa-solid fa-calendar-xmark"></i>
+          {{ editingException() ? 'Editar Excepción' : 'Nueva Excepción' }}
+        </h3>
+        <button class="btn-icon" (click)="closeModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Date -->
+        <div class="form-group">
+          <label for="exception-date">Fecha</label>
+          <input
+            type="date"
+            id="exception-date"
+            class="form-control"
+            [ngModel]="formDate()"
+            (ngModelChange)="formDate.set($event)"
+          />
+        </div>
+
+        <!-- Type -->
+        <div class="form-group">
+          <label for="exception-type">Tipo</label>
+          <select
+            id="exception-type"
+            class="form-control"
+            [ngModel]="formType()"
+            (ngModelChange)="formType.set($event)"
+          >
+            @for (type of exceptionTypes; track type.value) {
+              <option [value]="type.value">{{ type.label }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Reason -->
+        <div class="form-group">
+          <label for="exception-reason">Motivo</label>
+          <input
+            type="text"
+            id="exception-reason"
+            class="form-control"
+            placeholder="Ej: Navidad, Vacaciones Dr. García..."
+            maxlength="500"
+            [ngModel]="formReason()"
+            (ngModelChange)="formReason.set($event)"
+          />
+        </div>
+
+        <!-- Time Range (only for ModifiedHours) -->
+        @if (formType() === 'modifiedHours') {
+          <div class="form-row">
+            <div class="form-group">
+              <label for="exception-start">Hora Inicio</label>
+              <select
+                id="exception-start"
+                class="form-control"
+                [ngModel]="formStartTime()"
+                (ngModelChange)="formStartTime.set($event)"
+              >
+                @for (time of timeOptions; track time) {
+                  <option [value]="time">{{ time }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="exception-end">Hora Fin</label>
+              <select
+                id="exception-end"
+                class="form-control"
+                [ngModel]="formEndTime()"
+                (ngModelChange)="formEndTime.set($event)"
+              >
+                @for (time of timeOptions; track time) {
+                  <option [value]="time">{{ time }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          @if (formStartTime() >= formEndTime()) {
+            <p class="form-error">La hora de fin debe ser posterior a la hora de inicio</p>
+          }
+        }
+
+        <!-- Applies to -->
+        <div class="form-group">
+          <label for="exception-user">Aplica a</label>
+          <select
+            id="exception-user"
+            class="form-control"
+            [ngModel]="formUserId() ?? ''"
+            (ngModelChange)="onUserIdChange($event)"
+          >
+            <option value="">Toda la clínica</option>
+            @for (dentist of dentists(); track dentist.id) {
+              <option [value]="dentist.id">{{ dentist.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Recurring -->
+        <div class="form-check">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              [ngModel]="formIsRecurringYearly()"
+              (ngModelChange)="formIsRecurringYearly.set($event)"
+            />
+            <span>Se repite cada año (festivo recurrente)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button
+          class="btn btn-primary"
+          [disabled]="!isFormValid() || saving()"
+          (click)="saveException()"
+        >
+          @if (saving()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          } @else {
+            <i class="fa-solid fa-floppy-disk"></i>
+          }
+          {{ editingException() ? 'Actualizar' : 'Crear' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

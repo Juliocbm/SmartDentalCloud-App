@@ -13,6 +13,7 @@ import { DentistListItem } from '../../../../core/models/user.models';
 import { TimeSlot } from '../../models/appointment.models';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { DaySchedule, DAY_ORDER } from '../../../settings/models/work-schedule.models';
+import { ScheduleException, EXCEPTION_TYPE_LABELS } from '../../../settings/models/schedule-exception.models';
 
 @Component({
   selector: 'app-appointment-form',
@@ -53,6 +54,9 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
   // Work schedule
   workScheduleDays = signal<DaySchedule[]>([]);
 
+  // Schedule exceptions
+  scheduleExceptions = signal<ScheduleException[]>([]);
+
   backRoute = computed(() => this.contextService.context().returnUrl);
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [
@@ -66,6 +70,7 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
     this.loadContext();
     this.checkEditMode();
     this.loadWorkSchedule();
+    this.loadScheduleExceptions();
   }
 
   ngOnDestroy(): void {
@@ -77,6 +82,53 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
       next: (schedule) => this.workScheduleDays.set(schedule.days),
       error: () => {} // Silent — use no schedule
     });
+  }
+
+  private loadScheduleExceptions(): void {
+    const from = new Date();
+    from.setDate(from.getDate() - 7);
+    const to = new Date();
+    to.setDate(to.getDate() + 90);
+    const fromStr = from.toISOString().split('T')[0];
+    const toStr = to.toISOString().split('T')[0];
+
+    this.settingsService.getScheduleExceptions(fromStr, toStr).subscribe({
+      next: (exceptions) => this.scheduleExceptions.set(exceptions),
+      error: () => {} // Silent
+    });
+  }
+
+  getActiveException(): ScheduleException | null {
+    const startAtValue = this.appointmentForm?.get('startAt')?.value;
+    if (!startAtValue) return null;
+
+    const date = new Date(startAtValue);
+    if (isNaN(date.getTime())) return null;
+
+    const dateStr = date.toISOString().split('T')[0];
+    const dentistId = this.appointmentForm?.get('userId')?.value || null;
+
+    // Find the most relevant exception for this date
+    return this.scheduleExceptions().find(ex => {
+      if (ex.date !== dateStr) return false;
+      // Clinic-wide exception applies to everyone
+      if (!ex.userId) return true;
+      // Dentist-specific exception applies only if matching
+      if (dentistId && ex.userId === dentistId) return true;
+      return false;
+    }) || null;
+  }
+
+  getExceptionWarningMessage(): string {
+    const ex = this.getActiveException();
+    if (!ex) return '';
+    const label = EXCEPTION_TYPE_LABELS[ex.type];
+    const isClosed = ex.type !== 'modifiedHours';
+    const scope = ex.userId ? `para ${ex.userName}` : 'para toda la clínica';
+    if (isClosed) {
+      return `${label} ${scope}: ${ex.reason}. No hay disponibilidad este día.`;
+    }
+    return `${label} ${scope}: ${ex.reason}. El horario está modificado (${ex.startTime} - ${ex.endTime}).`;
   }
 
   isOutsideWorkSchedule(): boolean {
