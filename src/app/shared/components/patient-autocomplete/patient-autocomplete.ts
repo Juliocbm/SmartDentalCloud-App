@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, inject, effect } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, inject, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, of, map } from 'rxjs';
@@ -13,11 +13,12 @@ import { LoggingService } from '../../../core/services/logging.service';
   templateUrl: './patient-autocomplete.html',
   styleUrl: './patient-autocomplete.scss'
 })
-export class PatientAutocompleteComponent {
+export class PatientAutocompleteComponent implements OnChanges {
   private patientsService = inject(PatientsService);
   private logger = inject(LoggingService);
 
   @Input() selectedPatientId: string | null = null;
+  @Input() selectedPatientName: string | null = null;
   @Input() placeholder = 'Buscar paciente...';
   @Input() required = false;
   @Input() disabled = false;
@@ -30,6 +31,18 @@ export class PatientAutocompleteComponent {
   loading = signal(false);
   showDropdown = signal(false);
   selectedPatient = signal<PatientSearchResult | null>(null);
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['selectedPatientId'] && this.selectedPatientId && this.selectedPatientName) {
+      this.selectedPatient.set({
+        id: this.selectedPatientId,
+        name: this.selectedPatientName,
+        email: '',
+        phone: ''
+      });
+      this.searchControl.setValue(this.selectedPatientName, { emitEvent: false });
+    }
+  }
 
   constructor() {
     this.searchControl.valueChanges

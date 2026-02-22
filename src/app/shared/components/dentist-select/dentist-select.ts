@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, inject, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, inject, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { UsersService } from '../../../core/services/users.service';
@@ -12,7 +12,7 @@ import { LoggingService } from '../../../core/services/logging.service';
   templateUrl: './dentist-select.html',
   styleUrl: './dentist-select.scss'
 })
-export class DentistSelectComponent implements OnInit {
+export class DentistSelectComponent implements OnInit, OnChanges {
   private usersService = inject(UsersService);
   private logger = inject(LoggingService);
 
@@ -35,9 +35,11 @@ export class DentistSelectComponent implements OnInit {
       const dentist = this.dentists().find(d => d.id === dentistId);
       this.dentistSelected.emit(dentist || null);
     });
+  }
 
-    if (this.selectedDentistId) {
-      this.selectControl.setValue(this.selectedDentistId);
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['selectedDentistId'] && this.selectedDentistId) {
+      this.selectControl.setValue(this.selectedDentistId, { emitEvent: false });
     }
   }
 
@@ -47,6 +49,9 @@ export class DentistSelectComponent implements OnInit {
       next: (dentists) => {
         this.dentists.set(dentists);
         this.loading.set(false);
+        if (this.selectedDentistId) {
+          this.selectControl.setValue(this.selectedDentistId, { emitEvent: false });
+        }
       },
       error: (error) => {
         this.logger.error('Error loading dentists:', error);

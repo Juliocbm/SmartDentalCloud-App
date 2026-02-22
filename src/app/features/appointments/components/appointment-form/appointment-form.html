@@ -48,6 +48,7 @@
       <div class="form-group">
         <app-patient-autocomplete
           [selectedPatientId]="selectedPatient()?.id || null"
+          [selectedPatientName]="selectedPatient()?.name || null"
           [required]="true"
           [disabled]="loading()"
           [error]="getFieldError('patientId')"
@@ -73,7 +74,7 @@
           [error]="getFieldError('userId')"
           (dentistSelected)="onDentistSelected($event)"
         >
-          Dentista
+          Seleccionar Dentista
         </app-dentist-select>
       </div>
     </div>

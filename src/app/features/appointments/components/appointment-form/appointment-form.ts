@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -27,7 +27,7 @@ import { DaySchedule, DAY_ORDER } from '../../../settings/models/work-schedule.m
   templateUrl: './appointment-form.html',
   styleUrls: ['./appointment-form.scss']
 })
-export class AppointmentFormComponent implements OnInit {
+export class AppointmentFormComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -66,6 +66,10 @@ export class AppointmentFormComponent implements OnInit {
     this.loadContext();
     this.checkEditMode();
     this.loadWorkSchedule();
+  }
+
+  ngOnDestroy(): void {
+    this.contextService.resetContext();
   }
 
   private loadWorkSchedule(): void {

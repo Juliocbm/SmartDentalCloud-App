@@ -11,6 +11,8 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatusConfig } from '../../models/appointment.models';
+import { AppointmentFormContextService } from '../../services/appointment-form-context.service';
+import { CALENDAR_APPOINTMENT_CONTEXT } from '../../models/appointment-form-context.model';
 import { UsersService } from '../../../../core/services/users.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { DentistListItem } from '../../../../core/models/user.models';
@@ -30,6 +32,7 @@ export class AppointmentCalendarComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private router = inject(Router);
   private logger = inject(LoggingService);
+  private contextService = inject(AppointmentFormContextService);
 
   private calendarRef = viewChild(FullCalendarComponent);
 
@@ -218,12 +221,22 @@ export class AppointmentCalendarComponent implements OnInit {
   navigateToFullForm(): void {
     const slot = this.selectedSlot();
     if (slot) {
-      this.router.navigate(['/appointments/new'], {
-        queryParams: {
-          startAt: slot.start.toISOString(),
-          endAt: slot.end.toISOString()
-        }
-      });
+      const selectedId = this.selectedDoctorId();
+      const dentist = selectedId !== 'all'
+        ? this.dentists().find(d => d.id === selectedId)
+        : undefined;
+
+      this.contextService.setContext(
+        CALENDAR_APPOINTMENT_CONTEXT(
+          slot.start,
+          slot.end,
+          dentist?.id,
+          dentist?.name,
+          dentist?.specialization ?? undefined
+        )
+      );
+
+      this.router.navigate(['/appointments/new']);
     }
   }
 
