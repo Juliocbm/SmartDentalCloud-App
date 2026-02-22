@@ -1,0 +1,159 @@
+<div class="detail-container">
+  <app-page-header
+    [title]="'Recibir Mercancía'"
+    [subtitle]="order()?.orderNumber || ''"
+    [icon]="'fa-box'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      @if (order(); as po) {
+        <span class="badge" [ngClass]="getStatusClass(po.status)">
+          {{ getStatusLabel(po.status) }}
+        </span>
+      }
+    </div>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando orden de compra...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <h3>Error al cargar la orden</h3>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  }
+
+  @if (!loading() && !error() && order(); as po) {
+    <div class="detail-body">
+      <!-- Order summary -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-file-invoice"></i>
+          Resumen de la Orden
+        </h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Proveedor:</span>
+            <span class="info-value">{{ po.supplierName }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Total de la Orden:</span>
+            <span class="info-value">{{ formatCurrency(po.total) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Receive items table -->
+      <div class="info-section">
+        <div class="receive-header">
+          <h3>
+            <i class="fa-solid fa-boxes-stacked"></i>
+            Productos a Recibir
+            <span class="items-count">{{ receiveItems().length }}</span>
+          </h3>
+          <div class="receive-actions">
+            <button class="btn btn-sm btn-outline" (click)="receiveAll()">
+              <i class="fa-solid fa-check-double"></i>
+              Recibir Todo
+            </button>
+            <button class="btn btn-sm btn-outline" (click)="clearAll()">
+              <i class="fa-solid fa-eraser"></i>
+              Limpiar
+            </button>
+          </div>
+        </div>
+
+        @if (receiveItems().length > 0) {
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Código</th>
+                  <th class="text-center">Ordenado</th>
+                  <th class="text-center">Recibido</th>
+                  <th class="text-center">Pendiente</th>
+                  <th class="text-center">Recibir Ahora</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of receiveItems(); track item.id; let i = $index) {
+                  <tr [class.row-complete]="item.pendingQuantity === 0">
+                    <td class="product-name">{{ item.productName }}</td>
+                    <td class="code-cell">{{ item.productCode }}</td>
+                    <td class="text-center">{{ item.quantity }} {{ item.unit }}</td>
+                    <td class="text-center">
+                      <span [class.text-success]="item.receivedSoFar >= item.quantity"
+                            [class.text-warning]="item.receivedSoFar > 0 && item.receivedSoFar < item.quantity">
+                        {{ item.receivedSoFar }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      @if (item.pendingQuantity > 0) {
+                        <span class="badge badge-warning">{{ item.pendingQuantity }}</span>
+                      } @else {
+                        <span class="badge badge-success">
+                          <i class="fa-solid fa-check"></i> Completo
+                        </span>
+                      }
+                    </td>
+                    <td class="text-center receive-input-cell">
+                      @if (item.pendingQuantity > 0) {
+                        <input
+                          type="number"
+                          class="form-control receive-input"
+                          [value]="item.receiveNow"
+                          [min]="0"
+                          [max]="item.pendingQuantity"
+                          (input)="onReceiveNowChange(i, $any($event.target).valueAsNumber || 0)"
+                          [disabled]="submitting()"
+                        />
+                      } @else {
+                        <span class="text-muted">—</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-state empty-state-sm">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            <h3>Sin items</h3>
+            <p>Esta orden no tiene items para recibir</p>
+          </div>
+        }
+      </div>
+
+      <!-- Action bar -->
+      <div class="form-actions">
+        <button class="btn btn-secondary" (click)="goBack()" [disabled]="submitting()">
+          Cancelar
+        </button>
+        <button
+          class="btn btn-success"
+          (click)="confirmReceive()"
+          [disabled]="!hasItemsToReceive() || submitting()">
+          @if (submitting()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Procesando...
+          } @else {
+            <i class="fa-solid fa-box"></i>
+            Confirmar Recepción ({{ totalItemsToReceive() }} unidades)
+          }
+        </button>
+      </div>
+    </div>
+  }
+</div>

@@ -5,14 +5,13 @@
     [subtitle]="'Historial de pagos de pacientes'"
     [icon]="'fa-money-bill-wave'"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <a routerLink="/payments/new" class="btn btn-success">
+        <i class="fa-solid fa-plus"></i>
+        Registrar Pago
+      </a>
+    </div>
   </app-page-header>
-
-  <div class="page-actions">
-    <a routerLink="/payments/new" class="btn btn-success">
-      <i class="fa-solid fa-plus"></i>
-      Registrar Pago
-    </a>
-  </div>
 
   <!-- KPI Metrics -->
   <div class="metrics-grid">

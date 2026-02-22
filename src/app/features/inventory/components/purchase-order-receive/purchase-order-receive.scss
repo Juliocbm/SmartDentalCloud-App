@@ -1,0 +1,90 @@
+// ============================================
+// PurchaseOrderReceiveComponent - Estilos Específicos
+// Base: .detail-container, .detail-body, .info-section, .info-card,
+//       .info-row, .table-container, .table de _components.scss
+// ============================================
+
+// ===== Receive header with actions =====
+.receive-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.receive-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+// ===== Items count badge =====
+.items-count {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-left: var(--spacing-sm);
+}
+
+// ===== Table cell styles =====
+.text-center { text-align: center; }
+.text-success { color: var(--success-600); }
+.text-warning { color: var(--warning-600); }
+
+.product-name {
+  font-weight: var(--font-weight-medium);
+}
+
+.code-cell {
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+}
+
+// ===== Receive input =====
+.receive-input-cell {
+  width: 120px;
+}
+
+.receive-input {
+  width: 80px;
+  text-align: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 2px var(--primary-100);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ===== Completed row =====
+.row-complete {
+  opacity: 0.6;
+}
+
+// ===== Form actions =====
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-xl);
+  border-top: 1px solid var(--border-primary);
+}

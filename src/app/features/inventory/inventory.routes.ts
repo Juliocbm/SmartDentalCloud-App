@@ -96,8 +96,8 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: ':id/receive',
-        loadComponent: () => import('./components/purchase-order-form/purchase-order-form').then(m => m.PurchaseOrderFormComponent)
-        // TODO: Crear purchase-order-receive component
+        loadComponent: () => import('./components/purchase-order-receive/purchase-order-receive').then(m => m.PurchaseOrderReceiveComponent),
+        title: 'Recibir Mercancía'
       }
     ]
   }
