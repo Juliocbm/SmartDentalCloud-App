@@ -69,8 +69,8 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: ':id',
-        loadComponent: () => import('./components/supplier-list/supplier-list').then(m => m.SupplierListComponent)
-        // TODO: Crear supplier-detail component
+        loadComponent: () => import('./components/supplier-detail/supplier-detail').then(m => m.SupplierDetailComponent),
+        title: 'Detalle de Proveedor'
       },
       {
         path: ':id/edit',
