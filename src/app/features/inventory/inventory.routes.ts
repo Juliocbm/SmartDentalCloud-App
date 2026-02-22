@@ -21,8 +21,8 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: ':id',
-        loadComponent: () => import('./components/product-list/product-list').then(m => m.ProductListComponent)
-        // TODO: Crear product-detail component
+        loadComponent: () => import('./components/product-detail/product-detail').then(m => m.ProductDetailComponent),
+        title: 'Detalle de Producto'
       },
       {
         path: ':id/edit',

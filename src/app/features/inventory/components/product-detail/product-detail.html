@@ -1,0 +1,203 @@
+<div class="detail-container">
+  <app-page-header
+    [title]="product() ? product()!.name : 'Producto'"
+    [icon]="'fa-box'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      @if (product(); as p) {
+        <span class="status-badge" [class.badge-active]="p.isActive" [class.badge-inactive]="!p.isActive">
+          {{ p.isActive ? 'Activo' : 'Inactivo' }}
+        </span>
+        <button class="btn btn-outline" (click)="editProduct()">
+          <i class="fa-solid fa-pen"></i>
+          Editar
+        </button>
+      }
+    </div>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando producto...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <h3>Error al cargar el producto</h3>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  }
+
+  @if (!loading() && !error() && product(); as p) {
+    <div class="detail-body">
+      <!-- Info: two columns -->
+      <div class="info-two-col">
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-box"></i>
+            Información General
+          </h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Código:</span>
+              <span class="info-value">{{ p.code }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ p.name }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Categoría:</span>
+              <span class="info-value">{{ p.categoryName || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Unidad:</span>
+              <span class="info-value">{{ getUnitLabel(p.unit) }}</span>
+            </div>
+            @if (p.description) {
+              <div class="info-row">
+                <span class="info-label">Descripción:</span>
+                <span class="info-value">{{ p.description }}</span>
+              </div>
+            }
+            <div class="info-row">
+              <span class="info-label">Registrado:</span>
+              <span class="info-value">{{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            @if (p.updatedAt) {
+              <div class="info-row">
+                <span class="info-label">Última actualización:</span>
+                <span class="info-value">{{ p.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-warehouse"></i>
+            Stock e Inventario
+          </h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Stock actual:</span>
+              <span class="info-value">
+                <span class="badge" [ngClass]="getStockStatus(p).class">
+                  {{ p.currentStock ?? 0 }}
+                </span>
+              </span>
+            </div>
+            @if (p.availableStock != null) {
+              <div class="info-row">
+                <span class="info-label">Stock disponible:</span>
+                <span class="info-value">{{ p.availableStock }}</span>
+              </div>
+            }
+            <div class="info-row">
+              <span class="info-label">Stock mínimo:</span>
+              <span class="info-value">{{ p.minStock }}</span>
+            </div>
+            @if (p.maxStock != null) {
+              <div class="info-row">
+                <span class="info-label">Stock máximo:</span>
+                <span class="info-value">{{ p.maxStock }}</span>
+              </div>
+            }
+            <div class="info-row">
+              <span class="info-label">Punto de reorden:</span>
+              <span class="info-value">{{ p.reorderPoint }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Cantidad de reorden:</span>
+              <span class="info-value">{{ p.reorderQuantity }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Costos y trazabilidad -->
+      <div class="info-two-col">
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-dollar-sign"></i>
+            Costos
+          </h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Costo unitario:</span>
+              <span class="info-value">{{ formatCurrency(p.unitCost) }}</span>
+            </div>
+            @if (p.price != null) {
+              <div class="info-row">
+                <span class="info-label">Precio de venta:</span>
+                <span class="info-value">{{ formatCurrency(p.price) }}</span>
+              </div>
+            }
+            @if (p.averageCost != null) {
+              <div class="info-row">
+                <span class="info-label">Costo promedio:</span>
+                <span class="info-value">{{ formatCurrency(p.averageCost) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-barcode"></i>
+            Trazabilidad
+          </h3>
+          <div class="info-card">
+            @if (p.lotNumber) {
+              <div class="info-row">
+                <span class="info-label">Número de lote:</span>
+                <span class="info-value">{{ p.lotNumber }}</span>
+              </div>
+            }
+            @if (p.expiryDate) {
+              <div class="info-row">
+                <span class="info-label">Fecha de vencimiento:</span>
+                <span class="info-value">{{ p.expiryDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+            }
+            @if (p.usageCount != null) {
+              <div class="info-row">
+                <span class="info-label">Usos registrados:</span>
+                <span class="info-value">{{ p.usageCount }}</span>
+              </div>
+            }
+            @if (!p.lotNumber && !p.expiryDate && p.usageCount == null) {
+              <div class="info-empty">
+                <i class="fa-solid fa-circle-info"></i>
+                Sin información de trazabilidad
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Notas -->
+      @if (p.notes) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-sticky-note"></i>
+            Notas
+          </h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-value">{{ p.notes }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
