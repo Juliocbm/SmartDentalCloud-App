@@ -6,11 +6,15 @@
     [breadcrumbs]="breadcrumbs">
     <div actions>
       @if (service(); as svc) {
-        <a [routerLink]="['/services', svc.id, 'edit']" class="btn btn-primary">
+        <span class="badge" [ngClass]="svc.isActive ? 'badge-success' : 'badge-neutral'">
+          <i [class]="svc.isActive ? 'fa-solid fa-check-circle' : 'fa-solid fa-pause-circle'"></i>
+          {{ svc.isActive ? 'Activo' : 'Inactivo' }}
+        </span>
+        <a [routerLink]="['/services', svc.id, 'edit']" class="btn btn-outline">
           <i class="fa-solid fa-pen"></i>
           Editar
         </a>
-        <button class="btn btn-danger-outline" (click)="confirmDelete()">
+        <button class="btn btn-outline btn-danger" (click)="confirmDelete()">
           <i class="fa-solid fa-trash"></i>
           Eliminar
         </button>
@@ -23,132 +27,124 @@
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando servicio...</p>
     </div>
-  } @else if (error()) {
+  }
+
+  @if (error()) {
     <div class="empty-state">
       <i class="fa-solid fa-exclamation-circle"></i>
+      <h3>Error al cargar el servicio</h3>
       <p>{{ error() }}</p>
       <button class="btn btn-secondary" routerLink="/services">
         <i class="fa-solid fa-arrow-left"></i>
         Volver a Servicios
       </button>
     </div>
-  } @else if (service(); as svc) {
+  }
 
-    <div class="detail-header">
-
-      <div class="header-content">
-        <div class="title-section">
-          <h1>
-            <i class="fa-solid fa-tooth"></i>
-            {{ svc.name }}
-          </h1>
-          <span class="status-badge" [class.badge-success]="svc.isActive" [class.badge-neutral]="!svc.isActive">
-            <i [class]="svc.isActive ? 'fa-solid fa-check-circle' : 'fa-solid fa-pause-circle'"></i>
-            {{ svc.isActive ? 'Activo' : 'Inactivo' }}
-          </span>
-        </div>
-        @if (svc.description) {
-          <p class="service-description">{{ svc.description }}</p>
-        }
-      </div>
-    </div>
-
+  @if (!loading() && !error() && service(); as svc) {
     <div class="detail-body">
-      <!-- Main Info -->
-      <div class="info-section">
-        <h3><i class="fa-solid fa-info-circle"></i> Información General</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">Precio</span>
-            <span class="info-value price">{{ formatCurrency(svc.cost) }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Duración</span>
-            <span class="info-value">{{ svc.durationMinutes ? svc.durationMinutes + ' min' : '—' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Categoría</span>
-            <span class="info-value">{{ getCategoryLabel(svc.category) }}</span>
+
+      <!-- Row 1: Info General + Clínica -->
+      <div class="info-two-col">
+        <!-- Información General -->
+        <div class="info-section">
+          <h3><i class="fa-solid fa-info-circle"></i> Información General</h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Precio:</span>
+              <span class="info-value price-value">{{ formatCurrency(svc.cost) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Duración:</span>
+              <span class="info-value">{{ svc.durationMinutes ? svc.durationMinutes + ' min' : '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Categoría:</span>
+              <span class="info-value">{{ getCategoryLabel(svc.category) }}</span>
+            </div>
+            @if (svc.description) {
+              <div class="info-row">
+                <span class="info-label">Descripción:</span>
+                <span class="info-value">{{ svc.description }}</span>
+              </div>
+            }
           </div>
         </div>
-      </div>
 
-      <!-- Clinical Info -->
-      <div class="info-section">
-        <h3><i class="fa-solid fa-stethoscope"></i> Información Clínica</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">Requiere Seguimiento</span>
-            <span class="info-value">
-              @if (svc.requiresFollowUp) {
-                <span class="tag tag-info">Sí — {{ svc.followUpDays }} días</span>
-              } @else {
-                <span class="tag tag-neutral">No</span>
-              }
-            </span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Requiere Anestesia</span>
-            <span class="info-value">
-              <span [class]="svc.requiresAnesthesia ? 'tag tag-warning' : 'tag tag-neutral'">
-                {{ svc.requiresAnesthesia ? 'Sí' : 'No' }}
+        <!-- Información Clínica -->
+        <div class="info-section">
+          <h3><i class="fa-solid fa-stethoscope"></i> Información Clínica</h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Seguimiento:</span>
+              <span class="info-value">
+                @if (svc.requiresFollowUp) {
+                  <span class="badge badge-info">Sí — {{ svc.followUpDays }} días</span>
+                } @else {
+                  <span class="badge badge-neutral">No</span>
+                }
               </span>
-            </span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Multi-Sesión</span>
-            <span class="info-value">
-              @if (svc.isMultiSession) {
-                <span class="tag tag-info">Sí — {{ svc.estimatedSessions }} sesiones</span>
-              } @else {
-                <span class="tag tag-neutral">No</span>
-              }
-            </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Anestesia:</span>
+              <span class="info-value">
+                <span class="badge" [ngClass]="svc.requiresAnesthesia ? 'badge-warning' : 'badge-neutral'">
+                  {{ svc.requiresAnesthesia ? 'Sí' : 'No' }}
+                </span>
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Multi-Sesión:</span>
+              <span class="info-value">
+                @if (svc.isMultiSession) {
+                  <span class="badge badge-info">Sí — {{ svc.estimatedSessions }} sesiones</span>
+                } @else {
+                  <span class="badge badge-neutral">No</span>
+                }
+              </span>
+            </div>
+            @if (svc.notes) {
+              <div class="info-row">
+                <span class="info-label">Notas:</span>
+                <span class="info-value">{{ svc.notes }}</span>
+              </div>
+            }
           </div>
         </div>
-        @if (svc.notes) {
-          <div class="notes-section">
-            <span class="info-label">Notas</span>
-            <p class="notes-text">{{ svc.notes }}</p>
-          </div>
-        }
       </div>
 
-      <!-- CFDI -->
-      @if (svc.claveProdServ || svc.claveUnidad) {
+      <!-- Row 2: CFDI + Auditoría -->
+      <div class="info-two-col">
+        <!-- Datos CFDI -->
         <div class="info-section">
           <h3><i class="fa-solid fa-file-signature"></i> Datos CFDI</h3>
-          <div class="info-grid">
-            @if (svc.claveProdServ) {
-              <div class="info-item">
-                <span class="info-label">Clave Prod/Serv SAT</span>
-                <span class="info-value mono">{{ svc.claveProdServ }}</span>
-              </div>
-            }
-            @if (svc.claveUnidad) {
-              <div class="info-item">
-                <span class="info-label">Clave Unidad SAT</span>
-                <span class="info-value mono">{{ svc.claveUnidad }}</span>
-              </div>
-            }
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Clave Prod/Serv SAT:</span>
+              <span class="info-value mono-value">{{ svc.claveProdServ || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Clave Unidad SAT:</span>
+              <span class="info-value mono-value">{{ svc.claveUnidad || '—' }}</span>
+            </div>
           </div>
         </div>
-      }
 
-      <!-- Audit -->
-      <div class="info-section">
-        <h3><i class="fa-solid fa-clock-rotate-left"></i> Auditoría</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">Creado</span>
-            <span class="info-value">{{ formatDate(svc.createdAt) }}</span>
-          </div>
-          @if (svc.updatedAt) {
-            <div class="info-item">
-              <span class="info-label">Actualizado</span>
-              <span class="info-value">{{ formatDate(svc.updatedAt) }}</span>
+        <!-- Auditoría -->
+        <div class="info-section">
+          <h3><i class="fa-solid fa-clock-rotate-left"></i> Auditoría</h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Creado:</span>
+              <span class="info-value">{{ formatDate(svc.createdAt) }}</span>
             </div>
-          }
+            @if (svc.updatedAt) {
+              <div class="info-row">
+                <span class="info-label">Actualizado:</span>
+                <span class="info-value">{{ formatDate(svc.updatedAt) }}</span>
+              </div>
+            }
+          </div>
         </div>
       </div>
     </div>
