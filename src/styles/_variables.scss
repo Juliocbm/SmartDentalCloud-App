@@ -581,23 +581,141 @@
   --chart-tooltip-text: #fffbf5;
 }
 
-// ===== Tema Alto Contraste =====
+// ===== Tema Alto Contraste (WCAG AAA) =====
 [data-theme="high-contrast"] {
+  // ===== Superficies - Blanco puro con grises marcados =====
   --surface-primary: #ffffff;
   --surface-secondary: #f0f0f0;
   --surface-tertiary: #e0e0e0;
-  
+
+  // ===== Texto - Negro puro, máximo contraste =====
   --text-primary: #000000;
   --text-secondary: #1a1a1a;
   --text-tertiary: #333333;
-  
+  --text-muted: #555555;
+
+  // ===== Bordes - Gruesos y visibles =====
   --border-primary: #000000;
   --border-secondary: #333333;
-  
-  --primary-500: #0000ff;
+  --border-medium: #000000;
+  --border-dark: #000000;
+
+  // ===== Marca Principal - Azul WCAG AAA (4.5:1+ en blanco) =====
+  --primary-50: #e6e6ff;
+  --primary-100: #ccccff;
+  --primary-200: #9999ff;
+  --primary-300: #6666ff;
+  --primary-400: #3333ff;
+  --primary-500: #0000ee;
   --primary-600: #0000cc;
-  
+  --primary-700: #0000aa;
+  --primary-800: #000088;
+  --primary-900: #000066;
+
+  // ===== Gradientes - Sólidos para máxima legibilidad =====
+  --gradient-primary: linear-gradient(135deg, #0000aa, #0000ee);
+  --gradient-admin: linear-gradient(135deg, #660099, #9900cc);
+  --gradient-header: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  --gradient-card: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+
+  // ===== Sombras - Más marcadas =====
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.25);
+  --shadow-primary: 0 8px 25px rgba(0, 0, 238, 0.2);
+
+  // ===== Colores de Estado - Saturados para visibilidad =====
+  // Success
+  --success-50: #e6ffe6;
+  --success-100: #ccffcc;
   --success-500: #008000;
-  --error-500: #ff0000;
-  --warning-500: #ff8800;
+  --success-600: #006600;
+  --success-700: #004d00;
+  --success-bg: rgba(0, 128, 0, 0.15);
+  --success-text: #006600;
+  --success-gradient: linear-gradient(135deg, #006600, #008000);
+
+  // Error
+  --error-50: #ffe6e6;
+  --error-100: #ffcccc;
+  --error-200: #ff9999;
+  --error-500: #cc0000;
+  --error-600: #aa0000;
+  --error-700: #880000;
+  --error-bg: rgba(204, 0, 0, 0.12);
+  --error-text: #aa0000;
+  --error-gradient: linear-gradient(135deg, #aa0000, #cc0000);
+
+  // Warning
+  --warning-50: #fff5e6;
+  --warning-100: #ffebcc;
+  --warning-500: #cc6600;
+  --warning-600: #aa5500;
+  --warning-700: #884400;
+  --warning-bg: rgba(204, 102, 0, 0.12);
+  --warning-text: #aa5500;
+  --warning-gradient: linear-gradient(135deg, #aa5500, #cc6600);
+
+  // Info
+  --info-50: #e6f5ff;
+  --info-100: #ccebff;
+  --info-500: #006699;
+  --info-600: #005580;
+  --info-700: #004466;
+  --info-bg: rgba(0, 102, 153, 0.12);
+  --info-text: #005580;
+
+  // Neutral
+  --neutral-50: #f5f5f5;
+  --neutral-100: #ebebeb;
+  --neutral-200: #d6d6d6;
+  --neutral-300: #c2c2c2;
+  --neutral-400: #8a8a8a;
+  --neutral-500: #555555;
+  --neutral-600: #3d3d3d;
+  --neutral-700: #2b2b2b;
+  --neutral-800: #1a1a1a;
+  --neutral-900: #0a0a0a;
+  --neutral-bg: rgba(85, 85, 85, 0.12);
+  --neutral-text: #555555;
+
+  // ===== Dashboard Components =====
+  --metric-primary-bg: rgba(0, 0, 238, 0.1);
+  --metric-primary-color: var(--primary-700);
+  --metric-success-bg: rgba(0, 128, 0, 0.1);
+  --metric-success-color: var(--success-600);
+  --metric-error-bg: rgba(204, 0, 0, 0.1);
+  --metric-error-color: var(--error-600);
+  --metric-warning-bg: rgba(204, 102, 0, 0.1);
+  --metric-warning-color: var(--warning-600);
+  --metric-info-bg: rgba(0, 102, 153, 0.1);
+  --metric-info-color: var(--info-600);
+
+  --quick-action-icon-background: var(--primary-50);
+  --quick-action-icon-color: var(--primary-700);
+
+  // ===== Category Chart =====
+  --category-bar-background: var(--neutral-200);
+  --category-bar-normal: var(--gradient-primary);
+  --category-bar-warning: var(--warning-gradient);
+  --category-bar-critical: var(--error-gradient);
+
+  // ===== Activity Timeline =====
+  --activity-item-background: var(--surface-secondary);
+  --activity-item-hover: var(--surface-tertiary);
+
+  // ===== Chart Colors - Máximo contraste =====
+  --chart-color-1: #0000ee;  // Blue
+  --chart-color-2: #008000;  // Green
+  --chart-color-3: #cc6600;  // Orange
+  --chart-color-4: #cc0000;  // Red
+  --chart-color-5: #660099;  // Purple
+  --chart-color-6: #006699;  // Teal
+  --chart-color-7: #cc0066;  // Pink
+  --chart-color-8: #558800;  // Olive
+
+  --chart-grid-color: var(--border-primary);
+  --chart-text-color: var(--text-primary);
+  --chart-legend-color: var(--text-primary);
+  --chart-tooltip-bg: #000000;
+  --chart-tooltip-text: #ffffff;
 }

@@ -16,7 +16,8 @@ export class ThemeToggleComponent {
   private readonly labels: Record<string, string> = {
     light: 'Tema: Claro',
     warm: 'Tema: Cálido',
-    dark: 'Tema: Oscuro'
+    dark: 'Tema: Oscuro',
+    'high-contrast': 'Tema: Alto Contraste'
   };
 
   themeLabel = computed(() => this.labels[this.themeService.currentTheme()] ?? 'Cambiar tema');
