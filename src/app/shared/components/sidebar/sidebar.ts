@@ -98,6 +98,7 @@ export class SidebarComponent {
       icon: 'fa-solid fa-file-invoice-dollar', 
       label: 'Facturación', 
       route: '/invoices',
+      hasDashboard: true,
       children: [
         { id: 'billing-invoices', icon: 'fa-solid fa-file-invoice', label: 'Facturas', route: '/invoices/list' },
         { id: 'billing-payments', icon: 'fa-solid fa-money-bill-wave', label: 'Pagos', route: '/payments' },
@@ -109,6 +110,7 @@ export class SidebarComponent {
       icon: 'fa-solid fa-boxes-stacked', 
       label: 'Inventario', 
       route: '/inventory',
+      hasDashboard: true,
       children: [
         { id: 'inventory-products', icon: 'fa-solid fa-box', label: 'Productos', route: '/inventory/products' },
         { id: 'inventory-categories', icon: 'fa-solid fa-tags', label: 'Categorías', route: '/inventory/categories' },
@@ -125,7 +127,22 @@ export class SidebarComponent {
     },
     { id: 'dentists', icon: 'fa-solid fa-user-doctor', label: 'Dentistas', route: '/dentists' },
     { id: 'users', icon: 'fa-solid fa-user-shield', label: 'Usuarios y Roles', route: '/users' },
-    { id: 'reports', icon: 'fa-solid fa-chart-line', label: 'Reportes', route: '/reports' },
+    {
+      id: 'reports',
+      icon: 'fa-solid fa-chart-line',
+      label: 'Reportes',
+      route: '/reports',
+      hasDashboard: true,
+      children: [
+        { id: 'reports-income', icon: 'fa-solid fa-coins', label: 'Ingresos', route: '/reports/income' },
+        { id: 'reports-treatments', icon: 'fa-solid fa-tooth', label: 'Tratamientos', route: '/reports/treatments' },
+        { id: 'reports-dentist', icon: 'fa-solid fa-user-doctor', label: 'Productividad', route: '/reports/dentist-productivity' },
+        { id: 'reports-receivable', icon: 'fa-solid fa-hand-holding-dollar', label: 'Cuentas por Cobrar', route: '/reports/accounts-receivable' },
+        { id: 'reports-inventory', icon: 'fa-solid fa-boxes-stacked', label: 'Inventario', route: '/reports/inventory' },
+        { id: 'reports-occupancy', icon: 'fa-solid fa-calendar-check', label: 'Ocupación', route: '/reports/appointment-occupancy' },
+        { id: 'reports-top-services', icon: 'fa-solid fa-ranking-star', label: 'Top Servicios', route: '/reports/top-services' }
+      ]
+    },
     { id: 'settings', icon: 'fa-solid fa-gear', label: 'Configuración', route: '/settings' },
     { id: 'audit-log', icon: 'fa-solid fa-shield-halved', label: 'Auditoría', route: '/audit-log' },
   ]);
