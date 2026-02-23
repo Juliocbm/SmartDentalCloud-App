@@ -68,6 +68,28 @@
                 <span class="info-value">{{ svc.description }}</span>
               </div>
             }
+            @if (svc.claveProdServ) {
+              <div class="info-row">
+                <span class="info-label">Clave Prod/Serv SAT:</span>
+                <span class="info-value mono-value">{{ svc.claveProdServ }}</span>
+              </div>
+            }
+            @if (svc.claveUnidad) {
+              <div class="info-row">
+                <span class="info-label">Clave Unidad SAT:</span>
+                <span class="info-value mono-value">{{ svc.claveUnidad }}</span>
+              </div>
+            }
+            <div class="info-row">
+              <span class="info-label">Creado:</span>
+              <span class="info-value">{{ formatDate(svc.createdAt) }}</span>
+            </div>
+            @if (svc.updatedAt) {
+              <div class="info-row">
+                <span class="info-label">Actualizado:</span>
+                <span class="info-value">{{ formatDate(svc.updatedAt) }}</span>
+              </div>
+            }
           </div>
         </div>
 
@@ -107,41 +129,6 @@
               <div class="info-row">
                 <span class="info-label">Notas:</span>
                 <span class="info-value">{{ svc.notes }}</span>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 2: CFDI + Auditoría -->
-      <div class="info-two-col">
-        <!-- Datos CFDI -->
-        <div class="info-section">
-          <h3><i class="fa-solid fa-file-signature"></i> Datos CFDI</h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Clave Prod/Serv SAT:</span>
-              <span class="info-value mono-value">{{ svc.claveProdServ || '—' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Clave Unidad SAT:</span>
-              <span class="info-value mono-value">{{ svc.claveUnidad || '—' }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Auditoría -->
-        <div class="info-section">
-          <h3><i class="fa-solid fa-clock-rotate-left"></i> Auditoría</h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Creado:</span>
-              <span class="info-value">{{ formatDate(svc.createdAt) }}</span>
-            </div>
-            @if (svc.updatedAt) {
-              <div class="info-row">
-                <span class="info-label">Actualizado:</span>
-                <span class="info-value">{{ formatDate(svc.updatedAt) }}</span>
               </div>
             }
           </div>

@@ -4,7 +4,7 @@
 // ===== Feature-specific styles =====
 
 .price-value {
-  color: var(--success-600);
+  color: var(--success-600) !important;
   font-weight: var(--font-weight-bold);
 }
 

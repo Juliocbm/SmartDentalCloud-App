@@ -36,6 +36,9 @@ export class TreatmentDetailComponent implements OnInit {
     { label: 'Detalle' }
   ];
 
+  // Tabs
+  activeTab = signal<'general' | 'followups' | 'materials' | 'sessions'>('general');
+
   // State
   treatment = signal<Treatment | null>(null);
   loading = signal(false);
@@ -75,6 +78,10 @@ export class TreatmentDetailComponent implements OnInit {
   TreatmentStatus = TreatmentStatus;
   TREATMENT_STATUS_CONFIG = TREATMENT_STATUS_CONFIG;
   SESSION_STATUS_CONFIG = SESSION_STATUS_CONFIG;
+
+  setActiveTab(tab: 'general' | 'followups' | 'materials' | 'sessions'): void {
+    this.activeTab.set(tab);
+  }
 
   ngOnInit(): void {
     const treatmentId = this.route.snapshot.paramMap.get('id');

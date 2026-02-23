@@ -10,14 +10,14 @@ export const TREATMENTS_ROUTES: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./components/treatment-dashboard/treatment-dashboard').then(m => m.TreatmentDashboardComponent),
+          import('./components/treatment-list/treatment-list').then(m => m.TreatmentListComponent),
         title: 'Tratamientos'
       },
       {
-        path: 'list',
+        path: 'dashboard',
         loadComponent: () =>
-          import('./components/treatment-list/treatment-list').then(m => m.TreatmentListComponent),
-        title: 'Tratamientos'
+          import('./components/treatment-dashboard/treatment-dashboard').then(m => m.TreatmentDashboardComponent),
+        title: 'Dashboard de Tratamientos'
       },
       {
         path: 'new',

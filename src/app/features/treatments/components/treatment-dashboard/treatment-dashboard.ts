@@ -23,7 +23,8 @@ export class TreatmentDashboardComponent implements OnInit {
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
-    { label: 'Tratamientos' }
+    { label: 'Tratamientos', route: '/treatments' },
+    { label: 'Dashboard' }
   ];
 
   statusCounts = computed(() => {

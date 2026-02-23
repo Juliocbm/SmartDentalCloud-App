@@ -56,7 +56,8 @@ export class SidebarComponent {
       id: 'treatments',
       icon: 'fa-solid fa-tooth', 
       label: 'Tratamientos', 
-      route: '/treatments',
+      route: '/treatments/dashboard',
+      hasDashboard: true,
       children: [
         { id: 'treatments-list', icon: 'fa-solid fa-list', label: 'Tratamientos', route: '/treatments' },
         { id: 'treatments-new', icon: 'fa-solid fa-plus', label: 'Nuevo Tratamiento', route: '/treatments/new' }

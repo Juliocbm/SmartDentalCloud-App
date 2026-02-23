@@ -6,8 +6,18 @@
     [breadcrumbs]="breadcrumbItems">
     <div actions>
       @if (treatment(); as t) {
+        <span class="badge" [ngClass]="getStatusConfig(t.status).class">
+          <i [class]="'fa-solid ' + getStatusConfig(t.status).icon"></i>
+          {{ getStatusConfig(t.status).label }}
+        </span>
+        @if (t.treatmentPlanItemId) {
+          <span class="badge badge-info">
+            <i class="fa-solid fa-clipboard-list"></i>
+            Planificado
+          </span>
+        }
         @if (t.status !== TreatmentStatus.Cancelled) {
-          <a class="btn btn-secondary" [routerLink]="['/treatments', t.id, 'edit']">
+          <a class="btn btn-outline" [routerLink]="['/treatments', t.id, 'edit']">
             <i class="fa-solid fa-pen"></i>
             Editar
           </a>
@@ -21,650 +31,595 @@
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando tratamiento...</p>
     </div>
-  } @else if (error()) {
+  }
+
+  @if (error()) {
     <div class="empty-state">
       <i class="fa-solid fa-exclamation-circle"></i>
-      <h2>Error al cargar el tratamiento</h2>
+      <h3>Error al cargar el tratamiento</h3>
       <p>{{ error() }}</p>
       <button (click)="goBack()" class="btn btn-secondary">
         <i class="fa-solid fa-arrow-left"></i>
         Volver a Tratamientos
       </button>
     </div>
-  } @else if (treatment(); as t) {
+  }
 
-    <!-- Header Info -->
-    <div class="detail-header">
-      <div class="header-content">
-        <div class="title-section">
-          <h1>
-            <i class="fa-solid fa-tooth"></i>
-            {{ t.serviceName || 'Tratamiento' }}
-          </h1>
-          <span class="status-badge" [class]="getStatusConfig(t.status).class">
-            <i [class]="'fa-solid ' + getStatusConfig(t.status).icon"></i>
-            {{ getStatusConfig(t.status).label }}
-          </span>
-        </div>
-
-        <div class="header-info">
-          <div class="info-item">
-            <i class="fa-solid fa-user"></i>
-            <span class="label">Paciente:</span>
-            <span class="value">{{ t.patientName || 'Sin asignar' }}</span>
-          </div>
-          <div class="info-item">
-            <i class="fa-solid fa-calendar"></i>
-            <span class="label">Inicio:</span>
-            <span class="value">{{ formatDate(t.startDate) }}</span>
-          </div>
-          <div class="info-item">
-            <i class="fa-solid fa-dollar-sign"></i>
-            <span class="label">Costo:</span>
-            <span class="value">{{ formatCurrency(t.serviceCost) }}</span>
-          </div>
-        </div>
+  @if (!loading() && !error() && treatment(); as t) {
+    <!-- Tabs Bar -->
+    <div class="tabs-bar">
+      <div class="tabs-nav">
+        <button class="tab-button" [class.active]="activeTab() === 'general'" (click)="setActiveTab('general')">
+          <i class="fa-solid fa-info-circle"></i> General
+        </button>
+        <button class="tab-button" [class.active]="activeTab() === 'followups'" (click)="setActiveTab('followups')">
+          <i class="fa-solid fa-clipboard-check"></i> Seguimientos
+          @if (followUps().length > 0) {
+            <span class="tab-count">{{ followUps().length }}</span>
+          }
+        </button>
+        <button class="tab-button" [class.active]="activeTab() === 'materials'" (click)="setActiveTab('materials')">
+          <i class="fa-solid fa-boxes-stacked"></i> Materiales
+          @if (materials().length > 0) {
+            <span class="tab-count">{{ materials().length }}</span>
+          }
+        </button>
+        <button class="tab-button" [class.active]="activeTab() === 'sessions'" (click)="setActiveTab('sessions')">
+          <i class="fa-solid fa-layer-group"></i> Sesiones
+          @if (sessions().length > 0) {
+            <span class="tab-count">{{ sessions().length }}</span>
+          }
+        </button>
       </div>
     </div>
 
     <div class="detail-body">
 
-      <!-- Información General -->
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-info-circle"></i>
-          Información General
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Paciente:</span>
-            <span class="info-value">
-              <a [routerLink]="['/patients', t.patientId]" class="link-primary">
-                {{ t.patientName || 'Sin nombre' }}
-              </a>
-            </span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Servicio:</span>
-            <span class="info-value">{{ t.serviceName || '—' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Costo del Servicio:</span>
-            <span class="info-value">{{ formatCurrency(t.serviceCost) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Tipo:</span>
-            <span class="info-value">
-              @if (t.treatmentPlanItemId) {
-                <span class="badge badge-info">
-                  <i class="fa-solid fa-clipboard-list"></i>
-                  Planificado
+      <!-- ========== TAB: General ========== -->
+      @if (activeTab() === 'general') {
+        <!-- Row 1: Info General + Info Dental -->
+        <div class="info-two-col">
+          <div class="info-section">
+            <h3><i class="fa-solid fa-info-circle"></i> Información General</h3>
+            <div class="info-card">
+              <div class="info-row">
+                <span class="info-label">Paciente:</span>
+                <span class="info-value">
+                  <a [routerLink]="['/patients', t.patientId]" class="link-primary">
+                    {{ t.patientName || 'Sin nombre' }}
+                  </a>
                 </span>
-              } @else {
-                <span class="badge badge-neutral">Ad-hoc</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Servicio:</span>
+                <span class="info-value">{{ t.serviceName || '—' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Costo:</span>
+                <span class="info-value price-value">{{ formatCurrency(t.serviceCost) }}</span>
+              </div>
+              @if (t.notes) {
+                <div class="info-row">
+                  <span class="info-label">Notas:</span>
+                  <span class="info-value">{{ t.notes }}</span>
+                </div>
               }
-            </span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Estado:</span>
-            <span class="info-value">
-              <span class="badge" [class]="getStatusConfig(t.status).class">
-                <i [class]="'fa-solid ' + getStatusConfig(t.status).icon"></i>
-                {{ getStatusConfig(t.status).label }}
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Información Dental -->
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-tooth"></i>
-          Información Dental
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Número de Diente:</span>
-            <span class="info-value">
-              @if (t.toothNumber) {
-                <span class="badge badge-neutral">
-                  <i class="fa-solid fa-tooth"></i>
-                  #{{ t.toothNumber }}
-                </span>
-              } @else {
-                —
-              }
-            </span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Superficie:</span>
-            <span class="info-value">{{ t.surface || '—' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Cuadrante:</span>
-            <span class="info-value">
-              @if (t.quadrant) {
-                Q{{ t.quadrant }}
-              } @else {
-                —
-              }
-            </span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Múltiples Dientes:</span>
-            <span class="info-value">{{ t.isMultipleTooth ? 'Sí' : 'No' }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Fechas y Duración -->
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-calendar-days"></i>
-          Fechas y Duración
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Fecha de Inicio:</span>
-            <span class="info-value">{{ formatDate(t.startDate) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Fecha de Fin:</span>
-            <span class="info-value">{{ formatDate(t.endDate) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Duración:</span>
-            <span class="info-value">
-              @if (t.duration) {
-                {{ t.duration }} minutos
-              } @else {
-                —
-              }
-            </span>
-          </div>
-          @if (t.appointmentId) {
-            <div class="info-row">
-              <span class="info-label">Cita Asociada:</span>
-              <span class="info-value">
-                <a [routerLink]="['/appointments', t.appointmentId]" class="link-primary">
-                  <i class="fa-solid fa-calendar-check"></i>
-                  Ver Cita
-                </a>
-              </span>
             </div>
-          }
-        </div>
-      </div>
+          </div>
 
-      <!-- Notas -->
-      @if (t.notes) {
-        <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-sticky-note"></i>
-            Notas
-          </h3>
-          <div class="notes-content">
-            {{ t.notes }}
+          <div class="info-section">
+            <h3><i class="fa-solid fa-tooth"></i> Información Dental</h3>
+            <div class="info-card">
+              <div class="info-row">
+                <span class="info-label">Diente:</span>
+                <span class="info-value">
+                  @if (t.toothNumber) {
+                    <span class="badge badge-neutral">
+                      <i class="fa-solid fa-tooth"></i>
+                      #{{ t.toothNumber }}
+                    </span>
+                  } @else {
+                    —
+                  }
+                </span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Superficie:</span>
+                <span class="info-value">{{ t.surface || '—' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Cuadrante:</span>
+                <span class="info-value">{{ t.quadrant ? 'Q' + t.quadrant : '—' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Múltiples Dientes:</span>
+                <span class="info-value">{{ t.isMultipleTooth ? 'Sí' : 'No' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Fechas + Auditoría -->
+        <div class="info-two-col">
+          <div class="info-section">
+            <h3><i class="fa-solid fa-calendar-days"></i> Fechas y Duración</h3>
+            <div class="info-card">
+              <div class="info-row">
+                <span class="info-label">Inicio:</span>
+                <span class="info-value">{{ formatDate(t.startDate) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Fin:</span>
+                <span class="info-value">{{ formatDate(t.endDate) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Duración:</span>
+                <span class="info-value">{{ t.duration ? t.duration + ' minutos' : '—' }}</span>
+              </div>
+              @if (t.appointmentId) {
+                <div class="info-row">
+                  <span class="info-label">Cita Asociada:</span>
+                  <span class="info-value">
+                    <a [routerLink]="['/appointments', t.appointmentId]" class="link-primary">
+                      <i class="fa-solid fa-calendar-check"></i>
+                      Ver Cita
+                    </a>
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="info-section">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Auditoría</h3>
+            <div class="info-card">
+              <div class="info-row">
+                <span class="info-label">Creado:</span>
+                <span class="info-value">{{ formatDateTime(t.createdAt) }}</span>
+              </div>
+              @if (t.createdByName) {
+                <div class="info-row">
+                  <span class="info-label">Creado por:</span>
+                  <span class="info-value">{{ t.createdByName }}</span>
+                </div>
+              }
+              @if (t.updatedAt) {
+                <div class="info-row">
+                  <span class="info-label">Actualizado:</span>
+                  <span class="info-value">{{ formatDateTime(t.updatedAt) }}</span>
+                </div>
+              }
+              @if (t.updatedByName) {
+                <div class="info-row">
+                  <span class="info-label">Actualizado por:</span>
+                  <span class="info-value">{{ t.updatedByName }}</span>
+                </div>
+              }
+            </div>
           </div>
         </div>
       }
 
-      <!-- Seguimientos -->
-      <div class="info-section">
-        <div class="section-header">
-          <h3>
-            <i class="fa-solid fa-clipboard-check"></i>
-            Seguimientos
-            @if (followUps().length > 0) {
-              <span class="section-count">{{ followUps().length }}</span>
-            }
-          </h3>
-          <button
-            type="button"
-            class="btn btn-outline btn-sm"
-            (click)="toggleFollowUpForm()"
-          >
-            @if (showFollowUpForm()) {
-              <i class="fa-solid fa-xmark"></i>
-              Cancelar
-            } @else {
-              <i class="fa-solid fa-plus"></i>
-              Nuevo Seguimiento
-            }
-          </button>
-        </div>
-
-        <!-- Follow-up Form -->
-        @if (showFollowUpForm()) {
-          <div class="followup-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Fecha</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  [ngModel]="newFollowUpDate()"
-                  (ngModelChange)="newFollowUpDate.set($event)"
-                />
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Descripción</label>
-              <textarea
-                class="form-control"
-                rows="3"
-                placeholder="Observaciones del seguimiento..."
-                [ngModel]="newFollowUpDescription()"
-                (ngModelChange)="newFollowUpDescription.set($event)"
-              ></textarea>
-            </div>
-            <div class="form-actions">
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                [disabled]="!newFollowUpDate() || savingFollowUp()"
-                (click)="saveFollowUp()"
-              >
-                @if (savingFollowUp()) {
-                  <i class="fa-solid fa-spinner fa-spin"></i>
-                  Guardando...
-                } @else {
-                  <i class="fa-solid fa-check"></i>
-                  Guardar
-                }
-              </button>
-            </div>
+      <!-- ========== TAB: Seguimientos ========== -->
+      @if (activeTab() === 'followups') {
+        <div class="info-section">
+          <div class="section-header">
+            <h3>
+              <i class="fa-solid fa-clipboard-check"></i>
+              Seguimientos
+              @if (followUps().length > 0) {
+                <span class="section-count">{{ followUps().length }}</span>
+              }
+            </h3>
+            <button
+              type="button"
+              class="btn btn-outline btn-sm"
+              (click)="toggleFollowUpForm()"
+            >
+              @if (showFollowUpForm()) {
+                <i class="fa-solid fa-xmark"></i>
+                Cancelar
+              } @else {
+                <i class="fa-solid fa-plus"></i>
+                Nuevo Seguimiento
+              }
+            </button>
           </div>
-        }
 
-        <!-- Loading -->
-        @if (followUpsLoading()) {
-          <div class="inline-loading">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            <span>Cargando seguimientos...</span>
-          </div>
-        }
-
-        <!-- Timeline -->
-        @if (!followUpsLoading() && followUps().length > 0) {
-          <div class="followups-timeline">
-            @for (fu of followUps(); track fu.id) {
-              <div class="timeline-item">
-                <div class="timeline-marker"></div>
-                <div class="timeline-content">
-                  <div class="timeline-header">
-                    <span class="timeline-date">
-                      <i class="fa-solid fa-calendar"></i>
-                      {{ formatDateShort(fu.date) }}
-                    </span>
-                    @if (fu.createdByName) {
-                      <span class="timeline-author">
-                        <i class="fa-solid fa-user-doctor"></i>
-                        {{ fu.createdByName }}
-                      </span>
-                    }
-                    <button
-                      class="btn-icon-sm"
-                      title="Eliminar seguimiento"
-                      (click)="deleteFollowUp(fu.id)"
-                    >
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                  @if (fu.description) {
-                    <p class="timeline-description">{{ fu.description }}</p>
-                  }
+          @if (showFollowUpForm()) {
+            <div class="followup-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Fecha</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    [ngModel]="newFollowUpDate()"
+                    (ngModelChange)="newFollowUpDate.set($event)"
+                  />
                 </div>
               </div>
-            }
-          </div>
-        }
-
-        <!-- Empty -->
-        @if (!followUpsLoading() && followUps().length === 0 && !showFollowUpForm()) {
-          <div class="empty-inline">
-            <i class="fa-solid fa-clipboard-check"></i>
-            <p>No hay seguimientos registrados</p>
-          </div>
-        }
-      </div>
-
-      <!-- Materiales Usados -->
-      <div class="info-section">
-        <div class="section-header">
-          <h3>
-            <i class="fa-solid fa-boxes-stacked"></i>
-            Materiales Usados
-            @if (materials().length > 0) {
-              <span class="section-count">{{ materials().length }}</span>
-            }
-          </h3>
-          <button
-            type="button"
-            class="btn btn-outline btn-sm"
-            (click)="toggleMaterialForm()"
-          >
-            @if (showMaterialForm()) {
-              <i class="fa-solid fa-xmark"></i>
-              Cancelar
-            } @else {
-              <i class="fa-solid fa-plus"></i>
-              Agregar Material
-            }
-          </button>
-        </div>
-
-        <!-- Material Form -->
-        @if (showMaterialForm()) {
-          <div class="followup-form">
-            <div class="form-row">
               <div class="form-group">
-                <label class="form-label">Producto</label>
+                <label class="form-label">Descripción</label>
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  placeholder="Observaciones del seguimiento..."
+                  [ngModel]="newFollowUpDescription()"
+                  (ngModelChange)="newFollowUpDescription.set($event)"
+                ></textarea>
+              </div>
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  [disabled]="!newFollowUpDate() || savingFollowUp()"
+                  (click)="saveFollowUp()"
+                >
+                  @if (savingFollowUp()) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Guardando...
+                  } @else {
+                    <i class="fa-solid fa-check"></i>
+                    Guardar
+                  }
+                </button>
+              </div>
+            </div>
+          }
+
+          @if (followUpsLoading()) {
+            <div class="inline-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando seguimientos...</span>
+            </div>
+          }
+
+          @if (!followUpsLoading() && followUps().length > 0) {
+            <div class="followups-timeline">
+              @for (fu of followUps(); track fu.id) {
+                <div class="timeline-item">
+                  <div class="timeline-marker"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-header">
+                      <span class="timeline-date">
+                        <i class="fa-solid fa-calendar"></i>
+                        {{ formatDateShort(fu.date) }}
+                      </span>
+                      @if (fu.createdByName) {
+                        <span class="timeline-author">
+                          <i class="fa-solid fa-user-doctor"></i>
+                          {{ fu.createdByName }}
+                        </span>
+                      }
+                      <button
+                        class="btn-icon-sm"
+                        title="Eliminar seguimiento"
+                        (click)="deleteFollowUp(fu.id)"
+                      >
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                    @if (fu.description) {
+                      <p class="timeline-description">{{ fu.description }}</p>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          @if (!followUpsLoading() && followUps().length === 0 && !showFollowUpForm()) {
+            <div class="empty-state empty-state-sm">
+              <i class="fa-solid fa-clipboard-check"></i>
+              <h3>Sin seguimientos</h3>
+              <p>No hay seguimientos registrados</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ========== TAB: Materiales ========== -->
+      @if (activeTab() === 'materials') {
+        <div class="info-section">
+          <div class="section-header">
+            <h3>
+              <i class="fa-solid fa-boxes-stacked"></i>
+              Materiales Usados
+              @if (materials().length > 0) {
+                <span class="section-count">{{ materials().length }}</span>
+              }
+            </h3>
+            <button
+              type="button"
+              class="btn btn-outline btn-sm"
+              (click)="toggleMaterialForm()"
+            >
+              @if (showMaterialForm()) {
+                <i class="fa-solid fa-xmark"></i>
+                Cancelar
+              } @else {
+                <i class="fa-solid fa-plus"></i>
+                Agregar Material
+              }
+            </button>
+          </div>
+
+          @if (showMaterialForm()) {
+            <div class="followup-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Producto</label>
+                  <select
+                    class="form-control"
+                    [ngModel]="selectedProductId()"
+                    (ngModelChange)="selectedProductId.set($event); onProductSelected()"
+                  >
+                    <option value="">Seleccionar producto...</option>
+                    @for (p of products(); track p.id) {
+                      <option [value]="p.id">{{ p.code }} — {{ p.name }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Cantidad</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    min="0.01"
+                    step="0.01"
+                    [ngModel]="materialQuantity()"
+                    (ngModelChange)="materialQuantity.set($event)"
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Costo Unitario</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    min="0"
+                    step="0.01"
+                    [ngModel]="materialUnitCost()"
+                    (ngModelChange)="materialUnitCost.set($event)"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Notas</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Notas opcionales..."
+                    [ngModel]="materialNotes()"
+                    (ngModelChange)="materialNotes.set($event)"
+                  />
+                </div>
+              </div>
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  [disabled]="!selectedProductId() || savingMaterial()"
+                  (click)="saveMaterial()"
+                >
+                  @if (savingMaterial()) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Guardando...
+                  } @else {
+                    <i class="fa-solid fa-check"></i>
+                    Agregar
+                  }
+                </button>
+              </div>
+            </div>
+          }
+
+          @if (materialsLoading()) {
+            <div class="inline-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando materiales...</span>
+            </div>
+          }
+
+          @if (!materialsLoading() && materials().length > 0) {
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Costo Unit.</th>
+                    <th>Total</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (mat of materials(); track mat.id) {
+                    <tr>
+                      <td>
+                        <div class="product-cell">
+                          <span class="product-code">{{ mat.productCode }}</span>
+                          <span class="product-name">{{ mat.productName }}</span>
+                        </div>
+                      </td>
+                      <td>{{ mat.quantity }} {{ mat.unit }}</td>
+                      <td>{{ formatCurrency(mat.unitCost) }}</td>
+                      <td class="total-cell">{{ formatCurrency(mat.totalCost) }}</td>
+                      <td>
+                        <button
+                          class="btn-icon-sm"
+                          title="Eliminar material"
+                          (click)="deleteMaterial(mat.id)"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="3" class="total-label">Total Materiales</td>
+                    <td class="total-cell total-value">{{ formatCurrency(getMaterialsTotalCost()) }}</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          }
+
+          @if (!materialsLoading() && materials().length === 0 && !showMaterialForm()) {
+            <div class="empty-state empty-state-sm">
+              <i class="fa-solid fa-boxes-stacked"></i>
+              <h3>Sin materiales</h3>
+              <p>No hay materiales registrados</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ========== TAB: Sesiones ========== -->
+      @if (activeTab() === 'sessions') {
+        <div class="info-section">
+          <div class="section-header">
+            <h3>
+              <i class="fa-solid fa-layer-group"></i>
+              Sesiones
+              @if (sessions().length > 0) {
+                <span class="section-count">{{ sessions().length }}</span>
+              }
+            </h3>
+            <button
+              type="button"
+              class="btn btn-outline btn-sm"
+              (click)="toggleSessionForm()"
+            >
+              @if (showSessionForm()) {
+                <i class="fa-solid fa-xmark"></i>
+                Cancelar
+              } @else {
+                <i class="fa-solid fa-plus"></i>
+                Nueva Sesión
+              }
+            </button>
+          </div>
+
+          @if (showSessionForm()) {
+            <div class="followup-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Fecha</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    [ngModel]="sessionDate()"
+                    (ngModelChange)="sessionDate.set($event)"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Duración (min)</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    min="1"
+                    placeholder="Opcional"
+                    [ngModel]="sessionDuration()"
+                    (ngModelChange)="sessionDuration.set($event)"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Cita Asociada <small class="form-hint">(Opcional)</small></label>
                 <select
                   class="form-control"
-                  [ngModel]="selectedProductId()"
-                  (ngModelChange)="selectedProductId.set($event); onProductSelected()"
+                  [ngModel]="selectedAppointmentId()"
+                  (ngModelChange)="selectedAppointmentId.set($event)"
                 >
-                  <option value="">Seleccionar producto...</option>
-                  @for (p of products(); track p.id) {
-                    <option [value]="p.id">{{ p.code }} — {{ p.name }}</option>
+                  <option value="">Sin cita asociada</option>
+                  @for (apt of patientAppointments(); track apt.id) {
+                    <option [value]="apt.id">
+                      {{ apt.displayDate }} {{ apt.displayTime }} — {{ apt.reason }}
+                    </option>
                   }
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label">Cantidad</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  min="0.01"
-                  step="0.01"
-                  [ngModel]="materialQuantity()"
-                  (ngModelChange)="materialQuantity.set($event)"
-                />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Costo Unitario</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  min="0"
-                  step="0.01"
-                  [ngModel]="materialUnitCost()"
-                  (ngModelChange)="materialUnitCost.set($event)"
-                />
-              </div>
-              <div class="form-group">
                 <label class="form-label">Notas</label>
-                <input
-                  type="text"
+                <textarea
                   class="form-control"
-                  placeholder="Notas opcionales..."
-                  [ngModel]="materialNotes()"
-                  (ngModelChange)="materialNotes.set($event)"
-                />
+                  rows="2"
+                  placeholder="Notas de la sesión..."
+                  [ngModel]="sessionNotes()"
+                  (ngModelChange)="sessionNotes.set($event)"
+                ></textarea>
               </div>
-            </div>
-            <div class="form-actions">
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                [disabled]="!selectedProductId() || savingMaterial()"
-                (click)="saveMaterial()"
-              >
-                @if (savingMaterial()) {
-                  <i class="fa-solid fa-spinner fa-spin"></i>
-                  Guardando...
-                } @else {
-                  <i class="fa-solid fa-check"></i>
-                  Agregar
-                }
-              </button>
-            </div>
-          </div>
-        }
-
-        <!-- Loading -->
-        @if (materialsLoading()) {
-          <div class="inline-loading">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            <span>Cargando materiales...</span>
-          </div>
-        }
-
-        <!-- Materials Table -->
-        @if (!materialsLoading() && materials().length > 0) {
-          <div class="materials-table-wrapper">
-            <table class="materials-table">
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>Cantidad</th>
-                  <th>Costo Unit.</th>
-                  <th>Total</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (mat of materials(); track mat.id) {
-                  <tr>
-                    <td>
-                      <div class="product-cell">
-                        <span class="product-code">{{ mat.productCode }}</span>
-                        <span class="product-name">{{ mat.productName }}</span>
-                      </div>
-                    </td>
-                    <td>{{ mat.quantity }} {{ mat.unit }}</td>
-                    <td>{{ formatCurrency(mat.unitCost) }}</td>
-                    <td class="total-cell">{{ formatCurrency(mat.totalCost) }}</td>
-                    <td>
-                      <button
-                        class="btn-icon-sm"
-                        title="Eliminar material"
-                        (click)="deleteMaterial(mat.id)"
-                      >
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colspan="3" class="total-label">Total Materiales</td>
-                  <td class="total-cell total-value">{{ formatCurrency(getMaterialsTotalCost()) }}</td>
-                  <td></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        }
-
-        <!-- Empty -->
-        @if (!materialsLoading() && materials().length === 0 && !showMaterialForm()) {
-          <div class="empty-inline">
-            <i class="fa-solid fa-boxes-stacked"></i>
-            <p>No hay materiales registrados</p>
-          </div>
-        }
-      </div>
-
-      <!-- Sesiones -->
-      <div class="info-section">
-        <div class="section-header">
-          <h3>
-            <i class="fa-solid fa-layer-group"></i>
-            Sesiones
-            @if (sessions().length > 0) {
-              <span class="section-count">{{ sessions().length }}</span>
-            }
-          </h3>
-          <button
-            type="button"
-            class="btn btn-outline btn-sm"
-            (click)="toggleSessionForm()"
-          >
-            @if (showSessionForm()) {
-              <i class="fa-solid fa-xmark"></i>
-              Cancelar
-            } @else {
-              <i class="fa-solid fa-plus"></i>
-              Nueva Sesión
-            }
-          </button>
-        </div>
-
-        <!-- Session Form -->
-        @if (showSessionForm()) {
-          <div class="followup-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Fecha</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  [ngModel]="sessionDate()"
-                  (ngModelChange)="sessionDate.set($event)"
-                />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Duración (min)</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  min="1"
-                  placeholder="Opcional"
-                  [ngModel]="sessionDuration()"
-                  (ngModelChange)="sessionDuration.set($event)"
-                />
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Cita Asociada <small style="color: var(--text-muted); font-weight: normal;">(Opcional)</small></label>
-              <select
-                class="form-control"
-                [ngModel]="selectedAppointmentId()"
-                (ngModelChange)="selectedAppointmentId.set($event)"
-              >
-                <option value="">Sin cita asociada</option>
-                @for (apt of patientAppointments(); track apt.id) {
-                  <option [value]="apt.id">
-                    {{ apt.displayDate }} {{ apt.displayTime }} — {{ apt.reason }}
-                  </option>
-                }
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Notas</label>
-              <textarea
-                class="form-control"
-                rows="2"
-                placeholder="Notas de la sesión..."
-                [ngModel]="sessionNotes()"
-                (ngModelChange)="sessionNotes.set($event)"
-              ></textarea>
-            </div>
-            <div class="form-actions">
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                [disabled]="!sessionDate() || savingSession()"
-                (click)="saveSession()"
-              >
-                @if (savingSession()) {
-                  <i class="fa-solid fa-spinner fa-spin"></i>
-                  Guardando...
-                } @else {
-                  <i class="fa-solid fa-check"></i>
-                  Crear Sesión #{{ getNextSessionNumber() }}
-                }
-              </button>
-            </div>
-          </div>
-        }
-
-        <!-- Loading -->
-        @if (sessionsLoading()) {
-          <div class="inline-loading">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            <span>Cargando sesiones...</span>
-          </div>
-        }
-
-        <!-- Sessions List -->
-        @if (!sessionsLoading() && sessions().length > 0) {
-          <div class="sessions-list">
-            @for (s of sessions(); track s.id) {
-              <div class="session-card">
-                <div class="session-number">#{{ s.sessionNumber }}</div>
-                <div class="session-info">
-                  <div class="session-header-row">
-                    <span class="session-date">
-                      <i class="fa-solid fa-calendar"></i>
-                      {{ formatDateShort(s.date) }}
-                    </span>
-                    @if (s.duration) {
-                      <span class="session-duration">
-                        <i class="fa-solid fa-clock"></i>
-                        {{ s.duration }} min
-                      </span>
-                    }
-                    <span class="badge" [class]="getSessionStatusConfig(s.status).class">
-                      <i [class]="'fa-solid ' + getSessionStatusConfig(s.status).icon"></i>
-                      {{ getSessionStatusConfig(s.status).label }}
-                    </span>
-                  </div>
-                  @if (s.notes) {
-                    <p class="session-notes">{{ s.notes }}</p>
+              <div class="form-actions">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  [disabled]="!sessionDate() || savingSession()"
+                  (click)="saveSession()"
+                >
+                  @if (savingSession()) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Guardando...
+                  } @else {
+                    <i class="fa-solid fa-check"></i>
+                    Crear Sesión #{{ getNextSessionNumber() }}
                   }
-                </div>
+                </button>
               </div>
-            }
-          </div>
-        }
-
-        <!-- Empty -->
-        @if (!sessionsLoading() && sessions().length === 0 && !showSessionForm()) {
-          <div class="empty-inline">
-            <i class="fa-solid fa-layer-group"></i>
-            <p>No hay sesiones registradas</p>
-          </div>
-        }
-      </div>
-
-      <!-- Auditoría -->
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          Auditoría
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Creado:</span>
-            <span class="info-value">{{ formatDateTime(t.createdAt) }}</span>
-          </div>
-          @if (t.createdByName) {
-            <div class="info-row">
-              <span class="info-label">Creado por:</span>
-              <span class="info-value">{{ t.createdByName }}</span>
             </div>
           }
-          @if (t.updatedAt) {
-            <div class="info-row">
-              <span class="info-label">Última Actualización:</span>
-              <span class="info-value">{{ formatDateTime(t.updatedAt) }}</span>
+
+          @if (sessionsLoading()) {
+            <div class="inline-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando sesiones...</span>
             </div>
           }
-          @if (t.updatedByName) {
-            <div class="info-row">
-              <span class="info-label">Actualizado por:</span>
-              <span class="info-value">{{ t.updatedByName }}</span>
+
+          @if (!sessionsLoading() && sessions().length > 0) {
+            <div class="sessions-list">
+              @for (s of sessions(); track s.id) {
+                <div class="session-card">
+                  <div class="session-number">#{{ s.sessionNumber }}</div>
+                  <div class="session-info">
+                    <div class="session-header-row">
+                      <span class="session-date">
+                        <i class="fa-solid fa-calendar"></i>
+                        {{ formatDateShort(s.date) }}
+                      </span>
+                      @if (s.duration) {
+                        <span class="session-duration">
+                          <i class="fa-solid fa-clock"></i>
+                          {{ s.duration }} min
+                        </span>
+                      }
+                      <span class="badge" [class]="getSessionStatusConfig(s.status).class">
+                        <i [class]="'fa-solid ' + getSessionStatusConfig(s.status).icon"></i>
+                        {{ getSessionStatusConfig(s.status).label }}
+                      </span>
+                    </div>
+                    @if (s.notes) {
+                      <p class="session-notes">{{ s.notes }}</p>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          @if (!sessionsLoading() && sessions().length === 0 && !showSessionForm()) {
+            <div class="empty-state empty-state-sm">
+              <i class="fa-solid fa-layer-group"></i>
+              <h3>Sin sesiones</h3>
+              <p>No hay sesiones registradas</p>
             </div>
           }
         </div>
-      </div>
+      }
 
     </div>
   }
