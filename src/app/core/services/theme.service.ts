@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export type Theme = 'light' | 'dark' | 'warm' | 'high-contrast';
+export type Theme = 'light' | 'dark' | 'warm' | 'high-contrast' | 'pastel';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,7 @@ export class ThemeService {
   currentTheme = signal<Theme>('light');
   
   private readonly THEME_KEY = 'smartdental-theme';
-  private readonly themes: Theme[] = ['light', 'warm', 'dark', 'high-contrast'];
+  private readonly themes: Theme[] = ['light', 'warm', 'dark', 'high-contrast', 'pastel'];
 
   constructor() {
     this.loadTheme();

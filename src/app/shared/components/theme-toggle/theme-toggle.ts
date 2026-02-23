@@ -17,7 +17,8 @@ export class ThemeToggleComponent {
     light: 'Tema: Claro',
     warm: 'Tema: Cálido',
     dark: 'Tema: Oscuro',
-    'high-contrast': 'Tema: Alto Contraste'
+    'high-contrast': 'Tema: Alto Contraste',
+    pastel: 'Tema: Pastel Rose'
   };
 
   themeLabel = computed(() => this.labels[this.themeService.currentTheme()] ?? 'Cambiar tema');

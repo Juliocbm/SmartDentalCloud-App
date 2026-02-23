@@ -719,3 +719,142 @@
   --chart-tooltip-bg: #000000;
   --chart-tooltip-text: #ffffff;
 }
+
+// ===== Tema Pastel Rose =====
+[data-theme="pastel"] {
+  // ===== Superficies - Rosa pálido / lavanda =====
+  --surface-primary: #fdf2f8;
+  --surface-secondary: #fce7f3;
+  --surface-tertiary: #fbcfe8;
+
+  // ===== Texto - Tonos rosados oscuros =====
+  --text-primary: #4a1942;
+  --text-secondary: #6b3a64;
+  --text-tertiary: #8b5a84;
+  --text-muted: #b48aad;
+
+  // ===== Bordes - Rosa suave =====
+  --border-primary: #f0c6e0;
+  --border-secondary: #f5d8ea;
+  --border-medium: #dda0c8;
+  --border-dark: #c480a8;
+
+  // ===== Marca Principal - Rose =====
+  --primary-50: #fff1f2;
+  --primary-100: #ffe4e6;
+  --primary-200: #fecdd3;
+  --primary-300: #fda4af;
+  --primary-400: #fb7185;
+  --primary-500: #f43f5e;
+  --primary-600: #e11d48;
+  --primary-700: #be123c;
+  --primary-800: #9f1239;
+  --primary-900: #881337;
+
+  // ===== Gradientes =====
+  --gradient-primary: linear-gradient(135deg, #be123c, #f43f5e);
+  --gradient-admin: linear-gradient(135deg, #7c3aed, #a78bfa);
+  --gradient-header: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+  --gradient-card: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+
+  // ===== Sombras - Tinte rosado =====
+  --shadow-card: 0 4px 20px rgba(190, 18, 60, 0.06);
+  --shadow-card-hover: 0 8px 30px rgba(190, 18, 60, 0.12);
+  --shadow-primary: 0 8px 25px rgba(244, 63, 94, 0.15);
+
+  // ===== Colores de Estado =====
+  // Success - Verde menta pastel
+  --success-50: #ecfdf5;
+  --success-100: #d1fae5;
+  --success-500: #10b981;
+  --success-600: #059669;
+  --success-700: #047857;
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --success-text: #059669;
+  --success-gradient: linear-gradient(135deg, #059669, #34d399);
+
+  // Error - Rojo suave
+  --error-50: #fff1f2;
+  --error-100: #ffe4e6;
+  --error-200: #fecdd3;
+  --error-500: #e11d48;
+  --error-600: #be123c;
+  --error-700: #9f1239;
+  --error-bg: rgba(225, 29, 72, 0.1);
+  --error-text: #be123c;
+  --error-gradient: linear-gradient(135deg, #be123c, #f43f5e);
+
+  // Warning - Ámbar pastel
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  --warning-700: #b45309;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --warning-text: #d97706;
+  --warning-gradient: linear-gradient(135deg, #d97706, #fbbf24);
+
+  // Info - Violeta pastel
+  --info-50: #f5f3ff;
+  --info-100: #ede9fe;
+  --info-500: #8b5cf6;
+  --info-600: #7c3aed;
+  --info-700: #6d28d9;
+  --info-bg: rgba(139, 92, 246, 0.1);
+  --info-text: #7c3aed;
+
+  // Neutral - Rosa grisáceo
+  --neutral-50: #faf5f7;
+  --neutral-100: #f3eaef;
+  --neutral-200: #e8d5e0;
+  --neutral-300: #d4b8c8;
+  --neutral-400: #b08fa0;
+  --neutral-500: #8b6a7c;
+  --neutral-600: #6b4d5e;
+  --neutral-700: #523c48;
+  --neutral-800: #3a2a34;
+  --neutral-900: #261c22;
+  --neutral-bg: rgba(139, 106, 124, 0.1);
+  --neutral-text: #8b6a7c;
+
+  // ===== Dashboard Components =====
+  --metric-primary-bg: rgba(244, 63, 94, 0.1);
+  --metric-primary-color: var(--primary-700);
+  --metric-success-bg: rgba(16, 185, 129, 0.1);
+  --metric-success-color: var(--success-600);
+  --metric-error-bg: rgba(225, 29, 72, 0.1);
+  --metric-error-color: var(--error-600);
+  --metric-warning-bg: rgba(245, 158, 11, 0.1);
+  --metric-warning-color: var(--warning-600);
+  --metric-info-bg: rgba(139, 92, 246, 0.1);
+  --metric-info-color: var(--info-600);
+
+  --quick-action-icon-background: var(--primary-50);
+  --quick-action-icon-color: var(--primary-700);
+
+  // ===== Category Chart =====
+  --category-bar-background: var(--neutral-100);
+  --category-bar-normal: var(--gradient-primary);
+  --category-bar-warning: var(--warning-gradient);
+  --category-bar-critical: var(--error-gradient);
+
+  // ===== Activity Timeline =====
+  --activity-item-background: var(--surface-secondary);
+  --activity-item-hover: var(--surface-tertiary);
+
+  // ===== Chart Colors - Pasteles vibrantes =====
+  --chart-color-1: #f43f5e;  // Rose
+  --chart-color-2: #10b981;  // Mint
+  --chart-color-3: #f59e0b;  // Amber
+  --chart-color-4: #ef4444;  // Red
+  --chart-color-5: #8b5cf6;  // Violet
+  --chart-color-6: #06b6d4;  // Cyan
+  --chart-color-7: #ec4899;  // Pink
+  --chart-color-8: #84cc16;  // Lime
+
+  --chart-grid-color: var(--border-primary);
+  --chart-text-color: var(--text-secondary);
+  --chart-legend-color: var(--text-primary);
+  --chart-tooltip-bg: rgba(74, 25, 66, 0.9);
+  --chart-tooltip-text: #fdf2f8;
+}
