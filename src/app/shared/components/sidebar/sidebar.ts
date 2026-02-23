@@ -77,7 +77,8 @@ export class SidebarComponent {
       id: 'treatment-plans',
       icon: 'fa-solid fa-clipboard-list', 
       label: 'Planes de Tratamiento', 
-      route: '/treatment-plans',
+      route: '/treatment-plans/dashboard',
+      hasDashboard: true,
       children: [
         { id: 'treatment-plans-list', icon: 'fa-solid fa-list', label: 'Planes de Tratamiento', route: '/treatment-plans' },
         { id: 'treatment-plans-new', icon: 'fa-solid fa-plus', label: 'Nuevo Plan de Tratamiento', route: '/treatment-plans/new' }
@@ -125,7 +126,16 @@ export class SidebarComponent {
         { id: 'inventory-orders', icon: 'fa-solid fa-file-invoice', label: 'Órdenes de Compra', route: '/inventory/purchase-orders' }
       ]
     },
-    { id: 'dentists', icon: 'fa-solid fa-user-doctor', label: 'Dentistas', route: '/dentists' },
+    {
+      id: 'dentists',
+      icon: 'fa-solid fa-user-doctor',
+      label: 'Dentistas',
+      route: '/dentists/dashboard',
+      hasDashboard: true,
+      children: [
+        { id: 'dentists-list', icon: 'fa-solid fa-list', label: 'Dentistas', route: '/dentists' }
+      ]
+    },
     { id: 'users', icon: 'fa-solid fa-user-shield', label: 'Usuarios y Roles', route: '/users' },
     {
       id: 'reports',

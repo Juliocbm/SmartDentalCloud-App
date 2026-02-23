@@ -1,0 +1,215 @@
+// ===== KPI Grid =====
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-smooth);
+
+  &:hover {
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.kpi-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i { font-size: var(--font-size-xl); }
+
+  &.primary { background: var(--primary-50); i { color: var(--primary-600); } }
+  &.success { background: var(--success-50); i { color: var(--success-600); } }
+  &.info { background: var(--info-50); i { color: var(--info-600); } }
+  &.warning { background: var(--warning-50); i { color: var(--warning-600); } }
+  &.error { background: var(--error-50); i { color: var(--error-600); } }
+}
+
+.kpi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .kpi-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .kpi-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+// ===== Quick Actions =====
+.quick-actions-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+// ===== Dashboard Grid =====
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+
+  i { color: var(--primary-500); }
+}
+
+.section-count {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+}
+
+// ===== Plan List =====
+.plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.plan-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-smooth);
+
+  &:hover {
+    background: var(--surface-secondary);
+    border-color: var(--primary-300);
+  }
+
+  .plan-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    .plan-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .plan-patient {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+    }
+  }
+
+  .plan-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-shrink: 0;
+
+    .plan-cost {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--success-500);
+    }
+
+    .plan-items {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .plan-date {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+    }
+  }
+}
+
+// ===== Progress Indicator =====
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.progress-bar {
+  width: 60px;
+  height: 6px;
+  background: var(--neutral-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary-500);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-500);
+  min-width: 32px;
+}

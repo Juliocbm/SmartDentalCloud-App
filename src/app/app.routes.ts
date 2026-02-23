@@ -67,7 +67,7 @@ export const routes: Routes = [
       },
       {
         path: 'dentists',
-        loadComponent: () => import('./features/users/components/dentist-list/dentist-list').then(m => m.DentistListComponent)
+        loadChildren: () => import('./features/users/dentists.routes').then(m => m.DENTISTS_ROUTES)
       },
       {
         path: 'reports',

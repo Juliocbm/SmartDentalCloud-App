@@ -1,0 +1,162 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Dentistas'"
+    [subtitle]="'Panel de control del equipo de dentistas'"
+    [icon]="'fa-user-doctor'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando datos de dentistas...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error() }}</span>
+    </div>
+  } @else {
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper primary">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ totalDentists() }}</span>
+          <span class="kpi-label">Total Dentistas</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper success">
+          <i class="fa-solid fa-user-check"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ activeDentists() }}</span>
+          <span class="kpi-label">Activos</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper info">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ totalAppointmentsCompleted() }}</span>
+          <span class="kpi-label">Citas Completadas (mes)</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper warning">
+          <i class="fa-solid fa-tooth"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ totalTreatmentsCompleted() }}</span>
+          <span class="kpi-label">Tratamientos (mes)</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper success">
+          <i class="fa-solid fa-dollar-sign"></i>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ totalRevenue() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+          <span class="kpi-label">Ingresos Generados (mes)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-row">
+      <a routerLink="/dentists" class="btn btn-outline">
+        <i class="fa-solid fa-list"></i>
+        Ver Todos
+      </a>
+      <a routerLink="/reports/dentist-productivity" class="btn btn-outline">
+        <i class="fa-solid fa-chart-bar"></i>
+        Reporte de Productividad
+      </a>
+      <a routerLink="/reports/appointment-occupancy" class="btn btn-outline">
+        <i class="fa-solid fa-calendar-check"></i>
+        Ocupación de Agenda
+      </a>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="dashboard-grid">
+      <!-- Top Performers -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-ranking-star"></i>
+            Productividad del Mes
+          </h2>
+          <span class="section-count">{{ topPerformers().length }}</span>
+        </div>
+
+        @if (topPerformers().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-chart-bar"></i>
+            <p>No hay datos de productividad este mes</p>
+          </div>
+        } @else {
+          <div class="dentist-list">
+            @for (dentist of topPerformers(); track dentist.dentistId; let idx = $index) {
+              <div class="dentist-item">
+                <div class="dentist-rank">{{ idx + 1 }}</div>
+                <div class="dentist-info">
+                  <span class="dentist-name">{{ dentist.dentistName }}</span>
+                  <span class="dentist-stats">
+                    {{ dentist.appointmentsCompleted }} citas · {{ dentist.treatmentsCompleted }} tratamientos
+                  </span>
+                </div>
+                <div class="dentist-meta">
+                  <span class="dentist-revenue">{{ dentist.revenueGenerated | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Recent Dentists -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-users"></i>
+            Equipo de Dentistas
+          </h2>
+          <span class="section-count">{{ dentists().length }}</span>
+        </div>
+
+        @if (dentists().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-user-doctor"></i>
+            <p>No hay dentistas registrados</p>
+          </div>
+        } @else {
+          <div class="dentist-list">
+            @for (d of recentDentists(); track d.id) {
+              <a [routerLink]="['/users', d.id]" class="dentist-item dentist-item--link">
+                <div class="dentist-avatar">
+                  <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <div class="dentist-info">
+                  <span class="dentist-name">{{ d.name }}</span>
+                  <span class="dentist-stats">
+                    {{ d.profile?.specialty || 'Sin especialidad' }}
+                  </span>
+                </div>
+                <div class="dentist-meta">
+                  <span class="status-badge" [class.badge-active]="d.isActive" [class.badge-inactive]="!d.isActive">
+                    {{ d.isActive ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </div>
+              </a>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

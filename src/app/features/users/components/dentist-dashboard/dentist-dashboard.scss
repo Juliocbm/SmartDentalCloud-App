@@ -1,0 +1,202 @@
+// ===== KPI Grid =====
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-smooth);
+
+  &:hover {
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.kpi-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i { font-size: var(--font-size-xl); }
+
+  &.primary { background: var(--primary-50); i { color: var(--primary-600); } }
+  &.success { background: var(--success-50); i { color: var(--success-600); } }
+  &.info { background: var(--info-50); i { color: var(--info-600); } }
+  &.warning { background: var(--warning-50); i { color: var(--warning-600); } }
+  &.error { background: var(--error-50); i { color: var(--error-600); } }
+}
+
+.kpi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .kpi-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .kpi-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+// ===== Quick Actions =====
+.quick-actions-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+// ===== Dashboard Grid =====
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+
+  i { color: var(--primary-500); }
+}
+
+.section-count {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+}
+
+// ===== Dentist List =====
+.dentist-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.dentist-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+  transition: var(--transition-smooth);
+
+  &--link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--surface-secondary);
+      border-color: var(--primary-300);
+    }
+  }
+
+  .dentist-rank {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    background: var(--primary-50);
+    color: var(--primary-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    flex-shrink: 0;
+  }
+
+  .dentist-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--primary-50);
+    color: var(--primary-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+    flex-shrink: 0;
+  }
+
+  .dentist-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+
+    .dentist-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dentist-stats {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+    }
+  }
+
+  .dentist-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-shrink: 0;
+
+    .dentist-revenue {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--success-500);
+    }
+  }
+}

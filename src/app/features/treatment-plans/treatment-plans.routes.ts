@@ -12,6 +12,12 @@ export const TREATMENT_PLANS_ROUTES: Routes = [
           import('./components/treatment-plan-list/treatment-plan-list').then(m => m.TreatmentPlanListComponent)
       },
       {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./components/treatment-plan-dashboard/treatment-plan-dashboard').then(m => m.TreatmentPlanDashboardComponent),
+        title: 'Dashboard de Planes de Tratamiento'
+      },
+      {
         path: 'new',
         loadComponent: () =>
           import('./components/treatment-plan-form/treatment-plan-form').then(m => m.TreatmentPlanFormComponent)
