@@ -5,12 +5,14 @@
     [icon]="'fa-file-invoice'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div actions>
+    <div title-extra>
       @if (order(); as po) {
         <span class="badge" [ngClass]="getStatusClass(po.status)">
           {{ getStatusLabel(po.status) }}
         </span>
       }
+    </div>
+    <div actions>
       <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
         <i class="fa-solid fa-clock-rotate-left"></i>
       </button>

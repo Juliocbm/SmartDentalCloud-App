@@ -356,21 +356,69 @@ Todos los estilos de botones usan variables globales definidas en `_variables.sc
 
 En las pantallas de detalle, **todos los botones de acción usan variantes outline** (`btn btn-outline`). Nunca se usan botones sólidos (`btn-primary`, `btn-danger`, `btn-success`) directamente.
 
+### Estatus junto al título (`title-extra`)
+
+Los **badges/chips de estatus** (Activo/Inactivo, En Progreso, Pagada, etc.) se colocan **junto al título** usando el slot `<div title-extra>`, **NO** dentro de `<div actions>`.
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  📄 Título de Entidad  [● Estatus]        [🕐] [Editar] [Desactivar]│
+│     ← title-extra →                       ← actions (solo botones) →│
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+- **`<div title-extra>`** — Solo badges/chips de estatus (`badge`, `status-badge`)
+- **`<div actions>`** — **Solo botones** (`btn btn-icon`, `btn btn-outline`, etc.)
+
 ### Orden estándar en `<div actions>`
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  📄 Título de Entidad                                               │
-│                                                                     │
-│  [badge-status]  [🕐 audit]  [btn-outline]  [btn-outline btn-danger]│
-│  Estado          Auditoría   Editar          Desactivar             │
-└─────────────────────────────────────────────────────────────────────┘
+1. **Botón auditoría** — `<button class="btn btn-icon">` con `fa-clock-rotate-left`
+2. **Acciones normales** — `btn btn-outline` (Editar, Imprimir, Exportar, Reagendar, etc.)
+3. **Acciones con contexto** — `btn btn-outline btn-success` / `btn btn-outline btn-danger` (Activar, Desactivar, Aprobar, Rechazar, Eliminar)
+
+> ⚠️ **NUNCA** colocar badges, chips o indicadores de estatus dentro de `<div actions>`. Usar siempre `<div title-extra>`.
+
+### Clases de badge para estatus
+
+Existen **dos clases base** de badge definidas globalmente en `_components.scss`:
+
+| Clase base | Forma | Uso |
+|------------|-------|-----|
+| `.badge` | Rectángulo (`border-radius: var(--radius-sm)`) | Estatus con múltiples variantes (Pagada, En Progreso, etc.) |
+| `.status-badge` | Píldora (`border-radius: var(--radius-full)`) | Estatus binario (Activo/Inactivo) |
+
+**Variantes de color** (se combinan con cualquiera de las clases base):
+
+| Variante | Background | Uso |
+|----------|------------|-----|
+| `.badge-active` | `var(--success-500)` | Activo, Habilitado |
+| `.badge-success` | `var(--success-500)` | Completado, Pagada |
+| `.badge-primary` | `var(--primary-500)` | En Progreso, Programada |
+| `.badge-info` | `var(--info-500)` | Planificado, Informativo |
+| `.badge-warning` | `var(--warning-500)` | Expirada, Pendiente |
+| `.badge-error` | `var(--error-500)` | Cancelada, Error |
+| `.badge-neutral` / `.badge-inactive` | `var(--neutral-500)` | Inactivo, Deshabilitado |
+
+#### Ejemplo: Estatus binario (Activo/Inactivo)
+
+```html
+<div title-extra>
+  <span class="status-badge" [class.badge-active]="entity.isActive" [class.badge-inactive]="!entity.isActive">
+    {{ entity.isActive ? 'Activo' : 'Inactivo' }}
+  </span>
+</div>
 ```
 
-1. **Status badge(s)** — `<span class="badge">` o `<span class="status-badge">`
-2. **Botón auditoría** — `<button class="btn btn-icon">` con `fa-clock-rotate-left`
-3. **Acciones normales** — `btn btn-outline` (Editar, Imprimir, Exportar, Reagendar, etc.)
-4. **Acciones con contexto** — `btn btn-outline btn-success` / `btn btn-outline btn-danger` (Activar, Desactivar, Aprobar, Rechazar, Eliminar)
+#### Ejemplo: Estatus con múltiples variantes
+
+```html
+<div title-extra>
+  <span class="badge" [ngClass]="getStatusConfig(entity.status).class">
+    <i [class]="'fa-solid ' + getStatusConfig(entity.status).icon"></i>
+    {{ getStatusConfig(entity.status).label }}
+  </span>
+</div>
+```
 
 ### Clases por tipo de acción
 
@@ -392,11 +440,15 @@ En las pantallas de detalle, **todos los botones de acción usan variantes outli
 
 ```html
 <app-page-header [title]="entity()?.name || 'Entidad'" [icon]="'fa-box'" [showBackButton]="true" [breadcrumbs]="breadcrumbItems">
-  <div actions>
+  <div title-extra>
     @if (entity(); as e) {
       <span class="status-badge" [class.badge-active]="e.isActive" [class.badge-inactive]="!e.isActive">
         {{ e.isActive ? 'Activo' : 'Inactivo' }}
       </span>
+    }
+  </div>
+  <div actions>
+    @if (entity(); as e) {
       <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
         <i class="fa-solid fa-clock-rotate-left"></i>
       </button>
@@ -424,12 +476,16 @@ En las pantallas de detalle, **todos los botones de acción usan variantes outli
 
 ```html
 <app-page-header [title]="'Factura'" [icon]="'fa-file-invoice-dollar'" [showBackButton]="true" [breadcrumbs]="breadcrumbItems">
-  <div actions>
+  <div title-extra>
     @if (invoice(); as inv) {
       <span class="badge" [ngClass]="getStatusConfig(inv.status).class">
         <i [class]="'fa-solid ' + getStatusConfig(inv.status).icon"></i>
         {{ getStatusConfig(inv.status).label }}
       </span>
+    }
+  </div>
+  <div actions>
+    @if (invoice(); as inv) {
       <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
         <i class="fa-solid fa-clock-rotate-left"></i>
       </button>

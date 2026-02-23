@@ -4,11 +4,15 @@
     [icon]="'fa-truck'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div actions>
+    <div title-extra>
       @if (supplier(); as sup) {
         <span class="status-badge" [class.badge-active]="sup.isActive" [class.badge-inactive]="!sup.isActive">
           {{ sup.isActive ? 'Activo' : 'Inactivo' }}
         </span>
+      }
+    </div>
+    <div actions>
+      @if (supplier(); as sup) {
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>

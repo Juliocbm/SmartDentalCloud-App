@@ -4,11 +4,15 @@
     [icon]="'fa-tag'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div actions>
+    <div title-extra>
       @if (category(); as cat) {
         <span class="status-badge" [class.badge-active]="cat.isActive" [class.badge-inactive]="!cat.isActive">
           {{ cat.isActive ? 'Activa' : 'Inactiva' }}
         </span>
+      }
+    </div>
+    <div actions>
+      @if (category(); as cat) {
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>

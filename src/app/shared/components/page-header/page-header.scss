@@ -138,11 +138,16 @@
   color: var(--text-primary);
   line-height: var(--line-height-tight);
   margin: 0;
+  flex-wrap: wrap;
 
   i {
     color: var(--primary-600);
     font-size: var(--font-size-2xl);
   }
+}
+
+.page-title-text {
+  min-width: 0;
 }
 
 .page-subtitle {

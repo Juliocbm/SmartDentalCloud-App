@@ -4,12 +4,16 @@
     [icon]="'fa-file-invoice-dollar'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div actions>
+    <div title-extra>
       @if (invoice(); as inv) {
         <span class="badge" [ngClass]="getStatusConfig(inv.status).class">
           <i [class]="'fa-solid ' + getStatusConfig(inv.status).icon"></i>
           {{ getStatusConfig(inv.status).label }}
         </span>
+      }
+    </div>
+    <div actions>
+      @if (invoice(); as inv) {
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>

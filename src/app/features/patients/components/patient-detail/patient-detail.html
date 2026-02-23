@@ -4,11 +4,15 @@
     [icon]="'fa-user'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div actions>
+    <div title-extra>
       @if (patient(); as pat) {
         <span class="status-badge" [class.badge-active]="pat.isActive" [class.badge-inactive]="!pat.isActive">
           {{ pat.isActive ? 'Activo' : 'Inactivo' }}
         </span>
+      }
+    </div>
+    <div actions>
+      @if (patient(); as pat) {
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>

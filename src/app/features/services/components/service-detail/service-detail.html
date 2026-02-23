@@ -4,12 +4,16 @@
     [icon]="'fa-briefcase-medical'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbs">
-    <div actions>
+    <div title-extra>
       @if (service(); as svc) {
         <span class="badge" [ngClass]="svc.isActive ? 'badge-success' : 'badge-neutral'">
           <i [class]="svc.isActive ? 'fa-solid fa-check-circle' : 'fa-solid fa-pause-circle'"></i>
           {{ svc.isActive ? 'Activo' : 'Inactivo' }}
         </span>
+      }
+    </div>
+    <div actions>
+      @if (service(); as svc) {
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>

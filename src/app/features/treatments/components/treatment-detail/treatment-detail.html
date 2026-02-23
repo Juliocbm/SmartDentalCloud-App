@@ -4,7 +4,7 @@
     [icon]="'fa-tooth'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div actions>
+    <div title-extra>
       @if (treatment(); as t) {
         <span class="badge" [ngClass]="getStatusConfig(t.status).class">
           <i [class]="'fa-solid ' + getStatusConfig(t.status).icon"></i>
@@ -16,6 +16,10 @@
             Planificado
           </span>
         }
+      }
+    </div>
+    <div actions>
+      @if (treatment(); as t) {
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>

@@ -4,11 +4,15 @@
     [icon]="'fa-box'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div actions>
+    <div title-extra>
       @if (product(); as p) {
         <span class="status-badge" [class.badge-active]="p.isActive" [class.badge-inactive]="!p.isActive">
           {{ p.isActive ? 'Activo' : 'Inactivo' }}
         </span>
+      }
+    </div>
+    <div actions>
+      @if (product(); as p) {
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>

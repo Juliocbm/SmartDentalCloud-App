@@ -4,11 +4,15 @@
     [icon]="'fa-user-md'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div actions>
+    <div title-extra>
       @if (user(); as currentUser) {
         <span class="status-badge" [class.badge-active]="currentUser.isActive" [class.badge-inactive]="!currentUser.isActive">
           {{ currentUser.isActive ? 'Activo' : 'Inactivo' }}
         </span>
+      }
+    </div>
+    <div actions>
+      @if (user(); as currentUser) {
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>

@@ -55,7 +55,8 @@
           @if (icon) {
             <i class="fa-solid" [ngClass]="icon"></i>
           }
-          {{ title }}
+          <span class="page-title-text">{{ title }}</span>
+          <ng-content select="[title-extra]"></ng-content>
         </h1>
         @if (subtitle) {
           <p class="page-subtitle">{{ subtitle }}</p>

@@ -4,7 +4,7 @@
     [icon]="'fa-prescription'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
-    <div actions>
+    <div title-extra>
       @if (prescription(); as rx) {
         <span class="badge" [ngClass]="getStatusConfig(rx.status).class">
           <i [class]="'fa-solid ' + getStatusConfig(rx.status).icon"></i>
@@ -16,6 +16,10 @@
             Expirada
           </span>
         }
+      }
+    </div>
+    <div actions>
+      @if (prescription(); as rx) {
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>

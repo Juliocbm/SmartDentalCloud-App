@@ -521,6 +521,31 @@ textarea.form-control {
   color: #ffffff;
 }
 
+.badge-active {
+  background: var(--success-500);
+  color: #ffffff;
+}
+
+// ===== STATUS BADGE (estatus junto al título) =====
+// Uso: <span class="status-badge badge-active">Activo</span>
+//      <span class="status-badge badge-inactive">Inactivo</span>
+// Variantes de color: badge-active, badge-inactive, badge-success, badge-warning, etc.
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-full);
+  line-height: 1;
+  white-space: nowrap;
+
+  i {
+    font-size: var(--font-size-sm);
+  }
+}
+
 // Badge circular solo con ícono
 .badge-icon {
   width: 32px;
