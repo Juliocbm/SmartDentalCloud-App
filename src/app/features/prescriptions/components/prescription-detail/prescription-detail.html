@@ -76,19 +76,21 @@
           </div>
         </div>
 
-        <!-- Diagnóstico -->
+        <!-- Diagnóstico y Notas -->
         <div class="info-section">
           <h3>
             <i class="fa-solid fa-stethoscope"></i>
-            Diagnóstico
+            Diagnóstico y Notas
           </h3>
           <div class="info-card">
-            @if (rx.diagnosis) {
-              <p class="diagnosis-text">{{ rx.diagnosis }}</p>
-            } @else {
-              <div class="info-empty">
-                <i class="fa-solid fa-circle-info"></i>
-                Sin diagnóstico registrado
+            <div class="info-row">
+              <span class="info-label">Diagnóstico:</span>
+              <span class="info-value">{{ rx.diagnosis || '—' }}</span>
+            </div>
+            @if (rx.notes) {
+              <div class="info-row">
+                <span class="info-label">Notas:</span>
+                <span class="info-value">{{ rx.notes }}</span>
               </div>
             }
           </div>
@@ -104,81 +106,43 @@
         </h3>
 
         @if (rx.items.length > 0) {
-          <div class="medications-grid">
-            @for (item of rx.items; track item.id; let i = $index) {
-              <div class="medication-card">
-                <div class="medication-header">
-                  <span class="medication-number">{{ i + 1 }}</span>
-                  <div class="medication-title">
-                    <h4>{{ item.medicationName }}</h4>
-                    @if (item.activeIngredient) {
-                      <span class="active-ingredient">{{ item.activeIngredient }}</span>
-                    }
-                  </div>
-                </div>
-
-                <div class="medication-details">
-                  <div class="detail-row">
-                    <span class="detail-label">
-                      <i class="fa-solid fa-syringe"></i>
-                      Dosis:
-                    </span>
-                    <span class="detail-value">{{ item.dosage }}</span>
-                  </div>
-
-                  <div class="detail-row">
-                    <span class="detail-label">
-                      <i class="fa-solid fa-repeat"></i>
-                      Frecuencia:
-                    </span>
-                    <span class="detail-value">{{ item.frequency }}</span>
-                  </div>
-
-                  <div class="detail-row">
-                    <span class="detail-label">
-                      <i class="fa-solid fa-calendar-days"></i>
-                      Duración:
-                    </span>
-                    <span class="detail-value">{{ item.duration }}</span>
-                  </div>
-
-                  <div class="detail-row">
-                    <span class="detail-label">
-                      <i class="fa-solid fa-hashtag"></i>
-                      Cantidad:
-                    </span>
-                    <span class="detail-value">{{ item.quantity }}</span>
-                  </div>
-
-                  @if (item.presentation) {
-                    <div class="detail-row">
-                      <span class="detail-label">
-                        <i class="fa-solid fa-box"></i>
-                        Presentación:
-                      </span>
-                      <span class="detail-value">{{ item.presentation }}</span>
-                    </div>
-                  }
-
-                  @if (item.route) {
-                    <div class="detail-row">
-                      <span class="detail-label">
-                        <i class="fa-solid fa-route"></i>
-                        Vía:
-                      </span>
-                      <span class="detail-value">{{ item.route }}</span>
-                    </div>
-                  }
-                </div>
-
-                @if (item.instructions) {
-                  <div class="medication-instructions">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span>{{ item.instructions }}</span>
-                  </div>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Medicamento</th>
+                  <th>Dosis</th>
+                  <th>Frecuencia</th>
+                  <th>Duración</th>
+                  <th>Cantidad</th>
+                  <th>Vía</th>
+                  <th>Indicaciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of rx.items; track item.id; let i = $index) {
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>
+                      <div class="med-name">{{ item.medicationName }}</div>
+                      @if (item.activeIngredient) {
+                        <div class="med-ingredient">{{ item.activeIngredient }}</div>
+                      }
+                      @if (item.presentation) {
+                        <div class="med-presentation">{{ item.presentation }}</div>
+                      }
+                    </td>
+                    <td>{{ item.dosage }}</td>
+                    <td>{{ item.frequency }}</td>
+                    <td>{{ item.duration }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.route || '—' }}</td>
+                    <td>{{ item.instructions || '—' }}</td>
+                  </tr>
                 }
-              </div>
-            }
+              </tbody>
+            </table>
           </div>
         } @else {
           <div class="empty-state empty-state-sm">
@@ -188,19 +152,6 @@
           </div>
         }
       </div>
-
-      <!-- Notas -->
-      @if (rx.notes) {
-        <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-note-sticky"></i>
-            Notas Adicionales
-          </h3>
-          <div class="info-card">
-            <p>{{ rx.notes }}</p>
-          </div>
-        </div>
-      }
     </div>
   }
 </div>
