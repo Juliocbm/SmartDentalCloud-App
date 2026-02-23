@@ -18,13 +18,13 @@
     </div>
   } @else {
     <!-- Alerta: Facturas con saldo pendiente -->
-    @if (overdueInvoices().length > 0) {
+    @if (unpaidInvoices().length > 0) {
       <div class="alert-banner alert-banner--warning">
         <i class="fa-solid fa-exclamation-triangle"></i>
         <span>
-          Tienes <strong>{{ overdueInvoices().length }}</strong> factura{{ overdueInvoices().length === 1 ? '' : 's' }} con saldo pendiente.
+          Tienes <strong>{{ unpaidInvoices().length }}</strong> factura{{ unpaidInvoices().length === 1 ? '' : 's' }} con saldo pendiente.
         </span>
-        <a routerLink="/invoices/list" [queryParams]="{status: 'pending'}" class="btn btn--sm btn--warning">
+        <a routerLink="/invoices/list" [queryParams]="{status: 'Issued'}" class="btn btn--sm btn--warning">
           Ver Pendientes
         </a>
       </div>
@@ -148,16 +148,16 @@
             <span class="stat-value warning">{{ invoicesByStatus().partial }}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">Pendientes</span>
-            <span class="stat-value">{{ invoicesByStatus().pending }}</span>
+            <span class="stat-label">Emitidas</span>
+            <span class="stat-value">{{ invoicesByStatus().issued }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Sobrepagadas</span>
+            <span class="stat-value success">{{ invoicesByStatus().overpaid }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Canceladas</span>
             <span class="stat-value error">{{ invoicesByStatus().cancelled }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Vencidas</span>
-            <span class="stat-value error">{{ invoicesByStatus().overdue }}</span>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
@@ -28,6 +28,10 @@ type SettingsTab = 'general' | 'schedule' | 'dentist-schedule' | 'exceptions' | 
 export class SettingsPageComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private notifications = inject(NotificationService);
+
+  scheduleEditor = viewChild<WorkScheduleEditorComponent>('scheduleEditor');
+  dentistScheduleManager = viewChild<DentistScheduleManagerComponent>('dentistScheduleManager');
+  exceptionsManager = viewChild<ScheduleExceptionsManagerComponent>('exceptionsManager');
 
   // State
   settings = signal<TenantSettings | null>(null);

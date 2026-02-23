@@ -6,24 +6,24 @@
  * Estado de factura
  */
 export enum InvoiceStatus {
-  Pending = 'Pending',
-  PartiallyPaid = 'PartiallyPaid',
+  Issued = 'Issued',
+  Partial = 'Partial',
   Paid = 'Paid',
-  Cancelled = 'Cancelled',
-  Overdue = 'Overdue'
+  Overpaid = 'Overpaid',
+  Cancelled = 'Cancelled'
 }
 
 /**
  * Configuración visual de estados de factura
  */
 export const INVOICE_STATUS_CONFIG = {
-  [InvoiceStatus.Pending]: {
-    label: 'Pendiente',
+  [InvoiceStatus.Issued]: {
+    label: 'Emitida',
     class: 'badge-warning',
     icon: 'fa-clock'
   },
-  [InvoiceStatus.PartiallyPaid]: {
-    label: 'Parcialmente Pagada',
+  [InvoiceStatus.Partial]: {
+    label: 'Pago Parcial',
     class: 'badge-info',
     icon: 'fa-coins'
   },
@@ -32,15 +32,15 @@ export const INVOICE_STATUS_CONFIG = {
     class: 'badge-success',
     icon: 'fa-check-circle'
   },
+  [InvoiceStatus.Overpaid]: {
+    label: 'Sobrepagada',
+    class: 'badge-success',
+    icon: 'fa-circle-check'
+  },
   [InvoiceStatus.Cancelled]: {
     label: 'Cancelada',
     class: 'badge-error',
     icon: 'fa-ban'
-  },
-  [InvoiceStatus.Overdue]: {
-    label: 'Vencida',
-    class: 'badge-error',
-    icon: 'fa-exclamation-triangle'
   }
 };
 

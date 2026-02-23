@@ -1,9 +1,9 @@
 <div class="dentist-schedule-manager">
   <div class="section-header">
-    <div class="section-title">
+    <h3 class="section-title">
       <i class="fa-solid fa-user-doctor"></i>
-      <h3>Horarios por Dentista</h3>
-    </div>
+      Horarios por Dentista
+    </h3>
     <p class="section-description">Configura horarios individuales para cada dentista. Si un dentista no tiene horario propio, se usa el horario del consultorio.</p>
   </div>
 
@@ -18,10 +18,10 @@
       <p>No hay dentistas registrados en el sistema</p>
     </div>
   } @else {
-    <div class="dentist-selector">
+    <div class="form-group dentist-selector">
       <label class="form-label">Seleccionar Dentista</label>
       <select
-        class="form-control"
+        class="form-input"
         [ngModel]="selectedDentistId() ?? ''"
         (ngModelChange)="onDentistChange($event)">
         <option value="">— Selecciona un dentista —</option>
@@ -39,15 +39,38 @@
     @if (selectedDentistId()) {
       <div class="dentist-editor">
         <app-work-schedule-editor
+          #dentistScheduleEditor
           [userId]="selectedDentistId()"
           [title]="'Horario de ' + selectedDentistName()"
           [description]="'Horario de atención individual. Si no se configura, se usa el horario del consultorio.'"
         />
       </div>
     } @else {
-      <div class="select-prompt">
-        <i class="fa-solid fa-hand-pointer"></i>
-        <p>Selecciona un dentista para configurar su horario individual</p>
+      <div class="schedule-skeleton">
+        <div class="skeleton-header">
+          <span class="skeleton-bar skeleton-title"></span>
+          <span class="skeleton-bar skeleton-desc"></span>
+        </div>
+        <div class="skeleton-table">
+          <div class="skeleton-thead">
+            <span class="skeleton-bar"></span>
+            <span class="skeleton-bar"></span>
+            <span class="skeleton-bar"></span>
+            <span class="skeleton-bar"></span>
+          </div>
+          @for (row of [1,2,3,4,5,6,7]; track row) {
+            <div class="skeleton-row">
+              <span class="skeleton-bar skeleton-day"></span>
+              <span class="skeleton-bar skeleton-toggle"></span>
+              <span class="skeleton-bar skeleton-time"></span>
+              <span class="skeleton-bar skeleton-time"></span>
+            </div>
+          }
+        </div>
+        <div class="skeleton-overlay">
+          <i class="fa-solid fa-hand-pointer"></i>
+          <p>Selecciona un dentista para configurar su horario individual</p>
+        </div>
       </div>
     }
   }

@@ -1,6 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { UsersService } from '../../../../core/services/users.service';
@@ -19,7 +21,7 @@ import { generateTimeOptions } from '../../models/work-schedule.models';
 @Component({
   selector: 'app-schedule-exceptions-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule, ModalComponent],
   templateUrl: './schedule-exceptions-manager.html',
   styleUrl: './schedule-exceptions-manager.scss'
 })

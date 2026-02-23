@@ -97,11 +97,10 @@ export class PaymentFormComponent implements OnInit {
     const val = this.form.getRawValue();
 
     this.paymentsService.create({
-      patientId: this.selectedInvoice()!.patientId,
       invoiceId: val.invoiceId,
       amount: val.amount,
       paymentMethod: val.paymentMethod,
-      paidAt: new Date(val.paidAt),
+      paidAt: val.paidAt,
       reference: val.reference?.trim() || undefined
     }).subscribe({
       next: () => {

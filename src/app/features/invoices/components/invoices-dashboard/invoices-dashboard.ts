@@ -75,11 +75,11 @@ export class InvoicesDashboardComponent implements OnInit {
   invoicesByStatus = computed(() => {
     const invs = this.invoices();
     return {
-      pending: invs.filter(i => i.status === InvoiceStatus.Pending).length,
-      partial: invs.filter(i => i.status === InvoiceStatus.PartiallyPaid).length,
+      issued: invs.filter(i => i.status === InvoiceStatus.Issued).length,
+      partial: invs.filter(i => i.status === InvoiceStatus.Partial).length,
       paid: invs.filter(i => i.status === InvoiceStatus.Paid).length,
-      cancelled: invs.filter(i => i.status === InvoiceStatus.Cancelled).length,
-      overdue: invs.filter(i => i.status === InvoiceStatus.Overdue).length
+      overpaid: invs.filter(i => i.status === InvoiceStatus.Overpaid).length,
+      cancelled: invs.filter(i => i.status === InvoiceStatus.Cancelled).length
     };
   });
 
@@ -92,11 +92,11 @@ export class InvoicesDashboardComponent implements OnInit {
   statusChartData = computed<ChartDataItem[]>(() => {
     const byStatus = this.invoicesByStatus();
     const items: ChartDataItem[] = [];
-    if (byStatus.pending > 0) items.push({ label: 'Pendiente', value: byStatus.pending });
+    if (byStatus.issued > 0) items.push({ label: 'Emitida', value: byStatus.issued });
     if (byStatus.partial > 0) items.push({ label: 'Parcial', value: byStatus.partial });
     if (byStatus.paid > 0) items.push({ label: 'Pagada', value: byStatus.paid });
+    if (byStatus.overpaid > 0) items.push({ label: 'Sobrepagada', value: byStatus.overpaid });
     if (byStatus.cancelled > 0) items.push({ label: 'Cancelada', value: byStatus.cancelled });
-    if (byStatus.overdue > 0) items.push({ label: 'Vencida', value: byStatus.overdue });
     return items;
   });
 
@@ -106,12 +106,12 @@ export class InvoicesDashboardComponent implements OnInit {
       .slice(0, 5);
   });
 
-  overdueInvoices = computed(() => {
-    return this.invoices().filter(i => i.status === InvoiceStatus.Overdue || (i.balance > 0 && i.status !== InvoiceStatus.Paid && i.status !== InvoiceStatus.Cancelled));
+  unpaidInvoices = computed(() => {
+    return this.invoices().filter(i => i.balance > 0 && i.status !== InvoiceStatus.Paid && i.status !== InvoiceStatus.Overpaid && i.status !== InvoiceStatus.Cancelled);
   });
 
   accountsReceivable = computed(() => {
-    const pending = this.overdueInvoices();
+    const pending = this.unpaidInvoices();
     const totalBalance = pending.reduce((sum, i) => sum + i.balance, 0);
     const now = new Date();
 

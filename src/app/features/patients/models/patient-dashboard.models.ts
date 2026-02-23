@@ -83,14 +83,13 @@ export interface TreatmentDetail {
 
 export interface InvoiceDetail {
   id: string;
-  invoiceNumber: string;
   patientId: string;
-  date: Date;
-  dueDate: Date;
-  subtotal: number;
-  tax: number;
-  total: number;
+  issuedAt: Date;
+  totalAmount: number;
   status: string;
+  serie: string | null;
+  folio: string | null;
+  uuid: string | null;
   createdAt: Date;
 }
 
@@ -99,6 +98,6 @@ export interface PaymentDetail {
   invoiceId: string;
   amount: number;
   paymentMethod: string;
-  paymentDate: Date;
+  paidAt: Date;
   reference: string | null;
 }

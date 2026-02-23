@@ -108,7 +108,7 @@
         </thead>
         <tbody>
           @for (invoice of filteredInvoices(); track invoice.id) {
-            <tr [class.row-warning]="isOverdue(invoice)">
+            <tr [class.row-warning]="isUnpaid(invoice)">
               <!-- Folio -->
               <td>
                 @if (invoice.serie && invoice.folio) {

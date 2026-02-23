@@ -339,7 +339,8 @@ export class PatientDetailComponent implements OnInit {
     });
   }
 
-  formatCurrency(value: number): string {
+  formatCurrency(value: number | null | undefined): string {
+    if (value == null || isNaN(value)) return '$0.00';
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value);
   }
 

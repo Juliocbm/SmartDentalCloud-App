@@ -19,7 +19,7 @@ export class DentistScheduleManagerComponent implements OnInit {
   selectedDentistId = signal<string | null>(null);
   loadingDentists = signal(false);
 
-  private editorRef = viewChild(WorkScheduleEditorComponent);
+  editorRef = viewChild(WorkScheduleEditorComponent);
 
   selectedDentistName(): string {
     const id = this.selectedDentistId();

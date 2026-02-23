@@ -52,72 +52,65 @@
     </div>
   } @else if (patient(); as pat) {
 
-    <!-- Tabs Navigation -->
-    <div class="tabs-bar">
-      <div class="tabs-nav">
-        <button 
-          class="tab-button" 
+    <div class="patient-layout">
+      <!-- Sidebar Navigation -->
+      <nav class="patient-nav">
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'info'"
-          (click)="setActiveTab('info')"
-        >
+          (click)="setActiveTab('info')">
           <i class="fa-solid fa-user"></i>
-          Información General
+          <span>Información General</span>
         </button>
-        <button 
-          class="tab-button" 
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'medical'"
-          (click)="setActiveTab('medical')"
-        >
+          (click)="setActiveTab('medical')">
           <i class="fa-solid fa-heartbeat"></i>
-          Historia Médica
+          <span>Historia Médica</span>
         </button>
-        <button 
-          class="tab-button" 
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'odontogram'"
-          (click)="setActiveTab('odontogram')"
-        >
+          (click)="setActiveTab('odontogram')">
           <i class="fa-solid fa-tooth"></i>
-          Odontograma
+          <span>Odontograma</span>
         </button>
-        <button 
-          class="tab-button" 
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'fiscal'"
-          (click)="setActiveTab('fiscal')"
-        >
+          (click)="setActiveTab('fiscal')">
           <i class="fa-solid fa-file-invoice"></i>
-          Datos Fiscales
+          <span>Datos Fiscales</span>
         </button>
-        <button 
-          class="tab-button" 
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'financial'"
-          (click)="setActiveTab('financial')"
-        >
+          (click)="setActiveTab('financial')">
           <i class="fa-solid fa-wallet"></i>
-          Resumen Financiero
+          <span>Resumen Financiero</span>
         </button>
-        <button 
-          class="tab-button" 
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'history'"
-          (click)="setActiveTab('history')"
-        >
+          (click)="setActiveTab('history')">
           <i class="fa-solid fa-clock-rotate-left"></i>
-          Historial
+          <span>Historial</span>
         </button>
-        <button 
-          class="tab-button" 
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'files'"
-          (click)="setActiveTab('files')"
-        >
+          (click)="setActiveTab('files')">
           <i class="fa-solid fa-paperclip"></i>
-          Archivos
+          <span>Archivos</span>
           @if (files().length > 0) {
-            <span class="tab-count">{{ files().length }}</span>
+            <span class="nav-count">{{ files().length }}</span>
           }
         </button>
-      </div>
-    </div>
+      </nav>
 
-    <div class="detail-body">
+      <!-- Content -->
+      <div class="patient-content">
       <!-- Info Tab -->
       @if (activeTab() === 'info') {
         <div class="info-two-col">
@@ -392,11 +385,11 @@
                     @for (inv of fin.pendingInvoices; track inv.id) {
                       <tr>
                         <td>
-                          <a [routerLink]="['/invoices', inv.id]" class="link-primary">{{ inv.invoiceNumber || 'Sin folio' }}</a>
+                          <a [routerLink]="['/invoices', inv.id]" class="link-primary">{{ inv.serie && inv.folio ? inv.serie + '-' + inv.folio : '—' }}</a>
                         </td>
-                        <td>{{ formatDateShort(inv.date) }}</td>
-                        <td class="amount">{{ formatCurrency(inv.total) }}</td>
-                        <td><span class="badge badge-warning">{{ inv.status }}</span></td>
+                        <td>{{ formatDateShort(inv.issuedAt) }}</td>
+                        <td class="amount">{{ formatCurrency(inv.totalAmount) }}</td>
+                        <td><span class="badge badge-sm" [class.badge-success]="inv.status === 'Paid' || inv.status === 'Overpaid'" [class.badge-warning]="inv.status === 'Issued'" [class.badge-info]="inv.status === 'Partial'" [class.badge-error]="inv.status === 'Cancelled'">{{ inv.status }}</span></td>
                       </tr>
                     }
                   </tbody>
@@ -419,7 +412,7 @@
                   <tbody>
                     @for (pay of fin.recentPayments; track pay.id) {
                       <tr>
-                        <td>{{ formatDateShort(pay.paymentDate) }}</td>
+                        <td>{{ formatDateShort(pay.paidAt) }}</td>
                         <td class="amount success">{{ formatCurrency(pay.amount) }}</td>
                         <td>{{ pay.paymentMethod }}</td>
                         <td>{{ pay.reference || '—' }}</td>
@@ -515,10 +508,10 @@
                   <tbody>
                     @for (inv of hist.invoices; track inv.id) {
                       <tr>
-                        <td><a [routerLink]="['/invoices', inv.id]" class="link-primary">{{ inv.invoiceNumber || 'Sin folio' }}</a></td>
-                        <td>{{ formatDateShort(inv.date) }}</td>
-                        <td class="amount">{{ formatCurrency(inv.total) }}</td>
-                        <td><span class="badge badge-sm" [class.badge-success]="inv.status === 'Paid'" [class.badge-warning]="inv.status === 'Pending'" [class.badge-neutral]="inv.status !== 'Paid' && inv.status !== 'Pending'">{{ inv.status }}</span></td>
+                        <td><a [routerLink]="['/invoices', inv.id]" class="link-primary">{{ inv.serie && inv.folio ? inv.serie + '-' + inv.folio : '—' }}</a></td>
+                        <td>{{ formatDateShort(inv.issuedAt) }}</td>
+                        <td class="amount">{{ formatCurrency(inv.totalAmount) }}</td>
+                        <td><span class="badge badge-sm" [class.badge-success]="inv.status === 'Paid' || inv.status === 'Overpaid'" [class.badge-warning]="inv.status === 'Issued'" [class.badge-info]="inv.status === 'Partial'" [class.badge-error]="inv.status === 'Cancelled'">{{ inv.status }}</span></td>
                       </tr>
                     }
                   </tbody>
@@ -685,6 +678,7 @@
           }
         </div>
       }
+      </div>
     </div>
 
     <app-audit-info

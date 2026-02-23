@@ -123,8 +123,8 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
     return (invoice.paidAmount / invoice.totalAmount) * 100;
   }
 
-  isOverdue(invoice: Invoice): boolean {
-    return invoice.status === InvoiceStatus.Overdue;
+  isUnpaid(invoice: Invoice): boolean {
+    return invoice.status === InvoiceStatus.Issued && invoice.balance > 0;
   }
 
   formatCurrency(value: number): string {

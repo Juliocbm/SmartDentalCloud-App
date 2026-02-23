@@ -20,11 +20,10 @@ export interface Payment {
  * Request para crear pago
  */
 export interface CreatePaymentRequest {
-  patientId: string;
   invoiceId: string;
   amount: number;
   paymentMethod: string;
-  paidAt: Date;
+  paidAt: string;
   reference?: string;
 }
 

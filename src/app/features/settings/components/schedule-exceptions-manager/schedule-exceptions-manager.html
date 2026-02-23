@@ -1,18 +1,12 @@
 <div class="exceptions-container">
   <div class="section-header">
-    <div class="section-title">
-      <h2>
-        <i class="fa-solid fa-calendar-xmark"></i>
-        Excepciones de Horario
-      </h2>
-      <p class="section-description">
-        Configura días festivos, vacaciones y bloqueos puntuales
-      </p>
-    </div>
-    <button class="btn btn-primary" (click)="openCreateModal()">
-      <i class="fa-solid fa-plus"></i>
-      Nueva Excepción
-    </button>
+    <h3 class="section-title">
+      <i class="fa-solid fa-calendar-xmark"></i>
+      Excepciones de Horario
+    </h3>
+    <p class="section-description">
+      Configura días festivos, vacaciones y bloqueos puntuales
+    </p>
   </div>
 
   <!-- Loading -->
@@ -64,15 +58,16 @@
               <td>{{ exception.reason }}</td>
               <td class="time-cell">{{ getTimeRange(exception) }}</td>
               <td>
-                <span class="applies-to" [class.applies-clinic]="!exception.userId">
-                  @if (exception.userId) {
-                    <i class="fa-solid fa-user-doctor"></i>
+                @if (exception.userId) {
+                  <a [routerLink]="['/users', exception.userId]" class="link-primary">
                     {{ exception.userName }}
-                  } @else {
+                  </a>
+                } @else {
+                  <span class="applies-clinic">
                     <i class="fa-solid fa-building"></i>
                     Clínica
-                  }
-                </span>
+                  </span>
+                }
               </td>
               <td>
                 @if (exception.isRecurringYearly) {
@@ -86,11 +81,13 @@
               </td>
               <td class="actions-column">
                 <div class="action-buttons">
-                  <button class="btn-icon btn-icon-edit" title="Editar" (click)="openEditModal(exception)">
+                  <button class="btn btn-sm btn-outline" (click)="openEditModal(exception)">
                     <i class="fa-solid fa-pen"></i>
+                    Editar
                   </button>
-                  <button class="btn-icon btn-icon-delete" title="Eliminar" (click)="deleteException(exception)">
+                  <button class="btn btn-sm btn-outline btn-danger" (click)="deleteException(exception)">
                     <i class="fa-solid fa-trash"></i>
+                    Eliminar
                   </button>
                 </div>
               </td>
@@ -110,139 +107,129 @@
 
 <!-- Modal Form -->
 @if (showModal()) {
-  <div class="modal-overlay" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>
-          <i class="fa-solid fa-calendar-xmark"></i>
-          {{ editingException() ? 'Editar Excepción' : 'Nueva Excepción' }}
-        </h3>
-        <button class="btn-icon" (click)="closeModal()">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+  <app-modal
+    [title]="editingException() ? 'Editar Excepción' : 'Nueva Excepción'"
+    icon="fa-calendar-xmark"
+    size="md"
+    (closed)="closeModal()">
+
+    <div class="modal-form">
+      <!-- Date -->
+      <div class="form-group">
+        <label class="form-label">Fecha <span class="required">*</span></label>
+        <input
+          type="date"
+          class="form-input"
+          [ngModel]="formDate()"
+          (ngModelChange)="formDate.set($event)"
+        />
       </div>
 
-      <div class="modal-body">
-        <!-- Date -->
-        <div class="form-group">
-          <label for="exception-date">Fecha</label>
-          <input
-            type="date"
-            id="exception-date"
-            class="form-control"
-            [ngModel]="formDate()"
-            (ngModelChange)="formDate.set($event)"
-          />
-        </div>
+      <!-- Type -->
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select
+          class="form-input"
+          [ngModel]="formType()"
+          (ngModelChange)="formType.set($event)">
+          @for (type of exceptionTypes; track type.value) {
+            <option [value]="type.value">{{ type.label }}</option>
+          }
+        </select>
+      </div>
 
-        <!-- Type -->
-        <div class="form-group">
-          <label for="exception-type">Tipo</label>
-          <select
-            id="exception-type"
-            class="form-control"
-            [ngModel]="formType()"
-            (ngModelChange)="formType.set($event)"
-          >
-            @for (type of exceptionTypes; track type.value) {
-              <option [value]="type.value">{{ type.label }}</option>
-            }
-          </select>
-        </div>
+      <!-- Reason -->
+      <div class="form-group">
+        <label class="form-label">Motivo <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-input"
+          placeholder="Ej: Navidad, Vacaciones Dr. García..."
+          maxlength="500"
+          [ngModel]="formReason()"
+          (ngModelChange)="formReason.set($event)"
+        />
+      </div>
 
-        <!-- Reason -->
-        <div class="form-group">
-          <label for="exception-reason">Motivo</label>
-          <input
-            type="text"
-            id="exception-reason"
-            class="form-control"
-            placeholder="Ej: Navidad, Vacaciones Dr. García..."
-            maxlength="500"
-            [ngModel]="formReason()"
-            (ngModelChange)="formReason.set($event)"
-          />
-        </div>
-
-        <!-- Time Range (only for ModifiedHours) -->
-        @if (formType() === 'modifiedHours') {
-          <div class="form-row">
-            <div class="form-group">
-              <label for="exception-start">Hora Inicio</label>
-              <select
-                id="exception-start"
-                class="form-control"
-                [ngModel]="formStartTime()"
-                (ngModelChange)="formStartTime.set($event)"
-              >
-                @for (time of timeOptions; track time) {
-                  <option [value]="time">{{ time }}</option>
-                }
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="exception-end">Hora Fin</label>
-              <select
-                id="exception-end"
-                class="form-control"
-                [ngModel]="formEndTime()"
-                (ngModelChange)="formEndTime.set($event)"
-              >
-                @for (time of timeOptions; track time) {
-                  <option [value]="time">{{ time }}</option>
-                }
-              </select>
-            </div>
+      <!-- Time Range (only for ModifiedHours) -->
+      @if (formType() === 'modifiedHours') {
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Hora Inicio</label>
+            <select
+              class="form-input"
+              [ngModel]="formStartTime()"
+              (ngModelChange)="formStartTime.set($event)">
+              @for (time of timeOptions; track time) {
+                <option [value]="time">{{ time }}</option>
+              }
+            </select>
           </div>
-          @if (formStartTime() >= formEndTime()) {
-            <p class="form-error">La hora de fin debe ser posterior a la hora de inicio</p>
-          }
+          <div class="form-group">
+            <label class="form-label">Hora Fin</label>
+            <select
+              class="form-input"
+              [ngModel]="formEndTime()"
+              (ngModelChange)="formEndTime.set($event)">
+              @for (time of timeOptions; track time) {
+                <option [value]="time">{{ time }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        @if (formStartTime() >= formEndTime()) {
+          <p class="error-message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            La hora de fin debe ser posterior a la hora de inicio
+          </p>
         }
+      }
 
-        <!-- Applies to -->
-        <div class="form-group">
-          <label for="exception-user">Aplica a</label>
-          <select
-            id="exception-user"
-            class="form-control"
-            [ngModel]="formUserId() ?? ''"
-            (ngModelChange)="onUserIdChange($event)"
-          >
-            <option value="">Toda la clínica</option>
-            @for (dentist of dentists(); track dentist.id) {
-              <option [value]="dentist.id">{{ dentist.name }}</option>
-            }
-          </select>
-        </div>
-
-        <!-- Recurring -->
-        <div class="form-check">
-          <label class="checkbox-label">
-            <input
-              type="checkbox"
-              [ngModel]="formIsRecurringYearly()"
-              (ngModelChange)="formIsRecurringYearly.set($event)"
-            />
-            <span>Se repite cada año (festivo recurrente)</span>
-          </label>
-        </div>
+      <!-- Applies to -->
+      <div class="form-group">
+        <label class="form-label">Aplica a</label>
+        <select
+          class="form-input"
+          [ngModel]="formUserId() ?? ''"
+          (ngModelChange)="onUserIdChange($event)">
+          <option value="">Toda la clínica</option>
+          @for (dentist of dentists(); track dentist.id) {
+            <option [value]="dentist.id">{{ dentist.name }}</option>
+          }
+        </select>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
-        <button
-          class="btn btn-primary"
-          [disabled]="!isFormValid() || saving()"
-          (click)="saveException()"
-        >
-          @if (saving()) {
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          } @else {
-            <i class="fa-solid fa-floppy-disk"></i>
-          }
-          {{ editingException() ? 'Actualizar' : 'Crear' }}
-        </button>
+      <!-- Recurring -->
+      <div class="form-check">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [ngModel]="formIsRecurringYearly()"
+            (ngModelChange)="formIsRecurringYearly.set($event)"
+          />
+          <span>Se repite cada año (festivo recurrente)</span>
+        </label>
       </div>
     </div>
-  </div>
+
+    <div modal-footer>
+      <button type="button" class="btn btn-outline" (click)="closeModal()" [disabled]="saving()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="!isFormValid() || saving()"
+        (click)="saveException()">
+        @if (saving()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-check"></i>
+          {{ editingException() ? 'Actualizar' : 'Crear' }}
+        }
+      </button>
+    </div>
+  </app-modal>
 }
