@@ -27,6 +27,8 @@ export class AuthService {
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly USER_KEY = 'current_user';
   private readonly TOKEN_EXPIRY_KEY = 'token_expiry';
+  private readonly REMEMBER_ME_KEY = 'remember_me';
+  private readonly SAVED_EMAIL_KEY = 'saved_email';
 
   currentUser = signal<UserInfo | null>(this.getUserFromStorage());
   isAuthenticated = signal<boolean>(this.hasValidToken());
@@ -37,14 +39,36 @@ export class AuthService {
     this.startTokenExpiryCheck();
   }
 
-  login(credentials: LoginRequest): Observable<LoginResponse> {
+  login(credentials: LoginRequest, rememberMe: boolean = false): Observable<LoginResponse> {
     return this.apiService.post<LoginResponse>('/auth/login', credentials).pipe(
       tap(response => {
+        this.setRememberMe(rememberMe);
+        if (rememberMe) {
+          localStorage.setItem(this.SAVED_EMAIL_KEY, credentials.email);
+        } else {
+          localStorage.removeItem(this.SAVED_EMAIL_KEY);
+        }
         this.setSession(response);
         this.currentUser.set(response.user);
         this.isAuthenticated.set(true);
       })
     );
+  }
+
+  getRememberMe(): boolean {
+    return localStorage.getItem(this.REMEMBER_ME_KEY) === 'true';
+  }
+
+  getSavedEmail(): string {
+    return localStorage.getItem(this.SAVED_EMAIL_KEY) || '';
+  }
+
+  private setRememberMe(value: boolean): void {
+    localStorage.setItem(this.REMEMBER_ME_KEY, value ? 'true' : 'false');
+  }
+
+  private getStorage(): Storage {
+    return this.getRememberMe() ? localStorage : sessionStorage;
   }
 
   logout(): Observable<void> {
@@ -92,11 +116,15 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return this.getStorage().getItem(this.TOKEN_KEY)
+      || localStorage.getItem(this.TOKEN_KEY)
+      || sessionStorage.getItem(this.TOKEN_KEY);
   }
 
   getRefreshToken(): string | null {
-    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    return this.getStorage().getItem(this.REFRESH_TOKEN_KEY)
+      || localStorage.getItem(this.REFRESH_TOKEN_KEY)
+      || sessionStorage.getItem(this.REFRESH_TOKEN_KEY);
   }
 
   getCurrentUser(): UserInfo | null {
@@ -114,21 +142,27 @@ export class AuthService {
   }
 
   private setSession(authResult: LoginResponse): void {
-    localStorage.setItem(this.TOKEN_KEY, authResult.accessToken);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, authResult.refreshToken);
-    localStorage.setItem(this.USER_KEY, JSON.stringify(authResult.user));
-    localStorage.setItem(this.TOKEN_EXPIRY_KEY, authResult.expiresAt);
+    const storage = this.getStorage();
+    storage.setItem(this.TOKEN_KEY, authResult.accessToken);
+    storage.setItem(this.REFRESH_TOKEN_KEY, authResult.refreshToken);
+    storage.setItem(this.USER_KEY, JSON.stringify(authResult.user));
+    storage.setItem(this.TOKEN_EXPIRY_KEY, authResult.expiresAt);
   }
 
   private clearSession(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-    localStorage.removeItem(this.TOKEN_EXPIRY_KEY);
+    // Limpiar ambos storages para asegurar limpieza completa
+    [localStorage, sessionStorage].forEach(storage => {
+      storage.removeItem(this.TOKEN_KEY);
+      storage.removeItem(this.REFRESH_TOKEN_KEY);
+      storage.removeItem(this.USER_KEY);
+      storage.removeItem(this.TOKEN_EXPIRY_KEY);
+    });
   }
 
   private getUserFromStorage(): UserInfo | null {
-    const userJson = localStorage.getItem(this.USER_KEY);
+    const userJson = this.getStorage().getItem(this.USER_KEY)
+      || localStorage.getItem(this.USER_KEY)
+      || sessionStorage.getItem(this.USER_KEY);
     if (userJson) {
       try {
         return JSON.parse(userJson);
@@ -141,7 +175,9 @@ export class AuthService {
 
   private hasValidToken(): boolean {
     const token = this.getToken();
-    const expiry = localStorage.getItem(this.TOKEN_EXPIRY_KEY);
+    const expiry = this.getStorage().getItem(this.TOKEN_EXPIRY_KEY)
+      || localStorage.getItem(this.TOKEN_EXPIRY_KEY)
+      || sessionStorage.getItem(this.TOKEN_EXPIRY_KEY);
     
     if (!token || !expiry) {
       return false;

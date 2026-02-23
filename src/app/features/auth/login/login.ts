@@ -1,13 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ThemeToggleComponent],
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
 })
@@ -21,11 +22,16 @@ export class LoginComponent {
   loading = signal(false);
   errorMessage = signal<string | null>(null);
   showPassword = signal(false);
+  rememberMe = signal(false);
 
   constructor() {
+    const savedEmail = this.authService.getSavedEmail();
+    const wasRemembered = this.authService.getRememberMe();
+
+    this.rememberMe.set(wasRemembered);
     this.loginForm = this.fb.group({
-      email: ['juliocbm500@gmail.com', [Validators.required, Validators.email]],
-      password: ['Entrar240992', [Validators.required, Validators.minLength(6)]]
+      email: [savedEmail, [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -43,7 +49,7 @@ export class LoginComponent {
       password: this.loginForm.value.password
     };
 
-    this.authService.login(credentials).subscribe({
+    this.authService.login(credentials, this.rememberMe()).subscribe({
       next: () => {
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
         this.router.navigate([returnUrl]);

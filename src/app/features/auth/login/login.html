@@ -1,4 +1,7 @@
 <div class="login-container">
+  <div class="auth-theme-toggle">
+    <app-theme-toggle />
+  </div>
   <div class="login-card">
     <!-- Logo y Header -->
     <div class="login-header">
@@ -82,7 +85,7 @@
       <!-- Recordar / Olvidé mi contraseña -->
       <div class="form-options">
         <label class="checkbox-label">
-          <input type="checkbox" />
+          <input type="checkbox" [checked]="rememberMe()" (change)="rememberMe.set($any($event.target).checked)" />
           <span>Recordarme</span>
         </label>
         <a routerLink="/forgot-password" class="forgot-password-link">¿Olvidaste tu contraseña?</a>

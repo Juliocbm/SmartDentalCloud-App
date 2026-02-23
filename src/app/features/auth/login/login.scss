@@ -5,6 +5,29 @@
   justify-content: center;
   background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%);
   padding: var(--spacing-xl);
+  position: relative;
+}
+
+.auth-theme-toggle {
+  position: absolute;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  z-index: 10;
+
+  ::ng-deep .theme-toggle {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.35rem;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+  }
 }
 
 .login-card {
