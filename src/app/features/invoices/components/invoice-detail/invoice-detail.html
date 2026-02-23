@@ -5,8 +5,12 @@
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
-      @if (invoice()) {
-        <button class="btn btn-secondary" (click)="printInvoice()">
+      @if (invoice(); as inv) {
+        <span class="badge" [ngClass]="getStatusConfig(inv.status).class">
+          <i [class]="'fa-solid ' + getStatusConfig(inv.status).icon"></i>
+          {{ getStatusConfig(inv.status).label }}
+        </span>
+        <button class="btn btn-outline" (click)="printInvoice()">
           <i class="fa-solid fa-print"></i>
           Imprimir
         </button>
@@ -19,59 +23,52 @@
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando factura...</p>
     </div>
-  } @else if (error()) {
+  }
+
+  @if (error()) {
     <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h2>Error al cargar la factura</h2>
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <h3>Error al cargar la factura</h3>
       <p>{{ error() }}</p>
       <button (click)="goBack()" class="btn btn-secondary">
         <i class="fa-solid fa-arrow-left"></i>
         Volver a Facturas
       </button>
     </div>
-  } @else if (invoice(); as inv) {
+  }
 
-    <!-- Header Info -->
-    <div class="detail-header">
+  @if (!loading() && !error() && invoice(); as inv) {
+    <div class="detail-body">
 
-      <div class="header-content">
-        <div class="title-section">
-          <h1>
-            <i class="fa-solid fa-file-invoice-dollar"></i>
-            Factura
-            @if (inv.serie && inv.folio) {
-              <span class="invoice-number">{{ inv.serie }}-{{ inv.folio }}</span>
-            }
-          </h1>
-          <span class="status-badge" [class]="getStatusConfig(inv.status).class">
-            <i [class]="'fa-solid ' + getStatusConfig(inv.status).icon"></i>
-            {{ getStatusConfig(inv.status).label }}
-          </span>
-        </div>
-
-        <div class="header-info">
-          <div class="info-item">
-            <i class="fa-solid fa-user"></i>
-            <span class="label">Paciente:</span>
-            <span class="value">{{ inv.patientName }}</span>
+      <!-- Invoice Info -->
+      <div class="info-section">
+        <h3>
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          Información de Factura
+        </h3>
+        <div class="info-card">
+          @if (inv.serie && inv.folio) {
+            <div class="info-row">
+              <span class="info-label">Serie/Folio:</span>
+              <span class="info-value">{{ inv.serie }}-{{ inv.folio }}</span>
+            </div>
+          }
+          <div class="info-row">
+            <span class="info-label">Paciente:</span>
+            <span class="info-value">{{ inv.patientName }}</span>
           </div>
-          <div class="info-item">
-            <i class="fa-solid fa-calendar"></i>
-            <span class="label">Emisión:</span>
-            <span class="value">{{ formatDate(inv.issuedAt) }}</span>
+          <div class="info-row">
+            <span class="info-label">Fecha de Emisión:</span>
+            <span class="info-value">{{ formatDate(inv.issuedAt) }}</span>
           </div>
           @if (inv.lastPaymentDate) {
-            <div class="info-item">
-              <i class="fa-solid fa-clock"></i>
-              <span class="label">Último Pago:</span>
-              <span class="value">{{ formatDate(inv.lastPaymentDate) }}</span>
+            <div class="info-row">
+              <span class="info-label">Último Pago:</span>
+              <span class="info-value">{{ formatDate(inv.lastPaymentDate) }}</span>
             </div>
           }
         </div>
       </div>
-    </div>
-
-    <div class="detail-body">
 
       <!-- Payment Progress -->
       <div class="info-section">
@@ -183,7 +180,7 @@
             }
           </h3>
           @if (canRegisterPayment()) {
-            <button class="btn btn-success" (click)="openPaymentModal()">
+            <button class="btn btn-primary" (click)="openPaymentModal()">
               <i class="fa-solid fa-plus"></i>
               Registrar Pago
             </button>
@@ -270,7 +267,7 @@
             }
             @if (canCancelarCfdi()) {
               <button
-                class="btn btn-danger-outline"
+                class="btn btn-sm btn-outline btn-danger"
                 (click)="toggleCancelForm()"
               >
                 <i class="fa-solid fa-ban"></i>
@@ -345,19 +342,19 @@
             <!-- Download & action buttons for timbrado CFDIs -->
             @if (c.uuid) {
               <div class="cfdi-download-actions">
-                <a [href]="getXmlUrl()" target="_blank" class="btn btn-outline-sm">
+                <a [href]="getXmlUrl()" target="_blank" class="btn btn-sm btn-outline">
                   <i class="fa-solid fa-file-code"></i>
                   Descargar XML
                 </a>
-                <a [href]="getPdfUrl()" target="_blank" class="btn btn-outline-sm">
+                <a [href]="getPdfUrl()" target="_blank" class="btn btn-sm btn-outline">
                   <i class="fa-solid fa-file-pdf"></i>
                   Descargar PDF
                 </a>
-                <button class="btn btn-outline-sm" (click)="sendCfdiEmail()" [disabled]="cfdiActionLoading()">
+                <button class="btn btn-sm btn-outline" (click)="sendCfdiEmail()" [disabled]="cfdiActionLoading()">
                   <i class="fa-solid fa-envelope"></i>
                   Enviar por Email
                 </button>
-                <button class="btn btn-outline-sm" (click)="consultarSat()" [disabled]="cfdiActionLoading()">
+                <button class="btn btn-sm btn-outline" (click)="consultarSat()" [disabled]="cfdiActionLoading()">
                   <i class="fa-solid fa-satellite-dish"></i>
                   Consultar SAT
                 </button>
