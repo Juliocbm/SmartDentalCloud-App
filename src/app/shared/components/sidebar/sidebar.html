@@ -40,6 +40,42 @@
 
   <!-- Navegación -->
   <nav class="sidebar__nav">
+    <!-- Favoritos -->
+    @if (favoriteMenuItems().length > 0) {
+      <div class="sidebar__favorites-section">
+        @if (!collapsed()) {
+          <div class="sidebar__section-title">
+            <i class="fa-solid fa-star"></i>
+            <span>Favoritos</span>
+          </div>
+        } @else {
+          <div class="sidebar__section-divider" title="Favoritos">
+            <i class="fa-solid fa-star"></i>
+          </div>
+        }
+        @for (fav of favoriteMenuItems(); track fav.id) {
+          <a 
+            [routerLink]="fav.route" 
+            routerLinkActive="sidebar__menu-item--active"
+            class="sidebar__menu-item sidebar__menu-item--favorite"
+            [title]="collapsed() ? fav.label : ''">
+            <i [class]="fav.icon" class="sidebar__menu-icon"></i>
+            @if (!collapsed()) {
+              <span class="sidebar__menu-label">{{ fav.label }}</span>
+              <button class="sidebar__fav-btn sidebar__fav-btn--active" 
+                      (click)="toggleFavorite(fav.id, $event)" 
+                      title="Quitar de favoritos">
+                <i class="fa-solid fa-star"></i>
+              </button>
+            }
+          </a>
+        }
+        @if (!collapsed()) {
+          <div class="sidebar__section-separator"></div>
+        }
+      </div>
+    }
+
     @for (item of filteredMenuItems(); track item.id) {
       @if (hasChildren(item)) {
         <!-- Menú con hijos -->
@@ -86,6 +122,12 @@
                   @if (child.badge !== undefined && child.badge > 0) {
                     <span class="sidebar__badge sidebar__badge--warning">{{ child.badge }}</span>
                   }
+                  <button class="sidebar__fav-btn" 
+                          [class.sidebar__fav-btn--active]="isFavorite(child.id)"
+                          (click)="toggleFavorite(child.id, $event)" 
+                          [title]="isFavorite(child.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
+                    <i class="fa-solid fa-star"></i>
+                  </button>
                 </a>
               }
             </div>
@@ -104,6 +146,12 @@
             @if (item.badge) {
               <span class="sidebar__badge sidebar__badge--primary">{{ item.badge }}</span>
             }
+            <button class="sidebar__fav-btn" 
+                    [class.sidebar__fav-btn--active]="isFavorite(item.id)"
+                    (click)="toggleFavorite(item.id, $event)" 
+                    [title]="isFavorite(item.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
+              <i class="fa-solid fa-star"></i>
+            </button>
           }
         </a>
       }

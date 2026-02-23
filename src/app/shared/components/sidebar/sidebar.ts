@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { AlertsCountService } from '../../../core/services/alerts-count.service'
 import { SidebarStateService } from '../../../core/services/sidebar-state.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserProfileCacheService } from '../../../core/services/user-profile-cache.service';
+import { FavoritesService } from '../../../core/services/favorites.service';
 import { MenuItem } from './sidebar.models';
 
 /**
@@ -18,12 +19,13 @@ import { MenuItem } from './sidebar.models';
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.scss']
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   private alertsService = inject(AlertsCountService);
   private sidebarState = inject(SidebarStateService);
   private authService = inject(AuthService);
   private profileCache = inject(UserProfileCacheService);
   private router = inject(Router);
+  favoritesService = inject(FavoritesService);
 
   currentUser = this.authService.currentUser;
   sidebarUserName = computed(() => this.currentUser()?.name || 'Usuario');
@@ -169,6 +171,30 @@ export class SidebarComponent {
     { id: 'audit-log', icon: 'fa-solid fa-shield-halved', label: 'Auditoría', route: '/audit-log' },
   ]);
 
+  // Menú de favoritos dinámico
+  favoriteMenuItems = computed<MenuItem[]>(() => {
+    const favIds = this.favoritesService.favorites();
+    if (favIds.length === 0) return [];
+
+    const allItems = this.menuItems();
+    const favChildren: MenuItem[] = [];
+
+    for (const item of allItems) {
+      if (favIds.includes(item.id)) {
+        favChildren.push({ id: item.id, icon: item.icon, label: item.label, route: item.route });
+      }
+      if (item.children) {
+        for (const child of item.children) {
+          if (favIds.includes(child.id)) {
+            favChildren.push({ id: child.id, icon: child.icon, label: child.label, route: child.route });
+          }
+        }
+      }
+    }
+
+    return favChildren;
+  });
+
   // Menús filtrados por búsqueda
   filteredMenuItems = computed<MenuItem[]>(() => {
     const term = this.searchTerm().toLowerCase().trim();
@@ -185,7 +211,21 @@ export class SidebarComponent {
     return this.countMenuItems(this.filteredMenuItems());
   });
 
+  ngOnInit(): void {
+    this.favoritesService.loadFavorites();
+  }
+
   // === Acciones ===
+
+  toggleFavorite(menuItemId: string, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.favoritesService.toggleFavorite(menuItemId);
+  }
+
+  isFavorite(menuItemId: string): boolean {
+    return this.favoritesService.isFavorite(menuItemId);
+  }
 
   toggleSidebar(): void {
     this.sidebarState.toggleCollapsed();
