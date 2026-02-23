@@ -194,6 +194,14 @@ export class SidebarComponent {
   toggleMenu(menuId: string, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
+
+    // Si está colapsado, expandir sidebar y abrir este menú
+    if (this.collapsed()) {
+      this.sidebarState.setCollapsed(false);
+      this.sidebarState.expandMenu(menuId);
+      return;
+    }
+
     this.sidebarState.toggleMenuExpansion(menuId);
   }
 

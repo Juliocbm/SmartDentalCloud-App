@@ -77,10 +77,20 @@ export class SidebarStateService {
   toggleMenuExpansion(menuId: string): void {
     this.expandedMenus.update(menus => {
       if (menus.includes(menuId)) {
-        return menus.filter(id => id !== menuId);
+        return [];
       } else {
-        return [...menus, menuId];
+        return [menuId];
       }
+    });
+  }
+
+  /**
+   * Expande un menú específico (sin toglear)
+   */
+  expandMenu(menuId: string): void {
+    this.expandedMenus.update(menus => {
+      if (menus.includes(menuId)) return menus;
+      return [...menus, menuId];
     });
   }
 
