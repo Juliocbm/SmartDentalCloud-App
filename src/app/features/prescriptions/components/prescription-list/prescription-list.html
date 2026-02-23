@@ -4,6 +4,12 @@
     [subtitle]="'Gestión de recetas médicas'"
     [icon]="'fa-prescription'"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <button class="btn btn-primary" (click)="createPrescription()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Receta
+      </button>
+    </div>
   </app-page-header>
 
   <!-- KPI Cards -->
@@ -64,10 +70,6 @@
         <option [value]="PrescriptionStatus.Cancelled">Canceladas</option>
       </select>
 
-      <button class="btn btn-primary" (click)="createPrescription()">
-        <i class="fa-solid fa-plus"></i>
-        Nueva Receta
-      </button>
     </div>
   </div>
 
