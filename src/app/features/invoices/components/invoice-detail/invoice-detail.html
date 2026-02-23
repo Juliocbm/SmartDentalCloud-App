@@ -1,6 +1,7 @@
 <div class="detail-container">
   <app-page-header
     [title]="'Factura'"
+    [subtitle]="invoice()?.serie && invoice()?.folio ? invoice()!.serie + '-' + invoice()!.folio : ''"
     [icon]="'fa-file-invoice-dollar'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">

@@ -651,6 +651,17 @@ textarea.form-control {
 }
 
 // ===== ACTION BUTTONS (Para tablas) - Estilo compacto =====
+
+.actions-column {
+  white-space: nowrap;
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
 .btn-icon {
   width: 32px;
   height: 32px;

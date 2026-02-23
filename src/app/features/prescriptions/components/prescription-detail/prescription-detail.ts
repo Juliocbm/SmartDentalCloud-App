@@ -9,6 +9,8 @@ import {
 } from '../../models/prescription.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { SettingsService } from '../../../settings/services/settings.service';
+import { TenantSettings } from '../../../settings/models/settings.models';
 
 @Component({
   selector: 'app-prescription-detail',
@@ -23,6 +25,7 @@ export class PrescriptionDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private prescriptionsService = inject(PrescriptionsService);
+  private settingsService = inject(SettingsService);
   private location = inject(Location);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -33,6 +36,7 @@ export class PrescriptionDetailComponent implements OnInit {
 
   // State
   prescription = signal<Prescription | null>(null);
+  clinicSettings = signal<TenantSettings | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
 
@@ -41,6 +45,14 @@ export class PrescriptionDetailComponent implements OnInit {
     if (id) {
       this.loadPrescription(id);
     }
+    this.loadClinicSettings();
+  }
+
+  private loadClinicSettings(): void {
+    this.settingsService.getSettings().subscribe({
+      next: (data) => this.clinicSettings.set(data),
+      error: () => {} // Non-blocking: print will use fallbacks
+    });
   }
 
   private loadPrescription(id: string): void {

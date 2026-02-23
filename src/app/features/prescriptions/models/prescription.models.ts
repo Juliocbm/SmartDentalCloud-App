@@ -10,6 +10,7 @@ export interface Prescription {
   appointmentId?: string;
   prescribedById: string;
   prescribedByName: string;
+  prescribedByLicense?: string;
   issuedAt: Date;
   expiresAt?: Date;
   diagnosis?: string;

@@ -1,9 +1,18 @@
 <div class="detail-container">
   <app-page-header
     [title]="plan()?.title || 'Plan de Tratamiento'"
+    [subtitle]="plan()?.planNumber || ''"
     [icon]="'fa-clipboard-list'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
+    <div title-extra>
+      @if (plan(); as p) {
+        <span class="badge" [ngClass]="getStatusConfig(p.status).class">
+          <i [class]="'fa-solid ' + getStatusConfig(p.status).icon"></i>
+          {{ getStatusConfig(p.status).label }}
+        </span>
+      }
+    </div>
     <div actions>
       <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
         <i class="fa-solid fa-clock-rotate-left"></i>
@@ -44,44 +53,28 @@
     </div>
   } @else if (plan(); as p) {
 
-    <!-- Header Info -->
-    <div class="detail-header">
-
-      <div class="header-content">
-        <div class="title-section">
-          <h1>
-            <i class="fa-solid fa-clipboard-list"></i>
-            {{ p.title }}
-          </h1>
-          <span class="status-badge" [class]="getStatusConfig(p.status).class">
-            <i [class]="'fa-solid ' + getStatusConfig(p.status).icon"></i>
-            {{ getStatusConfig(p.status).label }}
-          </span>
-        </div>
-
-        <div class="header-info">
-          <div class="info-item">
-            <i class="fa-solid fa-hashtag"></i>
-            <span class="label">Plan:</span>
-            <span class="value">{{ p.planNumber }}</span>
-          </div>
-          <div class="info-item">
-            <i class="fa-solid fa-user"></i>
-            <span class="label">Paciente:</span>
-            <span class="value">
-              <a [routerLink]="['/patients', p.patientId]" class="link-primary">
-                {{ p.patientName || 'Sin asignar' }}
-              </a>
-            </span>
-          </div>
-          <div class="info-item">
-            <i class="fa-solid fa-dollar-sign"></i>
-            <span class="label">Costo Estimado:</span>
-            <span class="value">{{ formatCurrency(p.totalEstimatedCost) }}</span>
-          </div>
-        </div>
+    <!-- Status banners for terminal states -->
+    @if (p.status === TreatmentPlanStatus.Completed) {
+      <div class="status-banner status-banner--success">
+        <i class="fa-solid fa-circle-check"></i>
+        Plan de tratamiento completado
       </div>
-    </div>
+    }
+    @if (p.status === TreatmentPlanStatus.Rejected) {
+      <div class="status-banner status-banner--error">
+        <i class="fa-solid fa-circle-xmark"></i>
+        Plan de tratamiento rechazado
+        @if (p.rejectionReason) {
+          — {{ p.rejectionReason }}
+        }
+      </div>
+    }
+    @if (p.status === TreatmentPlanStatus.Cancelled) {
+      <div class="status-banner status-banner--error">
+        <i class="fa-solid fa-ban"></i>
+        Plan de tratamiento cancelado
+      </div>
+    }
 
     <div class="detail-body">
 
@@ -124,120 +117,84 @@
         </div>
       </div>
 
-      <!-- Información General -->
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-info-circle"></i>
-          Información General
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Paciente:</span>
-            <span class="info-value">
-              <a [routerLink]="['/patients', p.patientId]" class="link-primary">
-                {{ p.patientName || 'Sin nombre' }}
-              </a>
-            </span>
-          </div>
-          @if (p.diagnosis) {
-            <div class="info-row">
-              <span class="info-label">Diagnóstico:</span>
-              <span class="info-value">{{ p.diagnosis }}</span>
-            </div>
-          }
-          @if (p.description) {
-            <div class="info-row">
-              <span class="info-label">Descripción:</span>
-              <span class="info-value">{{ p.description }}</span>
-            </div>
-          }
-          <div class="info-row">
-            <span class="info-label">Estado:</span>
-            <span class="info-value">
-              <span class="badge" [class]="getStatusConfig(p.status).class">
-                <i [class]="'fa-solid ' + getStatusConfig(p.status).icon"></i>
-                {{ getStatusConfig(p.status).label }}
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Fechas -->
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-calendar-days"></i>
-          Fechas
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Inicio Estimado:</span>
-            <span class="info-value">{{ formatDate(p.estimatedStartDate) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Fin Estimado:</span>
-            <span class="info-value">{{ formatDate(p.estimatedEndDate) }}</span>
-          </div>
-          @if (p.actualStartDate) {
-            <div class="info-row">
-              <span class="info-label">Inicio Real:</span>
-              <span class="info-value">{{ formatDate(p.actualStartDate) }}</span>
-            </div>
-          }
-          @if (p.actualEndDate) {
-            <div class="info-row">
-              <span class="info-label">Fin Real:</span>
-              <span class="info-value">{{ formatDate(p.actualEndDate) }}</span>
-            </div>
-          }
-        </div>
-      </div>
-
-      <!-- Aprobación / Rechazo -->
-      @if (p.approvedAt || p.rejectedAt) {
+      <!-- Información General + Fechas (two columns) -->
+      <div class="info-two-col">
         <div class="info-section">
           <h3>
-            <i class="fa-solid fa-stamp"></i>
-            @if (p.approvedAt) {
-              Aprobación
-            } @else {
-              Rechazo
-            }
+            <i class="fa-solid fa-info-circle"></i>
+            Información General
           </h3>
           <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Paciente:</span>
+              <span class="info-value">
+                <a [routerLink]="['/patients', p.patientId]" class="link-primary">
+                  {{ p.patientName || 'Sin nombre' }}
+                </a>
+              </span>
+            </div>
+            @if (p.diagnosis) {
+              <div class="info-row">
+                <span class="info-label">Diagnóstico:</span>
+                <span class="info-value">{{ p.diagnosis }}</span>
+              </div>
+            }
+            @if (p.description) {
+              <div class="info-row">
+                <span class="info-label">Descripción:</span>
+                <span class="info-value">{{ p.description }}</span>
+              </div>
+            }
             @if (p.approvedAt) {
               <div class="info-row">
                 <span class="info-label">Aprobado:</span>
-                <span class="info-value">{{ formatDateTime(p.approvedAt) }}</span>
+                <span class="info-value">{{ formatDateTime(p.approvedAt) }}{{ p.approvedByName ? ' por ' + p.approvedByName : '' }}</span>
               </div>
-              @if (p.approvedByName) {
-                <div class="info-row">
-                  <span class="info-label">Aprobado por:</span>
-                  <span class="info-value">{{ p.approvedByName }}</span>
-                </div>
-              }
             }
             @if (p.rejectedAt) {
               <div class="info-row">
                 <span class="info-label">Rechazado:</span>
-                <span class="info-value">{{ formatDateTime(p.rejectedAt) }}</span>
+                <span class="info-value">{{ formatDateTime(p.rejectedAt) }}{{ p.rejectedByName ? ' por ' + p.rejectedByName : '' }}</span>
               </div>
-              @if (p.rejectedByName) {
-                <div class="info-row">
-                  <span class="info-label">Rechazado por:</span>
-                  <span class="info-value">{{ p.rejectedByName }}</span>
-                </div>
-              }
               @if (p.rejectionReason) {
-                <div class="info-row">
-                  <span class="info-label">Razón:</span>
-                  <span class="info-value rejection-reason">{{ p.rejectionReason }}</span>
+                <div class="info-row alert-row">
+                  <span class="info-label">Razón de Rechazo:</span>
+                  <span class="info-value">{{ p.rejectionReason }}</span>
                 </div>
               }
             }
           </div>
         </div>
-      }
+
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-calendar-days"></i>
+            Fechas
+          </h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Inicio Estimado:</span>
+              <span class="info-value">{{ formatDate(p.estimatedStartDate) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Fin Estimado:</span>
+              <span class="info-value">{{ formatDate(p.estimatedEndDate) }}</span>
+            </div>
+            @if (p.actualStartDate) {
+              <div class="info-row">
+                <span class="info-label">Inicio Real:</span>
+                <span class="info-value">{{ formatDate(p.actualStartDate) }}</span>
+              </div>
+            }
+            @if (p.actualEndDate) {
+              <div class="info-row">
+                <span class="info-label">Fin Real:</span>
+                <span class="info-value">{{ formatDate(p.actualEndDate) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
 
       <!-- Procedimientos (Items) -->
       <div class="info-section">
@@ -248,121 +205,135 @@
         </h3>
 
         @if (p.items && p.items.length > 0) {
-          <div class="items-list">
-            @for (item of p.items; track item.id; let i = $index) {
-              <div class="detail-item-card">
-                <div class="detail-item-header">
-                  <span class="detail-item-number">#{{ i + 1 }}</span>
-                  @if (item.treatmentPhase) {
-                    <span class="detail-item-phase">{{ item.treatmentPhase }}</span>
-                  }
-                  <span [class]="'badge ' + getItemStatusConfig(item.status).class">
-                    <i [class]="'fa-solid ' + getItemStatusConfig(item.status).icon"></i>
-                    {{ getItemStatusConfig(item.status).label }}
-                  </span>
-                  <span [class]="'badge ' + getItemPriorityConfig(item.priority).class">
-                    <i [class]="'fa-solid ' + getItemPriorityConfig(item.priority).icon"></i>
-                    {{ getItemPriorityConfig(item.priority).label }}
-                  </span>
-                </div>
-
-                <div class="detail-item-body">
-                  <div class="detail-item-info">
-                    <div class="detail-item-title">{{ item.description }}</div>
-                    @if (item.serviceName) {
-                      <div class="detail-item-service">
-                        <i class="fa-solid fa-briefcase-medical"></i>
-                        {{ item.serviceName }}
-                      </div>
-                    }
-                    @if (item.notes) {
-                      <div class="detail-item-notes">{{ item.notes }}</div>
-                    }
-                  </div>
-
-                  <div class="detail-item-costs">
-                    <div class="cost-row">
-                      <span class="cost-label">Estimado:</span>
-                      <span class="cost-value">{{ formatCurrency(item.estimatedCost) }}</span>
-                    </div>
-                    @if (item.discount) {
-                      <div class="cost-row discount">
-                        <span class="cost-label">Descuento:</span>
-                        <span class="cost-value">-{{ formatCurrency(item.discount) }}</span>
-                      </div>
-                    }
-                    @if (item.actualCost != null) {
-                      <div class="cost-row">
-                        <span class="cost-label">Costo Real:</span>
-                        <span class="cost-value actual">{{ formatCurrency(item.actualCost) }}</span>
-                      </div>
-                    }
-                  </div>
-                </div>
-
-                @if (item.progressPercentage > 0) {
-                  <div class="detail-item-progress">
-                    <div class="progress-bar-mini">
-                      <div
-                        class="progress-fill-mini"
-                        [style.width.%]="item.progressPercentage"
-                        [class.progress-complete]="item.progressPercentage >= 100"
-                      ></div>
-                    </div>
-                    <span class="progress-text">{{ item.progressPercentage }}%</span>
-                  </div>
-                }
-
-                <!-- Item Actions -->
-                @if (p.status === TreatmentPlanStatus.InProgress && item.status !== ItemStatus.Completed && item.status !== ItemStatus.Cancelled) {
-                  <div class="detail-item-actions">
-                    @if (canStartItem(item.status)) {
-                      <button
-                        class="btn btn-sm btn-outline"
-                        (click)="onStartItem(item.id)"
-                        [disabled]="itemActionLoading() === item.id"
-                      >
-                        @if (itemActionLoading() === item.id) {
-                          <i class="fa-solid fa-spinner fa-spin"></i>
-                        } @else {
-                          <i class="fa-solid fa-play"></i>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Procedimiento</th>
+                  <th>Fase</th>
+                  <th>Estado</th>
+                  <th>Prioridad</th>
+                  <th class="text-right">Estimado</th>
+                  <th class="text-right">Real</th>
+                  <th>Progreso</th>
+                  <th class="actions-column">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of p.items; track item.id; let i = $index) {
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>
+                      <div class="item-desc">
+                        <span class="item-desc__title">{{ item.description }}</span>
+                        @if (item.serviceName) {
+                          <span class="item-desc__service">
+                            <i class="fa-solid fa-briefcase-medical"></i>
+                            {{ item.serviceName }}
+                          </span>
                         }
-                        Iniciar
-                      </button>
-                    }
-                    @if (canCompleteItem(item.status)) {
-                      <button
-                        class="btn btn-sm btn-success"
-                        (click)="onCompleteItem(item.id)"
-                        [disabled]="itemActionLoading() === item.id"
-                      >
-                        @if (itemActionLoading() === item.id) {
-                          <i class="fa-solid fa-spinner fa-spin"></i>
-                        } @else {
-                          <i class="fa-solid fa-check"></i>
+                        @if (item.notes) {
+                          <span class="item-desc__notes">{{ item.notes }}</span>
                         }
-                        Completar
-                      </button>
-                    }
-                    @if (canCancelItem(item.status)) {
-                      <button
-                        class="btn btn-sm btn-outline-danger"
-                        (click)="onCancelItem(item.id)"
-                        [disabled]="itemActionLoading() === item.id"
-                      >
-                        <i class="fa-solid fa-ban"></i>
-                        Cancelar
-                      </button>
-                    }
-                  </div>
+                      </div>
+                    </td>
+                    <td>{{ item.treatmentPhase || '—' }}</td>
+                    <td>
+                      <span [class]="'badge ' + getItemStatusConfig(item.status).class">
+                        <i [class]="'fa-solid ' + getItemStatusConfig(item.status).icon"></i>
+                        {{ getItemStatusConfig(item.status).label }}
+                      </span>
+                    </td>
+                    <td>
+                      <span [class]="'badge ' + getItemPriorityConfig(item.priority).class">
+                        <i [class]="'fa-solid ' + getItemPriorityConfig(item.priority).icon"></i>
+                        {{ getItemPriorityConfig(item.priority).label }}
+                      </span>
+                    </td>
+                    <td class="text-right">
+                      {{ formatCurrency(item.estimatedCost) }}
+                      @if (item.discount) {
+                        <div class="item-discount">-{{ formatCurrency(item.discount) }}</div>
+                      }
+                    </td>
+                    <td class="text-right">
+                      @if (item.actualCost != null) {
+                        {{ formatCurrency(item.actualCost) }}
+                      } @else {
+                        —
+                      }
+                    </td>
+                    <td>
+                      @if (item.progressPercentage > 0) {
+                        <div class="item-progress">
+                          <div class="item-progress__bar">
+                            <div
+                              class="item-progress__fill"
+                              [style.width.%]="item.progressPercentage"
+                              [class.item-progress__fill--complete]="item.progressPercentage >= 100"
+                            ></div>
+                          </div>
+                          <span class="item-progress__text">{{ item.progressPercentage }}%</span>
+                        </div>
+                      } @else {
+                        —
+                      }
+                    </td>
+                    <td class="actions-column">
+                      @if (p.status === TreatmentPlanStatus.InProgress && item.status !== ItemStatus.Completed && item.status !== ItemStatus.Cancelled) {
+                        <div class="action-buttons">
+                          @if (canStartItem(item.status)) {
+                            <button
+                              class="btn btn-sm btn-outline"
+                              (click)="onStartItem(item.id)"
+                              [disabled]="itemActionLoading() === item.id"
+                            >
+                              @if (itemActionLoading() === item.id) {
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                              } @else {
+                                <i class="fa-solid fa-play"></i>
+                              }
+                              Iniciar
+                            </button>
+                          }
+                          @if (canCompleteItem(item.status)) {
+                            <button
+                              class="btn btn-sm btn-outline btn-success"
+                              (click)="onCompleteItem(item.id)"
+                              [disabled]="itemActionLoading() === item.id"
+                            >
+                              @if (itemActionLoading() === item.id) {
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                              } @else {
+                                <i class="fa-solid fa-check"></i>
+                              }
+                              Completar
+                            </button>
+                          }
+                          @if (canCancelItem(item.status)) {
+                            <button
+                              class="btn btn-sm btn-outline btn-danger"
+                              (click)="onCancelItem(item.id)"
+                              [disabled]="itemActionLoading() === item.id"
+                            >
+                              <i class="fa-solid fa-ban"></i>
+                              Cancelar
+                            </button>
+                          }
+                        </div>
+                      }
+                    </td>
+                  </tr>
                 }
-              </div>
-            }
+              </tbody>
+            </table>
           </div>
         } @else {
-          <div class="empty-items">
+          <div class="empty-state empty-state-sm">
             <i class="fa-solid fa-clipboard"></i>
-            <p>No hay procedimientos en este plan</p>
+            <h3>Sin Procedimientos</h3>
+            <p>No hay procedimientos registrados en este plan</p>
           </div>
         }
       </div>
@@ -378,37 +349,41 @@
 
     <!-- Reject Modal -->
     @if (showRejectModal()) {
-      <div class="modal-overlay" (click)="onCancelReject()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
-          <div class="modal-header">
-            <h3>
-              <i class="fa-solid fa-circle-xmark"></i>
-              Rechazar Plan de Tratamiento
-            </h3>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <label class="form-label">
-                Razón del rechazo <span class="required">*</span>
-              </label>
-              <textarea
-                class="form-input form-textarea"
-                rows="4"
-                placeholder="Indique la razón por la cual se rechaza este plan..."
-                [value]="rejectReason()"
-                (input)="rejectReason.set($any($event.target).value)"
-              ></textarea>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-outline" (click)="onCancelReject()">Cancelar</button>
-            <button class="btn btn-danger" (click)="onConfirmReject()" [disabled]="actionLoading()">
+      <app-modal
+        title="Rechazar Plan de Tratamiento"
+        icon="fa-circle-xmark"
+        size="sm"
+        (closed)="onCancelReject()">
+
+        <div class="form-group">
+          <label class="form-label">
+            Razón del rechazo <span class="required">*</span>
+          </label>
+          <textarea
+            class="form-input form-textarea"
+            rows="4"
+            placeholder="Indique la razón por la cual se rechaza este plan..."
+            [value]="rejectReason()"
+            (input)="rejectReason.set($any($event.target).value)"
+          ></textarea>
+        </div>
+
+        <div modal-footer>
+          <button class="btn btn-outline" (click)="onCancelReject()" [disabled]="actionLoading()">
+            <i class="fa-solid fa-times"></i>
+            Cancelar
+          </button>
+          <button class="btn btn-danger" (click)="onConfirmReject()" [disabled]="actionLoading() || !rejectReason().trim()">
+            @if (actionLoading()) {
+              <span class="btn-spinner"></span>
+              Rechazando...
+            } @else {
               <i class="fa-solid fa-circle-xmark"></i>
               Confirmar Rechazo
-            </button>
-          </div>
+            }
+          </button>
         </div>
-      </div>
+      </app-modal>
     }
   }
 </div>

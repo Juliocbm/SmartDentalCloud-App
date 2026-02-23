@@ -14,11 +14,12 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
 
 @Component({
   selector: 'app-treatment-plan-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, ModalComponent],
   templateUrl: './treatment-plan-detail.html',
   styleUrl: './treatment-plan-detail.scss'
 })

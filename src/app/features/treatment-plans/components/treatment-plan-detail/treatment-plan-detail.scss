@@ -2,12 +2,8 @@
 // TreatmentPlanDetailComponent - Estilos
 // Base: usa .detail-container, .detail-header, .detail-body,
 //       .info-section, .info-card, .link-primary de _components.scss
+// Solo overrides específicos de este componente.
 // ============================================
-
-.rejection-reason {
-  color: var(--danger-500) !important;
-  font-weight: var(--font-weight-medium);
-}
 
 // ===== Progress Overview =====
 
@@ -84,7 +80,7 @@
   }
 }
 
-// ===== Items List =====
+// ===== Items Table =====
 
 .items-badge {
   margin-left: auto;
@@ -96,240 +92,70 @@
   border-radius: var(--radius-full);
 }
 
-.items-list {
+.item-desc {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-}
+  gap: 2px;
 
-.detail-item-card {
-  background: var(--surface-secondary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.detail-item-header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--surface-tertiary);
-  border-bottom: 1px solid var(--border-primary);
-  flex-wrap: wrap;
-}
-
-.detail-item-number {
-  font-weight: var(--font-weight-bold);
-  color: var(--primary-500);
-  font-size: var(--font-size-sm);
-}
-
-.detail-item-phase {
-  font-size: var(--font-size-xs);
-  color: var(--text-secondary);
-  background: var(--surface-primary);
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-}
-
-.detail-item-body {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--spacing-xl);
-  padding: var(--spacing-lg);
-}
-
-.detail-item-info {
-  flex: 1;
-}
-
-.detail-item-title {
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-xs);
-}
-
-.detail-item-service {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-xs);
-
-  i {
-    color: var(--primary-500);
-  }
-}
-
-.detail-item-notes {
-  font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
-  font-style: italic;
-}
-
-.detail-item-costs {
-  min-width: 160px;
-  text-align: right;
-}
-
-.cost-row {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  padding: 2px 0;
-
-  .cost-label {
-    font-size: var(--font-size-xs);
-    color: var(--text-secondary);
-  }
-
-  .cost-value {
+  &__title {
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
-    font-size: var(--font-size-sm);
-
-    &.actual {
-      color: var(--primary-500);
-    }
   }
 
-  &.discount .cost-value {
-    color: var(--success-500);
+  &__service {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+
+    i { color: var(--primary-500); }
   }
-}
 
-.detail-item-progress {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: 0 var(--spacing-lg) var(--spacing-md);
-}
-
-.progress-bar-mini {
-  flex: 1;
-  height: 6px;
-  background: var(--surface-tertiary);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-}
-
-.progress-fill-mini {
-  height: 100%;
-  background: var(--primary-500);
-  border-radius: var(--radius-full);
-  transition: width 0.3s ease;
-
-  &.progress-complete {
-    background: var(--success-500);
+  &__notes {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    font-style: italic;
   }
 }
 
-.progress-text {
+.item-discount {
   font-size: var(--font-size-xs);
-  color: var(--text-secondary);
-  white-space: nowrap;
+  color: var(--success-500);
 }
 
-.detail-item-actions {
+.item-progress {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-md);
-  border-top: 1px solid var(--border-primary);
+  min-width: 80px;
 
-  .btn-sm {
+  &__bar {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-tertiary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    background: var(--primary-500);
+    border-radius: var(--radius-full);
+    transition: width 0.3s ease;
+
+    &--complete {
+      background: var(--success-500);
+    }
+  }
+
+  &__text {
     font-size: var(--font-size-xs);
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
-
-  .btn-outline-danger {
-    color: var(--error-500);
-    border-color: var(--error-300);
-    background: transparent;
-
-    &:hover:not(:disabled) {
-      background: var(--error-50);
-      border-color: var(--error-500);
-    }
+    color: var(--text-secondary);
+    white-space: nowrap;
   }
 }
 
-.empty-items {
-  text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--text-tertiary);
-
-  i {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: var(--spacing-md);
-  }
-}
-
-// ===== Modal =====
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  width: 90%;
-  max-width: 500px;
-  box-shadow: var(--shadow-xl);
-}
-
-.modal-header {
-  padding: var(--spacing-xl);
-  border-bottom: 1px solid var(--border-primary);
-
-  h3 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin: 0;
-    font-size: var(--font-size-xl);
-    color: var(--text-primary);
-
-    i {
-      color: var(--danger-500);
-    }
-  }
-}
-
-.modal-body {
-  padding: var(--spacing-xl);
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-md);
-  padding: var(--spacing-xl);
-  border-top: 1px solid var(--border-primary);
-}
-
-// Responsive: .detail-container, .detail-header, .info-section, .info-card
+// Responsive: .detail-container, .info-section, .info-card, .table
 // manejados globalmente en _components.scss
-@media (max-width: 768px) {
-  .detail-item-body {
-    flex-direction: column;
-  }
-
-  .detail-item-costs {
-    text-align: left;
-    min-width: auto;
-  }
-}
+// Modal: usa <app-modal> global, sin estilos custom

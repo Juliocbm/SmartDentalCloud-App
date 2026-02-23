@@ -44,6 +44,9 @@ export class SettingsPageComponent implements OnInit {
   generalName = signal('');
   generalLegalName = signal('');
   generalTaxId = signal('');
+  generalAddress = signal('');
+  generalPhone = signal('');
+  generalEmail = signal('');
   generalWorkingHours = signal('');
   generalTimeZone = signal('');
   generalLanguage = signal('');
@@ -124,6 +127,9 @@ export class SettingsPageComponent implements OnInit {
     this.generalName.set(s.name);
     this.generalLegalName.set(s.legalName || '');
     this.generalTaxId.set(s.taxId || '');
+    this.generalAddress.set(s.address || '');
+    this.generalPhone.set(s.phone || '');
+    this.generalEmail.set(s.email || '');
     this.generalWorkingHours.set(s.workingHours || '');
     this.generalTimeZone.set(s.timeZone);
     this.generalLanguage.set(s.language);
@@ -149,6 +155,9 @@ export class SettingsPageComponent implements OnInit {
       name: this.generalName().trim(),
       legalName: this.generalLegalName().trim() || undefined,
       taxId: this.generalTaxId().trim() || undefined,
+      address: this.generalAddress().trim() || undefined,
+      phone: this.generalPhone().trim() || undefined,
+      email: this.generalEmail().trim() || undefined,
       workingHours: this.generalWorkingHours().trim() || undefined,
       timeZone: this.generalTimeZone() || undefined,
       language: this.generalLanguage() || undefined

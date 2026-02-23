@@ -9,6 +9,9 @@ export interface TenantSettings {
   legalName?: string;
   taxId?: string;
   logoUrl?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
   workingHours?: string;
   timeZone: string;
   language: string;
@@ -22,6 +25,9 @@ export interface UpdateTenantSettingsRequest {
   name: string;
   legalName?: string;
   taxId?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
   workingHours?: string;
   timeZone?: string;
   language?: string;

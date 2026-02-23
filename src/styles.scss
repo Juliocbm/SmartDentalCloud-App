@@ -98,16 +98,20 @@ select:focus-visible {
 
 // ===== Estilos de impresión =====
 @media print {
-  * {
-    background: white !important;
-    color: black !important;
+  *:not(.rx-print):not(.rx-print *) {
     box-shadow: none !important;
   }
-  
+
   .no-print,
   .sidebar,
   .header-actions,
-  button {
+  .main-header,
+  button:not(.rx-print button) {
     display: none !important;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
   }
 }

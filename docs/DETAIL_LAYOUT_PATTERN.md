@@ -313,15 +313,100 @@ Para secciones con un botón de edición (ej: Datos Fiscales):
 
 ---
 
+## Page Header — Subtitle para Identificadores de Entidad
+
+Cuando una entidad tiene un **código, clave, número de referencia o identificador único** visible al usuario, este debe mostrarse en el `[subtitle]` del `app-page-header`. Esto evita crear secciones `detail-header` solo para mostrar un identificador y mantiene la información clave visible de inmediato.
+
+### Regla
+
+> Si la entidad tiene un identificador formal (folio, número de plan, clave, número de orden, etc.), usar `[subtitle]` en el `app-page-header`. **No** crear una sección `detail-header` solo para mostrar este dato.
+
+### ✅ Correcto — Identificador en subtitle
+
+```html
+<app-page-header
+  [title]="plan()?.title || 'Plan de Tratamiento'"
+  [subtitle]="plan()?.planNumber || ''"
+  [icon]="'fa-clipboard-list'"
+  [showBackButton]="true"
+  [breadcrumbs]="breadcrumbItems">
+  <div title-extra>
+    <span class="badge" [ngClass]="getStatusConfig(plan()!.status).class">
+      {{ getStatusConfig(plan()!.status).label }}
+    </span>
+  </div>
+  <div actions>
+    <!-- botones -->
+  </div>
+</app-page-header>
+```
+
+### ❌ Incorrecto — Identificador en detail-header redundante
+
+```html
+<!-- NO: crear una sección entera solo para mostrar un número de plan -->
+<app-page-header [title]="plan()?.title" ...></app-page-header>
+<div class="detail-header">
+  <div class="header-content">
+    <div class="header-info">
+      <div class="info-item">
+        <span class="label">Plan:</span>
+        <span class="value">{{ plan()?.planNumber }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### Entidades y sus identificadores
+
+| Entidad | Campo para `subtitle` | Ejemplo |
+|---------|----------------------|---------|
+| Plan de Tratamiento | `planNumber` | `PLAN-202602-F7F97433` |
+| Orden de Compra | `orderNumber` | `OC-2026-0001` |
+| Factura | `serie`-`folio` | `A-0001` |
+| Receta | ID corto o folio | `9D1A5FBE` |
+| Cita | Fecha + Hora | `21 Feb 2026, 10:00` |
+| Tratamiento | Nombre del servicio | `Limpieza Dental` |
+| Paciente | *(no aplica — el nombre ES el título)* | — |
+| Usuario | *(no aplica — el nombre ES el título)* | — |
+
+### Cuándo usar `subtitle` vs `detail-header`
+
+| Escenario | Usar |
+|-----------|------|
+| Solo necesitas mostrar un identificador/clave | `[subtitle]` en page-header |
+| Necesitas mostrar 2-3 datos clave + acciones de workflow | `detail-header` con `header-info` + `header-action-bar` |
+| El identificador ya está en una sección del body | Solo `[subtitle]`, no duplicar |
+
+### Anatomía completa del page-header en detalle
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│  ← 🏠 Dashboard > Entidades > Detalle                             │
+│                                                                    │
+│  📋 Título de Entidad  [● Badge Estado]    [🕐] [Acción] [Acción] │
+│     CLAVE-2026-0001                                                │
+│     ↑ subtitle          ↑ title-extra       ↑ actions              │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Page Header — Acciones y Badge de Estado
 
-El badge de estado y los botones de acción van en el slot `[actions]` del `app-page-header`:
+El badge de estado va en el slot `[title-extra]` y los botones de acción en el slot `[actions]` del `app-page-header`:
 
 ```html
 <app-page-header [title]="'Nombre del Paciente'" [icon]="'fa-user'"
   [showBackButton]="true" [breadcrumbs]="breadcrumbItems">
-  <div actions>
+  <div title-extra>
     <span class="status-badge badge-active">Activo</span>
+  </div>
+  <div actions>
+    <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+    </button>
     <button class="btn btn-outline">
       <i class="fa-solid fa-pen"></i> Editar
     </button>
@@ -333,10 +418,16 @@ El badge de estado y los botones de acción van en el slot `[actions]` del `app-
 ```
 
 **Reglas de botones en el header:**
+- Auditoría → `btn btn-icon` con `fa-clock-rotate-left` (siempre primero)
 - Editar → `btn btn-outline` (neutro)
 - Desactivar → `btn btn-outline btn-danger` (destructivo, outline)
 - Activar → `btn btn-outline btn-success` (positivo, outline)
 - Acciones de estado (Confirmar, Completar) → dentro de `header-action-bar` en `detail-header`
+
+**Reglas de badge de estado:**
+- Badges van en `<div title-extra>`, **NUNCA** en `<div actions>`
+- Usar `.badge` para estados con múltiples variantes
+- Usar `.status-badge` para estados binarios (Activo/Inactivo)
 
 ---
 
@@ -344,19 +435,20 @@ El badge de estado y los botones de acción van en el slot `[actions]` del `app-
 
 1. **Siempre usar `detail-container`** como wrapper principal
 2. **No crear h1 dentro del content** — el título va en `app-page-header`
-3. **No duplicar datos** — si un dato ya está en un tab, no repetirlo en el header
-4. **Badge de estado** → en el slot `[actions]` del `app-page-header`
-5. **Acciones de edición/desactivación** → en `app-page-header` con estilo outline
-6. **Acciones de estado (confirmar, completar)** → en `header-action-bar` dentro de `detail-header`
-7. **Usar `info-two-col` / `info-three-col`** para agrupar secciones relacionadas
-8. **Usar `status-banner`** para estados terminales (entre header y body)
-9. **Usar `alert-row`** para filas que requieren atención (errores, cancelaciones)
-10. **Consolidar campos simples** en una sola `info-section` con `info-rows` (no múltiples cards)
-11. **Tabs** para entidades con 3+ categorías de datos (copiar patrón segmented control)
-12. **Empty states**: `.empty-state` para tabs vacíos, `.empty-state-sm` para secciones, `.info-empty` para inline
-13. **SCSS del componente solo contiene overrides específicos** — NO redefinir clases globales
-14. **Usar siempre variables CSS** — nunca hard-codear colores, spacing o font-sizes
-15. **Responsive ya está resuelto globalmente** — no repetir media queries (excepto tabs)
+3. **Identificador de entidad** → en `[subtitle]` del `app-page-header` (no en `detail-header`)
+4. **No duplicar datos** — si un dato ya está en una sección, no repetirlo en el header
+5. **Badge de estado** → en el slot `[title-extra]` del `app-page-header`
+6. **Acciones de edición/desactivación** → en `app-page-header` `[actions]` con estilo outline
+7. **Acciones de estado (confirmar, completar)** → en `header-action-bar` dentro de `detail-header`
+8. **Usar `info-two-col` / `info-three-col`** para agrupar secciones relacionadas
+9. **Usar `status-banner`** para estados terminales (entre header y body)
+10. **Usar `alert-row`** para filas que requieren atención (errores, cancelaciones)
+11. **Consolidar campos simples** en una sola `info-section` con `info-rows` (no múltiples cards)
+12. **Tabs** para entidades con 3+ categorías de datos (copiar patrón segmented control)
+13. **Empty states**: `.empty-state` para tabs vacíos, `.empty-state-sm` para secciones, `.info-empty` para inline
+14. **SCSS del componente solo contiene overrides específicos** — NO redefinir clases globales
+15. **Usar siempre variables CSS** — nunca hard-codear colores, spacing o font-sizes
+16. **Responsive ya está resuelto globalmente** — no repetir media queries (excepto tabs)
 
 ---
 

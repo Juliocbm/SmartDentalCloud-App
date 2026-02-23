@@ -15,16 +15,23 @@
 
 <!-- Confirm dialog -->
 @if (pendingConfirm(); as confirm) {
-  <div class="confirm-backdrop" (click)="onCancel()">
-    <div class="confirm-dialog" (click)="$event.stopPropagation()">
-      <div class="confirm-icon">
-        <i class="fa-solid fa-circle-question"></i>
-      </div>
-      <p class="confirm-message">{{ confirm.message }}</p>
-      <div class="confirm-actions">
-        <button class="btn btn-secondary" (click)="onCancel()">Cancelar</button>
-        <button class="btn btn-primary" (click)="onConfirm()">Confirmar</button>
-      </div>
+  <app-modal
+    title="Confirmar Acción"
+    icon="fa-circle-question"
+    size="sm"
+    (closed)="onCancel()">
+
+    <p class="confirm-message">{{ confirm.message }}</p>
+
+    <div modal-footer>
+      <button class="btn btn-outline" (click)="onCancel()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button class="btn btn-primary" (click)="onConfirm()">
+        <i class="fa-solid fa-check"></i>
+        Confirmar
+      </button>
     </div>
-  </div>
+  </app-modal>
 }

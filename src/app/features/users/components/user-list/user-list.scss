@@ -97,15 +97,6 @@
   min-width: 100px;
 }
 
-.actions-column {
-  .action-buttons {
-    display: flex;
-    gap: var(--spacing-xs);
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-}
-
 // ===== Table Footer =====
 // Usa .table-footer de _components.scss
 

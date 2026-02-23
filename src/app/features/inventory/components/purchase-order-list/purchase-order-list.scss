@@ -77,12 +77,3 @@
     color: var(--info-600);
   }
 }
-
-.actions-column {
-  .action-buttons {
-    display: flex;
-    gap: var(--spacing-xs);
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-}

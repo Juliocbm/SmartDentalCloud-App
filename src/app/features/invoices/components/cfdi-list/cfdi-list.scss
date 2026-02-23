@@ -16,11 +16,6 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.action-buttons {
-  display: flex;
-  gap: var(--spacing-xs);
-}
-
 .btn-xs {
   padding: var(--spacing-xs) var(--spacing-sm) !important;
   font-size: var(--font-size-xs) !important;

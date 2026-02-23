@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AppointmentsService } from '../../services/appointments.service';
@@ -46,6 +46,14 @@ export class AppointmentDetailComponent implements OnInit {
 
   AppointmentStatus = AppointmentStatus;
   statusConfig = AppointmentStatusConfig;
+
+  appointmentSubtitle = computed(() => {
+    const apt = this.appointment();
+    if (!apt) return '';
+    const date = new Date(apt.startAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+    const time = new Date(apt.startAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    return `${date}, ${time}`;
+  });
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');

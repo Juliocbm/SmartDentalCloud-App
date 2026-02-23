@@ -1,6 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService, Notification } from '../../../core/services/notification.service';
+import { ModalComponent } from '../modal/modal';
 
 /**
  * Componente global de notificaciones toast.
@@ -9,7 +10,7 @@ import { NotificationService, Notification } from '../../../core/services/notifi
 @Component({
   selector: 'app-toast',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ModalComponent],
   templateUrl: './toast.html',
   styleUrl: './toast.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

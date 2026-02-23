@@ -92,51 +92,13 @@
   }
 }
 
-// Confirm Dialog
-.confirm-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
-  animation: fadeIn 0.15s ease-out;
-}
-
-.confirm-dialog {
-  background: var(--surface-primary, #fff);
-  border-radius: var(--radius-lg, 12px);
-  padding: 2rem;
-  max-width: 420px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  animation: confirmScaleIn 0.2s ease-out;
-}
-
-.confirm-icon {
-  font-size: 2.5rem;
-  color: var(--warning-500, #f59e0b);
-  margin-bottom: 1rem;
-}
-
+// Confirm Dialog — usa <app-modal> global, solo estilo del mensaje
 .confirm-message {
-  font-size: 0.9375rem;
+  font-size: var(--font-size-base, 0.9375rem);
   line-height: 1.5;
   color: var(--text-primary, #1e293b);
-  margin-bottom: 1.5rem;
   white-space: pre-line;
-}
-
-.confirm-actions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-
-  .btn {
-    min-width: 100px;
-  }
+  margin: 0;
 }
 
 // Animations
@@ -148,21 +110,5 @@
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes confirmScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }
