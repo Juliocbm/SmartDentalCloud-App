@@ -92,7 +92,15 @@
               </div>
               <div class="info-row">
                 <span class="info-label">Servicio:</span>
-                <span class="info-value">{{ t.serviceName || '—' }}</span>
+                <span class="info-value">
+                  @if (t.serviceId) {
+                    <a [routerLink]="['/services', t.serviceId]" class="link-primary">
+                      {{ t.serviceName || '—' }}
+                    </a>
+                  } @else {
+                    {{ t.serviceName || '—' }}
+                  }
+                </span>
               </div>
               <div class="info-row">
                 <span class="info-label">Costo:</span>

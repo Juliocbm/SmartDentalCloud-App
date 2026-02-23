@@ -138,7 +138,7 @@
                 {{ formatDate(prescription.issuedAt) }}
               </td>
               <td>
-                <span class="patient-name">{{ prescription.patientName }}</span>
+                <a [routerLink]="['/patients', prescription.patientId]" class="link-primary">{{ prescription.patientName }}</a>
               </td>
               <td>
                 <span class="diagnosis-text">
@@ -151,7 +151,7 @@
                 </span>
               </td>
               <td>
-                <span class="doctor-name">{{ prescription.prescribedByName }}</span>
+                <a [routerLink]="['/users', prescription.prescribedById]" class="link-primary">{{ prescription.prescribedByName }}</a>
               </td>
               <td class="date-cell">
                 @if (prescription.expiresAt) {

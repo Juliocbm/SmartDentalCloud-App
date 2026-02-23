@@ -125,7 +125,9 @@
                     <i class="fa-solid fa-user"></i>
                   </div>
                   <div class="info-content">
-                    <div class="info-title">{{ invoice.patientName }}</div>
+                    <div class="info-title">
+                      <a [routerLink]="['/patients', invoice.patientId]" class="link-primary">{{ invoice.patientName }}</a>
+                    </div>
                     <div class="info-subtitle">#{{ invoice.id.substring(0, 8) }}</div>
                   </div>
                 </div>

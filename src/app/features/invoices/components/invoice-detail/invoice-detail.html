@@ -57,7 +57,11 @@
             }
             <div class="info-row">
               <span class="info-label">Paciente:</span>
-              <span class="info-value">{{ inv.patientName }}</span>
+              <span class="info-value">
+                <a [routerLink]="['/patients', inv.patientId]" class="link-primary">
+                  {{ inv.patientName }}
+                </a>
+              </span>
             </div>
             <div class="info-row">
               <span class="info-label">Fecha de Emisión:</span>

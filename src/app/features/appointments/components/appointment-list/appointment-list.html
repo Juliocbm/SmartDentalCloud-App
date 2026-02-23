@@ -107,7 +107,9 @@
                       <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="info-content">
-                      <div class="info-title">{{ appointment.patientName }}</div>
+                      <div class="info-title">
+                        <a [routerLink]="['/patients', appointment.patientId]" class="link-primary">{{ appointment.patientName }}</a>
+                      </div>
                       <div class="info-subtitle">Paciente</div>
                     </div>
                   </div>
@@ -118,7 +120,13 @@
                       <i class="fa-solid fa-user-doctor"></i>
                     </div>
                     <div class="info-content">
-                      <div class="info-title">{{ appointment.doctorName || 'Sin asignar' }}</div>
+                      <div class="info-title">
+                        @if (appointment.userId) {
+                          <a [routerLink]="['/users', appointment.userId]" class="link-primary">{{ appointment.doctorName }}</a>
+                        } @else {
+                          {{ appointment.doctorName || 'Sin asignar' }}
+                        }
+                      </div>
                       <div class="info-subtitle">Dentista</div>
                     </div>
                   </div>

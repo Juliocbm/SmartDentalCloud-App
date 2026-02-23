@@ -120,7 +120,7 @@
 
               <!-- Paciente -->
               <td>
-                <span class="patient-name">{{ plan.patientName || 'Sin asignar' }}</span>
+                <a [routerLink]="['/patients', plan.patientId]" class="link-primary">{{ plan.patientName || 'Sin asignar' }}</a>
               </td>
 
               <!-- Estado -->

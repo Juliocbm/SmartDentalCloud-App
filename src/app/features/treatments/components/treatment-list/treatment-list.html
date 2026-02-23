@@ -116,7 +116,9 @@
                     <i class="fa-solid fa-user"></i>
                   </div>
                   <div class="info-content">
-                    <div class="info-title">{{ treatment.patientName || 'Sin nombre' }}</div>
+                    <div class="info-title">
+                      <a [routerLink]="['/patients', treatment.patientId]" class="link-primary">{{ treatment.patientName || 'Sin nombre' }}</a>
+                    </div>
                   </div>
                 </div>
               </td>
@@ -124,7 +126,9 @@
               <!-- Servicio -->
               <td>
                 <div class="info-content">
-                  <div class="info-title">{{ treatment.serviceName || 'Sin servicio' }}</div>
+                  <div class="info-title">
+                    <a [routerLink]="['/services', treatment.serviceId]" class="link-primary">{{ treatment.serviceName || 'Sin servicio' }}</a>
+                  </div>
                   @if (treatment.serviceCost) {
                     <div class="info-subtitle">${{ treatment.serviceCost | number:'1.2-2' }}</div>
                   }

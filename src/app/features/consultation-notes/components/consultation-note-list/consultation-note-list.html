@@ -88,14 +88,20 @@
                     <i class="fa-solid fa-user"></i>
                   </div>
                   <div class="info-content">
-                    <div class="info-title">{{ apt.patientName }}</div>
+                    <div class="info-title">
+                      <a [routerLink]="['/patients', apt.patientId]" class="link-primary">{{ apt.patientName }}</a>
+                    </div>
                   </div>
                 </div>
               </td>
 
               <!-- Doctor -->
               <td>
-                <span class="doctor-name">{{ apt.doctorName || '—' }}</span>
+                @if (apt.userId) {
+                  <a [routerLink]="['/users', apt.userId]" class="link-primary">{{ apt.doctorName }}</a>
+                } @else {
+                  {{ apt.doctorName || '—' }}
+                }
               </td>
 
               <!-- Fecha -->

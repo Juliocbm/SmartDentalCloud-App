@@ -65,7 +65,11 @@
           <div class="info-item">
             <i class="fa-solid fa-user"></i>
             <span class="label">Paciente:</span>
-            <span class="value">{{ p.patientName || 'Sin asignar' }}</span>
+            <span class="value">
+              <a [routerLink]="['/patients', p.patientId]" class="link-primary">
+                {{ p.patientName || 'Sin asignar' }}
+              </a>
+            </span>
           </div>
           <div class="info-item">
             <i class="fa-solid fa-dollar-sign"></i>

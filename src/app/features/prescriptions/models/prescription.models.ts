@@ -8,6 +8,7 @@ export interface Prescription {
   patientId: string;
   patientName: string;
   appointmentId?: string;
+  prescribedById: string;
   prescribedByName: string;
   issuedAt: Date;
   expiresAt?: Date;

@@ -123,7 +123,7 @@
               <td class="supplier-cell">
                 <div class="supplier-info">
                   <i class="fa-solid fa-truck"></i>
-                  <strong>{{ order.supplierName }}</strong>
+                  <a [routerLink]="['/inventory/suppliers', order.supplierId]" class="link-primary"><strong>{{ order.supplierName }}</strong></a>
                 </div>
               </td>
 

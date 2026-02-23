@@ -57,11 +57,19 @@
           <div class="info-card">
             <div class="info-row">
               <span class="info-label">Paciente:</span>
-              <span class="info-value">{{ rx.patientName }}</span>
+              <span class="info-value">
+                <a [routerLink]="['/patients', rx.patientId]" class="link-primary">
+                  {{ rx.patientName }}
+                </a>
+              </span>
             </div>
             <div class="info-row">
               <span class="info-label">Prescrito por:</span>
-              <span class="info-value">{{ rx.prescribedByName }}</span>
+              <span class="info-value">
+                <a [routerLink]="['/users', rx.prescribedById]" class="link-primary">
+                  {{ rx.prescribedByName }}
+                </a>
+              </span>
             </div>
             <div class="info-row">
               <span class="info-label">Fecha de Emisión:</span>
