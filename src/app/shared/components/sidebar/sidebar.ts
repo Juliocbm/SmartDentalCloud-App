@@ -4,6 +4,8 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AlertsCountService } from '../../../core/services/alerts-count.service';
 import { SidebarStateService } from '../../../core/services/sidebar-state.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { UserProfileCacheService } from '../../../core/services/user-profile-cache.service';
 import { MenuItem } from './sidebar.models';
 
 /**
@@ -19,7 +21,17 @@ import { MenuItem } from './sidebar.models';
 export class SidebarComponent {
   private alertsService = inject(AlertsCountService);
   private sidebarState = inject(SidebarStateService);
+  private authService = inject(AuthService);
+  private profileCache = inject(UserProfileCacheService);
   private router = inject(Router);
+
+  currentUser = this.authService.currentUser;
+  sidebarUserName = computed(() => this.currentUser()?.name || 'Usuario');
+  sidebarUserRole = computed(() => {
+    const roles = this.currentUser()?.roles;
+    return roles && roles.length > 0 ? roles[0] : 'Usuario';
+  });
+  profilePictureUrl = this.profileCache.profilePictureUrl;
 
   // Estado del sidebar
   collapsed = this.sidebarState.collapsed;

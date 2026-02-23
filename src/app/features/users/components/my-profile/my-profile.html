@@ -1,34 +1,36 @@
-<div class="profile-container">
-  <div class="profile-header">
-    <div class="profile-avatar">
-      <i class="fa-solid fa-user-circle"></i>
-    </div>
-    <div class="profile-identity">
-      <h1>{{ currentUser?.name }}</h1>
-      <p class="profile-email">{{ currentUser?.email }}</p>
-      @if (currentUser?.roles; as roles) {
-        @if (roles.length > 0) {
-          <div class="profile-roles">
-            @for (role of roles; track role) {
-              <span class="badge badge-primary">{{ role }}</span>
-            }
-          </div>
-        }
+<div class="detail-container">
+  <app-page-header
+    [title]="'Mi Perfil'"
+    [subtitle]="currentUser?.email || ''"
+    [icon]="'fa-user-circle'"
+    [breadcrumbs]="breadcrumbs">
+    <div actions>
+      @if (editing()) {
+        <button class="btn btn-outline" (click)="toggleEdit()" [disabled]="saving()">
+          <i class="fa-solid fa-times"></i>
+          Cancelar
+        </button>
+        <button class="btn btn-outline btn-success" [disabled]="saving()" (click)="saveProfile()">
+          @if (saving()) {
+            <span class="btn-spinner"></span>
+            Guardando...
+          } @else {
+            <i class="fa-solid fa-floppy-disk"></i>
+            Guardar Cambios
+          }
+        </button>
+      } @else {
+        <a routerLink="/change-password" class="btn btn-outline">
+          <i class="fa-solid fa-key"></i>
+          Cambiar Contraseña
+        </a>
+        <button class="btn btn-outline" (click)="toggleEdit()">
+          <i class="fa-solid fa-pen"></i>
+          Editar Perfil
+        </button>
       }
     </div>
-    <div class="profile-actions">
-      <button class="btn btn-outline btn-sm" (click)="toggleEdit()">
-        @if (editing()) {
-          <i class="fa-solid fa-xmark"></i> Cancelar
-        } @else {
-          <i class="fa-solid fa-pen"></i> Editar Perfil
-        }
-      </button>
-      <a routerLink="/change-password" class="btn btn-outline btn-sm">
-        <i class="fa-solid fa-key"></i> Cambiar Contraseña
-      </a>
-    </div>
-  </div>
+  </app-page-header>
 
   @if (loading()) {
     <div class="loading-container">
@@ -37,10 +39,29 @@
     </div>
   } @else if (editing()) {
     <!-- Edit Mode -->
-    <div class="profile-form">
-      <div class="form-section">
+    <div class="detail-body">
+      <div class="info-section">
+        <h3><i class="fa-solid fa-camera"></i> Foto de Perfil</h3>
+        <div class="profile-picture-edit">
+          <div class="profile-avatar profile-avatar--preview">
+            @if (profilePictureUrl()) {
+              <img [src]="profilePictureUrl()" alt="Vista previa" />
+            } @else {
+              <i class="fa-solid fa-user"></i>
+            }
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">URL de la imagen</label>
+            <input type="url" class="form-control" placeholder="https://ejemplo.com/foto.jpg"
+              [ngModel]="profilePictureUrl()" (ngModelChange)="profilePictureUrl.set($event)" />
+            <span class="form-hint">Ingresa la URL de una imagen para tu foto de perfil</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
         <h3><i class="fa-solid fa-user"></i> Información Personal</h3>
-        <div class="form-grid">
+        <div class="form-row">
           <div class="form-group">
             <label class="form-label">Teléfono</label>
             <input type="tel" class="form-control" placeholder="Número de teléfono"
@@ -51,17 +72,17 @@
             <input type="email" class="form-control" placeholder="Email alternativo"
               [ngModel]="alternateEmail()" (ngModelChange)="alternateEmail.set($event)" />
           </div>
-          <div class="form-group full-width">
-            <label class="form-label">Dirección</label>
-            <input type="text" class="form-control" placeholder="Dirección"
-              [ngModel]="address()" (ngModelChange)="address.set($event)" />
-          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Dirección</label>
+          <input type="text" class="form-control" placeholder="Dirección"
+            [ngModel]="address()" (ngModelChange)="address.set($event)" />
         </div>
       </div>
 
-      <div class="form-section">
+      <div class="info-section">
         <h3><i class="fa-solid fa-stethoscope"></i> Información Profesional</h3>
-        <div class="form-grid">
+        <div class="form-row">
           <div class="form-group">
             <label class="form-label">Especialidad</label>
             <input type="text" class="form-control" placeholder="Ej: Ortodoncia"
@@ -72,6 +93,8 @@
             <input type="text" class="form-control" placeholder="Número de cédula"
               [ngModel]="professionalLicense()" (ngModelChange)="professionalLicense.set($event)" />
           </div>
+        </div>
+        <div class="form-row">
           <div class="form-group">
             <label class="form-label">Años de Experiencia</label>
             <input type="number" class="form-control" placeholder="0" min="0"
@@ -85,9 +108,9 @@
         </div>
       </div>
 
-      <div class="form-section">
+      <div class="info-section">
         <h3><i class="fa-solid fa-phone-volume"></i> Contacto de Emergencia</h3>
-        <div class="form-grid">
+        <div class="form-row">
           <div class="form-group">
             <label class="form-label">Nombre</label>
             <input type="text" class="form-control" placeholder="Nombre del contacto"
@@ -101,89 +124,122 @@
         </div>
       </div>
 
-      <div class="form-section">
+      <div class="info-section">
         <h3><i class="fa-solid fa-quote-left"></i> Biografía</h3>
-        <div class="form-group full-width">
+        <div class="form-group">
           <textarea class="form-control" rows="4" placeholder="Breve descripción profesional..."
             [ngModel]="bio()" (ngModelChange)="bio.set($event)"></textarea>
         </div>
       </div>
-
-      <div class="form-actions">
-        <button class="btn btn-primary" [disabled]="saving()" (click)="saveProfile()">
-          @if (saving()) {
-            <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-          } @else {
-            <i class="fa-solid fa-save"></i> Guardar Cambios
-          }
-        </button>
-      </div>
     </div>
   } @else {
     <!-- View Mode -->
-    <div class="profile-sections">
-      <div class="profile-card">
-        <h3 class="card-title"><i class="fa-solid fa-user"></i> Información Personal</h3>
-        <div class="card-body">
-          <div class="info-row">
-            <span class="info-label">Teléfono</span>
-            <span class="info-value">{{ profile()?.phoneNumber || '—' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Email Alternativo</span>
-            <span class="info-value">{{ profile()?.alternateEmail || '—' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Dirección</span>
-            <span class="info-value">{{ profile()?.address || '—' }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="profile-card">
-        <h3 class="card-title"><i class="fa-solid fa-stethoscope"></i> Información Profesional</h3>
-        <div class="card-body">
-          <div class="info-row">
-            <span class="info-label">Especialidad</span>
-            <span class="info-value">{{ profile()?.specialty || '—' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Cédula Profesional</span>
-            <span class="info-value mono">{{ profile()?.professionalLicense || '—' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Años de Experiencia</span>
-            <span class="info-value">{{ profile()?.yearsOfExperience || '—' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Formación Académica</span>
-            <span class="info-value">{{ profile()?.education || '—' }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="profile-card">
-        <h3 class="card-title"><i class="fa-solid fa-phone-volume"></i> Contacto de Emergencia</h3>
-        <div class="card-body">
-          <div class="info-row">
-            <span class="info-label">Nombre</span>
-            <span class="info-value">{{ profile()?.emergencyContactName || '—' }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Teléfono</span>
-            <span class="info-value">{{ profile()?.emergencyContactPhone || '—' }}</span>
-          </div>
-        </div>
-      </div>
-
-      @if (profile()?.bio) {
-        <div class="profile-card full-width">
-          <h3 class="card-title"><i class="fa-solid fa-quote-left"></i> Biografía</h3>
-          <div class="card-body">
-            <p class="bio-text">{{ profile()?.bio }}</p>
+    <div class="detail-body">
+      @if (profile()?.profilePictureUrl) {
+        <div class="info-section profile-picture-section">
+          <h3><i class="fa-solid fa-camera"></i> Foto de Perfil</h3>
+          <div class="profile-picture-view">
+            <div class="profile-avatar profile-avatar--large">
+              <img [src]="profile()!.profilePictureUrl" alt="Foto de perfil" />
+            </div>
+            <div class="profile-picture-name">
+              <span class="profile-picture-label">{{ currentUser?.name }}</span>
+              @if (currentUser?.roles; as roles) {
+                <div class="profile-roles">
+                  @for (role of roles; track role) {
+                    <span class="badge badge-primary">{{ role }}</span>
+                  }
+                </div>
+              }
+            </div>
           </div>
         </div>
       }
+
+      <div class="info-two-col">
+        <div class="info-section">
+          <h3><i class="fa-solid fa-user"></i> Información Personal</h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ currentUser?.name || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span class="info-value">{{ currentUser?.email || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Teléfono:</span>
+              <span class="info-value">{{ profile()?.phoneNumber || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email Alternativo:</span>
+              <span class="info-value">{{ profile()?.alternateEmail || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Dirección:</span>
+              <span class="info-value">{{ profile()?.address || '—' }}</span>
+            </div>
+            @if (currentUser?.roles; as roles) {
+              <div class="info-row">
+                <span class="info-label">Roles:</span>
+                <span class="info-value">
+                  @for (role of roles; track role) {
+                    <span class="badge badge-primary">{{ role }}</span>
+                  }
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3><i class="fa-solid fa-stethoscope"></i> Información Profesional</h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Especialidad:</span>
+              <span class="info-value">{{ profile()?.specialty || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Cédula Profesional:</span>
+              <span class="info-value">{{ profile()?.professionalLicense || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Años de Experiencia:</span>
+              <span class="info-value">{{ profile()?.yearsOfExperience || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Formación Académica:</span>
+              <span class="info-value">{{ profile()?.education || '—' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-two-col">
+        <div class="info-section">
+          <h3><i class="fa-solid fa-phone-volume"></i> Contacto de Emergencia</h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ profile()?.emergencyContactName || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Teléfono:</span>
+              <span class="info-value">{{ profile()?.emergencyContactPhone || '—' }}</span>
+            </div>
+          </div>
+        </div>
+
+        @if (profile()?.bio) {
+          <div class="info-section">
+            <h3><i class="fa-solid fa-quote-left"></i> Biografía</h3>
+            <div class="info-card">
+              <p class="bio-text">{{ profile()?.bio }}</p>
+            </div>
+          </div>
+        }
+      </div>
     </div>
   }
 </div>

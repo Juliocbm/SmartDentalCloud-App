@@ -120,14 +120,18 @@
 
   <!-- Footer -->
   <div class="sidebar__footer">
-    <div class="sidebar__user" [title]="collapsed() ? 'Admin - Administrador' : ''">
+    <div class="sidebar__user" [title]="collapsed() ? sidebarUserName() + ' - ' + sidebarUserRole() : ''">
       <div class="sidebar__user-avatar">
-        <i class="fa-solid fa-user"></i>
+        @if (profilePictureUrl()) {
+          <img [src]="profilePictureUrl()" alt="Avatar" />
+        } @else {
+          <i class="fa-solid fa-user"></i>
+        }
       </div>
       @if (!collapsed()) {
         <div class="sidebar__user-info">
-          <div class="sidebar__user-name">Admin</div>
-          <div class="sidebar__user-role">Administrador</div>
+          <div class="sidebar__user-name">{{ sidebarUserName() }}</div>
+          <div class="sidebar__user-role">{{ sidebarUserRole() }}</div>
         </div>
       }
     </div>

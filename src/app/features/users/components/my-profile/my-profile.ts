@@ -7,11 +7,13 @@ import { UsersService } from '../../services/users.service';
 import { UserProfile } from '../../models/user.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { UserProfileCacheService } from '../../../../core/services/user-profile-cache.service';
 
 @Component({
   selector: 'app-my-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
   templateUrl: './my-profile.html',
   styleUrl: './my-profile.scss'
 })
@@ -20,6 +22,12 @@ export class MyProfileComponent implements OnInit {
   private usersService = inject(UsersService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private profileCache = inject(UserProfileCacheService);
+
+  breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-house' },
+    { label: 'Mi Perfil' }
+  ];
 
   loading = signal(false);
   saving = signal(false);
@@ -36,6 +44,7 @@ export class MyProfileComponent implements OnInit {
   education = signal('');
   emergencyContactName = signal('');
   emergencyContactPhone = signal('');
+  profilePictureUrl = signal('');
   bio = signal('');
 
   get currentUser() {
@@ -74,6 +83,7 @@ export class MyProfileComponent implements OnInit {
     this.education.set(p.education || '');
     this.emergencyContactName.set(p.emergencyContactName || '');
     this.emergencyContactPhone.set(p.emergencyContactPhone || '');
+    this.profilePictureUrl.set(p.profilePictureUrl || '');
     this.bio.set(p.bio || '');
   }
 
@@ -99,6 +109,7 @@ export class MyProfileComponent implements OnInit {
       education: this.education().trim() || undefined,
       emergencyContactName: this.emergencyContactName().trim() || undefined,
       emergencyContactPhone: this.emergencyContactPhone().trim() || undefined,
+      profilePictureUrl: this.profilePictureUrl().trim() || undefined,
       bio: this.bio().trim() || undefined
     };
 
@@ -107,6 +118,7 @@ export class MyProfileComponent implements OnInit {
         this.profile.set(updated);
         this.editing.set(false);
         this.saving.set(false);
+        this.profileCache.refresh();
         this.notifications.success('Perfil actualizado correctamente');
       },
       error: () => {

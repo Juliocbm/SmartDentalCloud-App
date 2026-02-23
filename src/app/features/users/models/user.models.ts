@@ -37,6 +37,7 @@ export interface UserProfile {
   education?: string;
   emergencyContactName?: string;
   emergencyContactPhone?: string;
+  profilePictureUrl?: string;
   bio?: string;
 }
 

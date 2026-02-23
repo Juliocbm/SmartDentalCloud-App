@@ -1,156 +1,96 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { LoggingService } from '../../core/services/logging.service';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
 import { DashboardService } from './services/dashboard.service';
-import {
-  DashboardStats,
-  UpcomingAppointment,
-  QuickStat,
-  LowStockProduct,
-  MonthlyRevenueData
-} from './models/dashboard.models';
+import { DashboardData, QuickAction } from './models/dashboard.models';
+import { LoggingService } from '../../core/services/logging.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PageHeaderComponent],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss']
+  styleUrl: './dashboard.scss'
 })
 export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
-  private router = inject(Router);
   private logger = inject(LoggingService);
 
-  stats = signal<DashboardStats | null>(null);
-  kpis = signal<QuickStat[]>([]);
-  upcomingAppointments = signal<UpcomingAppointment[]>([]);
-  lowStockProducts = signal<LowStockProduct[]>([]);
-  revenueData = signal<MonthlyRevenueData | null>(null);
   loading = signal(true);
+  data = signal<DashboardData | null>(null);
 
-  quickActions = [
-    { icon: 'fa-calendar-plus', title: 'Nueva Cita', subtitle: 'Agendar paciente', route: '/appointments/new' },
-    { icon: 'fa-user-plus', title: 'Nuevo Paciente', subtitle: 'Registrar paciente', route: '/patients/new' },
-    { icon: 'fa-file-invoice', title: 'Nueva Factura', subtitle: 'Generar factura', route: '/invoices/new' },
-    { icon: 'fa-tooth', title: 'Nuevo Tratamiento', subtitle: 'Iniciar tratamiento', route: '/treatments/new' },
-    { icon: 'fa-box', title: 'Inventario', subtitle: 'Gestionar productos', route: '/inventory' },
-    { icon: 'fa-chart-line', title: 'Reportes', subtitle: 'Ver estadísticas', route: '/reports' }
+  quickActions: QuickAction[] = [
+    { label: 'Nueva Cita', description: 'Agendar paciente', icon: 'fa-calendar-plus', route: '/appointments/new', color: 'primary' },
+    { label: 'Nuevo Paciente', description: 'Registrar paciente', icon: 'fa-user-plus', route: '/patients/new', color: 'success' },
+    { label: 'Nueva Factura', description: 'Generar factura', icon: 'fa-file-invoice', route: '/invoices/new', color: 'info' },
+    { label: 'Nuevo Tratamiento', description: 'Iniciar tratamiento', icon: 'fa-tooth', route: '/treatments/new', color: 'primary' },
+    { label: 'Calendario', description: 'Ver agenda de citas', icon: 'fa-calendar-days', route: '/appointments', color: 'warning' },
+    { label: 'Reportes', description: 'Ver estadísticas', icon: 'fa-chart-line', route: '/reports', color: 'success' }
   ];
 
+  todayAppointmentsCount = computed(() => this.data()?.todayAppointments.length ?? 0);
+  monthlyIncome = computed(() => this.data()?.income.totalIncome ?? 0);
+  pendingBalance = computed(() => this.data()?.income.totalPending ?? 0);
+  activeTreatmentsCount = computed(() =>
+    this.data()?.treatments.filter(t => t.status === 'InProgress').length ?? 0
+  );
+  pendingApprovalCount = computed(() =>
+    this.data()?.treatmentPlans.filter(p => p.status === 'PendingApproval').length ?? 0
+  );
+  lowStockCount = computed(() => this.data()?.inventory.lowStockProducts ?? 0);
+
+  upcomingAppointments = computed(() => this.data()?.upcomingAppointments ?? []);
+  pendingPlans = computed(() =>
+    this.data()?.treatmentPlans
+      .filter(p => p.status === 'PendingApproval')
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 8) ?? []
+  );
+  lowStockItems = computed(() => this.data()?.inventory.lowStockItems ?? []);
+
   ngOnInit(): void {
-    this.loadDashboardData();
+    this.loadData();
   }
 
-  private loadDashboardData(): void {
+  refreshData(): void {
+    this.loadData();
+  }
+
+  private loadData(): void {
     this.loading.set(true);
-
-    this.dashboardService.getDashboardStats().subscribe({
-      next: (stats) => {
-        this.stats.set(stats);
-        this.buildKpis(stats);
+    this.dashboardService.loadDashboardData().subscribe({
+      next: (data) => {
+        this.data.set(data);
         this.loading.set(false);
       },
-      error: (error) => {
-        this.logger.error('Error loading dashboard stats:', error);
+      error: (err) => {
+        this.logger.error('Error loading dashboard:', err);
         this.loading.set(false);
       }
     });
-
-    this.dashboardService.getUpcomingAppointments(5).subscribe({
-      next: (appointments) => this.upcomingAppointments.set(appointments)
-    });
-
-    this.dashboardService.getLowStockProducts(5).subscribe({
-      next: (products) => this.lowStockProducts.set(products)
-    });
-
-    this.dashboardService.getMonthlyRevenueData(6).subscribe({
-      next: (data) => this.revenueData.set(data)
-    });
   }
 
-  private buildKpis(stats: DashboardStats): void {
-    this.kpis.set([
-      {
-        label: 'Citas de Hoy',
-        value: stats.todayAppointments,
-        icon: 'fa-calendar-check',
-        color: 'primary',
-        trend: 12,
-        trendDirection: 'up',
-        route: '/appointments'
-      },
-      {
-        label: 'Nuevos Pacientes',
-        value: stats.newPatientsThisMonth,
-        icon: 'fa-user-plus',
-        color: 'success',
-        trend: 8,
-        trendDirection: 'up',
-        route: '/patients'
-      },
-      {
-        label: 'Ingresos del Mes',
-        value: this.formatCurrency(stats.monthlyRevenue),
-        icon: 'fa-dollar-sign',
-        color: 'info',
-        trend: 15,
-        trendDirection: 'up',
-        route: '/invoices'
-      },
-      {
-        label: 'Tratamientos Activos',
-        value: stats.activeTreatmentPlans,
-        icon: 'fa-tooth',
-        color: 'warning',
-        route: '/treatments'
-      },
-      {
-        label: 'Productos con Stock Bajo',
-        value: stats.lowStockProducts,
-        icon: 'fa-exclamation-triangle',
-        color: 'error',
-        trend: stats.lowStockProducts > 0 ? -5 : 0,
-        trendDirection: stats.lowStockProducts > 0 ? 'down' : 'neutral',
-        route: '/inventory/alerts'
-      },
-      {
-        label: 'Citas Pendientes',
-        value: stats.pendingAppointments,
-        icon: 'fa-clock',
-        color: 'neutral',
-        route: '/appointments'
-      }
-    ]);
-  }
-
-  getStatusClass(status: string): string {
-    const statusMap: { [key: string]: string } = {
+  getAppointmentStatusClass(status: string): string {
+    const map: Record<string, string> = {
       'Scheduled': 'badge-primary',
-      'Confirmed': 'badge-success',
+      'Confirmed': 'badge-info',
       'Completed': 'badge-success',
       'Cancelled': 'badge-error',
-      'NoShow': 'badge-warning',
-      'Pending': 'badge-warning'
+      'NoShow': 'badge-warning'
     };
-    return statusMap[status] || 'badge-neutral';
+    return map[status] || 'badge-neutral';
   }
 
-  formatTime(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  }
-
-  formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short'
-    }).format(date);
+  getAppointmentStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+      'Scheduled': 'Programada',
+      'Confirmed': 'Confirmada',
+      'Completed': 'Completada',
+      'Cancelled': 'Cancelada',
+      'NoShow': 'No Asistió'
+    };
+    return map[status] || status;
   }
 
   formatCurrency(value: number): string {
@@ -161,11 +101,14 @@ export class DashboardComponent implements OnInit {
     }).format(value);
   }
 
-  onQuickAction(action: { icon: string; title: string; subtitle: string; route: string }): void {
-    this.router.navigate([action.route]);
-  }
-
-  refreshData(): void {
-    this.loadDashboardData();
+  formatDateTime(dateStr: string): string {
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat('es-MX', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
   }
 }

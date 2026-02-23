@@ -1,200 +1,238 @@
-<div class="dashboard-container">
-  <!-- Header -->
-  <div class="dashboard-header">
-    <div class="header-content">
-      <div class="header-left">
-        <h1 class="page-title">
-          <i class="fa-solid fa-gauge"></i>
-          Dashboard
-        </h1>
-        <p class="page-subtitle">Bienvenido a SmartDental Cloud</p>
-      </div>
-      <div class="header-actions">
-        <button class="btn btn-outline" (click)="refreshData()" [disabled]="loading()">
-          <i class="fa-solid fa-sync-alt" [class.fa-spin]="loading()"></i>
-          Actualizar
-        </button>
-        <button class="btn btn-primary" (click)="onQuickAction(quickActions[0])">
-          <i class="fa-solid fa-plus"></i>
-          Nueva Cita
-        </button>
-      </div>
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Dashboard'"
+    [subtitle]="'Panel de control general de la clínica'"
+    [icon]="'fa-gauge'">
+    <div actions>
+      <button class="btn btn-outline" (click)="refreshData()" [disabled]="loading()">
+        <i class="fa-solid fa-sync-alt" [class.fa-spin]="loading()"></i>
+        Actualizar
+      </button>
+      <a routerLink="/appointments/new" class="btn btn-outline btn-success">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Cita
+      </a>
     </div>
-  </div>
+  </app-page-header>
 
   @if (loading()) {
-    <div class="content-section">
-      <div class="dashboard-loading">
-        <div class="spinner spinner-lg"></div>
-        <p class="text-secondary">Cargando dashboard...</p>
-      </div>
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando dashboard...</p>
     </div>
   } @else {
-    <!-- KPI Cards -->
-    <div class="kpi-section">
-      <div class="kpi-grid">
-        @for (kpi of kpis(); track kpi.label) {
-          <a class="kpi-card" [routerLink]="kpi.route || null">
-            <div class="kpi-header">
-              <div class="kpi-icon-wrapper" [style.background]="'var(--' + kpi.color + '-50)'">
-                <i class="fa-solid" [ngClass]="kpi.icon" [style.color]="'var(--' + kpi.color + '-600)'"></i>
-              </div>
-              @if (kpi.trend !== undefined) {
-                <div class="kpi-trend" 
-                     [ngClass]="{
-                       'positive': kpi.trendDirection === 'up',
-                       'negative': kpi.trendDirection === 'down',
-                       'neutral': kpi.trendDirection === 'neutral'
-                     }">
-                  @if (kpi.trendDirection === 'up') {
-                    <i class="fa-solid fa-arrow-up"></i>
-                  } @else if (kpi.trendDirection === 'down') {
-                    <i class="fa-solid fa-arrow-down"></i>
-                  } @else {
-                    <i class="fa-solid fa-minus"></i>
-                  }
-                  <span>{{ kpi.trend }}%</span>
-                </div>
-              }
+    <!-- Alert Banner: Stock Bajo -->
+    @if (lowStockCount() > 0) {
+      <div class="alert-banner alert-banner--warning">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        <span>Hay <strong>{{ lowStockCount() }}</strong> productos con stock bajo que requieren atención.</span>
+        <a routerLink="/inventory/alerts" class="btn btn-sm btn-warning">
+          Ver Alertas
+        </a>
+      </div>
+    }
+
+    <!-- KPI Metrics -->
+    <div class="metrics-grid">
+      <a class="metric-card primary" routerLink="/appointments">
+        <div class="metric-icon">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">Citas de Hoy</span>
+          <span class="metric-value">{{ todayAppointmentsCount() }}</span>
+        </div>
+        <i class="fa-solid fa-chevron-right metric-arrow"></i>
+      </a>
+
+      <a class="metric-card success" routerLink="/reports/income">
+        <div class="metric-icon">
+          <i class="fa-solid fa-dollar-sign"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">Ingresos del Mes</span>
+          <span class="metric-value">{{ formatCurrency(monthlyIncome()) }}</span>
+        </div>
+        <i class="fa-solid fa-chevron-right metric-arrow"></i>
+      </a>
+
+      <a class="metric-card info" routerLink="/treatments">
+        <div class="metric-icon">
+          <i class="fa-solid fa-tooth"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">Tratamientos Activos</span>
+          <span class="metric-value">{{ activeTreatmentsCount() }}</span>
+        </div>
+        <i class="fa-solid fa-chevron-right metric-arrow"></i>
+      </a>
+
+      <a class="metric-card warning" routerLink="/treatment-plans">
+        <div class="metric-icon">
+          <i class="fa-solid fa-clipboard-list"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">Planes por Aprobar</span>
+          <span class="metric-value">{{ pendingApprovalCount() }}</span>
+        </div>
+        <i class="fa-solid fa-chevron-right metric-arrow"></i>
+      </a>
+
+      <a class="metric-card critical" routerLink="/inventory/alerts">
+        <div class="metric-icon">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">Productos Stock Bajo</span>
+          <span class="metric-value">{{ lowStockCount() }}</span>
+        </div>
+        <i class="fa-solid fa-chevron-right metric-arrow"></i>
+      </a>
+
+      <a class="metric-card warning" routerLink="/reports/accounts-receivable">
+        <div class="metric-icon">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">Pendiente de Cobro</span>
+          <span class="metric-value">{{ formatCurrency(pendingBalance()) }}</span>
+        </div>
+        <i class="fa-solid fa-chevron-right metric-arrow"></i>
+      </a>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="section-card quick-actions-wrapper">
+      <h2 class="section-title">
+        <i class="fa-solid fa-bolt"></i>
+        Acciones Rápidas
+      </h2>
+      <div class="quick-actions-grid cols-3">
+        @for (action of quickActions; track action.route) {
+          <a [routerLink]="action.route" class="quick-action-card">
+            <div class="action-icon" [ngClass]="action.color">
+              <i class="fa-solid" [ngClass]="action.icon"></i>
             </div>
-            <div class="kpi-content">
-              <div class="kpi-value">{{ kpi.value }}</div>
-              <div class="kpi-label">{{ kpi.label }}</div>
+            <div class="action-content">
+              <h3 class="action-title">{{ action.label }}</h3>
+              <p class="action-description">{{ action.description }}</p>
             </div>
+            <i class="fa-solid fa-chevron-right action-arrow"></i>
           </a>
         }
       </div>
     </div>
 
-    <!-- Próximas Citas -->
-    <div class="content-section">
-      <div class="content-container">
+    <!-- Content Grid: Citas + Planes -->
+    <div class="analytics-grid">
+      <!-- Próximas Citas -->
+      <div class="section-card">
         <div class="section-header">
-          <h3 class="section-title">
+          <h2 class="section-title">
             <i class="fa-solid fa-calendar-days"></i>
             Próximas Citas
-          </h3>
+          </h2>
+          @if (upcomingAppointments().length > 0) {
+            <span class="section-badge">{{ upcomingAppointments().length }}</span>
+          }
         </div>
-        
+
         @if (upcomingAppointments().length === 0) {
-          <div class="alert alert-info">
-            <i class="fa-solid fa-info-circle"></i>
-            <span>No hay citas programadas próximamente</span>
+          <div class="empty-state">
+            <i class="fa-solid fa-calendar-check"></i>
+            <p>No hay citas programadas próximamente</p>
           </div>
         } @else {
-          <div class="table-container">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Paciente</th>
-                  <th>Dentista</th>
-                  <th>Fecha</th>
-                  <th>Hora</th>
-                  <th>Motivo</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (appointment of upcomingAppointments(); track appointment.id) {
-                  <tr>
-                    <td>
-                      <div class="patient-cell">
-                        <div class="avatar-sm">
-                          {{ appointment.patientName.charAt(0) }}
-                        </div>
-                        <strong>{{ appointment.patientName }}</strong>
-                      </div>
-                    </td>
-                    <td>{{ appointment.doctorName || 'Sin asignar' }}</td>
-                    <td>{{ formatDate(appointment.startAt) }}</td>
-                    <td>{{ formatTime(appointment.startAt) }}</td>
-                    <td>{{ appointment.reason }}</td>
-                    <td>
-                      <span class="badge" [ngClass]="getStatusClass(appointment.status)">
-                        {{ appointment.status }}
-                      </span>
-                    </td>
-                    <td>
-                      <button class="btn btn-sm btn-outline">
-                        <i class="fa-solid fa-eye"></i>
-                        Ver
-                      </button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+          <div class="data-list">
+            @for (apt of upcomingAppointments(); track apt.id) {
+              <a [routerLink]="['/appointments', apt.id]" class="data-list-item compact">
+                <div class="appointment-avatar">
+                  {{ apt.patientName.charAt(0) || '?' }}
+                </div>
+                <div class="item-info">
+                  <span class="item-title">{{ apt.patientName }}</span>
+                  <span class="item-detail">
+                    {{ formatDateTime(apt.startAt) }} · {{ apt.reason || 'Consulta' }}
+                  </span>
+                </div>
+                <span class="badge" [ngClass]="getAppointmentStatusClass(apt.status)">
+                  {{ getAppointmentStatusLabel(apt.status) }}
+                </span>
+                <i class="fa-solid fa-chevron-right item-arrow"></i>
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Planes Pendientes de Aprobación -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-clipboard-list"></i>
+            Planes por Aprobar
+          </h2>
+          @if (pendingPlans().length > 0) {
+            <span class="section-badge">{{ pendingPlans().length }}</span>
+          }
+        </div>
+
+        @if (pendingPlans().length === 0) {
+          <div class="empty-state success">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>No hay planes pendientes de aprobación</p>
+          </div>
+        } @else {
+          <div class="data-list">
+            @for (plan of pendingPlans(); track plan.id) {
+              <a [routerLink]="['/treatment-plans', plan.id]" class="data-list-item compact">
+                <div class="plan-icon">
+                  <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+                <div class="item-info">
+                  <span class="item-title">{{ plan.title }}</span>
+                  <span class="item-detail">{{ plan.patientName }} · {{ plan.totalItems }} items</span>
+                </div>
+                <span class="plan-cost">{{ formatCurrency(plan.totalEstimatedCost) }}</span>
+                <i class="fa-solid fa-chevron-right item-arrow"></i>
+              </a>
+            }
           </div>
         }
       </div>
     </div>
 
-    <!-- Productos con Stock Bajo -->
-    @if (lowStockProducts().length > 0) {
-      <div class="content-section">
-        <div class="content-container">
-          <div class="section-header">
-            <h3 class="section-title">
-              <i class="fa-solid fa-exclamation-triangle"></i>
-              Productos con Stock Bajo
-            </h3>
-          </div>
-          
-          <div class="table-container">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>Categoría</th>
-                  <th>Stock Actual</th>
-                  <th>Stock Mínimo</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (product of lowStockProducts(); track product.id) {
-                  <tr>
-                    <td><strong>{{ product.name }}</strong></td>
-                    <td>{{ product.category }}</td>
-                    <td>{{ product.currentStock }}</td>
-                    <td>{{ product.minStock }}</td>
-                    <td>
-                      <span class="badge badge-warning">
-                        <i class="fa-solid fa-exclamation-circle"></i>
-                        Bajo stock
-                      </span>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+    <!-- Alertas de Inventario -->
+    @if (lowStockItems().length > 0) {
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Alertas de Inventario
+          </h2>
+          <span class="section-badge">{{ lowStockItems().length }}</span>
+        </div>
+        <div class="data-list">
+          @for (item of lowStockItems().slice(0, 5); track item.productId) {
+            <div class="data-list-item compact">
+              <div class="urgency-indicator" [ngClass]="item.currentStock === 0 ? 'critical' : 'warning'">
+                <i class="fa-solid" [ngClass]="item.currentStock === 0 ? 'fa-xmark' : 'fa-exclamation'"></i>
+              </div>
+              <div class="item-info">
+                <span class="item-title">{{ item.productName }}</span>
+                <span class="item-detail">{{ item.categoryName || 'Sin categoría' }}</span>
+              </div>
+              <div class="stock-levels">
+                <span class="stock-current" [class.stock-critical]="item.currentStock === 0" [class.stock-warning]="item.currentStock > 0">
+                  {{ item.currentStock }}
+                </span>
+                <span class="stock-separator">/</span>
+                <span class="stock-minimum">{{ item.minimumStock }}</span>
+              </div>
+            </div>
+          }
         </div>
       </div>
     }
-
-    <!-- Acciones Rápidas -->
-    <div class="quick-actions-section">
-      <div class="section-header">
-        <h3 class="section-title">
-          <i class="fa-solid fa-bolt"></i>
-          Acciones Rápidas
-        </h3>
-      </div>
-      <div class="quick-actions-grid">
-        @for (action of quickActions; track action.title) {
-          <button class="quick-action-card" (click)="onQuickAction(action)">
-            <div class="action-icon">
-              <i class="fa-solid" [ngClass]="action.icon"></i>
-            </div>
-            <div class="action-content">
-              <div class="action-title">{{ action.title }}</div>
-              <div class="action-subtitle">{{ action.subtitle }}</div>
-            </div>
-          </button>
-        }
-      </div>
-    </div>
   }
 </div>

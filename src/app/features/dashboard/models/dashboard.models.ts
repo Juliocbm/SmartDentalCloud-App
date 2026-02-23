@@ -1,69 +1,75 @@
 /**
- * Modelos de datos para el Dashboard
+ * Modelos de datos para el Dashboard Principal
+ * Interfaces ligeras que reflejan las respuestas reales del API
  */
 
-export interface DashboardStats {
-  todayAppointments: number;
-  todayRevenue: number;
-  newPatientsThisMonth: number;
-  completedTreatmentsThisMonth: number;
-  pendingAppointments: number;
-  lowStockProducts: number;
-  activeTreatmentPlans: number;
-  monthlyRevenue: number;
+export interface DashboardData {
+  todayAppointments: DashboardAppointment[];
+  upcomingAppointments: DashboardAppointment[];
+  treatments: DashboardTreatment[];
+  treatmentPlans: DashboardTreatmentPlan[];
+  income: DashboardIncome;
+  inventory: DashboardInventory;
 }
 
-export interface RevenueChartData {
-  month: string;
-  revenue: number;
-}
-
-export interface AppointmentStats {
-  scheduled: number;
-  completed: number;
-  cancelled: number;
-  noShow: number;
-}
-
-export interface UpcomingAppointment {
+export interface DashboardAppointment {
   id: string;
   patientName: string;
   patientId: string;
   doctorName?: string;
-  startAt: Date;
-  endAt: Date;
-  reason: string;
+  startAt: string;
+  endAt: string;
+  reason?: string;
   status: string;
 }
 
-export interface RecentActivity {
+export interface DashboardTreatment {
   id: string;
-  type: 'appointment' | 'treatment' | 'payment' | 'patient';
-  description: string;
-  timestamp: Date;
-  icon: string;
-  statusColor: string;
+  patientName?: string;
+  serviceName?: string;
+  status: string;
+  startDate: string;
 }
 
-export interface QuickStat {
-  label: string;
-  value: number | string;
-  icon: string;
-  color: string;
-  trend?: number;
-  trendDirection?: 'up' | 'down' | 'neutral';
-  route?: string;
+export interface DashboardTreatmentPlan {
+  id: string;
+  patientName?: string;
+  title: string;
+  planNumber: string;
+  status: string;
+  totalEstimatedCost: number;
+  totalItems: number;
+  completedItems: number;
+  overallProgressPercentage: number;
+  createdAt: string;
 }
 
-export interface LowStockProduct {
-  id: string;
-  name: string;
+export interface DashboardIncome {
+  totalIncome: number;
+  totalPending: number;
+  invoiceCount: number;
+  paymentCount: number;
+}
+
+export interface DashboardInventory {
+  totalProducts: number;
+  lowStockProducts: number;
+  outOfStockProducts: number;
+  lowStockItems: DashboardLowStockItem[];
+}
+
+export interface DashboardLowStockItem {
+  productId: string;
+  productName: string;
+  categoryName?: string;
   currentStock: number;
-  minStock: number;
-  category: string;
+  minimumStock: number;
 }
 
-export interface MonthlyRevenueData {
-  labels: string[];
-  data: number[];
+export interface QuickAction {
+  label: string;
+  description: string;
+  icon: string;
+  route: string;
+  color: string;
 }
