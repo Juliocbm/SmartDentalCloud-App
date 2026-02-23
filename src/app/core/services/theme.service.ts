@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export type Theme = 'light' | 'dark' | 'high-contrast';
+export type Theme = 'light' | 'dark' | 'warm';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +9,7 @@ export class ThemeService {
   currentTheme = signal<Theme>('light');
   
   private readonly THEME_KEY = 'smartdental-theme';
+  private readonly themes: Theme[] = ['light', 'warm', 'dark'];
 
   constructor() {
     this.loadTheme();
@@ -21,20 +22,14 @@ export class ThemeService {
   }
 
   toggleTheme(): void {
-    const newTheme = this.currentTheme() === 'light' ? 'dark' : 'light';
-    this.setTheme(newTheme);
-  }
-
-  cycleTheme(): void {
-    const themes: Theme[] = ['light', 'dark', 'high-contrast'];
-    const currentIndex = themes.indexOf(this.currentTheme());
-    const nextIndex = (currentIndex + 1) % themes.length;
-    this.setTheme(themes[nextIndex]);
+    const currentIndex = this.themes.indexOf(this.currentTheme());
+    const nextIndex = (currentIndex + 1) % this.themes.length;
+    this.setTheme(this.themes[nextIndex]);
   }
 
   private loadTheme(): void {
     const savedTheme = localStorage.getItem(this.THEME_KEY) as Theme;
-    if (savedTheme) {
+    if (savedTheme && this.themes.includes(savedTheme)) {
       this.setTheme(savedTheme);
     } else {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;

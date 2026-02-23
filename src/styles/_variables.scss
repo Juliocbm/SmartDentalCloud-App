@@ -442,6 +442,145 @@
   --chart-legend-color: var(--text-primary);
 }
 
+// ===== Tema Cálido (Warm) =====
+[data-theme="warm"] {
+  // ===== Superficies Cálidas =====
+  --surface-primary: #fffbf5;
+  --surface-secondary: #fef7ed;
+  --surface-tertiary: #fdf0e0;
+
+  // ===== Texto Cálido =====
+  --text-primary: #3d2c22;
+  --text-secondary: #6b5044;
+  --text-tertiary: #8b7060;
+  --text-muted: #b09888;
+
+  // ===== Bordes Cálidos =====
+  --border-primary: #f0dcc8;
+  --border-secondary: #f8ece0;
+  --border-medium: #dcc4aa;
+  --border-dark: #b8a090;
+
+  // ===== Marca Principal - Amber =====
+  --primary-50: #fffbeb;
+  --primary-100: #fef3c7;
+  --primary-200: #fde68a;
+  --primary-300: #fcd34d;
+  --primary-400: #fbbf24;
+  --primary-500: #f59e0b;
+  --primary-600: #d97706;
+  --primary-700: #b45309;
+  --primary-800: #92400e;
+  --primary-900: #78350f;
+
+  // ===== Gradientes =====
+  --gradient-primary: linear-gradient(135deg, #b45309, #f59e0b);
+  --gradient-admin: linear-gradient(135deg, #9a3412, #ea580c);
+  --gradient-header: linear-gradient(135deg, #fffbf5 0%, #fef7ed 100%);
+  --gradient-card: linear-gradient(135deg, #fffbf5 0%, #fef7ed 100%);
+
+  // ===== Sombras Cálidas =====
+  --shadow-card: 0 4px 20px rgba(120, 70, 30, 0.08);
+  --shadow-card-hover: 0 8px 30px rgba(120, 70, 30, 0.14);
+  --shadow-primary: 0 8px 25px rgba(245, 158, 11, 0.15);
+
+  // ===== Colores de Estado =====
+  // Success - Verde cálido
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-500: #16a34a;
+  --success-600: #15803d;
+  --success-700: #166534;
+  --success-bg: rgba(22, 163, 74, 0.1);
+  --success-text: #15803d;
+  --success-gradient: linear-gradient(135deg, #15803d, #16a34a);
+
+  // Error - Rojo cálido
+  --error-50: #fef2f2;
+  --error-100: #fee2e2;
+  --error-200: #fecaca;
+  --error-500: #dc2626;
+  --error-600: #b91c1c;
+  --error-700: #991b1b;
+  --error-bg: rgba(220, 38, 38, 0.1);
+  --error-text: #b91c1c;
+  --error-gradient: linear-gradient(135deg, #b91c1c, #dc2626);
+
+  // Warning - Naranja cálido (más saturado que primary)
+  --warning-50: #fff7ed;
+  --warning-100: #ffedd5;
+  --warning-500: #ea580c;
+  --warning-600: #c2410c;
+  --warning-700: #9a3412;
+  --warning-bg: rgba(234, 88, 12, 0.1);
+  --warning-text: #c2410c;
+  --warning-gradient: linear-gradient(135deg, #c2410c, #ea580c);
+
+  // Info - Teal cálido
+  --info-50: #f0fdfa;
+  --info-100: #ccfbf1;
+  --info-500: #0d9488;
+  --info-600: #0f766e;
+  --info-700: #115e59;
+  --info-bg: rgba(13, 148, 136, 0.1);
+  --info-text: #0f766e;
+
+  // Neutral - Tonos cálidos
+  --neutral-50: #fafaf9;
+  --neutral-100: #f5f5f4;
+  --neutral-200: #e7e5e4;
+  --neutral-300: #d6d3d1;
+  --neutral-400: #a8a29e;
+  --neutral-500: #78716c;
+  --neutral-600: #57534e;
+  --neutral-700: #44403c;
+  --neutral-800: #292524;
+  --neutral-900: #1c1917;
+  --neutral-bg: rgba(120, 113, 108, 0.1);
+  --neutral-text: #78716c;
+
+  // ===== Dashboard Components =====
+  --metric-primary-bg: rgba(245, 158, 11, 0.12);
+  --metric-primary-color: var(--primary-700);
+  --metric-success-bg: rgba(22, 163, 74, 0.12);
+  --metric-success-color: var(--success-600);
+  --metric-error-bg: rgba(220, 38, 38, 0.12);
+  --metric-error-color: var(--error-600);
+  --metric-warning-bg: rgba(234, 88, 12, 0.12);
+  --metric-warning-color: var(--warning-600);
+  --metric-info-bg: rgba(13, 148, 136, 0.12);
+  --metric-info-color: var(--info-600);
+
+  --quick-action-icon-background: var(--primary-50);
+  --quick-action-icon-color: var(--primary-700);
+
+  // ===== Category Chart =====
+  --category-bar-background: var(--neutral-100);
+  --category-bar-normal: var(--gradient-primary);
+  --category-bar-warning: var(--warning-gradient);
+  --category-bar-critical: var(--error-gradient);
+
+  // ===== Activity Timeline =====
+  --activity-item-background: var(--surface-secondary);
+  --activity-item-hover: var(--surface-tertiary);
+
+  // ===== Chart Colors - Tonos cálidos =====
+  --chart-color-1: #f59e0b;  // Amber
+  --chart-color-2: #16a34a;  // Green
+  --chart-color-3: #ea580c;  // Orange
+  --chart-color-4: #dc2626;  // Red
+  --chart-color-5: #9333ea;  // Purple
+  --chart-color-6: #0d9488;  // Teal
+  --chart-color-7: #db2777;  // Pink
+  --chart-color-8: #65a30d;  // Lime
+
+  --chart-grid-color: var(--border-primary);
+  --chart-text-color: var(--text-secondary);
+  --chart-legend-color: var(--text-primary);
+  --chart-tooltip-bg: rgba(61, 44, 34, 0.9);
+  --chart-tooltip-text: #fffbf5;
+}
+
 // ===== Tema Alto Contraste =====
 [data-theme="high-contrast"] {
   --surface-primary: #ffffff;

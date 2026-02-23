@@ -1,7 +1,13 @@
-<button class="theme-toggle" (click)="toggleTheme()" title="Cambiar tema">
-  @if (themeService.currentTheme() === 'light') {
-    <i class="fa-solid fa-moon"></i>
-  } @else {
-    <i class="fa-solid fa-sun"></i>
+<button class="theme-toggle" (click)="toggleTheme()" [title]="themeLabel()">
+  @switch (themeService.currentTheme()) {
+    @case ('light') {
+      <i class="fa-solid fa-sun"></i>
+    }
+    @case ('warm') {
+      <i class="fa-solid fa-fire"></i>
+    }
+    @case ('dark') {
+      <i class="fa-solid fa-moon"></i>
+    }
   }
 </button>
