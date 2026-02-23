@@ -1,53 +1,27 @@
-// Base: usa .detail-container, .detail-header, .detail-body de _components.scss
+// Base: usa .detail-container, .detail-body, .info-two-col,
+//       .info-section, .info-card, .info-row de _components.scss
 
-// Overrides específicos del detail-header
-.detail-header .header-content {
-  .title-section {
-    flex-wrap: wrap;
-  }
+// ===== Feature-specific styles =====
 
-  .header-info .info-item .text-danger {
-    color: var(--error-500);
-    font-weight: var(--font-weight-semibold);
-  }
+.section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 var(--spacing-sm);
+  background: var(--primary-100);
+  color: var(--primary-700);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
 }
 
-.detail-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2xl);
-}
-
-// Override: .info-section sin border-bottom en h3, font-size diferente
-.info-section h3 {
-  font-size: var(--font-size-xl);
-  padding-bottom: 0;
-  border-bottom: none;
-
-  .section-count {
-    background: var(--primary-100);
-    color: var(--primary-700);
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-full);
-    font-size: var(--font-size-sm);
-  }
-}
-
-.info-card {
-  background: var(--surface-secondary);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
-  border: 1px solid var(--border-primary);
-
-  p {
-    margin: 0;
-    color: var(--text-primary);
-    line-height: 1.6;
-  }
-
-  .diagnosis-text {
-    font-size: var(--font-size-lg);
-  }
+.diagnosis-text {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
 }
 
 .medications-grid {
@@ -151,23 +125,7 @@
   }
 }
 
-.empty-inline {
-  text-align: center;
-  padding: var(--spacing-xl);
-  color: var(--text-tertiary);
-
-  i {
-    font-size: var(--font-size-4xl);
-    display: block;
-    margin-bottom: var(--spacing-md);
-  }
-
-  p {
-    margin: 0;
-  }
-}
-
-// Responsive: .detail-container, .detail-header manejados globalmente
+// Responsive: .detail-container, .info-two-col manejados globalmente
 @media (max-width: 768px) {
   .medication-card .medication-details {
     grid-template-columns: 1fr;
