@@ -1,7 +1,7 @@
 // ============================================
 // InvoiceDetailComponent - Estilos
-// Base: usa .detail-container, .detail-header, .detail-body,
-//       .info-section, .info-card de _components.scss
+// Base: usa .detail-container, .detail-body, .info-two-col,
+//       .info-section, .info-card, .info-row de _components.scss
 // ============================================
 
 .section-header-actions {
@@ -373,7 +373,7 @@
 
   .cfdi-info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: var(--spacing-lg);
   }
 
@@ -396,7 +396,8 @@
 
   .cfdi-download-actions {
     display: flex;
-    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
     margin-top: var(--spacing-xl);
     padding-top: var(--spacing-lg);
     border-top: 1px solid var(--border-primary);
