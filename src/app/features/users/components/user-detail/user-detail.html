@@ -9,6 +9,9 @@
         <span class="status-badge" [class.badge-active]="currentUser.isActive" [class.badge-inactive]="!currentUser.isActive">
           {{ currentUser.isActive ? 'Activo' : 'Inactivo' }}
         </span>
+        <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
         <button class="btn btn-outline" (click)="editUser()">
           <i class="fa-solid fa-pen"></i>
           Editar
@@ -68,10 +71,6 @@
                 <span class="info-value">{{ currentUser.profile?.phoneNumber }}</span>
               </div>
             }
-            <div class="info-row">
-              <span class="info-label">Registrado:</span>
-              <span class="info-value">{{ currentUser.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
-            </div>
           </div>
         </div>
 
@@ -201,5 +200,11 @@
         }
       </div>
     </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="currentUser.createdAt"
+      (closed)="showAuditModal.set(false)"
+    />
   }
 </div>

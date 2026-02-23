@@ -6,7 +6,7 @@
     [icon]="'fa-file-invoice'"
     [breadcrumbs]="breadcrumbItems()">
     <div actions>
-      <a class="btn btn-primary" routerLink="/inventory/purchase-orders/new">
+      <a class="btn btn-outline btn-success" routerLink="/inventory/purchase-orders/new">
         <i class="fa-solid fa-plus"></i>
         Nueva Orden
       </a>
@@ -54,7 +54,7 @@
     <div class="empty-state">
       <i class="fa-solid fa-exclamation-circle"></i>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary" (click)="loadData()">
+      <button class="btn btn-secondary" (click)="loadData()">
         <i class="fa-solid fa-refresh"></i>
         Reintentar
       </button>
@@ -67,7 +67,7 @@
       <i class="fa-solid fa-file-invoice"></i>
       <h3>No hay órdenes de compra registradas</h3>
       <p>Comienza creando la primera orden de compra</p>
-      <a class="btn btn-primary" routerLink="/inventory/purchase-orders/new">
+      <a class="btn btn-outline btn-success" routerLink="/inventory/purchase-orders/new">
         <i class="fa-solid fa-plus"></i>
         Crear Primera Orden
       </a>
@@ -80,7 +80,7 @@
       <i class="fa-solid fa-filter-circle-xmark"></i>
       <h3>Sin resultados</h3>
       <p>No se encontraron órdenes de compra con los filtros aplicados</p>
-      <a routerLink="/inventory/purchase-orders/new" class="btn btn-primary">
+      <a routerLink="/inventory/purchase-orders/new" class="btn btn-outline btn-success">
         <i class="fa-solid fa-plus"></i>
         Nueva Orden
       </a>

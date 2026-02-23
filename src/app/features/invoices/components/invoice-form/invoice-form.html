@@ -12,12 +12,12 @@
         <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading()">
+      <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading()">
         @if (loading()) {
           <span class="btn-spinner"></span>
-          Creando...
+          Guardando...
         } @else {
-          <i class="fa-solid fa-file-invoice"></i>
+          <i class="fa-solid fa-plus"></i>
           Crear Factura
         }
       </button>

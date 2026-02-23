@@ -5,15 +5,18 @@ import { PaymentsService } from '../../services/payments.service';
 import { Payment, PAYMENT_METHOD_CONFIG } from '../../models/payment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 
 @Component({
   selector: 'app-payment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './payment-detail.html',
   styleUrl: './payment-detail.scss'
 })
 export class PaymentDetailComponent implements OnInit {
+  showAuditModal = signal(false);
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private paymentsService = inject(PaymentsService);

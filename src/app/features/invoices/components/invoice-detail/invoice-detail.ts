@@ -12,15 +12,18 @@ import { PaymentsService } from '../../services/payments.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })
 export class InvoiceDetailComponent implements OnInit {
+  showAuditModal = signal(false);
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private invoicesService = inject(InvoicesService);

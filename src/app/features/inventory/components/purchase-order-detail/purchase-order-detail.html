@@ -11,6 +11,9 @@
           {{ getStatusLabel(po.status) }}
         </span>
       }
+      <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </button>
     </div>
   </app-page-header>
 
@@ -160,5 +163,12 @@
         }
       </div>
     </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="po.createdAt"
+      [updatedAt]="po.updatedAt"
+      (closed)="showAuditModal.set(false)"
+    />
   }
 </div>

@@ -13,15 +13,18 @@ import { AppointmentsService } from '../../../appointments/services/appointments
 import { AppointmentListItem } from '../../../appointments/models/appointment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 
 @Component({
   selector: 'app-treatment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './treatment-detail.html',
   styleUrl: './treatment-detail.scss'
 })
 export class TreatmentDetailComponent implements OnInit {
+  showAuditModal = signal(false);
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private treatmentsService = inject(TreatmentsService);

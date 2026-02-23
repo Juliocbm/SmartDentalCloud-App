@@ -8,15 +8,18 @@ import { ConsultationNote } from '../../../consultation-notes/models/consultatio
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './appointment-detail.html',
   styleUrls: ['./appointment-detail.scss']
 })
 export class AppointmentDetailComponent implements OnInit {
+  showAuditModal = signal(false);
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private appointmentsService = inject(AppointmentsService);

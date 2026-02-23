@@ -16,6 +16,9 @@
             Planificado
           </span>
         }
+        <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
         @if (t.status !== TreatmentStatus.Cancelled) {
           <a class="btn btn-outline" [routerLink]="['/treatments', t.id, 'edit']">
             <i class="fa-solid fa-pen"></i>
@@ -147,65 +150,44 @@
           </div>
         </div>
 
-        <!-- Row 2: Fechas + Auditoría -->
-        <div class="info-two-col">
-          <div class="info-section">
-            <h3><i class="fa-solid fa-calendar-days"></i> Fechas y Duración</h3>
-            <div class="info-card">
-              <div class="info-row">
-                <span class="info-label">Inicio:</span>
-                <span class="info-value">{{ formatDate(t.startDate) }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Fin:</span>
-                <span class="info-value">{{ formatDate(t.endDate) }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Duración:</span>
-                <span class="info-value">{{ t.duration ? t.duration + ' minutos' : '—' }}</span>
-              </div>
-              @if (t.appointmentId) {
-                <div class="info-row">
-                  <span class="info-label">Cita Asociada:</span>
-                  <span class="info-value">
-                    <a [routerLink]="['/appointments', t.appointmentId]" class="link-primary">
-                      <i class="fa-solid fa-calendar-check"></i>
-                      Ver Cita
-                    </a>
-                  </span>
-                </div>
-              }
+        <!-- Row 2: Fechas -->
+        <div class="info-section">
+          <h3><i class="fa-solid fa-calendar-days"></i> Fechas y Duración</h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Inicio:</span>
+              <span class="info-value">{{ formatDate(t.startDate) }}</span>
             </div>
-          </div>
-
-          <div class="info-section">
-            <h3><i class="fa-solid fa-clock-rotate-left"></i> Auditoría</h3>
-            <div class="info-card">
-              <div class="info-row">
-                <span class="info-label">Creado:</span>
-                <span class="info-value">{{ formatDateTime(t.createdAt) }}</span>
-              </div>
-              @if (t.createdByName) {
-                <div class="info-row">
-                  <span class="info-label">Creado por:</span>
-                  <span class="info-value">{{ t.createdByName }}</span>
-                </div>
-              }
-              @if (t.updatedAt) {
-                <div class="info-row">
-                  <span class="info-label">Actualizado:</span>
-                  <span class="info-value">{{ formatDateTime(t.updatedAt) }}</span>
-                </div>
-              }
-              @if (t.updatedByName) {
-                <div class="info-row">
-                  <span class="info-label">Actualizado por:</span>
-                  <span class="info-value">{{ t.updatedByName }}</span>
-                </div>
-              }
+            <div class="info-row">
+              <span class="info-label">Fin:</span>
+              <span class="info-value">{{ formatDate(t.endDate) }}</span>
             </div>
+            <div class="info-row">
+              <span class="info-label">Duración:</span>
+              <span class="info-value">{{ t.duration ? t.duration + ' minutos' : '—' }}</span>
+            </div>
+            @if (t.appointmentId) {
+              <div class="info-row">
+                <span class="info-label">Cita Asociada:</span>
+                <span class="info-value">
+                  <a [routerLink]="['/appointments', t.appointmentId]" class="link-primary">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    Ver Cita
+                  </a>
+                </span>
+              </div>
+            }
           </div>
         </div>
+
+        <app-audit-info
+          [visible]="showAuditModal()"
+          [createdAt]="t.createdAt"
+          [createdByName]="t.createdByName"
+          [updatedAt]="t.updatedAt"
+          [updatedByName]="t.updatedByName"
+          (closed)="showAuditModal.set(false)"
+        />
       }
 
       <!-- ========== TAB: Seguimientos ========== -->

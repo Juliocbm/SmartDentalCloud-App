@@ -5,15 +5,18 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ServicesService } from '../../services/services.service';
 import { DentalServiceItem, SERVICE_CATEGORIES } from '../../models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 
 @Component({
   selector: 'app-service-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './service-detail.html',
   styleUrl: './service-detail.scss'
 })
 export class ServiceDetailComponent implements OnInit {
+  showAuditModal = signal(false);
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private servicesService = inject(ServicesService);

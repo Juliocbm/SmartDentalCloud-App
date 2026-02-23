@@ -10,6 +10,9 @@
           <i [class]="'fa-solid ' + getStatusConfig(inv.status).icon"></i>
           {{ getStatusConfig(inv.status).label }}
         </span>
+        <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
         <button class="btn btn-outline" (click)="printInvoice()">
           <i class="fa-solid fa-print"></i>
           Imprimir
@@ -477,5 +480,11 @@
         </div>
       </div>
     </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="inv.createdAt"
+      (closed)="showAuditModal.set(false)"
+    />
   }
 </div>

@@ -11,15 +11,18 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { OdontogramComponent } from '../../../dental-chart/components/odontogram/odontogram';
+import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
 export class PatientDetailComponent implements OnInit {
+  showAuditModal = signal(false);
+
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private patientsService = inject(PatientsService);

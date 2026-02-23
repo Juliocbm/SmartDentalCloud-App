@@ -5,15 +5,18 @@ import { SuppliersService } from '../../services/suppliers.service';
 import { Supplier, PAYMENT_TERMS } from '../../models/supplier.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 
 @Component({
   selector: 'app-supplier-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './supplier-detail.html',
   styleUrls: ['./supplier-detail.scss']
 })
 export class SupplierDetailComponent implements OnInit {
+  showAuditModal = signal(false);
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private suppliersService = inject(SuppliersService);

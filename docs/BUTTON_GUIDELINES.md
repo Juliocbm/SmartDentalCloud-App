@@ -141,6 +141,9 @@
 
 ### **Headers de Listados (List Views)**
 
+Los botones de "Crear/Nuevo" en listados usan `btn btn-outline btn-success` (borde verde).
+Los botones de navegación secundaria usan `btn btn-outline` (borde neutro).
+
 #### ✅ CORRECTO:
 ```html
 <app-page-header [title]="'Citas'">
@@ -149,7 +152,7 @@
       <i class="fa-solid fa-calendar"></i>
       Calendario
     </a>
-    <a routerLink="/appointments/new" class="btn btn-primary">
+    <a routerLink="/appointments/new" class="btn btn-outline btn-success">
       <i class="fa-solid fa-plus"></i>
       Nueva Cita
     </a>
@@ -159,29 +162,88 @@
 
 #### ❌ INCORRECTO:
 ```html
-<!-- ❌ Dos botones primary -->
-<a class="btn btn-primary">Calendario</a>
+<!-- ❌ btn-primary para crear -->
 <a class="btn btn-primary">Nueva Cita</a>
 
 <!-- ❌ btn-secondary en header -->
 <a class="btn btn-secondary">Calendario</a>
 ```
 
+#### Botones en empty states de listados:
+```html
+<div class="empty-state">
+  <i class="fa-solid fa-calendar-xmark"></i>
+  <h3>No hay citas</h3>
+  <p>Comienza creando tu primera cita</p>
+  <a routerLink="/appointments/new" class="btn btn-outline btn-success">
+    <i class="fa-solid fa-plus"></i>
+    Crear Primera Cita
+  </a>
+</div>
+```
+
 ---
 
-### **Formularios**
+### **Formularios (Crear / Editar)**
 
-#### ✅ CORRECTO:
+Los formularios usan botones en el `<div actions class="header-form-actions">` del `page-header`.
+
+#### Cancelar: `btn btn-outline` + `fa-times`
+#### Guardar/Crear: `btn btn-outline btn-success` + icono dinámico + texto dinámico
+
+#### ✅ Form con edit + create (isEditMode):
 ```html
-<div class="form-actions">
-  <button type="button" class="btn btn-secondary" (click)="cancel()">
+<div actions class="header-form-actions">
+  <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading()">
+    <i class="fa-solid fa-times"></i>
     Cancelar
   </button>
-  <button type="submit" class="btn btn-primary" [disabled]="!form.valid">
-    Guardar
+  <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading() || form.invalid">
+    @if (loading()) {
+      <span class="btn-spinner"></span>
+      Guardando...
+    } @else {
+      <i class="fa-solid" [class.fa-floppy-disk]="isEditMode()" [class.fa-plus]="!isEditMode()"></i>
+      {{ isEditMode() ? 'Guardar Cambios' : 'Crear {Entidad}' }}
+    }
   </button>
 </div>
 ```
+
+#### ✅ Form solo creación:
+```html
+<div actions class="header-form-actions">
+  <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading()">
+    <i class="fa-solid fa-times"></i>
+    Cancelar
+  </button>
+  <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading() || form.invalid">
+    @if (loading()) {
+      <span class="btn-spinner"></span>
+      Guardando...
+    } @else {
+      <i class="fa-solid fa-plus"></i>
+      Crear {Entidad}
+    }
+  </button>
+</div>
+```
+
+#### Reglas para formularios
+
+| Elemento | Clase | Icono | Texto |
+|----------|-------|-------|-------|
+| Cancelar | `btn btn-outline` | `fa-times` | "Cancelar" |
+| Guardar (edit) | `btn btn-outline btn-success` | `fa-floppy-disk` | "Guardar Cambios" |
+| Crear | `btn btn-outline btn-success` | `fa-plus` | "Crear {Entidad}" o "Registrar {Entidad}" |
+| Loading | `btn btn-outline btn-success` (disabled) | `btn-spinner` | "Guardando..." |
+
+- **SIEMPRE** usar `btn btn-outline btn-success` para el botón de submit (borde verde)
+- **SIEMPRE** usar `btn btn-outline` para cancelar (borde neutro)
+- **SIEMPRE** usar `fa-floppy-disk` para editar y `fa-plus` para crear
+- **SIEMPRE** mostrar "Guardando..." como texto de loading (NO "Creando..." ni "Registrando...")
+- Los botones van en `<div actions class="header-form-actions">` del `page-header`
+- Los estilos de `header-form-actions` y `btn-spinner` están en `_components.scss` (global)
 
 ---
 
@@ -290,6 +352,147 @@ Todos los estilos de botones usan variables globales definidas en `_variables.sc
 
 ---
 
+## 🔍 Pantallas de Detalle (Detail Views)
+
+En las pantallas de detalle, **todos los botones de acción usan variantes outline** (`btn btn-outline`). Nunca se usan botones sólidos (`btn-primary`, `btn-danger`, `btn-success`) directamente.
+
+### Orden estándar en `<div actions>`
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  📄 Título de Entidad                                               │
+│                                                                     │
+│  [badge-status]  [🕐 audit]  [btn-outline]  [btn-outline btn-danger]│
+│  Estado          Auditoría   Editar          Desactivar             │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Status badge(s)** — `<span class="badge">` o `<span class="status-badge">`
+2. **Botón auditoría** — `<button class="btn btn-icon">` con `fa-clock-rotate-left`
+3. **Acciones normales** — `btn btn-outline` (Editar, Imprimir, Exportar, Reagendar, etc.)
+4. **Acciones con contexto** — `btn btn-outline btn-success` / `btn btn-outline btn-danger` (Activar, Desactivar, Aprobar, Rechazar, Eliminar)
+
+### Clases por tipo de acción
+
+| Acción | Clase | Icono |
+|--------|-------|-------|
+| Editar | `btn btn-outline` | `fa-pen` |
+| Reagendar | `btn btn-outline` | `fa-calendar-pen` |
+| Imprimir | `btn btn-outline` | `fa-print` |
+| Exportar CSV | `btn btn-outline` | `fa-file-csv` |
+| Iniciar | `btn btn-outline` | `fa-play` |
+| Aprobar | `btn btn-outline btn-success` | `fa-circle-check` |
+| Activar | `btn btn-outline btn-success` | `fa-toggle-on` |
+| Rechazar | `btn btn-outline btn-danger` | `fa-circle-xmark` |
+| Desactivar | `btn btn-outline btn-danger` | `fa-toggle-off` |
+| Eliminar | `btn btn-outline btn-danger` | `fa-trash` |
+| Auditoría | `btn btn-icon` | `fa-clock-rotate-left` |
+
+### Ejemplo: Entidad con Editar + Desactivar
+
+```html
+<app-page-header [title]="entity()?.name || 'Entidad'" [icon]="'fa-box'" [showBackButton]="true" [breadcrumbs]="breadcrumbItems">
+  <div actions>
+    @if (entity(); as e) {
+      <span class="status-badge" [class.badge-active]="e.isActive" [class.badge-inactive]="!e.isActive">
+        {{ e.isActive ? 'Activo' : 'Inactivo' }}
+      </span>
+      <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </button>
+      <button class="btn btn-outline" (click)="edit()">
+        <i class="fa-solid fa-pen"></i>
+        Editar
+      </button>
+      @if (e.isActive) {
+        <button class="btn btn-outline btn-danger" (click)="toggleActive()">
+          <i class="fa-solid fa-toggle-off"></i>
+          Desactivar
+        </button>
+      } @else {
+        <button class="btn btn-outline btn-success" (click)="toggleActive()">
+          <i class="fa-solid fa-toggle-on"></i>
+          Activar
+        </button>
+      }
+    }
+  </div>
+</app-page-header>
+```
+
+### Ejemplo: Entidad de solo lectura (Imprimir)
+
+```html
+<app-page-header [title]="'Factura'" [icon]="'fa-file-invoice-dollar'" [showBackButton]="true" [breadcrumbs]="breadcrumbItems">
+  <div actions>
+    @if (invoice(); as inv) {
+      <span class="badge" [ngClass]="getStatusConfig(inv.status).class">
+        <i [class]="'fa-solid ' + getStatusConfig(inv.status).icon"></i>
+        {{ getStatusConfig(inv.status).label }}
+      </span>
+      <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </button>
+      <button class="btn btn-outline" (click)="print()">
+        <i class="fa-solid fa-print"></i>
+        Imprimir
+      </button>
+    }
+  </div>
+</app-page-header>
+```
+
+### Ejemplo: Entidad con acciones de workflow
+
+```html
+<app-page-header [title]="'Plan de Tratamiento'" [icon]="'fa-clipboard-list'" [showBackButton]="true" [breadcrumbs]="breadcrumbItems">
+  <div actions>
+    <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+    </button>
+    @if (canApprove()) {
+      <button class="btn btn-outline btn-success" (click)="onApprove()">
+        <i class="fa-solid fa-circle-check"></i>
+        Aprobar
+      </button>
+      <button class="btn btn-outline btn-danger" (click)="onReject()">
+        <i class="fa-solid fa-circle-xmark"></i>
+        Rechazar
+      </button>
+    }
+  </div>
+</app-page-header>
+```
+
+### Reglas para pantallas de detalle
+
+- **NUNCA** usar `btn-primary` o `btn-secondary` en pantallas de detalle
+- **SIEMPRE** usar variantes `btn btn-outline` (con modificador de color si aplica)
+- **SIEMPRE** incluir el botón de auditoría (`btn btn-icon` + `fa-clock-rotate-left`)
+- **SIEMPRE** incluir un ícono Font Awesome antes del texto del botón
+- Los badges de estado van **antes** del botón de auditoría
+- Las acciones destructivas van **al final** (derecha)
+
+### Pantallas implementadas
+
+| Pantalla | Acciones |
+|----------|----------|
+| appointment-detail | Reagendar (condicional) |
+| service-detail | Editar, Eliminar |
+| treatment-detail | Editar (condicional) |
+| patient-detail | Editar, Desactivar/Activar |
+| invoice-detail | Imprimir |
+| prescription-detail | Imprimir |
+| payment-detail | Solo auditoría |
+| treatment-plan-detail | Aprobar, Rechazar, Iniciar Plan (condicionales) |
+| product-detail | Editar |
+| supplier-detail | Editar |
+| category-detail | Editar |
+| purchase-order-detail | Solo badge + auditoría |
+| user-detail | Editar, Desactivar/Activar |
+
+---
+
 ## ✅ Checklist de Implementación
 
 Antes de agregar un botón, pregúntate:
@@ -310,11 +513,11 @@ Antes de agregar un botón, pregúntate:
 ```html
 <app-page-header [title]="'Pacientes'">
   <div actions>
-    <button class="btn btn-outline" routerLink="/patients/search">
-      <i class="fa-solid fa-filter"></i>
-      Búsqueda Avanzada
+    <button class="btn btn-outline" (click)="exportToCsv()">
+      <i class="fa-solid fa-file-csv"></i>
+      Exportar CSV
     </button>
-    <button class="btn btn-primary" routerLink="/patients/new">
+    <button class="btn btn-outline btn-success" routerLink="/patients/new">
       <i class="fa-solid fa-plus"></i>
       Nuevo Paciente
     </button>
@@ -330,7 +533,7 @@ Antes de agregar un botón, pregúntate:
       <i class="fa-solid fa-key"></i>
       Gestionar Roles
     </a>
-    <a class="btn btn-primary" routerLink="/users/new">
+    <a class="btn btn-outline btn-success" routerLink="/users/new">
       <i class="fa-solid fa-user-plus"></i>
       Nuevo Usuario
     </a>
@@ -346,7 +549,7 @@ Antes de agregar un botón, pregúntate:
       <i class="fa-solid fa-calendar"></i>
       Calendario
     </a>
-    <a class="btn btn-primary" routerLink="/appointments/new">
+    <a class="btn btn-outline btn-success" routerLink="/appointments/new">
       <i class="fa-solid fa-plus"></i>
       Nueva Cita
     </a>

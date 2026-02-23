@@ -14,12 +14,12 @@
         <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="orderForm.invalid || items.length === 0 || saving()">
+      <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="orderForm.invalid || items.length === 0 || saving()">
         @if (saving()) {
           <span class="btn-spinner"></span>
-          Creando...
+          Guardando...
         } @else {
-          <i class="fa-solid fa-save"></i>
+          <i class="fa-solid fa-plus"></i>
           Crear Orden
         }
       </button>

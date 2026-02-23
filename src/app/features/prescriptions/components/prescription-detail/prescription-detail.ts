@@ -8,15 +8,18 @@ import {
   PRESCRIPTION_STATUS_CONFIG
 } from '../../models/prescription.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 
 @Component({
   selector: 'app-prescription-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './prescription-detail.html',
   styleUrl: './prescription-detail.scss'
 })
 export class PrescriptionDetailComponent implements OnInit {
+  showAuditModal = signal(false);
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private prescriptionsService = inject(PrescriptionsService);

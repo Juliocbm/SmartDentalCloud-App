@@ -5,18 +5,21 @@
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </button>
       @if (canApprove()) {
-        <button class="btn btn-success" (click)="onApprove()" [disabled]="actionLoading()">
+        <button class="btn btn-outline btn-success" (click)="onApprove()" [disabled]="actionLoading()">
           <i class="fa-solid fa-circle-check"></i>
           Aprobar
         </button>
-        <button class="btn btn-danger" (click)="onShowReject()" [disabled]="actionLoading()">
+        <button class="btn btn-outline btn-danger" (click)="onShowReject()" [disabled]="actionLoading()">
           <i class="fa-solid fa-circle-xmark"></i>
           Rechazar
         </button>
       }
       @if (canStart()) {
-        <button class="btn btn-primary" (click)="onStart()" [disabled]="actionLoading()">
+        <button class="btn btn-outline" (click)="onStart()" [disabled]="actionLoading()">
           <i class="fa-solid fa-play"></i>
           Iniciar Plan
         </button>
@@ -364,25 +367,12 @@
         }
       </div>
 
-      <!-- Auditoría -->
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          Auditoría
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Creado:</span>
-            <span class="info-value">{{ formatDateTime(p.createdAt) }}</span>
-          </div>
-          @if (p.createdByName) {
-            <div class="info-row">
-              <span class="info-label">Creado por:</span>
-              <span class="info-value">{{ p.createdByName }}</span>
-            </div>
-          }
-        </div>
-      </div>
+      <app-audit-info
+        [visible]="showAuditModal()"
+        [createdAt]="p.createdAt"
+        [createdByName]="p.createdByName"
+        (closed)="showAuditModal.set(false)"
+      />
 
     </div>
 

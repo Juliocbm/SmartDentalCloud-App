@@ -6,7 +6,7 @@
     [icon]="'fa-truck'"
     [breadcrumbs]="breadcrumbItems()">
     <div actions>
-      <a class="btn btn-primary" routerLink="/inventory/suppliers/new">
+      <a class="btn btn-outline btn-success" routerLink="/inventory/suppliers/new">
         <i class="fa-solid fa-plus"></i>
         Nuevo Proveedor
       </a>
@@ -52,7 +52,7 @@
     <div class="empty-state">
       <i class="fa-solid fa-exclamation-circle"></i>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary" (click)="loadData()">
+      <button class="btn btn-secondary" (click)="loadData()">
         <i class="fa-solid fa-refresh"></i>
         Reintentar
       </button>
@@ -65,7 +65,7 @@
       <i class="fa-solid fa-truck"></i>
       <h3>No hay proveedores registrados</h3>
       <p>Comienza agregando el primer proveedor</p>
-      <a class="btn btn-primary" routerLink="/inventory/suppliers/new">
+      <a class="btn btn-outline btn-success" routerLink="/inventory/suppliers/new">
         <i class="fa-solid fa-plus"></i>
         Agregar Primer Proveedor
       </a>
@@ -78,7 +78,7 @@
       <i class="fa-solid fa-filter-circle-xmark"></i>
       <h3>Sin resultados</h3>
       <p>No se encontraron proveedores con los filtros aplicados</p>
-      <a routerLink="/inventory/suppliers/new" class="btn btn-primary">
+      <a routerLink="/inventory/suppliers/new" class="btn btn-outline btn-success">
         <i class="fa-solid fa-plus"></i>
         Nuevo Proveedor
       </a>

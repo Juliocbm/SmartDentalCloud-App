@@ -14,13 +14,13 @@
         <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading() || patientForm.invalid">
+      <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading() || patientForm.invalid">
         @if (loading()) {
           <span class="btn-spinner"></span>
           Guardando...
         } @else {
-          <i class="fa-solid fa-check"></i>
-          {{ isEditMode() ? 'Actualizar' : 'Crear' }} Paciente
+          <i class="fa-solid" [class.fa-floppy-disk]="isEditMode()" [class.fa-plus]="!isEditMode()"></i>
+          {{ isEditMode() ? 'Guardar Cambios' : 'Crear Paciente' }}
         }
       </button>
     </div>

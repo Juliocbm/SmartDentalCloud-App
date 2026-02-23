@@ -10,6 +10,9 @@
           <i [class]="svc.isActive ? 'fa-solid fa-check-circle' : 'fa-solid fa-pause-circle'"></i>
           {{ svc.isActive ? 'Activo' : 'Inactivo' }}
         </span>
+        <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
         <a [routerLink]="['/services', svc.id, 'edit']" class="btn btn-outline">
           <i class="fa-solid fa-pen"></i>
           Editar
@@ -80,16 +83,6 @@
                 <span class="info-value mono-value">{{ svc.claveUnidad }}</span>
               </div>
             }
-            <div class="info-row">
-              <span class="info-label">Creado:</span>
-              <span class="info-value">{{ formatDate(svc.createdAt) }}</span>
-            </div>
-            @if (svc.updatedAt) {
-              <div class="info-row">
-                <span class="info-label">Actualizado:</span>
-                <span class="info-value">{{ formatDate(svc.updatedAt) }}</span>
-              </div>
-            }
           </div>
         </div>
 
@@ -135,6 +128,13 @@
         </div>
       </div>
     </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="svc.createdAt"
+      [updatedAt]="svc.updatedAt"
+      (closed)="showAuditModal.set(false)"
+    />
 
     <!-- Delete Confirm -->
     @if (showDeleteConfirm()) {

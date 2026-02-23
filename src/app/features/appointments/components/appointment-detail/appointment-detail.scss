@@ -19,63 +19,6 @@
   line-height: var(--line-height-relaxed);
 }
 
-// ===== Buttons =====
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: var(--transition-base);
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &.btn-primary {
-    background: var(--primary-500);
-    color: white;
-    &:hover:not(:disabled) { background: var(--primary-600); }
-  }
-
-  &.btn-secondary {
-    background: var(--surface-secondary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-primary);
-    &:hover:not(:disabled) { background: var(--surface-tertiary); }
-  }
-
-  &.btn-success {
-    background: var(--success-500);
-    color: white;
-    &:hover:not(:disabled) { background: var(--success-600); }
-  }
-
-  &.btn-warning {
-    background: var(--warning-500);
-    color: white;
-    &:hover:not(:disabled) { background: var(--warning-600); }
-  }
-
-  &.btn-danger {
-    background: var(--error-500);
-    color: white;
-    &:hover:not(:disabled) { background: var(--error-600); }
-  }
-
-  &.btn-outline {
-    background: transparent;
-    color: var(--text-primary);
-    border: 1px solid var(--border-primary);
-    &:hover:not(:disabled) { background: var(--surface-tertiary); }
-  }
-}
-
 // ===== Status Badge Utilities =====
 .bg-blue-100 { background: var(--primary-100); color: var(--primary-700); }
 .bg-green-100 { background: var(--success-100); color: var(--success-700); }

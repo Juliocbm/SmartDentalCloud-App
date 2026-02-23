@@ -9,6 +9,9 @@
         <span class="status-badge" [class.badge-active]="cat.isActive" [class.badge-inactive]="!cat.isActive">
           {{ cat.isActive ? 'Activa' : 'Inactiva' }}
         </span>
+        <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
         <button class="btn btn-outline" (click)="editCategory()">
           <i class="fa-solid fa-pen"></i>
           Editar
@@ -67,12 +70,14 @@
               </span>
             </span>
           </div>
-          <div class="info-row">
-            <span class="info-label">Fecha de creación:</span>
-            <span class="info-value">{{ cat.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
-          </div>
         </div>
       </div>
     </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="cat.createdAt"
+      (closed)="showAuditModal.set(false)"
+    />
   }
 </div>

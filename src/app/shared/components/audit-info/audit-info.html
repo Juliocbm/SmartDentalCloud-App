@@ -1,0 +1,59 @@
+@if (visible()) {
+  <app-modal
+    title="Auditoría"
+    subtitle="Información de creación y modificación"
+    icon="fa-clock-rotate-left"
+    size="sm"
+    (closed)="close()">
+
+    <div class="audit-content">
+      <!-- Creación -->
+      <div class="audit-group">
+        <h4 class="audit-group-title">
+          <i class="fa-solid fa-plus-circle"></i> Creación
+        </h4>
+        @if (createdAt()) {
+          <div class="audit-row">
+            <span class="audit-label">Fecha:</span>
+            <span class="audit-value">{{ createdAt() | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        }
+        @if (createdByName()) {
+          <div class="audit-row">
+            <span class="audit-label">Por:</span>
+            <span class="audit-value">{{ createdByName() }}</span>
+          </div>
+        }
+        @if (!createdAt() && !createdByName()) {
+          <p class="audit-empty">Sin información de creación</p>
+        }
+      </div>
+
+      <!-- Modificación -->
+      <div class="audit-group">
+        <h4 class="audit-group-title">
+          <i class="fa-solid fa-pen-to-square"></i> Última Modificación
+        </h4>
+        @if (updatedAt()) {
+          <div class="audit-row">
+            <span class="audit-label">Fecha:</span>
+            <span class="audit-value">{{ updatedAt() | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        }
+        @if (updatedByName()) {
+          <div class="audit-row">
+            <span class="audit-label">Por:</span>
+            <span class="audit-value">{{ updatedByName() }}</span>
+          </div>
+        }
+        @if (!updatedAt() && !updatedByName()) {
+          <p class="audit-empty">Sin modificaciones registradas</p>
+        }
+      </div>
+    </div>
+
+    <div modal-footer>
+      <button class="btn btn-secondary" (click)="close()">Cerrar</button>
+    </div>
+  </app-modal>
+}

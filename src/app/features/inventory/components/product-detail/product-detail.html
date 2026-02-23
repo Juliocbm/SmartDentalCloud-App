@@ -9,6 +9,9 @@
         <span class="status-badge" [class.badge-active]="p.isActive" [class.badge-inactive]="!p.isActive">
           {{ p.isActive ? 'Activo' : 'Inactivo' }}
         </span>
+        <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
         <button class="btn btn-outline" (click)="editProduct()">
           <i class="fa-solid fa-pen"></i>
           Editar
@@ -66,16 +69,6 @@
               <div class="info-row">
                 <span class="info-label">Descripción:</span>
                 <span class="info-value">{{ p.description }}</span>
-              </div>
-            }
-            <div class="info-row">
-              <span class="info-label">Registrado:</span>
-              <span class="info-value">{{ p.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
-            </div>
-            @if (p.updatedAt) {
-              <div class="info-row">
-                <span class="info-label">Última actualización:</span>
-                <span class="info-value">{{ p.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
               </div>
             }
           </div>
@@ -199,5 +192,12 @@
         </div>
       }
     </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="p.createdAt"
+      [updatedAt]="p.updatedAt"
+      (closed)="showAuditModal.set(false)"
+    />
   }
 </div>

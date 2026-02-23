@@ -2,6 +2,7 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { PurchaseOrdersService } from '../../services/purchase-orders.service';
 import { PurchaseOrder, PURCHASE_ORDER_STATUS_LABELS, PurchaseOrderStatus } from '../../models/purchase-order.models';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -10,11 +11,13 @@ import { LoggingService } from '../../../../core/services/logging.service';
 @Component({
   selector: 'app-purchase-order-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './purchase-order-detail.html',
   styleUrl: './purchase-order-detail.scss'
 })
 export class PurchaseOrderDetailComponent implements OnInit {
+  showAuditModal = signal(false);
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private poService = inject(PurchaseOrdersService);

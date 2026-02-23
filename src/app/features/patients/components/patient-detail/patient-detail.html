@@ -9,6 +9,9 @@
         <span class="status-badge" [class.badge-active]="pat.isActive" [class.badge-inactive]="!pat.isActive">
           {{ pat.isActive ? 'Activo' : 'Inactivo' }}
         </span>
+        <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
         <button class="btn btn-outline" (click)="editPatient()">
           <i class="fa-solid fa-pen"></i>
           Editar
@@ -131,10 +134,6 @@
               <div class="info-row">
                 <span class="info-label">Edad:</span>
                 <span class="info-value">{{ getAge() }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Registrado:</span>
-                <span class="info-value">{{ formatDate(patient()!.createdAt) }}</span>
               </div>
               @if (patient()!.gender) {
                 <div class="info-row">
@@ -683,5 +682,12 @@
         </div>
       }
     </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="patient()!.createdAt"
+      [updatedAt]="patient()!.updatedAt"
+      (closed)="showAuditModal.set(false)"
+    />
   }
 </div>

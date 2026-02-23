@@ -5,9 +5,12 @@
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </button>
       @if (canReschedule()) {
-        <button (click)="onEdit()" class="btn btn-secondary" [disabled]="actionLoading()">
-          <i class="fa-solid fa-edit"></i>
+        <button (click)="onEdit()" class="btn btn-outline" [disabled]="actionLoading()">
+          <i class="fa-solid fa-calendar-pen"></i>
           Reagendar
         </button>
       }
@@ -167,12 +170,14 @@
               <span class="info-value">{{ apt.cancellationReason }}</span>
             </div>
           }
-          <div class="info-row">
-            <span class="info-label">Fecha de creación:</span>
-            <span class="info-value">{{ formatDate(apt.createdAt) }}</span>
-          </div>
         </div>
       </div>
+
+      <app-audit-info
+        [visible]="showAuditModal()"
+        [createdAt]="apt.createdAt"
+        (closed)="showAuditModal.set(false)"
+      />
 
       <!-- Consultation Note Section (only for Completed appointments) -->
       @if (apt.status === AppointmentStatus.Completed) {

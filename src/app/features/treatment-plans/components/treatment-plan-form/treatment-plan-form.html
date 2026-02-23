@@ -13,12 +13,12 @@
         <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading()">
+      <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading()">
         @if (loading()) {
           <span class="btn-spinner"></span>
           Guardando...
         } @else {
-          <i class="fa-solid fa-save"></i>
+          <i class="fa-solid fa-plus"></i>
           Crear Plan
         }
       </button>

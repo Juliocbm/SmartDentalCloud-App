@@ -10,7 +10,7 @@
         <i class="fa-solid fa-box"></i>
         Productos
       </a>
-      <a class="btn btn-primary" routerLink="/inventory/categories/new">
+      <a class="btn btn-outline btn-success" routerLink="/inventory/categories/new">
         <i class="fa-solid fa-plus"></i>
         Nueva Categoría
       </a>
@@ -56,7 +56,7 @@
     <div class="empty-state">
       <i class="fa-solid fa-exclamation-circle"></i>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary" (click)="loadData()">
+      <button class="btn btn-secondary" (click)="loadData()">
         <i class="fa-solid fa-refresh"></i>
         Reintentar
       </button>
@@ -69,7 +69,7 @@
       <i class="fa-solid fa-tags"></i>
       <h3>No hay categorías registradas</h3>
       <p>Comienza agregando la primera categoría para organizar tus productos</p>
-      <a class="btn btn-primary" routerLink="/inventory/categories/new">
+      <a class="btn btn-outline btn-success" routerLink="/inventory/categories/new">
         <i class="fa-solid fa-plus"></i>
         Agregar Primera Categoría
       </a>

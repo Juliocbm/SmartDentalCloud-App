@@ -4,6 +4,11 @@
     [icon]="'fa-money-bill-wave'"
     [showBackButton]="true"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </button>
+    </div>
   </app-page-header>
 
   @if (loading()) {
@@ -59,10 +64,6 @@
               <span class="info-value mono">{{ pay.reference }}</span>
             </div>
           }
-          <div class="info-row">
-            <span class="info-label">Registrado</span>
-            <span class="info-value">{{ formatDateTime(pay.createdAt) }}</span>
-          </div>
         </div>
       </div>
 
@@ -95,5 +96,11 @@
         </div>
       </div>
     </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="pay.createdAt"
+      (closed)="showAuditModal.set(false)"
+    />
   }
 </div>
