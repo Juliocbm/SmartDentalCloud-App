@@ -6,6 +6,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { CfdiService } from '../../services/cfdi.service';
 import { Cfdi, CFDI_STATUS_CONFIG } from '../../models/cfdi.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-cfdi-list',
@@ -17,6 +18,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 export class CfdiListComponent implements OnInit {
   private cfdiService = inject(CfdiService);
   private logger = inject(LoggingService);
+  private notifications = inject(NotificationService);
 
   cfdis = signal<Cfdi[]>([]);
   filteredCfdis = signal<Cfdi[]>([]);
@@ -99,11 +101,26 @@ export class CfdiListComponent implements OnInit {
     }).format(new Date(date));
   }
 
-  downloadXml(cfdi: Cfdi): string {
-    return this.cfdiService.downloadXml(cfdi.id);
+  onDownloadXml(cfdi: Cfdi): void {
+    this.cfdiService.downloadXml(cfdi.id).subscribe({
+      next: (blob) => this.saveFile(blob, `${cfdi.serie || ''}${cfdi.folio || cfdi.id}.xml`, 'application/xml'),
+      error: () => this.notifications.error('Error al descargar XML')
+    });
   }
 
-  downloadPdf(cfdi: Cfdi): string {
-    return this.cfdiService.downloadPdf(cfdi.id);
+  onDownloadPdf(cfdi: Cfdi): void {
+    this.cfdiService.downloadPdf(cfdi.id).subscribe({
+      next: (blob) => this.saveFile(blob, `${cfdi.serie || ''}${cfdi.folio || cfdi.id}.pdf`, 'application/pdf'),
+      error: () => this.notifications.error('Error al descargar PDF')
+    });
+  }
+
+  private saveFile(blob: Blob, filename: string, type: string): void {
+    const url = window.URL.createObjectURL(new Blob([blob], { type }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 }

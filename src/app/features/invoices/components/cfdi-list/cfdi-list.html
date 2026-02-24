@@ -83,12 +83,12 @@
                     <i class="fa-solid fa-file-invoice"></i>
                   </a>
                   @if (cfdi.uuid) {
-                    <a [href]="downloadXml(cfdi)" target="_blank" class="btn btn-outline btn-xs" title="Descargar XML">
+                    <button class="btn btn-outline btn-xs" title="Descargar XML" (click)="onDownloadXml(cfdi)">
                       <i class="fa-solid fa-file-code"></i>
-                    </a>
-                    <a [href]="downloadPdf(cfdi)" target="_blank" class="btn btn-outline btn-xs" title="Descargar PDF">
+                    </button>
+                    <button class="btn btn-outline btn-xs" title="Descargar PDF" (click)="onDownloadPdf(cfdi)">
                       <i class="fa-solid fa-file-pdf"></i>
-                    </a>
+                    </button>
                   }
                 </div>
               </td>

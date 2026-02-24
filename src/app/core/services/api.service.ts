@@ -39,4 +39,8 @@ export class ApiService {
   patch<T>(endpoint: string, body: unknown): Observable<T> {
     return this.http.patch<T>(`${this.apiUrl}${endpoint}`, body);
   }
+
+  getBlob(endpoint: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}${endpoint}`, { responseType: 'blob' });
+  }
 }

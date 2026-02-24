@@ -13,11 +13,13 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { PatientsService } from '../../../patients/services/patients.service';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, ModalComponent],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })
@@ -33,6 +35,7 @@ export class InvoiceDetailComponent implements OnInit {
   private logger = inject(LoggingService);
   private cfdiService = inject(CfdiService);
   private location = inject(Location);
+  private patientsService = inject(PatientsService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -55,6 +58,13 @@ export class InvoiceDetailComponent implements OnInit {
   cancelMotivo = signal('');
   cancelObservaciones = signal('');
   satStatus = signal<CfdiSatStatus | null>(null);
+
+  // Email Modal State
+  showEmailModal = signal(false);
+  emailOption = signal<'patient' | 'custom'>('patient');
+  customEmail = signal('');
+  patientEmail = signal<string | null>(null);
+  sendingEmail = signal(false);
 
   // Constants
   InvoiceStatus = InvoiceStatus;
@@ -79,6 +89,7 @@ export class InvoiceDetailComponent implements OnInit {
       next: (data) => {
         this.invoice.set(data);
         this.loading.set(false);
+        this.loadPatientEmail(data.patientId);
       },
       error: (err) => {
         this.logger.error('Error loading invoice:', err);
@@ -271,14 +282,31 @@ export class InvoiceDetailComponent implements OnInit {
     return CFDI_STATUS_CONFIG[estado] || { label: estado, class: 'badge-neutral', icon: 'fa-circle' };
   }
 
-  getXmlUrl(): string {
+  onDownloadXml(): void {
     const cfdi = this.cfdi();
-    return cfdi ? this.cfdiService.downloadXml(cfdi.id) : '';
+    if (!cfdi) return;
+    this.cfdiService.downloadXml(cfdi.id).subscribe({
+      next: (blob) => this.saveFile(blob, `${cfdi.serie || ''}${cfdi.folio || cfdi.id}.xml`, 'application/xml'),
+      error: () => this.notifications.error('Error al descargar XML')
+    });
   }
 
-  getPdfUrl(): string {
+  onDownloadPdf(): void {
     const cfdi = this.cfdi();
-    return cfdi ? this.cfdiService.downloadPdf(cfdi.id) : '';
+    if (!cfdi) return;
+    this.cfdiService.downloadPdf(cfdi.id).subscribe({
+      next: (blob) => this.saveFile(blob, `${cfdi.serie || ''}${cfdi.folio || cfdi.id}.pdf`, 'application/pdf'),
+      error: () => this.notifications.error('Error al descargar PDF')
+    });
+  }
+
+  private saveFile(blob: Blob, filename: string, type: string): void {
+    const url = window.URL.createObjectURL(new Blob([blob], { type }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   canGenerateCfdi(): boolean {
@@ -297,23 +325,51 @@ export class InvoiceDetailComponent implements OnInit {
     return !!cfdi && cfdi.estado === 'Timbrado';
   }
 
-  sendCfdiEmail(): void {
+  private loadPatientEmail(patientId: string): void {
+    this.patientsService.getById(patientId).subscribe({
+      next: (patient) => this.patientEmail.set(patient.email || null),
+      error: () => this.patientEmail.set(null)
+    });
+  }
+
+  openEmailModal(): void {
+    if (!this.cfdi() || this.cfdiActionLoading()) return;
+    this.emailOption.set(this.patientEmail() ? 'patient' : 'custom');
+    this.customEmail.set('');
+    this.sendingEmail.set(false);
+    this.showEmailModal.set(true);
+  }
+
+  closeEmailModal(): void {
+    this.showEmailModal.set(false);
+  }
+
+  getSelectedEmail(): string {
+    return this.emailOption() === 'patient'
+      ? (this.patientEmail() ?? '')
+      : this.customEmail().trim();
+  }
+
+  isEmailValid(): boolean {
+    const email = this.getSelectedEmail();
+    return !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  confirmSendEmail(): void {
     const cfdi = this.cfdi();
-    const inv = this.invoice();
-    if (!cfdi || !inv || this.cfdiActionLoading()) return;
+    if (!cfdi || !this.isEmailValid()) return;
 
-    const email = prompt('Enviar CFDI al email:', '');
-    if (!email) return;
-
-    this.cfdiActionLoading.set(true);
+    const email = this.getSelectedEmail();
+    this.sendingEmail.set(true);
     this.cfdiService.sendEmail(cfdi.id, { email, includeXml: true, includePdf: true }).subscribe({
       next: () => {
-        this.notifications.success('CFDI enviado por email exitosamente');
-        this.cfdiActionLoading.set(false);
+        this.notifications.success(`CFDI enviado a ${email}`);
+        this.sendingEmail.set(false);
+        this.showEmailModal.set(false);
       },
       error: () => {
         this.notifications.error('Error al enviar el CFDI por email');
-        this.cfdiActionLoading.set(false);
+        this.sendingEmail.set(false);
       }
     });
   }

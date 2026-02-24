@@ -38,12 +38,12 @@ export class CfdiService {
     return this.api.post<CancelarCfdiResult>(`/cfdi/${cfdiId}/cancelar`, request);
   }
 
-  downloadXml(cfdiId: string): string {
-    return `${environment.apiUrl}/cfdi/${cfdiId}/xml`;
+  downloadXml(cfdiId: string): Observable<Blob> {
+    return this.api.getBlob(`/cfdi/${cfdiId}/xml`);
   }
 
-  downloadPdf(cfdiId: string): string {
-    return `${environment.apiUrl}/cfdi/${cfdiId}/pdf`;
+  downloadPdf(cfdiId: string): Observable<Blob> {
+    return this.api.getBlob(`/cfdi/${cfdiId}/pdf`);
   }
 
   sendEmail(cfdiId: string, request: SendCfdiEmailRequest): Observable<{ message: string }> {
