@@ -7,89 +7,122 @@
 // Botones: usa clases globales .btn de _components.scss
 // ============================================
 
-// ===== Items Container =====
-.items-container {
+// ===== Section Header Row =====
+.section-header-row {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+
+  .section-title {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
 }
 
 .items-count {
-  margin-left: auto;
+  margin-left: var(--spacing-sm);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);
-  color: var(--text-tertiary);
-  background: var(--surface-secondary);
+  color: var(--primary-700);
+  background: var(--primary-100);
   padding: 2px 10px;
   border-radius: var(--radius-full);
 }
 
-// ===== Plan Item Card =====
-.plan-item-card {
-  background: var(--surface-secondary);
-  border: 1px solid var(--border-primary);
+// ===== Table Cells =====
+.proc-description {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.proc-notes {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+// ===== Priority Badges =====
+.badge-priority-high {
+  background: var(--error-50);
+  color: var(--error-600);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.badge-priority-medium {
+  background: var(--warning-50);
+  color: var(--warning-700);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.badge-priority-low {
+  background: var(--success-50);
+  color: var(--success-600);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+// ===== Empty Items State =====
+.empty-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  border: 2px dashed var(--border-primary);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  background-color: var(--surface-secondary);
+  text-align: center;
+  gap: var(--spacing-md);
 
-  .item-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--surface-tertiary);
-    border-bottom: 1px solid var(--border-primary);
+  > i {
+    font-size: 2rem;
+    color: var(--text-tertiary);
   }
 
-  .item-number {
-    font-weight: var(--font-weight-bold);
-    color: var(--primary-500);
+  > p {
+    margin: 0;
     font-size: var(--font-size-sm);
-  }
-
-  .item-phase {
-    font-size: var(--font-size-xs);
     color: var(--text-secondary);
-    background: var(--surface-primary);
-    padding: 2px 8px;
-    border-radius: var(--radius-sm);
-  }
-
-  .btn-remove-item {
-    margin-left: auto;
-    background: transparent;
-    border: none;
-    color: var(--danger-500);
-    cursor: pointer;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    transition: var(--transition-base);
-    font-size: var(--font-size-sm);
-
-    &:hover {
-      background: var(--danger-500);
-      color: white;
-    }
-  }
-
-  .item-body {
-    padding: var(--spacing-lg);
   }
 }
 
-// ===== 3-column row for costs =====
+// ===== 3-column row for costs (modal) =====
 .form-row-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-lg);
 }
 
-// ===== Add Item Button =====
-.btn-add-item {
-  width: 100%;
-  margin-top: var(--spacing-md);
-  padding: var(--spacing-md);
-  border-style: dashed;
-  justify-content: center;
+// ===== Modal Cost Preview =====
+.modal-cost-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+
+  .modal-cost-value {
+    font-size: var(--font-size-lg);
+    color: var(--primary-600);
+  }
 }
 
 // ===== Plan Total =====

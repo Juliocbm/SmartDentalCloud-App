@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AbstractControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { ServiceSelectComponent } from '../service-select/service-select';
 import { DentalService } from '../../models/service.models';
@@ -15,7 +16,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 @Component({
   selector: 'app-invoice-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent, ServiceSelectComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent, ServiceSelectComponent, ModalComponent],
   templateUrl: './invoice-form.html',
   styleUrl: './invoice-form.scss'
 })
@@ -31,6 +32,11 @@ export class InvoiceFormComponent implements OnInit {
   error = signal<string | null>(null);
   form!: FormGroup;
   selectedPatient = signal<PatientSearchResult | null>(null);
+
+  // Item Modal State
+  showItemModal = signal(false);
+  editingItemIndex = signal<number | null>(null);
+  itemForm!: FormGroup;
 
   // Constants
   cfdiUsoOptions = CFDI_USO_OPTIONS;
@@ -53,7 +59,22 @@ export class InvoiceFormComponent implements OnInit {
       usoCFDI: ['G03'],
       metodoPago: ['PUE'],
       formaPago: ['01'],
-      items: this.fb.array([this.createItemGroup()])
+      items: this.fb.array([])
+    });
+    this.initItemForm();
+  }
+
+  private initItemForm(): void {
+    this.itemForm = this.fb.group({
+      treatmentId: [''],
+      description: ['', [Validators.required, Validators.minLength(3)]],
+      quantity: [1, [Validators.required, Validators.min(0.01)]],
+      unitPrice: [0, [Validators.required, Validators.min(0)]],
+      discountPercentage: [0, [Validators.min(0), Validators.max(100)]],
+      taxRate: [16, [Validators.min(0), Validators.max(100)]],
+      claveProdServ: ['85121800'],
+      claveUnidad: ['E48'],
+      noIdentificacion: ['']
     });
   }
 
@@ -75,14 +96,57 @@ export class InvoiceFormComponent implements OnInit {
     return this.form.get('items') as FormArray;
   }
 
-  addItem(): void {
-    this.items.push(this.createItemGroup());
+  openAddItemModal(): void {
+    this.editingItemIndex.set(null);
+    this.initItemForm();
+    this.showItemModal.set(true);
+  }
+
+  openEditItemModal(index: number): void {
+    this.editingItemIndex.set(index);
+    const itemValue = this.items.at(index).value;
+    this.initItemForm();
+    this.itemForm.patchValue(itemValue);
+    this.showItemModal.set(true);
+  }
+
+  confirmItemModal(): void {
+    if (this.itemForm.invalid) {
+      this.itemForm.markAllAsTouched();
+      return;
+    }
+
+    const index = this.editingItemIndex();
+    if (index !== null) {
+      this.items.at(index).patchValue(this.itemForm.value);
+    } else {
+      this.items.push(this.createItemGroupFromModal());
+    }
+    this.closeItemModal();
+  }
+
+  closeItemModal(): void {
+    this.showItemModal.set(false);
+    this.editingItemIndex.set(null);
   }
 
   removeItem(index: number): void {
-    if (this.items.length > 1) {
-      this.items.removeAt(index);
-    }
+    this.items.removeAt(index);
+  }
+
+  private createItemGroupFromModal(): FormGroup {
+    const v = this.itemForm.value;
+    return this.fb.group({
+      treatmentId: [v.treatmentId],
+      description: [v.description, [Validators.required, Validators.minLength(3)]],
+      quantity: [v.quantity, [Validators.required, Validators.min(0.01)]],
+      unitPrice: [v.unitPrice, [Validators.required, Validators.min(0)]],
+      discountPercentage: [v.discountPercentage, [Validators.min(0), Validators.max(100)]],
+      taxRate: [v.taxRate, [Validators.min(0), Validators.max(100)]],
+      claveProdServ: [v.claveProdServ],
+      claveUnidad: [v.claveUnidad],
+      noIdentificacion: [v.noIdentificacion]
+    });
   }
 
   calculateItemSubtotal(item: AbstractControl): number {
@@ -156,10 +220,9 @@ export class InvoiceFormComponent implements OnInit {
     });
   }
 
-  onServiceSelected(index: number, service: DentalService | null): void {
-    const itemGroup = this.items.at(index);
+  onModalServiceSelected(service: DentalService | null): void {
     if (service) {
-      itemGroup.patchValue({
+      this.itemForm.patchValue({
         description: service.name,
         unitPrice: service.cost,
         claveProdServ: service.claveProdServ || '85121800',
@@ -199,6 +262,32 @@ export class InvoiceFormComponent implements OnInit {
   isItemFieldInvalid(itemIndex: number, fieldName: string): boolean {
     const field = this.items.at(itemIndex).get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  isModalFieldInvalid(fieldName: string): boolean {
+    const field = this.itemForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  get isEditingItem(): boolean {
+    return this.editingItemIndex() !== null;
+  }
+
+  get modalItemSubtotal(): number {
+    const v = this.itemForm.value;
+    return (v.quantity || 0) * (v.unitPrice || 0);
+  }
+
+  get modalItemDiscount(): number {
+    return this.modalItemSubtotal * ((this.itemForm.value.discountPercentage || 0) / 100);
+  }
+
+  get modalItemTax(): number {
+    return (this.modalItemSubtotal - this.modalItemDiscount) * ((this.itemForm.value.taxRate || 0) / 100);
+  }
+
+  get modalItemTotal(): number {
+    return this.modalItemSubtotal - this.modalItemDiscount + this.modalItemTax;
   }
 
   formatCurrency(value: number): string {

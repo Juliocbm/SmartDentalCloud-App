@@ -158,65 +158,42 @@
   }
 }
 
-// Medication cards
-.medication-form-card {
-  background: var(--surface-secondary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-lg);
-  overflow: hidden;
+// Medication table cells
+.med-name {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
 
-  &:last-child {
-    margin-bottom: 0;
+.med-presentation {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+// Empty items state
+.empty-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  border: 2px dashed var(--border-primary);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-secondary);
+  text-align: center;
+  gap: var(--spacing-md);
+
+  > i {
+    font-size: 2rem;
+    color: var(--text-tertiary);
   }
 
-  .medication-form-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--surface-tertiary);
-    border-bottom: 1px solid var(--border-primary);
-
-    .medication-number {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: var(--radius-full);
-      background: var(--primary-500);
-      color: white;
-      font-weight: var(--font-weight-bold);
-      font-size: var(--font-size-sm);
-      flex-shrink: 0;
-    }
-
-    .medication-form-title {
-      flex: 1;
-      font-weight: var(--font-weight-semibold);
-      color: var(--text-primary);
-    }
-
-    .btn-remove {
-      background: transparent;
-      border: 1px solid var(--border-primary);
-      border-radius: var(--radius-md);
-      padding: var(--spacing-xs) var(--spacing-sm);
-      cursor: pointer;
-      color: var(--text-tertiary);
-      transition: all var(--transition-base);
-
-      &:hover {
-        background: var(--error-50);
-        border-color: var(--error-200);
-        color: var(--error-500);
-      }
-    }
-  }
-
-  .medication-form-body {
-    padding: var(--spacing-lg);
+  > p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
   }
 }
 

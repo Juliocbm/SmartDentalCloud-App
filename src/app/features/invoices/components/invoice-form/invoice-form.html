@@ -105,150 +105,77 @@
             Items de Factura
             <span class="required">*</span>
           </h3>
-          <button type="button" class="btn btn-outline btn-sm" (click)="addItem()">
+          <button type="button" class="btn btn-outline btn-sm" (click)="openAddItemModal()">
             <i class="fa-solid fa-plus"></i>
             Agregar Item
           </button>
         </div>
 
-        <div formArrayName="items" class="items-container">
-          @for (item of items.controls; track $index) {
-            <div [formGroupName]="$index" class="invoice-item">
-              <div class="item-header">
-                <span class="item-number">
-                  <i class="fa-solid fa-cube"></i>
-                  Item {{ $index + 1 }}
-                </span>
-                @if (items.length > 1) {
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-danger"
-                    (click)="removeItem($index)"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                    Eliminar
-                  </button>
+        @if (items.length === 0) {
+          <div class="empty-items">
+            <i class="fa-solid fa-box-open"></i>
+            <p>No hay items en la factura</p>
+            <button type="button" class="btn btn-outline btn-sm" (click)="openAddItemModal()">
+              <i class="fa-solid fa-plus"></i>
+              Agregar primer item
+            </button>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Descripción</th>
+                  <th>Cant.</th>
+                  <th>P. Unitario</th>
+                  <th>Desc. %</th>
+                  <th>IVA %</th>
+                  <th>Total</th>
+                  <th class="actions-column">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of items.controls; track $index) {
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>
+                      <span class="item-description">{{ item.value.description }}</span>
+                      @if (item.value.claveProdServ) {
+                        <span class="item-sat-key">{{ item.value.claveProdServ }}</span>
+                      }
+                    </td>
+                    <td>{{ item.value.quantity }}</td>
+                    <td class="amount-cell">{{ formatCurrency(item.value.unitPrice) }}</td>
+                    <td>{{ item.value.discountPercentage }}%</td>
+                    <td>{{ item.value.taxRate }}%</td>
+                    <td class="amount-cell">{{ formatCurrency(calculateItemTotal(item)) }}</td>
+                    <td class="actions-column">
+                      <div class="action-buttons">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline btn-icon"
+                          title="Editar item"
+                          (click)="openEditItemModal($index)"
+                        >
+                          <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline btn-icon btn-danger"
+                          title="Eliminar item"
+                          (click)="removeItem($index)"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
                 }
-              </div>
-
-              <!-- Selector de Servicio (auto-fill) -->
-              <div class="form-row">
-                <div class="form-group form-group-full">
-                  <label class="form-label">
-                    Servicio del Catálogo
-                    <span class="optional-badge">Auto-fill</span>
-                  </label>
-                  <app-service-select
-                    [disabled]="loading()"
-                    (serviceSelected)="onServiceSelected($index, $event)"
-                  ></app-service-select>
-                  <p class="field-hint">
-                    <i class="fa-solid fa-circle-info"></i>
-                    Selecciona un servicio para llenar automáticamente descripción, precio y claves SAT
-                  </p>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group form-group-full">
-                  <label class="form-label">Descripción <span class="required">*</span></label>
-                  <input
-                    type="text"
-                    formControlName="description"
-                    class="form-input"
-                    [class.input-error]="isItemFieldInvalid($index, 'description')"
-                    placeholder="Descripción del servicio o producto"
-                  />
-                  @if (isItemFieldInvalid($index, 'description')) {
-                    <span class="error-message">La descripción es requerida (mín. 3 caracteres)</span>
-                  }
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Cantidad <span class="required">*</span></label>
-                  <input
-                    type="number"
-                    formControlName="quantity"
-                    class="form-input"
-                    [class.input-error]="isItemFieldInvalid($index, 'quantity')"
-                    min="0.01"
-                    step="0.01"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Precio Unitario <span class="required">*</span></label>
-                  <input
-                    type="number"
-                    formControlName="unitPrice"
-                    class="form-input"
-                    [class.input-error]="isItemFieldInvalid($index, 'unitPrice')"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Descuento (%)</label>
-                  <input
-                    type="number"
-                    formControlName="discountPercentage"
-                    class="form-input"
-                    min="0"
-                    max="100"
-                    step="0.01"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">IVA (%)</label>
-                  <input
-                    type="number"
-                    formControlName="taxRate"
-                    class="form-input"
-                    min="0"
-                    max="100"
-                    step="0.01"
-                  />
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Clave Prod/Serv (SAT)</label>
-                  <input type="text" formControlName="claveProdServ" class="form-input" placeholder="85121800" />
-                </div>
-
-                <div class="form-group">
-                  <label class="form-label">Clave Unidad (SAT)</label>
-                  <input type="text" formControlName="claveUnidad" class="form-input" placeholder="E48" />
-                </div>
-              </div>
-
-              <!-- Item Totals -->
-              <div class="item-totals">
-                <div class="total-row">
-                  <span>Subtotal:</span>
-                  <span class="total-value">{{ formatCurrency(calculateItemSubtotal(item)) }}</span>
-                </div>
-                <div class="total-row">
-                  <span>Descuento:</span>
-                  <span class="total-value total-discount">-{{ formatCurrency(calculateItemDiscount(item)) }}</span>
-                </div>
-                <div class="total-row">
-                  <span>IVA:</span>
-                  <span class="total-value">{{ formatCurrency(calculateItemTax(item)) }}</span>
-                </div>
-                <div class="total-row total-row-main">
-                  <span>Total Item:</span>
-                  <span class="total-value">{{ formatCurrency(calculateItemTotal(item)) }}</span>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
 
       <!-- Invoice Total Summary -->
@@ -267,3 +194,145 @@
     </form>
   </div>
 </div>
+
+<!-- Item Modal -->
+@if (showItemModal()) {
+  <app-modal
+    [title]="isEditingItem ? 'Editar Item' : 'Agregar Item'"
+    [subtitle]="isEditingItem ? 'Modifica los datos del item' : 'Completa los datos del nuevo item'"
+    [icon]="'fa-cube'"
+    [size]="'lg'"
+    (closed)="closeItemModal()">
+
+    <form [formGroup]="itemForm">
+      <!-- Selector de Servicio -->
+      <div class="form-group">
+        <label class="form-label">
+          Servicio del Catálogo
+          <span class="optional-badge">Auto-fill</span>
+        </label>
+        <app-service-select
+          [disabled]="false"
+          (serviceSelected)="onModalServiceSelected($event)"
+        ></app-service-select>
+        <p class="field-hint">
+          <i class="fa-solid fa-circle-info"></i>
+          Selecciona un servicio para llenar automáticamente descripción, precio y claves SAT
+        </p>
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label class="form-label">Descripción <span class="required">*</span></label>
+        <input
+          type="text"
+          formControlName="description"
+          class="form-input"
+          [class.input-error]="isModalFieldInvalid('description')"
+          placeholder="Descripción del servicio o producto"
+        />
+        @if (isModalFieldInvalid('description')) {
+          <span class="error-message">La descripción es requerida (mín. 3 caracteres)</span>
+        }
+      </div>
+
+      <!-- Cantidad + Precio -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Cantidad <span class="required">*</span></label>
+          <input
+            type="number"
+            formControlName="quantity"
+            class="form-input"
+            [class.input-error]="isModalFieldInvalid('quantity')"
+            min="0.01"
+            step="0.01"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Precio Unitario <span class="required">*</span></label>
+          <input
+            type="number"
+            formControlName="unitPrice"
+            class="form-input"
+            [class.input-error]="isModalFieldInvalid('unitPrice')"
+            min="0"
+            step="0.01"
+          />
+        </div>
+      </div>
+
+      <!-- Descuento + IVA -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Descuento (%)</label>
+          <input
+            type="number"
+            formControlName="discountPercentage"
+            class="form-input"
+            min="0"
+            max="100"
+            step="0.01"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">IVA (%)</label>
+          <input
+            type="number"
+            formControlName="taxRate"
+            class="form-input"
+            min="0"
+            max="100"
+            step="0.01"
+          />
+        </div>
+      </div>
+
+      <!-- Claves SAT -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Clave Prod/Serv (SAT)</label>
+          <input type="text" formControlName="claveProdServ" class="form-input" placeholder="85121800" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Clave Unidad (SAT)</label>
+          <input type="text" formControlName="claveUnidad" class="form-input" placeholder="E48" />
+        </div>
+      </div>
+
+      <!-- Live Total Preview -->
+      <div class="modal-item-totals">
+        <div class="modal-total-row">
+          <span>Subtotal:</span>
+          <span class="modal-total-value">{{ formatCurrency(modalItemSubtotal) }}</span>
+        </div>
+        <div class="modal-total-row">
+          <span>Descuento:</span>
+          <span class="modal-total-value modal-total-discount">-{{ formatCurrency(modalItemDiscount) }}</span>
+        </div>
+        <div class="modal-total-row">
+          <span>IVA:</span>
+          <span class="modal-total-value">{{ formatCurrency(modalItemTax) }}</span>
+        </div>
+        <div class="modal-total-row modal-total-row-main">
+          <span>Total del Item:</span>
+          <span class="modal-total-value">{{ formatCurrency(modalItemTotal) }}</span>
+        </div>
+      </div>
+    </form>
+
+    <div modal-footer>
+      <button type="button" class="btn btn-outline" (click)="closeItemModal()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="confirmItemModal()" [disabled]="itemForm.invalid">
+        <i class="fa-solid fa-check"></i>
+        {{ isEditingItem ? 'Guardar Cambios' : 'Agregar Item' }}
+      </button>
+    </div>
+  </app-modal>
+}

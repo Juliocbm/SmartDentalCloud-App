@@ -149,162 +149,232 @@
         </div>
       </div>
 
-      <!-- Sección: Items del Plan -->
+      <!-- Sección: Procedimientos del Plan -->
       <div class="form-section">
-        <h3 class="section-title">
-          <i class="fa-solid fa-list-check section-icon"></i>
-          Procedimientos del Plan
-          <span class="items-count">{{ items.length }} {{ items.length === 1 ? 'item' : 'items' }}</span>
-        </h3>
+        <div class="section-header-row">
+          <h3 class="section-title">
+            <i class="fa-solid fa-list-check section-icon"></i>
+            Procedimientos del Plan
+            @if (items.length > 0) {
+              <span class="items-count">{{ items.length }}</span>
+            }
+          </h3>
+          <button type="button" class="btn btn-outline btn-sm" (click)="openAddProcModal()">
+            <i class="fa-solid fa-plus"></i>
+            Agregar Procedimiento
+          </button>
+        </div>
 
-        <div formArrayName="items" class="items-container">
-          @for (item of items.controls; track $index; let i = $index) {
-            <div class="plan-item-card" [formGroupName]="$index">
-              <div class="item-header">
-                <span class="item-number">#{{ i + 1 }}</span>
-                <span class="item-phase" *ngIf="item.get('treatmentPhase')?.value">
-                  {{ item.get('treatmentPhase')?.value }}
-                </span>
-                @if (items.length > 1) {
-                  <button
-                    type="button"
-                    class="btn-remove-item"
-                    (click)="removeItem(i)"
-                    title="Eliminar item"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                }
-              </div>
-
-              <div class="item-body">
-                <!-- Servicio y Descripción -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label">Servicio del Catálogo</label>
-                    <app-service-select
-                      [disabled]="loading()"
-                      (serviceSelected)="onItemServiceSelected(i, $event)"
-                    />
-                    <p class="field-hint">
-                      <i class="fa-solid fa-circle-info"></i>
-                      Opcional: selecciona un servicio para autocompletar
-                    </p>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">
-                      Descripción <span class="required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      formControlName="description"
-                      class="form-input"
-                      [class.input-error]="isItemFieldInvalid(i, 'description')"
-                      placeholder="Descripción del procedimiento"
-                    />
-                    @if (isItemFieldInvalid(i, 'description')) {
-                      <span class="error-message">La descripción es requerida</span>
-                    }
-                  </div>
-                </div>
-
-                <!-- Costos y Prioridad -->
-                <div class="form-row form-row-3">
-                  <div class="form-group">
-                    <label class="form-label">
-                      Costo Estimado <span class="required">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      formControlName="estimatedCost"
-                      class="form-input"
-                      [class.input-error]="isItemFieldInvalid(i, 'estimatedCost')"
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                    />
-                    @if (isItemFieldInvalid(i, 'estimatedCost')) {
-                      <span class="error-message">El costo es requerido</span>
-                    }
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Descuento</label>
-                    <input
-                      type="number"
-                      formControlName="discount"
-                      class="form-input"
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Prioridad</label>
-                    <select formControlName="priority" class="form-input">
-                      @for (priority of priorityOptions; track priority) {
-                        <option [value]="priority">{{ priority }}</option>
+        @if (items.length === 0) {
+          <div class="empty-items">
+            <i class="fa-solid fa-list-check"></i>
+            <p>No hay procedimientos en el plan</p>
+            <button type="button" class="btn btn-outline btn-sm" (click)="openAddProcModal()">
+              <i class="fa-solid fa-plus"></i>
+              Agregar primer procedimiento
+            </button>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Descripción</th>
+                  <th>Costo</th>
+                  <th>Desc.</th>
+                  <th>Neto</th>
+                  <th>Prioridad</th>
+                  <th>Fase</th>
+                  <th class="actions-column">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of items.controls; track $index) {
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>
+                      <span class="proc-description">{{ item.get('description')?.value }}</span>
+                      @if (item.get('notes')?.value) {
+                        <span class="proc-notes">{{ item.get('notes')?.value }}</span>
                       }
-                    </select>
-                  </div>
-                </div>
+                    </td>
+                    <td class="amount-cell">{{ item.get('estimatedCost')?.value | number:'1.2-2' }}</td>
+                    <td class="amount-cell">{{ item.get('discount')?.value | number:'1.2-2' }}</td>
+                    <td class="amount-cell">{{ (item.get('estimatedCost')?.value || 0) - (item.get('discount')?.value || 0) | number:'1.2-2' }}</td>
+                    <td>
+                      <span class="badge badge-priority-{{ (item.get('priority')?.value || 'Medium') | lowercase }}">
+                        {{ item.get('priority')?.value }}
+                      </span>
+                    </td>
+                    <td>{{ item.get('treatmentPhase')?.value || '—' }}</td>
+                    <td class="actions-column">
+                      <div class="action-buttons">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline btn-icon"
+                          title="Editar procedimiento"
+                          (click)="openEditProcModal($index)"
+                        >
+                          <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline btn-icon btn-danger"
+                          title="Eliminar procedimiento"
+                          (click)="removeProc($index)"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
 
-                <!-- Fase y Fecha -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label">Fase del Tratamiento</label>
-                    <input
-                      type="text"
-                      formControlName="treatmentPhase"
-                      class="form-input"
-                      placeholder="Ej: Fase 1: Diagnóstico"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">Fecha Estimada</label>
-                    <input
-                      type="date"
-                      formControlName="estimatedDate"
-                      class="form-input"
-                    />
-                  </div>
-                </div>
-
-                <!-- Notas -->
-                <div class="form-row">
-                  <div class="form-group form-group-full">
-                    <label class="form-label">Notas</label>
-                    <input
-                      type="text"
-                      formControlName="notes"
-                      class="form-input"
-                      placeholder="Notas adicionales sobre este procedimiento..."
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-
-        <!-- Add Item Button -->
-        <button type="button" class="btn btn-outline btn-add-item" (click)="addItem()">
-          <i class="fa-solid fa-plus"></i>
-          Agregar Procedimiento
-        </button>
-
-        <!-- Total Estimado -->
-        <div class="plan-total">
-          <span class="total-label">Total Estimado:</span>
-          <span class="total-amount">
-            {{ getTotalEstimated() | number:'1.2-2' }} MXN
-          </span>
-        </div>
+          <!-- Total Estimado -->
+          <div class="plan-total">
+            <span class="total-label">Total Estimado:</span>
+            <span class="total-amount">
+              {{ getTotalEstimated() | number:'1.2-2' }} MXN
+            </span>
+          </div>
+        }
       </div>
 
     </form>
   </div>
 </div>
+
+<!-- Procedure Modal -->
+@if (showProcModal()) {
+  <app-modal
+    [title]="isEditingProc ? 'Editar Procedimiento' : 'Agregar Procedimiento'"
+    [subtitle]="isEditingProc ? 'Modifica los datos del procedimiento' : 'Completa los datos del procedimiento'"
+    [icon]="'fa-list-check'"
+    [size]="'lg'"
+    (closed)="closeProcModal()">
+
+    <form [formGroup]="procForm">
+      <!-- Servicio del Catálogo -->
+      <div class="form-group">
+        <label class="form-label">
+          Servicio del Catálogo
+          <span class="optional-badge">Auto-fill</span>
+        </label>
+        <app-service-select
+          [disabled]="false"
+          (serviceSelected)="onModalServiceSelected($event)"
+        ></app-service-select>
+        <p class="field-hint">
+          <i class="fa-solid fa-circle-info"></i>
+          Selecciona un servicio para llenar automáticamente descripción y costo
+        </p>
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label class="form-label">Descripción <span class="required">*</span></label>
+        <input
+          type="text"
+          formControlName="description"
+          class="form-input"
+          [class.input-error]="isProcFieldInvalid('description')"
+          placeholder="Descripción del procedimiento"
+        />
+        @if (isProcFieldInvalid('description')) {
+          <span class="error-message">La descripción es requerida</span>
+        }
+      </div>
+
+      <!-- Costo + Descuento + Prioridad -->
+      <div class="form-row form-row-3">
+        <div class="form-group">
+          <label class="form-label">Costo Estimado <span class="required">*</span></label>
+          <input
+            type="number"
+            formControlName="estimatedCost"
+            class="form-input"
+            [class.input-error]="isProcFieldInvalid('estimatedCost')"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Descuento</label>
+          <input
+            type="number"
+            formControlName="discount"
+            class="form-input"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Prioridad</label>
+          <select formControlName="priority" class="form-input">
+            @for (priority of priorityOptions; track priority) {
+              <option [value]="priority">{{ priority }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Fase + Fecha -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Fase del Tratamiento</label>
+          <input
+            type="text"
+            formControlName="treatmentPhase"
+            class="form-input"
+            placeholder="Ej: Fase 1: Diagnóstico"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Fecha Estimada</label>
+          <input
+            type="date"
+            formControlName="estimatedDate"
+            class="form-input"
+          />
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <div class="form-group">
+        <label class="form-label">Notas</label>
+        <input
+          type="text"
+          formControlName="notes"
+          class="form-input"
+          placeholder="Notas adicionales sobre este procedimiento..."
+        />
+      </div>
+
+      <!-- Net Cost Preview -->
+      <div class="modal-cost-preview">
+        <span>Costo Neto:</span>
+        <span class="modal-cost-value">{{ procNetCost | number:'1.2-2' }} MXN</span>
+      </div>
+    </form>
+
+    <div modal-footer>
+      <button type="button" class="btn btn-outline" (click)="closeProcModal()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="confirmProcModal()" [disabled]="procForm.invalid">
+        <i class="fa-solid fa-check"></i>
+        {{ isEditingProc ? 'Guardar Cambios' : 'Agregar Procedimiento' }}
+      </button>
+    </div>
+  </app-modal>
+}

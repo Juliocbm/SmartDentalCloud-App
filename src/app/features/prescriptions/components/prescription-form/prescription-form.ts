@@ -14,12 +14,13 @@ import { PatientsService } from '../../../patients/services/patients.service';
 import { Patient } from '../../../patients/models/patient.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
 
 
 @Component({
   selector: 'app-prescription-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent],
   templateUrl: './prescription-form.html',
   styleUrl: './prescription-form.scss'
 })
@@ -48,9 +49,12 @@ export class PrescriptionFormComponent implements OnInit {
   selectedPatient = signal<Patient | null>(null);
   diagnosis = signal('');
   notes = signal('');
-  items = signal<CreatePrescriptionItemRequest[]>([
-    this.createEmptyItem()
-  ]);
+  items = signal<CreatePrescriptionItemRequest[]>([]);
+
+  // Medication Modal State
+  showMedModal = signal(false);
+  editingMedIndex = signal<number | null>(null);
+  medForm = signal<CreatePrescriptionItemRequest>(this.createEmptyItem());
 
   // Pre-selected patient from query params
   private preselectedPatientId: string | null = null;
@@ -125,21 +129,58 @@ export class PrescriptionFormComponent implements OnInit {
     };
   }
 
-  addItem(): void {
-    this.items.update(items => [...items, this.createEmptyItem()]);
+  openAddMedModal(): void {
+    this.editingMedIndex.set(null);
+    this.medForm.set(this.createEmptyItem());
+    this.showMedModal.set(true);
   }
 
-  removeItem(index: number): void {
-    if (this.items().length <= 1) return;
+  openEditMedModal(index: number): void {
+    this.editingMedIndex.set(index);
+    this.medForm.set({ ...this.items()[index] });
+    this.showMedModal.set(true);
+  }
+
+  confirmMedModal(): void {
+    const med = this.medForm();
+    if (!this.isMedValid(med)) return;
+
+    const index = this.editingMedIndex();
+    if (index !== null) {
+      this.items.update(items => {
+        const updated = [...items];
+        updated[index] = { ...med };
+        return updated;
+      });
+    } else {
+      this.items.update(items => [...items, { ...med }]);
+    }
+    this.closeMedModal();
+  }
+
+  closeMedModal(): void {
+    this.showMedModal.set(false);
+    this.editingMedIndex.set(null);
+  }
+
+  removeMed(index: number): void {
     this.items.update(items => items.filter((_, i) => i !== index));
   }
 
-  updateItem(index: number, field: keyof CreatePrescriptionItemRequest, value: string | number): void {
-    this.items.update(items => {
-      const updated = [...items];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
+  updateMedField(field: keyof CreatePrescriptionItemRequest, value: string | number): void {
+    this.medForm.update(med => ({ ...med, [field]: value }));
+  }
+
+  isMedValid(med: CreatePrescriptionItemRequest): boolean {
+    return med.medicationName.trim() !== '' &&
+      med.dosage.trim() !== '' &&
+      med.frequency.trim() !== '' &&
+      med.duration.trim() !== '' &&
+      med.quantity > 0;
+  }
+
+  get isEditingMed(): boolean {
+    return this.editingMedIndex() !== null;
   }
 
   // === Validation ===

@@ -31,7 +31,7 @@ export class LoginComponent {
     this.rememberMe.set(wasRemembered);
     this.loginForm = this.fb.group({
       email: [savedEmail, [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['Entrar240992*', [Validators.required, Validators.minLength(6)]]
     });
   }
 

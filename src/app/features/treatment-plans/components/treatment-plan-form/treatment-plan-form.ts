@@ -11,6 +11,7 @@ import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { DentalService } from '../../../invoices/models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
 
 @Component({
   selector: 'app-treatment-plan-form',
@@ -20,7 +21,8 @@ import { LoggingService } from '../../../../core/services/logging.service';
     ReactiveFormsModule,
     PageHeaderComponent,
     PatientAutocompleteComponent,
-    ServiceSelectComponent
+    ServiceSelectComponent,
+    ModalComponent
   ],
   templateUrl: './treatment-plan-form.html',
   styleUrl: './treatment-plan-form.scss'
@@ -39,6 +41,11 @@ export class TreatmentPlanFormComponent implements OnInit {
 
   // Form
   form!: FormGroup;
+
+  // Procedure Modal State
+  showProcModal = signal(false);
+  editingProcIndex = signal<number | null>(null);
+  procForm!: FormGroup;
 
   // Config
   priorityOptions = Object.values(ItemPriority);
@@ -64,16 +71,11 @@ export class TreatmentPlanFormComponent implements OnInit {
       items: this.fb.array([], Validators.required)
     });
 
-    // Add first empty item
-    this.addItem();
+    this.initProcForm();
   }
 
-  get items(): FormArray {
-    return this.form.get('items') as FormArray;
-  }
-
-  addItem(): void {
-    const itemGroup = this.fb.group({
+  private initProcForm(): void {
+    this.procForm = this.fb.group({
       serviceId: [''],
       serviceName: [''],
       description: ['', Validators.required],
@@ -84,14 +86,80 @@ export class TreatmentPlanFormComponent implements OnInit {
       treatmentPhase: [''],
       estimatedDate: ['']
     });
-
-    this.items.push(itemGroup);
   }
 
-  removeItem(index: number): void {
-    if (this.items.length > 1) {
-      this.items.removeAt(index);
+  get items(): FormArray {
+    return this.form.get('items') as FormArray;
+  }
+
+  // === Procedure Modal Methods ===
+
+  openAddProcModal(): void {
+    this.editingProcIndex.set(null);
+    this.procForm.reset({
+      serviceId: '',
+      serviceName: '',
+      description: '',
+      notes: '',
+      priority: ItemPriority.Medium,
+      estimatedCost: 0,
+      discount: 0,
+      treatmentPhase: '',
+      estimatedDate: ''
+    });
+    this.showProcModal.set(true);
+  }
+
+  openEditProcModal(index: number): void {
+    this.editingProcIndex.set(index);
+    const item = this.items.at(index);
+    this.procForm.patchValue(item.value);
+    this.showProcModal.set(true);
+  }
+
+  confirmProcModal(): void {
+    if (this.procForm.invalid) {
+      this.procForm.markAllAsTouched();
+      return;
     }
+
+    const index = this.editingProcIndex();
+    if (index !== null) {
+      this.items.at(index).patchValue(this.procForm.value);
+    } else {
+      const itemGroup = this.fb.group({
+        serviceId: [this.procForm.value.serviceId],
+        serviceName: [this.procForm.value.serviceName],
+        description: [this.procForm.value.description, Validators.required],
+        notes: [this.procForm.value.notes],
+        priority: [this.procForm.value.priority],
+        estimatedCost: [this.procForm.value.estimatedCost, [Validators.required, Validators.min(0)]],
+        discount: [this.procForm.value.discount, Validators.min(0)],
+        treatmentPhase: [this.procForm.value.treatmentPhase],
+        estimatedDate: [this.procForm.value.estimatedDate]
+      });
+      this.items.push(itemGroup);
+    }
+    this.closeProcModal();
+  }
+
+  closeProcModal(): void {
+    this.showProcModal.set(false);
+    this.editingProcIndex.set(null);
+  }
+
+  removeProc(index: number): void {
+    this.items.removeAt(index);
+  }
+
+  get isEditingProc(): boolean {
+    return this.editingProcIndex() !== null;
+  }
+
+  get procNetCost(): number {
+    const cost = this.procForm.get('estimatedCost')?.value || 0;
+    const discount = this.procForm.get('discount')?.value || 0;
+    return cost - discount;
   }
 
   onPatientSelected(patient: PatientSearchResult | null): void {
@@ -111,6 +179,24 @@ export class TreatmentPlanFormComponent implements OnInit {
     } else {
       item.patchValue({ serviceId: '', serviceName: '' });
     }
+  }
+
+  onModalServiceSelected(service: DentalService | null): void {
+    if (service) {
+      this.procForm.patchValue({
+        serviceId: service.id,
+        serviceName: service.name,
+        description: this.procForm.get('description')?.value || service.name,
+        estimatedCost: service.cost || 0
+      });
+    } else {
+      this.procForm.patchValue({ serviceId: '', serviceName: '' });
+    }
+  }
+
+  isProcFieldInvalid(fieldName: string): boolean {
+    const field = this.procForm.get(fieldName);
+    return !!(field && field.invalid && field.touched);
   }
 
   getTotalEstimated(): number {

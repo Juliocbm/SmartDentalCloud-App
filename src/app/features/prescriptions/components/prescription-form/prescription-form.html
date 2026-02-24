@@ -120,147 +120,79 @@
           <h3 class="section-title">
             <i class="fa-solid fa-pills section-icon"></i>
             Medicamentos
-            <span class="section-count">{{ items().length }}</span>
+            @if (items().length > 0) {
+              <span class="section-count">{{ items().length }}</span>
+            }
           </h3>
-          <button type="button" class="btn btn-outline btn-sm" (click)="addItem()">
+          <button type="button" class="btn btn-outline btn-sm" (click)="openAddMedModal()">
             <i class="fa-solid fa-plus"></i>
             Agregar
           </button>
         </div>
 
-        @for (item of items(); track $index; let i = $index) {
-          <div class="medication-form-card">
-            <div class="medication-form-header">
-              <span class="medication-number">{{ i + 1 }}</span>
-              <span class="medication-form-title">Medicamento {{ i + 1 }}</span>
-              @if (items().length > 1) {
-                <button type="button" class="btn-remove" (click)="removeItem(i)">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              }
-            </div>
-
-            <div class="medication-form-body">
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Nombre del Medicamento <span class="required">*</span></label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    placeholder="Ej: Amoxicilina"
-                    [ngModel]="item.medicationName"
-                    (ngModelChange)="updateItem(i, 'medicationName', $event)"
-                    [name]="'medicationName_' + i"
-                  />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Principio Activo</label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    placeholder="Ej: Amoxicilina trihidratada"
-                    [ngModel]="item.activeIngredient"
-                    (ngModelChange)="updateItem(i, 'activeIngredient', $event)"
-                    [name]="'activeIngredient_' + i"
-                  />
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Presentación</label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    placeholder="Ej: Cápsulas 500mg"
-                    [ngModel]="item.presentation"
-                    (ngModelChange)="updateItem(i, 'presentation', $event)"
-                    [name]="'presentation_' + i"
-                  />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Vía de Administración</label>
-                  <select
-                    class="form-input"
-                    [ngModel]="item.route"
-                    (ngModelChange)="updateItem(i, 'route', $event)"
-                    [name]="'route_' + i"
-                  >
-                    @for (opt of ROUTE_OPTIONS; track opt.value) {
-                      <option [value]="opt.value">{{ opt.label }}</option>
-                    }
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Dosis <span class="required">*</span></label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    placeholder="Ej: 500mg"
-                    [ngModel]="item.dosage"
-                    (ngModelChange)="updateItem(i, 'dosage', $event)"
-                    [name]="'dosage_' + i"
-                  />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Cantidad <span class="required">*</span></label>
-                  <input
-                    type="number"
-                    class="form-input"
-                    min="1"
-                    [ngModel]="item.quantity"
-                    (ngModelChange)="updateItem(i, 'quantity', +$event)"
-                    [name]="'quantity_' + i"
-                  />
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Frecuencia <span class="required">*</span></label>
-                  <select
-                    class="form-input"
-                    [ngModel]="item.frequency"
-                    (ngModelChange)="updateItem(i, 'frequency', $event)"
-                    [name]="'frequency_' + i"
-                  >
-                    <option value="">Seleccionar...</option>
-                    @for (opt of FREQUENCY_OPTIONS; track opt.value) {
-                      <option [value]="opt.value">{{ opt.label }}</option>
-                    }
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Duración <span class="required">*</span></label>
-                  <select
-                    class="form-input"
-                    [ngModel]="item.duration"
-                    (ngModelChange)="updateItem(i, 'duration', $event)"
-                    [name]="'duration_' + i"
-                  >
-                    <option value="">Seleccionar...</option>
-                    @for (opt of DURATION_OPTIONS; track opt.value) {
-                      <option [value]="opt.value">{{ opt.label }}</option>
-                    }
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Instrucciones Especiales</label>
-                <textarea
-                  class="form-input form-textarea"
-                  placeholder="Ej: Tomar después de los alimentos..."
-                  rows="2"
-                  [ngModel]="item.instructions"
-                  (ngModelChange)="updateItem(i, 'instructions', $event)"
-                  [name]="'instructions_' + i"
-                ></textarea>
-              </div>
-            </div>
+        @if (items().length === 0) {
+          <div class="empty-items">
+            <i class="fa-solid fa-pills"></i>
+            <p>No hay medicamentos en la receta</p>
+            <button type="button" class="btn btn-outline btn-sm" (click)="openAddMedModal()">
+              <i class="fa-solid fa-plus"></i>
+              Agregar primer medicamento
+            </button>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Medicamento</th>
+                  <th>Dosis</th>
+                  <th>Cant.</th>
+                  <th>Frecuencia</th>
+                  <th>Duración</th>
+                  <th>Vía</th>
+                  <th class="actions-column">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of items(); track $index) {
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>
+                      <span class="med-name">{{ item.medicationName }}</span>
+                      @if (item.presentation) {
+                        <span class="med-presentation">{{ item.presentation }}</span>
+                      }
+                    </td>
+                    <td>{{ item.dosage }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.frequency }}</td>
+                    <td>{{ item.duration }}</td>
+                    <td>{{ item.route }}</td>
+                    <td class="actions-column">
+                      <div class="action-buttons">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline btn-icon"
+                          title="Editar medicamento"
+                          (click)="openEditMedModal($index)"
+                        >
+                          <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline btn-icon btn-danger"
+                          title="Eliminar medicamento"
+                          (click)="removeMed($index)"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
         }
       </div>
@@ -289,3 +221,152 @@
     </form>
   </div>
 </div>
+
+<!-- Medication Modal -->
+@if (showMedModal()) {
+  <app-modal
+    [title]="isEditingMed ? 'Editar Medicamento' : 'Agregar Medicamento'"
+    [subtitle]="isEditingMed ? 'Modifica los datos del medicamento' : 'Completa los datos del medicamento'"
+    [icon]="'fa-pills'"
+    [size]="'lg'"
+    (closed)="closeMedModal()">
+
+    <form class="standard-form">
+      <!-- Nombre + Principio Activo -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nombre del Medicamento <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-input"
+            placeholder="Ej: Amoxicilina"
+            [ngModel]="medForm().medicationName"
+            (ngModelChange)="updateMedField('medicationName', $event)"
+            name="modal_medicationName"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Principio Activo</label>
+          <input
+            type="text"
+            class="form-input"
+            placeholder="Ej: Amoxicilina trihidratada"
+            [ngModel]="medForm().activeIngredient"
+            (ngModelChange)="updateMedField('activeIngredient', $event)"
+            name="modal_activeIngredient"
+          />
+        </div>
+      </div>
+
+      <!-- Presentación + Vía -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Presentación</label>
+          <input
+            type="text"
+            class="form-input"
+            placeholder="Ej: Cápsulas 500mg"
+            [ngModel]="medForm().presentation"
+            (ngModelChange)="updateMedField('presentation', $event)"
+            name="modal_presentation"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Vía de Administración</label>
+          <select
+            class="form-input"
+            [ngModel]="medForm().route"
+            (ngModelChange)="updateMedField('route', $event)"
+            name="modal_route"
+          >
+            @for (opt of ROUTE_OPTIONS; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Dosis + Cantidad -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Dosis <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-input"
+            placeholder="Ej: 500mg"
+            [ngModel]="medForm().dosage"
+            (ngModelChange)="updateMedField('dosage', $event)"
+            name="modal_dosage"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cantidad <span class="required">*</span></label>
+          <input
+            type="number"
+            class="form-input"
+            min="1"
+            [ngModel]="medForm().quantity"
+            (ngModelChange)="updateMedField('quantity', +$event)"
+            name="modal_quantity"
+          />
+        </div>
+      </div>
+
+      <!-- Frecuencia + Duración -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Frecuencia <span class="required">*</span></label>
+          <select
+            class="form-input"
+            [ngModel]="medForm().frequency"
+            (ngModelChange)="updateMedField('frequency', $event)"
+            name="modal_frequency"
+          >
+            <option value="">Seleccionar...</option>
+            @for (opt of FREQUENCY_OPTIONS; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Duración <span class="required">*</span></label>
+          <select
+            class="form-input"
+            [ngModel]="medForm().duration"
+            (ngModelChange)="updateMedField('duration', $event)"
+            name="modal_duration"
+          >
+            <option value="">Seleccionar...</option>
+            @for (opt of DURATION_OPTIONS; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Instrucciones Especiales -->
+      <div class="form-group">
+        <label class="form-label">Instrucciones Especiales</label>
+        <textarea
+          class="form-input form-textarea"
+          placeholder="Ej: Tomar después de los alimentos..."
+          rows="2"
+          [ngModel]="medForm().instructions"
+          (ngModelChange)="updateMedField('instructions', $event)"
+          name="modal_instructions"
+        ></textarea>
+      </div>
+    </form>
+
+    <div modal-footer>
+      <button type="button" class="btn btn-outline" (click)="closeMedModal()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primary" (click)="confirmMedModal()" [disabled]="!isMedValid(medForm())">
+        <i class="fa-solid fa-check"></i>
+        {{ isEditingMed ? 'Guardar Cambios' : 'Agregar Medicamento' }}
+      </button>
+    </div>
+  </app-modal>
+}
