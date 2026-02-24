@@ -3,7 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PatientsService } from '../../services/patients.service';
-import { Patient, UpdateTaxInfoRequest } from '../../models/patient.models';
+import { Patient, UpdateTaxInfoRequest, UpdateMedicalHistoryRequest, BloodType, SmokingStatus } from '../../models/patient.models';
 import { AttachedFile, FILE_CATEGORIES, getFileIcon, formatFileSize } from '../../models/attached-file.models';
 import { PatientFinancialSummary, PatientHistory } from '../../models/patient-dashboard.models';
 import { AttachedFilesService } from '../../services/attached-files.service';
@@ -41,6 +41,18 @@ export class PatientDetailComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   activeTab = signal<'info' | 'medical' | 'odontogram' | 'fiscal' | 'financial' | 'history' | 'files'>('info');
+
+  // Medical history editing state
+  editingMedical = signal(false);
+  savingMedical = signal(false);
+  medBloodType = signal('');
+  medAllergies = signal('');
+  medChronicDiseases = signal('');
+  medCurrentMedications = signal('');
+  medSmokingStatus = signal('');
+  medNotes = signal('');
+  bloodTypeOptions = Object.values(BloodType);
+  smokingStatusOptions = Object.values(SmokingStatus);
 
   // Fiscal data state
   taxId = signal('');
@@ -260,6 +272,53 @@ export class PatientDetailComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  // === Medical History ===
+
+  private populateMedicalForm(): void {
+    const pat = this.patient();
+    if (!pat) return;
+    this.medBloodType.set(pat.bloodType || '');
+    this.medAllergies.set(pat.allergies || '');
+    this.medChronicDiseases.set(pat.chronicDiseases || '');
+    this.medCurrentMedications.set(pat.currentMedications || '');
+    this.medSmokingStatus.set(pat.smokingStatus || '');
+    this.medNotes.set(pat.notes || '');
+  }
+
+  toggleEditMedical(): void {
+    this.editingMedical.update(v => !v);
+    if (this.editingMedical()) this.populateMedicalForm();
+  }
+
+  saveMedicalHistory(): void {
+    const pat = this.patient();
+    if (!pat || this.savingMedical()) return;
+
+    this.savingMedical.set(true);
+    const data: UpdateMedicalHistoryRequest = {
+      patientId: pat.id,
+      bloodType: this.medBloodType().trim() || null,
+      allergies: this.medAllergies().trim() || null,
+      chronicDiseases: this.medChronicDiseases().trim() || null,
+      currentMedications: this.medCurrentMedications().trim() || null,
+      smokingStatus: this.medSmokingStatus().trim() || null,
+      notes: this.medNotes().trim() || null
+    };
+
+    this.patientsService.updateMedicalHistory(pat.id, data).subscribe({
+      next: () => {
+        this.notifications.success('Historia médica actualizada');
+        this.editingMedical.set(false);
+        this.savingMedical.set(false);
+        this.loadPatient(pat.id);
+      },
+      error: () => {
+        this.notifications.error('Error al guardar historia médica');
+        this.savingMedical.set(false);
+      }
+    });
   }
 
   // === Fiscal Data ===

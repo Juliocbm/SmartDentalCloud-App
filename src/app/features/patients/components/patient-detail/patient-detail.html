@@ -178,62 +178,159 @@
 
       <!-- Medical Tab -->
       @if (activeTab() === 'medical') {
-        @if (hasMedicalHistory()) {
-          <div class="info-section">
-            <h3>
-              <i class="fa-solid fa-heartbeat"></i>
-              Historia Médica
-            </h3>
-            <div class="info-card">
-              @if (patient()!.bloodType) {
-                <div class="info-row">
-                  <span class="info-label">Tipo de Sangre:</span>
-                  <span class="info-value">{{ patient()!.bloodType }}</span>
-                </div>
-              }
-              @if (hasAllergies()) {
-                <div class="info-row">
-                  <span class="info-label">Alergias:</span>
-                  <span class="info-value">{{ patient()!.allergies }}</span>
-                </div>
-              }
-              @if (patient()!.chronicDiseases) {
-                <div class="info-row">
-                  <span class="info-label">Enfermedades Crónicas:</span>
-                  <span class="info-value">{{ patient()!.chronicDiseases }}</span>
-                </div>
-              }
-              @if (patient()!.currentMedications) {
-                <div class="info-row">
-                  <span class="info-label">Medicamentos Actuales:</span>
-                  <span class="info-value">{{ patient()!.currentMedications }}</span>
-                </div>
-              }
-              @if (patient()!.smokingStatus) {
-                <div class="info-row">
-                  <span class="info-label">Estado Fumador:</span>
-                  <span class="info-value">{{ patient()!.smokingStatus }}</span>
-                </div>
-              }
-              @if (patient()!.notes) {
-                <div class="info-row">
-                  <span class="info-label">Notas Médicas:</span>
-                  <span class="info-value">{{ patient()!.notes }}</span>
-                </div>
-              }
+        <div class="info-section">
+          @if (hasMedicalHistory() || editingMedical()) {
+            <div class="section-header-with-action">
+              <h3>
+                <i class="fa-solid fa-heartbeat"></i>
+                Historia Médica
+              </h3>
+              <button class="btn btn-outline btn-sm" (click)="toggleEditMedical()">
+                @if (editingMedical()) {
+                  <i class="fa-solid fa-xmark"></i> Cancelar
+                } @else {
+                  <i class="fa-solid fa-pen"></i> Editar
+                }
+              </button>
             </div>
-          </div>
-        } @else {
-          <div class="empty-state">
-            <i class="fa-solid fa-heartbeat"></i>
-            <h3>Sin Historia Médica</h3>
-            <p>Este paciente no tiene información médica registrada</p>
-            <button class="btn btn-primary" (click)="editPatient()">
-              <i class="fa-solid fa-plus"></i>
-              Agregar Historia Médica
-            </button>
-          </div>
-        }
+
+            @if (editingMedical()) {
+              <div class="medical-form">
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Tipo de Sangre</label>
+                    <select
+                      class="form-control"
+                      [ngModel]="medBloodType()"
+                      (ngModelChange)="medBloodType.set($event)"
+                    >
+                      <option value="">— Seleccionar —</option>
+                      @for (bt of bloodTypeOptions; track bt) {
+                        <option [value]="bt">{{ bt }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Estado Fumador</label>
+                    <select
+                      class="form-control"
+                      [ngModel]="medSmokingStatus()"
+                      (ngModelChange)="medSmokingStatus.set($event)"
+                    >
+                      <option value="">— Seleccionar —</option>
+                      @for (ss of smokingStatusOptions; track ss) {
+                        <option [value]="ss">{{ ss }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Alergias</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Ej: Penicilina, Látex..."
+                    [ngModel]="medAllergies()"
+                    (ngModelChange)="medAllergies.set($event)"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Enfermedades Crónicas</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Ej: Diabetes, Hipertensión..."
+                    [ngModel]="medChronicDiseases()"
+                    (ngModelChange)="medChronicDiseases.set($event)"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Medicamentos Actuales</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Ej: Metformina 500mg, Losartán 50mg..."
+                    [ngModel]="medCurrentMedications()"
+                    (ngModelChange)="medCurrentMedications.set($event)"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Notas Médicas</label>
+                  <textarea
+                    class="form-control"
+                    rows="3"
+                    placeholder="Observaciones médicas adicionales..."
+                    [ngModel]="medNotes()"
+                    (ngModelChange)="medNotes.set($event)"
+                  ></textarea>
+                </div>
+                <div class="form-actions-right">
+                  <button
+                    class="btn btn-primary btn-sm"
+                    [disabled]="savingMedical()"
+                    (click)="saveMedicalHistory()"
+                  >
+                    @if (savingMedical()) {
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                    } @else {
+                      <i class="fa-solid fa-save"></i>
+                    }
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div class="info-card">
+                @if (patient()!.bloodType) {
+                  <div class="info-row">
+                    <span class="info-label">Tipo de Sangre:</span>
+                    <span class="info-value">{{ patient()!.bloodType }}</span>
+                  </div>
+                }
+                @if (hasAllergies()) {
+                  <div class="info-row">
+                    <span class="info-label">Alergias:</span>
+                    <span class="info-value">{{ patient()!.allergies }}</span>
+                  </div>
+                }
+                @if (patient()!.chronicDiseases) {
+                  <div class="info-row">
+                    <span class="info-label">Enfermedades Crónicas:</span>
+                    <span class="info-value">{{ patient()!.chronicDiseases }}</span>
+                  </div>
+                }
+                @if (patient()!.currentMedications) {
+                  <div class="info-row">
+                    <span class="info-label">Medicamentos Actuales:</span>
+                    <span class="info-value">{{ patient()!.currentMedications }}</span>
+                  </div>
+                }
+                @if (patient()!.smokingStatus) {
+                  <div class="info-row">
+                    <span class="info-label">Estado Fumador:</span>
+                    <span class="info-value">{{ patient()!.smokingStatus }}</span>
+                  </div>
+                }
+                @if (patient()!.notes) {
+                  <div class="info-row">
+                    <span class="info-label">Notas Médicas:</span>
+                    <span class="info-value">{{ patient()!.notes }}</span>
+                  </div>
+                }
+              </div>
+            }
+          } @else {
+            <div class="empty-state empty-state-sm">
+              <i class="fa-solid fa-heartbeat"></i>
+              <h3>Sin Historia Médica</h3>
+              <p>Este paciente no tiene información médica registrada</p>
+              <button class="btn btn-primary" (click)="toggleEditMedical()">
+                <i class="fa-solid fa-plus"></i>
+                Agregar Historia Médica
+              </button>
+            </div>
+          }
+        </div>
       }
       <!-- Odontogram Tab -->
       @if (activeTab() === 'odontogram') {

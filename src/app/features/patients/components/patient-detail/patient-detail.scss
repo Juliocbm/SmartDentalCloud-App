@@ -316,6 +316,26 @@
   }
 }
 
+// ===== Medical Tab =====
+
+.medical-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+
+  .form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .form-actions-right {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--spacing-sm);
+  }
+}
+
 // ===== Fiscal Tab =====
 
 .fiscal-form {
