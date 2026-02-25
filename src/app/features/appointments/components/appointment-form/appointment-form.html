@@ -27,7 +27,7 @@
 
   <div class="content-card">
     @if (error()) {
-      <div class="alert alert-danger">
+      <div class="alert alert-error">
         <i class="fa-solid fa-circle-exclamation alert-icon"></i>
         <span class="alert-message">{{ error() }}</span>
         <button class="alert-close" (click)="error.set(null)">
@@ -135,7 +135,7 @@
       </div>
 
       @if (getActiveException(); as exception) {
-        <div class="alert schedule-warning" [class.alert-danger]="exception.type !== 'modifiedHours'" [class.alert-warning]="exception.type === 'modifiedHours'">
+        <div class="alert schedule-warning" [class.alert-error]="exception.type !== 'modifiedHours'" [class.alert-warning]="exception.type === 'modifiedHours'">
           <i class="fa-solid" [class.fa-ban]="exception.type !== 'modifiedHours'" [class.fa-clock]="exception.type === 'modifiedHours'"></i>
           <span>{{ getExceptionWarningMessage() }}</span>
         </div>

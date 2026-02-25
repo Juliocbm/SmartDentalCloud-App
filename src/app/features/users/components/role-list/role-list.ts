@@ -7,6 +7,7 @@ import { UsersService } from '../../services/users.service';
 import { Role } from '../../models/role.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-role-list',
@@ -46,7 +47,7 @@ export class RoleListComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading roles:', err);
-        this.error.set('Error al cargar roles');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -66,7 +67,7 @@ export class RoleListComponent implements OnInit {
         if (err.status === 400) {
           this.notifications.warning('No se puede eliminar el rol porque tiene usuarios asignados.');
         } else {
-          this.notifications.error('Error al eliminar el rol.');
+          this.notifications.error(getApiErrorMessage(err));
         }
       }
     });

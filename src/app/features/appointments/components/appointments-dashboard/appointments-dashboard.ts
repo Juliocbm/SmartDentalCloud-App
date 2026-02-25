@@ -19,6 +19,7 @@ import {
   APPOINTMENT_ACTIVITY_CONFIG
 } from '../../models/appointments-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 interface QuickAction {
   label: string;
@@ -151,7 +152,7 @@ export class AppointmentsDashboardComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading dashboard metrics:', err);
-        this.error.set('Error al cargar datos del dashboard');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

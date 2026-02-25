@@ -10,6 +10,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { LocationsService } from '../../../settings/services/locations.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -80,9 +81,9 @@ export class AppointmentDetailComponent implements OnInit {
           this.loadConsultationNote(appointment.id);
         }
       },
-      error: (error) => {
-        this.logger.error('Error loading appointment:', error);
-        this.error.set('Error al cargar la cita');
+      error: (err) => {
+        this.logger.error('Error loading appointment:', err);
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -154,8 +155,8 @@ export class AppointmentDetailComponent implements OnInit {
         this.loadAppointment(apt.id);
         this.actionLoading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al confirmar la cita.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.actionLoading.set(false);
       }
     });
@@ -175,8 +176,8 @@ export class AppointmentDetailComponent implements OnInit {
         this.loadAppointment(apt.id);
         this.actionLoading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al completar la cita.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.actionLoading.set(false);
       }
     });
@@ -196,8 +197,8 @@ export class AppointmentDetailComponent implements OnInit {
         this.loadAppointment(apt.id);
         this.actionLoading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al cancelar la cita.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.actionLoading.set(false);
       }
     });
@@ -217,8 +218,8 @@ export class AppointmentDetailComponent implements OnInit {
         this.loadAppointment(apt.id);
         this.actionLoading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al marcar como no show.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.actionLoading.set(false);
       }
     });

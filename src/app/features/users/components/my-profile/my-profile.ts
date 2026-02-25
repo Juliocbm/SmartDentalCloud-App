@@ -9,6 +9,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { UserProfileCacheService } from '../../../../core/services/user-profile-cache.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-my-profile',
@@ -121,9 +122,9 @@ export class MyProfileComponent implements OnInit {
         this.profileCache.refresh();
         this.notifications.success('Perfil actualizado correctamente');
       },
-      error: () => {
+      error: (err) => {
         this.saving.set(false);
-        this.notifications.error('Error al actualizar el perfil');
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

@@ -9,6 +9,7 @@ import { ReportsService } from '../../../reports/services/reports.service';
 import { User } from '../../models/user.models';
 import { DentistProductivity } from '../../../reports/models/report.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-dentist-dashboard',
@@ -89,7 +90,7 @@ export class DentistDashboardComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading dentist dashboard:', err);
-        this.error.set('Error al cargar datos de dentistas');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

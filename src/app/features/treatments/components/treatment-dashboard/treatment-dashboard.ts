@@ -5,6 +5,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { TreatmentsService } from '../../services/treatments.service';
 import { Treatment, TreatmentStatus, TREATMENT_STATUS_CONFIG } from '../../models/treatment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-treatment-dashboard',
@@ -69,7 +70,7 @@ export class TreatmentDashboardComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading treatments dashboard:', err);
-        this.error.set('Error al cargar datos de tratamientos');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

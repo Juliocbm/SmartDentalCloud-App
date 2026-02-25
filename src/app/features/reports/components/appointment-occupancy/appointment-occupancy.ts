@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ReportsService } from '../../services/reports.service';
 import { AppointmentOccupancy } from '../../models/report.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-appointment-occupancy',
@@ -36,7 +37,7 @@ export class AppointmentOccupancyComponent implements OnInit {
     this.error.set(null);
     this.reportsService.getAppointmentOccupancy(this.startDate(), this.endDate()).subscribe({
       next: (data) => { this.report.set(data); this.loading.set(false); },
-      error: () => { this.error.set('Error al cargar el reporte de ocupación'); this.loading.set(false); }
+      error: (err) => { this.error.set(getApiErrorMessage(err)); this.loading.set(false); }
     });
   }
 

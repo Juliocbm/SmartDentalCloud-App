@@ -7,6 +7,7 @@ export interface Notification {
   message: string;
   type: NotificationType;
   duration: number;
+  dismissing?: boolean;
 }
 
 /**
@@ -27,7 +28,7 @@ export class NotificationService {
     this.add(message, 'success', duration);
   }
 
-  error(message: string, duration = 6000): void {
+  error(message: string, duration = 0): void {
     this.add(message, 'error', duration);
   }
 
@@ -40,7 +41,13 @@ export class NotificationService {
   }
 
   dismiss(id: number): void {
-    this._notifications.update(list => list.filter(n => n.id !== id));
+    // Mark as dismissing to trigger exit animation, then remove after animation completes
+    this._notifications.update(list =>
+      list.map(n => n.id === id ? { ...n, dismissing: true } : n)
+    );
+    setTimeout(() => {
+      this._notifications.update(list => list.filter(n => n.id !== id));
+    }, 300);
   }
 
   clearAll(): void {

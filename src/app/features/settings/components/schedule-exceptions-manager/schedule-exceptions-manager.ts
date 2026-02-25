@@ -19,6 +19,7 @@ import {
   EXCEPTION_TYPE_COLORS
 } from '../../models/schedule-exception.models';
 import { generateTimeOptions } from '../../models/work-schedule.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-schedule-exceptions-manager',
@@ -78,8 +79,8 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
         this.exceptions.set(data);
         this.loading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al cargar las excepciones de horario');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -88,7 +89,10 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
   private loadDentists(): void {
     this.usersService.getDentists().subscribe({
       next: (dentists) => this.dentists.set(dentists),
-      error: () => this.dentists.set([])
+      error: () => {
+        this.notifications.warning('No se pudieron cargar los dentistas');
+        this.dentists.set([]);
+      }
     });
   }
 
@@ -158,8 +162,8 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
           this.loadExceptions();
           this.saving.set(false);
         },
-        error: () => {
-          this.notifications.error('Error al actualizar la excepción');
+        error: (err) => {
+          this.notifications.error(getApiErrorMessage(err));
           this.saving.set(false);
         }
       });
@@ -181,8 +185,8 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
           this.loadExceptions();
           this.saving.set(false);
         },
-        error: () => {
-          this.notifications.error('Error al crear la excepción');
+        error: (err) => {
+          this.notifications.error(getApiErrorMessage(err));
           this.saving.set(false);
         }
       });
@@ -200,8 +204,8 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
         this.notifications.success('Excepción eliminada');
         this.loadExceptions();
       },
-      error: () => {
-        this.notifications.error('Error al eliminar la excepción');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

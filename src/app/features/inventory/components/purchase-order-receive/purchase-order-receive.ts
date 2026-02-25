@@ -13,6 +13,7 @@ import {
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 interface ReceiveItem {
   id: string;
@@ -81,7 +82,7 @@ export class PurchaseOrderReceiveComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading purchase order:', err);
-        this.error.set('Error al cargar la orden de compra');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -155,7 +156,7 @@ export class PurchaseOrderReceiveComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error receiving order:', err);
-        this.notifications.error('Error al registrar la recepción.');
+        this.notifications.error(getApiErrorMessage(err));
         this.submitting.set(false);
       }
     });

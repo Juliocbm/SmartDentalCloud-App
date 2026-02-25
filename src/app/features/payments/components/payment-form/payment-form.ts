@@ -9,6 +9,7 @@ import { InvoicesService } from '../../../invoices/services/invoices.service';
 import { Invoice, InvoiceStatus } from '../../../invoices/models/invoice.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-payment-form',
@@ -62,7 +63,8 @@ export class PaymentFormComponent implements OnInit {
         );
         this.loadingInvoices.set(false);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar facturas pendientes'));
         this.loadingInvoices.set(false);
       }
     });
@@ -109,7 +111,7 @@ export class PaymentFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating payment:', err);
-        this.notifications.error('Error al registrar el pago');
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });

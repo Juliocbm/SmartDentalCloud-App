@@ -14,6 +14,7 @@ import { AppointmentFormContextService } from '../../../appointments/services/ap
 import { DENTIST_APPOINTMENT_CONTEXT } from '../../../appointments/models/appointment-form-context.model';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-dentist-list',
@@ -100,7 +101,7 @@ export class DentistListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading dentists:', err);
-        this.error.set('Error al cargar dentistas. Intenta de nuevo.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -154,8 +155,8 @@ export class DentistListComponent implements OnInit, OnDestroy {
         }
         this.notifications.success(`Dentista ${action === 'activar' ? 'activado' : 'desactivado'} correctamente.`);
       },
-      error: () => {
-        this.notifications.error('Error al cambiar el estado del dentista.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

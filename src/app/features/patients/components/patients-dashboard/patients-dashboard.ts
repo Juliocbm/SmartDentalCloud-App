@@ -6,6 +6,7 @@ import { BarChartComponent, ChartDataItem } from '../../../../shared/components/
 import { PatientsAnalyticsService } from '../../services/patients-analytics.service';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import {
   PatientsAnalytics,
   PatientsStatistics,
@@ -208,7 +209,7 @@ export class PatientsDashboardComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading patients dashboard:', err);
-        this.error.set('Error al cargar los datos del dashboard');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

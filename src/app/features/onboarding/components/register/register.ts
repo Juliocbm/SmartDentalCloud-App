@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { OnboardingService } from '../../services/onboarding.service';
 import { RegisterTenantRequest } from '../../models/onboarding.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-register',
@@ -88,8 +89,7 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading.set(false);
-        const msg = err?.error?.message || err?.error?.title || 'Error al registrar. Verifica los datos e intenta de nuevo.';
-        this.error.set(msg);
+        this.error.set(getApiErrorMessage(err));
       }
     });
   }

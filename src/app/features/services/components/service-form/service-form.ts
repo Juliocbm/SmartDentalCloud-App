@@ -7,6 +7,7 @@ import { ServicesService } from '../../services/services.service';
 import { SERVICE_CATEGORIES } from '../../models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-service-form',
@@ -99,7 +100,7 @@ export class ServiceFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading service for edit:', err);
-        this.error.set('Error al cargar el servicio.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -137,7 +138,7 @@ export class ServiceFormComponent implements OnInit {
         },
         error: (err) => {
           this.logger.error('Error updating service:', err);
-          this.error.set(err?.error?.message || 'Error al actualizar el servicio.');
+          this.error.set(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });
@@ -149,7 +150,7 @@ export class ServiceFormComponent implements OnInit {
         },
         error: (err) => {
           this.logger.error('Error creating service:', err);
-          this.error.set(err?.error?.message || 'Error al crear el servicio.');
+          this.error.set(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });

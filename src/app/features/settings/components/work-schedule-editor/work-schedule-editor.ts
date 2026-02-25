@@ -5,6 +5,7 @@ import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LocationsService } from '../../services/locations.service';
 import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import {
   DaySchedule,
   WorkSchedule,
@@ -129,8 +130,8 @@ export class WorkScheduleEditorComponent implements OnInit {
         this.notifications.success('Horario laboral actualizado');
         this.saving.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al guardar el horario laboral');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });

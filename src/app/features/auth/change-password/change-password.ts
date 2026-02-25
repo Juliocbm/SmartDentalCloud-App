@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header';
+import { getApiErrorMessage } from '../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-change-password',
@@ -64,8 +65,8 @@ export class ChangePasswordComponent {
         }
         this.loading.set(false);
       },
-      error: () => {
-        this.errorMessage.set('Error al cambiar la contraseña. Verifica tu contraseña actual.');
+      error: (err) => {
+        this.errorMessage.set(getApiErrorMessage(err, 'Error al cambiar la contraseña. Verifica tu contraseña actual.'));
         this.loading.set(false);
       }
     });

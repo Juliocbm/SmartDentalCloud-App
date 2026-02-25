@@ -270,18 +270,3 @@
   }
 }
 
-// ===== Alert =====
-.alert-danger {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--error-50);
-  border: 1px solid var(--error-200);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-lg);
-  font-size: var(--font-size-sm);
-  color: var(--error-700);
-
-  i { flex-shrink: 0; }
-}

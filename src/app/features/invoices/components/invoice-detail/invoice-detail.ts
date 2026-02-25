@@ -15,6 +15,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { PatientsService } from '../../../patients/services/patients.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-invoice-detail',
@@ -93,7 +94,7 @@ export class InvoiceDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading invoice:', err);
-        this.error.set('Error al cargar la factura. Por favor intente nuevamente.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -186,7 +187,8 @@ export class InvoiceDetailComponent implements OnInit {
         this.cfdi.set(active);
         this.cfdiLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar datos de facturación electrónica'));
         this.cfdiLoading.set(false);
       }
     });
@@ -212,8 +214,8 @@ export class InvoiceDetailComponent implements OnInit {
         }
         this.cfdiActionLoading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al generar el CFDI');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.cfdiActionLoading.set(false);
       }
     });
@@ -236,8 +238,8 @@ export class InvoiceDetailComponent implements OnInit {
         }
         this.cfdiActionLoading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al timbrar el CFDI');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.cfdiActionLoading.set(false);
       }
     });
@@ -271,8 +273,8 @@ export class InvoiceDetailComponent implements OnInit {
         }
         this.cfdiActionLoading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al cancelar el CFDI');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.cfdiActionLoading.set(false);
       }
     });
@@ -287,7 +289,7 @@ export class InvoiceDetailComponent implements OnInit {
     if (!cfdi) return;
     this.cfdiService.downloadXml(cfdi.id).subscribe({
       next: (blob) => this.saveFile(blob, `${cfdi.serie || ''}${cfdi.folio || cfdi.id}.xml`, 'application/xml'),
-      error: () => this.notifications.error('Error al descargar XML')
+      error: (err) => this.notifications.error(getApiErrorMessage(err))
     });
   }
 
@@ -296,7 +298,7 @@ export class InvoiceDetailComponent implements OnInit {
     if (!cfdi) return;
     this.cfdiService.downloadPdf(cfdi.id).subscribe({
       next: (blob) => this.saveFile(blob, `${cfdi.serie || ''}${cfdi.folio || cfdi.id}.pdf`, 'application/pdf'),
-      error: () => this.notifications.error('Error al descargar PDF')
+      error: (err) => this.notifications.error(getApiErrorMessage(err))
     });
   }
 
@@ -367,8 +369,8 @@ export class InvoiceDetailComponent implements OnInit {
         this.sendingEmail.set(false);
         this.showEmailModal.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al enviar el CFDI por email');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.sendingEmail.set(false);
       }
     });
@@ -384,8 +386,8 @@ export class InvoiceDetailComponent implements OnInit {
         this.satStatus.set(status);
         this.cfdiActionLoading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al consultar estado SAT');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.cfdiActionLoading.set(false);
       }
     });

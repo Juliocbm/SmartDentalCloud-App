@@ -6,6 +6,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { RolesService } from '../../services/roles.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PermissionSelectorComponent } from '../../../../shared/components/permission-selector/permission-selector';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 interface RoleFormValue {
   name: string;
@@ -76,7 +77,7 @@ export class RoleFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading role:', err);
-        this.error.set('Error al cargar rol');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -125,7 +126,7 @@ export class RoleFormComponent implements OnInit {
         if (err.status === 409) {
           this.error.set('Ya existe un rol con ese nombre');
         } else {
-          this.error.set('Error al crear rol. Intenta de nuevo');
+          this.error.set(getApiErrorMessage(err));
         }
         this.loading.set(false);
       }
@@ -163,7 +164,7 @@ export class RoleFormComponent implements OnInit {
         if (err.status === 409) {
           this.error.set('Ya existe un rol con ese nombre');
         } else {
-          this.error.set('Error al actualizar rol');
+          this.error.set(getApiErrorMessage(err));
         }
         this.loading.set(false);
       }

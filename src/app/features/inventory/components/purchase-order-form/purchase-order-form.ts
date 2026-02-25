@@ -12,6 +12,7 @@ import { LocationSelectorComponent } from '../../../../shared/components/locatio
 import { PurchaseOrderItemModalComponent, PurchaseOrderItemFormData } from './purchase-order-item-modal';
 import { Supplier } from '../../models/supplier.models';
 import { Product } from '../../models/product.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-purchase-order-form',
@@ -187,7 +188,7 @@ export class PurchaseOrderFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating purchase order:', err);
-        this.error.set(err.error?.error || 'Error al crear orden de compra');
+        this.error.set(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });

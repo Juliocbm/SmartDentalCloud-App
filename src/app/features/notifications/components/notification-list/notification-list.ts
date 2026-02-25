@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { NotificationsApiService } from '../../services/notifications.service';
 import { AppNotification, NOTIFICATION_TYPE_CONFIG } from '../../models/notification.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-notification-list',
@@ -33,7 +34,7 @@ export class NotificationListComponent implements OnInit {
     this.error.set(null);
     this.notifService.getNotifications().subscribe({
       next: (data) => { this.notifications.set(data); this.loading.set(false); },
-      error: () => { this.error.set('Error al cargar notificaciones'); this.loading.set(false); }
+      error: (err) => { this.error.set(getApiErrorMessage(err)); this.loading.set(false); }
     });
   }
 

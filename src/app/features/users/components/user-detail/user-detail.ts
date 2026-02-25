@@ -7,6 +7,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-user-detail',
@@ -55,7 +56,7 @@ export class UserDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading user:', err);
-        this.error.set('Error al cargar usuario');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -84,8 +85,8 @@ export class UserDetailComponent implements OnInit {
         this.user.set(updatedUser);
         this.notifications.success(`Usuario ${action === 'activar' ? 'activado' : 'desactivado'} correctamente.`);
       },
-      error: () => {
-        this.notifications.error('Error al cambiar el estado del usuario.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

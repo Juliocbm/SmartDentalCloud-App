@@ -9,6 +9,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { LocationFormModalComponent, LocationFormModalData } from '../location-form-modal/location-form-modal';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-location-detail',
@@ -57,7 +58,7 @@ export class LocationDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading location:', err);
-        this.error.set('Error al cargar la sucursal');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

@@ -4,6 +4,7 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle';
+import { getApiErrorMessage } from '../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-reset-password',
@@ -67,8 +68,8 @@ export class ResetPasswordComponent implements OnInit {
         }
         this.loading.set(false);
       },
-      error: () => {
-        this.errorMessage.set('Error al restablecer la contraseña. El enlace puede haber expirado.');
+      error: (err) => {
+        this.errorMessage.set(getApiErrorMessage(err, 'Error al restablecer la contraseña. El enlace puede haber expirado.'));
         this.loading.set(false);
       }
     });

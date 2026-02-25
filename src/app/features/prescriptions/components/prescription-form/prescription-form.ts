@@ -15,6 +15,7 @@ import { Patient } from '../../../patients/models/patient.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 
 @Component({
@@ -78,7 +79,8 @@ export class PrescriptionFormComponent implements OnInit {
           }
         }
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar pacientes'));
         this.loadingPatients.set(false);
       }
     });
@@ -228,8 +230,8 @@ export class PrescriptionFormComponent implements OnInit {
         this.notifications.success('Receta creada exitosamente');
         this.router.navigate(['/prescriptions', result.id]);
       },
-      error: () => {
-        this.notifications.error('Error al crear la receta. Por favor intente nuevamente.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });

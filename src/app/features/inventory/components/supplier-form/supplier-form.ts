@@ -6,6 +6,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { SuppliersService } from '../../services/suppliers.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PAYMENT_TERMS } from '../../models/supplier.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-supplier-form',
@@ -86,7 +87,7 @@ export class SupplierFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading supplier:', err);
-        this.error.set('Error al cargar proveedor');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -110,7 +111,7 @@ export class SupplierFormComponent implements OnInit {
         },
         error: (err) => {
           this.logger.error('Error updating supplier:', err);
-          this.error.set(err.error?.error || 'Error al actualizar proveedor');
+          this.error.set(getApiErrorMessage(err));
           this.saving.set(false);
         }
       });
@@ -121,7 +122,7 @@ export class SupplierFormComponent implements OnInit {
         },
         error: (err) => {
           this.logger.error('Error creating supplier:', err);
-          this.error.set(err.error?.error || 'Error al crear proveedor');
+          this.error.set(getApiErrorMessage(err));
           this.saving.set(false);
         }
       });

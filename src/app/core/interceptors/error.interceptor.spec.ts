@@ -40,14 +40,12 @@ describe('errorInterceptor', () => {
     expect(notificationService.notifications().length).toBe(0);
   });
 
-  it('should show error notification on 403', () => {
+  it('should NOT show notification on 403 (component handles)', () => {
     spyOn(notificationService, 'error');
 
     httpClient.get('/api/admin').subscribe({
       error: () => {
-        expect(notificationService.error).toHaveBeenCalledWith(
-          'No tiene permisos para realizar esta acción.'
-        );
+        expect(notificationService.error).not.toHaveBeenCalled();
       }
     });
 
@@ -55,14 +53,12 @@ describe('errorInterceptor', () => {
     req.flush({}, { status: 403, statusText: 'Forbidden' });
   });
 
-  it('should show error notification on 500', () => {
+  it('should NOT show notification on 500 (component handles)', () => {
     spyOn(notificationService, 'error');
 
     httpClient.get('/api/data').subscribe({
       error: () => {
-        expect(notificationService.error).toHaveBeenCalledWith(
-          'Error interno del servidor. Intente nuevamente más tarde.'
-        );
+        expect(notificationService.error).not.toHaveBeenCalled();
       }
     });
 
@@ -98,12 +94,12 @@ describe('errorInterceptor', () => {
     req.flush({}, { status: 401, statusText: 'Unauthorized' });
   });
 
-  it('should show conflict notification on 409', () => {
+  it('should NOT show notification on 409 (component handles)', () => {
     spyOn(notificationService, 'warning');
 
     httpClient.post('/api/patients', {}).subscribe({
       error: () => {
-        expect(notificationService.warning).toHaveBeenCalled();
+        expect(notificationService.warning).not.toHaveBeenCalled();
       }
     });
 

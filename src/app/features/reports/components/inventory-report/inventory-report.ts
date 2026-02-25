@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ReportsService } from '../../services/reports.service';
 import { InventorySummary } from '../../models/report.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-inventory-report',
@@ -34,7 +35,7 @@ export class InventoryReportComponent implements OnInit {
     this.error.set(null);
     this.reportsService.getInventorySummary().subscribe({
       next: (data) => { this.report.set(data); this.loading.set(false); },
-      error: () => { this.error.set('Error al cargar el reporte de inventario'); this.loading.set(false); }
+      error: (err) => { this.error.set(getApiErrorMessage(err)); this.loading.set(false); }
     });
   }
 

@@ -9,6 +9,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { Category, CreateCategoryRequest, UpdateCategoryRequest } from '../../models/category.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ROUTES } from '../../../../core/constants/routes.constants';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-category-form',
@@ -101,7 +102,7 @@ export class CategoryFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading category:', err);
-        this.error.set('Error al cargar la categoría. Por favor, intenta de nuevo.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -134,7 +135,7 @@ export class CategoryFormComponent implements OnInit {
         },
         error: (err) => {
           this.logger.error('Error updating category:', err);
-          this.error.set('Error al actualizar la categoría. Por favor, intenta de nuevo.');
+          this.error.set(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });
@@ -153,7 +154,7 @@ export class CategoryFormComponent implements OnInit {
         },
         error: (err) => {
           this.logger.error('Error creating category:', err);
-          this.error.set('Error al crear la categoría. Por favor, intenta de nuevo.');
+          this.error.set(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });

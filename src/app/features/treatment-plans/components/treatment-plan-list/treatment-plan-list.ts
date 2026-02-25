@@ -12,6 +12,7 @@ import {
   TREATMENT_PLAN_STATUS_CONFIG
 } from '../../models/treatment-plan.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-treatment-plan-list',
@@ -96,7 +97,7 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading treatment plans:', err);
-        this.error.set('Error al cargar los planes de tratamiento.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

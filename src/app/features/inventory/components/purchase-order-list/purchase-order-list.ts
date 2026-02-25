@@ -9,6 +9,7 @@ import { PurchaseOrdersService } from '../../services/purchase-orders.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PurchaseOrder, PurchaseOrderStatus, PURCHASE_ORDER_STATUS_LABELS } from '../../models/purchase-order.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -96,7 +97,7 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading purchase orders:', err);
-        this.error.set('Error al cargar órdenes de compra. Por favor, intenta de nuevo.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

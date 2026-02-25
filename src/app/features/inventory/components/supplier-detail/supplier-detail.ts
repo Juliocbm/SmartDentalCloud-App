@@ -6,6 +6,7 @@ import { Supplier, PAYMENT_TERMS } from '../../models/supplier.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-supplier-detail',
@@ -53,7 +54,7 @@ export class SupplierDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading supplier:', err);
-        this.error.set('Error al cargar el proveedor');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

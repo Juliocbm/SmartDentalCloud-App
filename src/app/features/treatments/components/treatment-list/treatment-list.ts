@@ -10,6 +10,7 @@ import { Treatment, TreatmentStatus, TREATMENT_STATUS_CONFIG } from '../../model
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-treatment-list',
@@ -97,7 +98,7 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading treatments:', err);
-        this.error.set('Error al cargar tratamientos. Por favor intente nuevamente.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

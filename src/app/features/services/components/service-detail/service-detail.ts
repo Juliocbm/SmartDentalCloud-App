@@ -6,6 +6,7 @@ import { ServicesService } from '../../services/services.service';
 import { DentalServiceItem, SERVICE_CATEGORIES } from '../../models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-service-detail',
@@ -46,8 +47,8 @@ export class ServiceDetailComponent implements OnInit {
         this.service.set(data);
         this.loading.set(false);
       },
-      error: () => {
-        this.error.set('Error al cargar el servicio');
+      error: (err) => {
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -76,8 +77,8 @@ export class ServiceDetailComponent implements OnInit {
         this.notifications.success('Servicio eliminado');
         this.router.navigate(['/services']);
       },
-      error: () => {
-        this.notifications.error('Error al eliminar el servicio');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.deleting.set(false);
         this.showDeleteConfirm.set(false);
       }

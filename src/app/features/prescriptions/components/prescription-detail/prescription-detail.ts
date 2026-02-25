@@ -11,6 +11,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { TenantSettings } from '../../../settings/models/settings.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-prescription-detail',
@@ -68,8 +69,8 @@ export class PrescriptionDetailComponent implements OnInit {
         });
         this.loading.set(false);
       },
-      error: () => {
-        this.error.set('Error al cargar la receta. Por favor intente nuevamente.');
+      error: (err) => {
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

@@ -10,6 +10,7 @@ import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG } from '../../models/invo
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-invoice-list',
@@ -91,7 +92,7 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading invoices:', err);
-        this.error.set('Error al cargar facturas. Por favor intente nuevamente.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

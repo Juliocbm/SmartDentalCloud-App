@@ -10,6 +10,7 @@ import { Patient } from '../../models/patient.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-patient-list',
@@ -84,7 +85,7 @@ export class PatientListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading patients:', err);
-        this.error.set('Error al cargar pacientes. Por favor intente nuevamente.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -137,8 +138,8 @@ export class PatientListComponent implements OnInit, OnDestroy {
         this.notifications.success('Paciente eliminado correctamente.');
         this.loadPatients();
       },
-      error: () => {
-        this.notifications.error('Error al eliminar el paciente. Por favor intente nuevamente.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

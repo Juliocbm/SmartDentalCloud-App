@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DentalChartService } from '../../services/dental-chart.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import {
   DentalChartTooth,
   DentalChartHistoryEntry,
@@ -117,7 +118,7 @@ export class OdontogramComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading dental chart:', err);
-        this.error.set('Error al cargar el odontograma');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -131,7 +132,7 @@ export class OdontogramComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error initializing dental chart:', err);
-        this.error.set('Error al inicializar el odontograma');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -254,7 +255,7 @@ export class OdontogramComponent implements OnInit {
       error: (err) => {
         this.logger.error('Error updating tooth:', err);
         this.saving.set(false);
-        this.notifications.error('Error al actualizar la pieza dental');
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

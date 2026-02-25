@@ -10,6 +10,7 @@ import { Supplier } from '../../models/supplier.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-supplier-list',
@@ -101,7 +102,7 @@ export class SupplierListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading suppliers:', err);
-        this.error.set('Error al cargar proveedores. Por favor, intenta de nuevo.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -143,8 +144,8 @@ export class SupplierListComponent implements OnInit, OnDestroy {
         this.notifications.success('Proveedor eliminado correctamente.');
         this.loadData();
       },
-      error: () => {
-        this.notifications.error('Error al eliminar proveedor.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

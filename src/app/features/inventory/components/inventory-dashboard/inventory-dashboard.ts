@@ -11,6 +11,7 @@ import { LocationsService } from '../../../settings/services/locations.service';
 import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
 import { TopProduct, ExpiringProduct, CategoryStockStatus, InventoryActivity, ACTIVITY_CONFIG } from '../../models/inventory-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 interface DashboardMetric {
   label: string;
@@ -157,7 +158,7 @@ export class InventoryDashboardComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading dashboard data:', err);
-        this.error.set('Error al cargar datos del dashboard');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

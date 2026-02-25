@@ -14,6 +14,8 @@ import { AppointmentListItem } from '../../../appointments/models/appointment.mo
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-treatment-detail',
@@ -32,6 +34,7 @@ export class TreatmentDetailComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);
   private logger = inject(LoggingService);
   private location = inject(Location);
+  private notifications = inject(NotificationService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -107,7 +110,7 @@ export class TreatmentDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading treatment:', err);
-        this.error.set('Error al cargar el tratamiento.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -128,7 +131,8 @@ export class TreatmentDetailComponent implements OnInit {
         this.followUps.set(parsed);
         this.followUpsLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar seguimientos'));
         this.followUpsLoading.set(false);
       }
     });
@@ -158,7 +162,8 @@ export class TreatmentDetailComponent implements OnInit {
         this.savingFollowUp.set(false);
         this.loadFollowUps(treatmentId);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al guardar seguimiento'));
         this.savingFollowUp.set(false);
       }
     });
@@ -182,7 +187,8 @@ export class TreatmentDetailComponent implements OnInit {
         this.materials.set(data);
         this.materialsLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar materiales'));
         this.materialsLoading.set(false);
       }
     });
@@ -228,7 +234,8 @@ export class TreatmentDetailComponent implements OnInit {
         this.savingMaterial.set(false);
         this.loadMaterials(treatmentId);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al guardar material'));
         this.savingMaterial.set(false);
       }
     });
@@ -262,7 +269,8 @@ export class TreatmentDetailComponent implements OnInit {
         this.sessions.set(parsed);
         this.sessionsLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar sesiones'));
         this.sessionsLoading.set(false);
       }
     });
@@ -317,7 +325,8 @@ export class TreatmentDetailComponent implements OnInit {
         this.savingSession.set(false);
         this.loadSessions(treatmentId);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al guardar sesión'));
         this.savingSession.set(false);
       }
     });

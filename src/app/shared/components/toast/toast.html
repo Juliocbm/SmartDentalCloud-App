@@ -1,7 +1,7 @@
 <!-- Toast notifications -->
 <div class="toast-container">
   @for (notification of notifications(); track notification.id) {
-    <div class="toast toast-{{ notification.type }}" role="alert">
+    <div class="toast toast-{{ notification.type }}" [class.toast-dismissing]="notification.dismissing" role="alert">
       <div class="toast-icon">
         <i class="fa-solid {{ getIcon(notification.type) }}"></i>
       </div>

@@ -9,6 +9,7 @@ import {
   TREATMENT_PLAN_STATUS_CONFIG
 } from '../../models/treatment-plan.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-treatment-plan-dashboard',
@@ -90,7 +91,7 @@ export class TreatmentPlanDashboardComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading treatment plans dashboard:', err);
-        this.error.set('Error al cargar datos de planes de tratamiento');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

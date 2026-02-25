@@ -6,6 +6,8 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { PatientsService } from '../../services/patients.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { Patient, CreatePatientRequest, UpdatePatientRequest } from '../../models/patient.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { isFieldInvalid, getFieldError, markFormGroupTouched, applyServerErrors } from '../../../../core/utils/form-error.utils';
 
 @Component({
   selector: 'app-patient-form',
@@ -87,7 +89,7 @@ export class PatientFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading patient:', err);
-        this.error.set('Error al cargar el paciente. Por favor intente nuevamente.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -107,7 +109,7 @@ export class PatientFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.patientForm.invalid) {
-      this.markFormGroupTouched(this.patientForm);
+      markFormGroupTouched(this.patientForm);
       return;
     }
 
@@ -130,7 +132,7 @@ export class PatientFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating patient:', err);
-        this.error.set('Error al crear el paciente. Por favor intente nuevamente.');
+        this.error.set(applyServerErrors(err, this.patientForm));
         this.loading.set(false);
       }
     });
@@ -146,7 +148,7 @@ export class PatientFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error updating patient:', err);
-        this.error.set('Error al actualizar el paciente. Por favor intente nuevamente.');
+        this.error.set(applyServerErrors(err, this.patientForm));
         this.loading.set(false);
       }
     });
@@ -160,31 +162,13 @@ export class PatientFormComponent implements OnInit {
     }
   }
 
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
-
-      if (control instanceof FormGroup) {
-        this.markFormGroupTouched(control);
-      }
-    });
-  }
-
   isFieldInvalid(fieldName: string): boolean {
-    const field = this.patientForm.get(fieldName);
-    return !!(field && field.invalid && (field.dirty || field.touched));
+    return isFieldInvalid(this.patientForm, fieldName);
   }
 
   getFieldError(fieldName: string): string {
-    const field = this.patientForm.get(fieldName);
-    if (!field || !field.errors) return '';
-
-    if (field.errors['required']) return 'Este campo es requerido';
-    if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
-    if (field.errors['email']) return 'Email inválido';
-    if (field.errors['pattern']) return 'Formato inválido (10 dígitos)';
-
-    return 'Campo inválido';
+    return getFieldError(this.patientForm, fieldName, {
+      pattern: () => 'Formato inválido (10 dígitos)'
+    }) || '';
   }
 }

@@ -13,8 +13,8 @@
     <!-- Mensaje de Error -->
     @if (errorMessage()) {
       <div class="alert alert-error">
-        <i class="fa-solid fa-circle-exclamation"></i>
-        <span>{{ errorMessage() }}</span>
+        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+        <span class="alert-message">{{ errorMessage() }}</span>
       </div>
     }
 

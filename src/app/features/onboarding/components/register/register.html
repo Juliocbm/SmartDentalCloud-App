@@ -33,9 +33,9 @@
       </div>
 
       @if (error()) {
-        <div class="alert alert-danger">
-          <i class="fa-solid fa-circle-exclamation"></i>
-          <span>{{ error() }}</span>
+        <div class="alert alert-error">
+          <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+          <span class="alert-message">{{ error() }}</span>
         </div>
       }
 

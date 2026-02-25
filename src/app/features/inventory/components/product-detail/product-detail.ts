@@ -12,6 +12,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-product-detail',
@@ -68,7 +69,7 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading product:', err);
-        this.error.set('Error al cargar el producto');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -81,7 +82,10 @@ export class ProductDetailComponent implements OnInit {
         this.stockByLocation.set(stocks);
         this.loadingStock.set(false);
       },
-      error: () => this.loadingStock.set(false)
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar stock por sucursal'));
+        this.loadingStock.set(false);
+      }
     });
   }
 

@@ -10,6 +10,7 @@ import {
   PRESCRIPTION_STATUS_CONFIG
 } from '../../models/prescription.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-prescription-list',
@@ -108,8 +109,8 @@ export class PrescriptionListComponent implements OnInit {
         this.prescriptions.set(parsed);
         this.loading.set(false);
       },
-      error: () => {
-        this.error.set('Error al cargar las recetas. Por favor intente nuevamente.');
+      error: (err) => {
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

@@ -8,10 +8,10 @@
   <!-- Error Alert -->
   @if (error()) {
     <div class="alert alert-error">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      <span>{{ error() }}</span>
+      <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+      <span class="alert-message">{{ error() }}</span>
       <button class="alert-close" (click)="error.set(null)" type="button">
-        <i class="fa-solid fa-times"></i>
+        <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
   }

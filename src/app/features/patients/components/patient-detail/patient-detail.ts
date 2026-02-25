@@ -12,6 +12,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { OdontogramComponent } from '../../../dental-chart/components/odontogram/odontogram';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-patient-detail',
@@ -99,7 +100,7 @@ export class PatientDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading patient:', err);
-        this.error.set('Error al cargar el paciente. Por favor intente nuevamente.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -138,7 +139,8 @@ export class PatientDetailComponent implements OnInit {
         this.files.set(parsed);
         this.filesLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar archivos'));
         this.filesLoading.set(false);
       }
     });
@@ -178,8 +180,8 @@ export class PatientDetailComponent implements OnInit {
         this.uploading.set(false);
         this.loadFiles();
       },
-      error: () => {
-        this.notifications.error('Error al subir el archivo');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.uploading.set(false);
       }
     });
@@ -194,8 +196,8 @@ export class PatientDetailComponent implements OnInit {
         this.notifications.success('Archivo eliminado');
         this.loadFiles();
       },
-      error: () => {
-        this.notifications.error('Error al eliminar el archivo');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }
@@ -314,8 +316,8 @@ export class PatientDetailComponent implements OnInit {
         this.savingMedical.set(false);
         this.loadPatient(pat.id);
       },
-      error: () => {
-        this.notifications.error('Error al guardar historia médica');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.savingMedical.set(false);
       }
     });
@@ -355,8 +357,8 @@ export class PatientDetailComponent implements OnInit {
         this.savingTax.set(false);
         this.loadPatient(pat.id);
       },
-      error: () => {
-        this.notifications.error('Error al guardar datos fiscales');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.savingTax.set(false);
       }
     });
@@ -374,7 +376,8 @@ export class PatientDetailComponent implements OnInit {
         this.financialSummary.set(data);
         this.financialLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar resumen financiero'));
         this.financialLoading.set(false);
       }
     });
@@ -392,7 +395,8 @@ export class PatientDetailComponent implements OnInit {
         this.patientHistory.set(data);
         this.historyLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar historial'));
         this.historyLoading.set(false);
       }
     });

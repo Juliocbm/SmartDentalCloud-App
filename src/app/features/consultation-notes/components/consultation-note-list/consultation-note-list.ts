@@ -8,6 +8,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ConsultationNotesService } from '../../services/consultation-notes.service';
 import { Appointment } from '../../../appointments/models/appointment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-consultation-note-list',
@@ -78,7 +79,7 @@ export class ConsultationNoteListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading completed appointments:', err);
-        this.error.set('Error al cargar las citas completadas.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

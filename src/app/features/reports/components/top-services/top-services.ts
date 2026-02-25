@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ReportsService } from '../../services/reports.service';
 import { TopService } from '../../models/report.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-top-services',
@@ -36,7 +37,7 @@ export class TopServicesComponent implements OnInit {
     this.error.set(null);
     this.reportsService.getTopServices(this.startDate(), this.endDate()).subscribe({
       next: (data) => { this.data.set(data); this.loading.set(false); },
-      error: () => { this.error.set('Error al cargar el ranking de servicios'); this.loading.set(false); }
+      error: (err) => { this.error.set(getApiErrorMessage(err)); this.loading.set(false); }
     });
   }
 

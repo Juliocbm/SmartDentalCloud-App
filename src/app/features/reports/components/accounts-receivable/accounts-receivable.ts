@@ -6,6 +6,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ReportsService } from '../../services/reports.service';
 import { AccountsReceivableItem, AccountsReceivableSummary } from '../../models/report.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-accounts-receivable',
@@ -82,8 +83,8 @@ export class AccountsReceivableComponent implements OnInit {
         this.items.set(parsed);
         this.loading.set(false);
       },
-      error: () => {
-        this.error.set('Error al cargar el reporte de cuentas por cobrar.');
+      error: (err) => {
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

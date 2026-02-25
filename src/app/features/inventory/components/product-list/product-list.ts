@@ -12,6 +12,7 @@ import { Category } from '../../models/category.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 /**
  * Componente para listar productos de inventario
@@ -91,7 +92,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading data:', err);
-        this.error.set('Error al cargar productos. Intenta de nuevo.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -169,8 +170,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
         this.applyFilters();
         this.notifications.success('Producto eliminado correctamente.');
       },
-      error: () => {
-        this.notifications.error('Error al eliminar el producto.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

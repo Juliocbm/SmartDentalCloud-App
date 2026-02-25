@@ -8,6 +8,7 @@ import { CategoriesService } from '../../services/categories.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { Category } from '../../models/category.models';
 import { PRODUCT_UNITS } from '../../models/product.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 interface ProductFormValue {
   code: string;
@@ -127,7 +128,7 @@ export class ProductFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading product:', err);
-        this.error.set('Error al cargar producto');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -177,7 +178,7 @@ export class ProductFormComponent implements OnInit {
         } else if (err.status === 400) {
           this.error.set('Datos inválidos. Verifica el formulario');
         } else {
-          this.error.set('Error al crear producto. Intenta de nuevo');
+          this.error.set(getApiErrorMessage(err));
         }
         this.loading.set(false);
       }
@@ -212,7 +213,7 @@ export class ProductFormComponent implements OnInit {
         if (err.status === 409) {
           this.error.set('Ya existe un producto con ese código');
         } else {
-          this.error.set('Error al actualizar producto');
+          this.error.set(getApiErrorMessage(err));
         }
         this.loading.set(false);
       }

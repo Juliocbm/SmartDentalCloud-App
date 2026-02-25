@@ -9,6 +9,7 @@ import { PaymentsService } from '../../services/payments.service';
 import { Payment, PaymentMethod, PAYMENT_METHOD_CONFIG, PaymentFilters } from '../../models/payment.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-payment-list',
@@ -92,7 +93,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading payments:', err);
-        this.error.set('Error al cargar pagos. Por favor intente nuevamente.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

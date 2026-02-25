@@ -12,6 +12,7 @@ import { DentalService } from '../../../invoices/models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-treatment-plan-form',
@@ -244,7 +245,7 @@ export class TreatmentPlanFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating treatment plan:', err);
-        this.error.set('Error al crear el plan de tratamiento.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

@@ -8,6 +8,7 @@ import { ScheduleExceptionsManagerComponent } from '../schedule-exceptions-manag
 import { LocationListComponent } from '../location-list/location-list';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import {
   TenantSettings,
   SmtpConfiguration,
@@ -105,8 +106,8 @@ export class SettingsPageComponent implements OnInit {
         this.domainCustom.set(data.customDomain || '');
         this.loading.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al cargar la configuración');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -169,8 +170,8 @@ export class SettingsPageComponent implements OnInit {
         this.notifications.success('Configuración general actualizada');
         this.saving.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al guardar la configuración');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });
@@ -202,8 +203,8 @@ export class SettingsPageComponent implements OnInit {
         }
         this.saving.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al guardar la configuración SMTP');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });
@@ -252,8 +253,8 @@ export class SettingsPageComponent implements OnInit {
         this.notifications.success('Configuración SMTP eliminada');
         this.saving.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al eliminar configuración SMTP');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });
@@ -269,8 +270,8 @@ export class SettingsPageComponent implements OnInit {
         this.notifications.success('Branding actualizado');
         this.saving.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al actualizar branding');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });
@@ -286,8 +287,8 @@ export class SettingsPageComponent implements OnInit {
         this.notifications.success('Dominio personalizado actualizado');
         this.saving.set(false);
       },
-      error: () => {
-        this.notifications.error('Error al actualizar dominio');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });

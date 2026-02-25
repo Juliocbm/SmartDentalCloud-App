@@ -13,6 +13,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
 import { ROUTES } from '../../../../core/constants/routes.constants';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-stock-alerts',
@@ -109,7 +110,7 @@ export class StockAlertsComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading stock alerts:', err);
-        this.error.set('Error al cargar las alertas de stock. Por favor, intenta de nuevo.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

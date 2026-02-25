@@ -6,6 +6,7 @@ import { Payment, PAYMENT_METHOD_CONFIG } from '../../models/payment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-payment-detail',
@@ -47,7 +48,7 @@ export class PaymentDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading payment:', err);
-        this.error.set('Error al cargar el pago');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

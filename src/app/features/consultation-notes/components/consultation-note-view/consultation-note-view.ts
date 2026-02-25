@@ -7,6 +7,7 @@ import { ConsultationNotesService } from '../../services/consultation-notes.serv
 import { ConsultationNote } from '../../models/consultation-note.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 type ViewMode = 'loading' | 'view' | 'edit' | 'create' | 'error';
 
@@ -81,7 +82,7 @@ export class ConsultationNoteViewComponent implements OnInit {
           this.mode.set('create');
         } else {
           this.logger.error('Error loading consultation note:', err);
-          this.error.set('Error al cargar la nota de consulta.');
+          this.error.set(getApiErrorMessage(err));
           this.mode.set('error');
         }
       }
@@ -130,7 +131,7 @@ export class ConsultationNoteViewComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating consultation note:', err);
-        this.notifications.error(err.error?.message || 'Error al crear la nota de consulta.');
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });
@@ -158,7 +159,7 @@ export class ConsultationNoteViewComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error updating consultation note:', err);
-        this.notifications.error('Error al actualizar la nota de consulta.');
+        this.notifications.error(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });

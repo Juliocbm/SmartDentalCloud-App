@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../../../core/services/users.service';
 import { DentistListItem } from '../../../../core/models/user.models';
 import { WorkScheduleEditorComponent } from '../work-schedule-editor/work-schedule-editor';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-dentist-schedule-manager',
@@ -14,6 +15,7 @@ import { WorkScheduleEditorComponent } from '../work-schedule-editor/work-schedu
 })
 export class DentistScheduleManagerComponent implements OnInit {
   private usersService = inject(UsersService);
+  private notifications = inject(NotificationService);
 
   dentists = signal<DentistListItem[]>([]);
   selectedDentistId = signal<string | null>(null);
@@ -40,6 +42,7 @@ export class DentistScheduleManagerComponent implements OnInit {
         this.loadingDentists.set(false);
       },
       error: () => {
+        this.notifications.warning('No se pudieron cargar los dentistas');
         this.dentists.set([]);
         this.loadingDentists.set(false);
       }

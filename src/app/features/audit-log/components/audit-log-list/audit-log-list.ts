@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditLogService } from '../../services/audit-log.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import {
   AuditLogEntry,
   AUDIT_ACTION_CONFIG,
@@ -73,7 +74,7 @@ export class AuditLogListComponent implements OnInit {
       pageSize: 200
     }).subscribe({
       next: (data) => { this.logs.set(data); this.loading.set(false); },
-      error: () => { this.error.set('Error al cargar registros de auditoría'); this.loading.set(false); }
+      error: (err) => { this.error.set(getApiErrorMessage(err)); this.loading.set(false); }
     });
   }
 

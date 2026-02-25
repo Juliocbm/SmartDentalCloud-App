@@ -10,6 +10,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { Role } from '../../models/role.models';
 import { LocationSummary } from '../../../settings/models/location.models';
 import { UserFormContextService } from '../../services/user-form-context.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 interface UserFormValue {
   name: string;
@@ -93,7 +94,7 @@ export class UserFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading roles:', err);
-        this.error.set('Error al cargar roles');
+        this.error.set(getApiErrorMessage(err));
         this.loadingRoles.set(false);
       }
     });
@@ -106,7 +107,10 @@ export class UserFormComponent implements OnInit {
         this.locations.set(locations);
         this.loadingLocations.set(false);
       },
-      error: () => this.loadingLocations.set(false)
+      error: (err: any) => {
+        this.error.set(getApiErrorMessage(err, 'Error al cargar sucursales'));
+        this.loadingLocations.set(false);
+      }
     });
   }
 
@@ -147,7 +151,7 @@ export class UserFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading user:', err);
-        this.error.set('Error al cargar usuario');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -235,7 +239,7 @@ export class UserFormComponent implements OnInit {
         } else if (err.status === 400) {
           this.error.set('Datos inválidos. Verifica el formulario');
         } else {
-          this.error.set('Error al crear usuario. Intenta de nuevo');
+          this.error.set(getApiErrorMessage(err));
         }
         this.loading.set(false);
       }
@@ -272,7 +276,7 @@ export class UserFormComponent implements OnInit {
         if (err.status === 409) {
           this.error.set('El email ya está registrado');
         } else {
-          this.error.set('Error al actualizar usuario');
+          this.error.set(getApiErrorMessage(err));
         }
         this.loading.set(false);
       }

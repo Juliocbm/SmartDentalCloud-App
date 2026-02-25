@@ -12,6 +12,7 @@ import { InvoicesService } from '../../services/invoices.service';
 import { CreateInvoiceRequest, CreateInvoiceItemRequest, CFDI_USO_OPTIONS, CFDI_METODO_PAGO_OPTIONS, CFDI_FORMA_PAGO_OPTIONS } from '../../models/invoice.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-invoice-form',
@@ -214,7 +215,7 @@ export class InvoiceFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating invoice:', err);
-        this.notifications.error('Error al crear la factura. Por favor intenta de nuevo.');
+        this.notifications.error(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

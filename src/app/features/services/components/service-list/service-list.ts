@@ -9,6 +9,7 @@ import { ServicesService } from '../../services/services.service';
 import { DentalServiceItem } from '../../models/service.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-service-list',
@@ -92,7 +93,7 @@ export class ServiceListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading services:', err);
-        this.error.set('Error al cargar servicios. Por favor intente nuevamente.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -187,7 +188,7 @@ export class ServiceListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error deleting service:', err);
-        this.notifications.error('Error al eliminar el servicio');
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

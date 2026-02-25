@@ -5,6 +5,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { ModalService } from '../../../../shared/services/modal.service';
 import { Location } from '../../models/location.models';
 import { LocationFormModalComponent, LocationFormModalData } from '../location-form-modal/location-form-modal';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-location-list',
@@ -45,8 +46,8 @@ export class LocationListComponent implements OnInit {
         this.locations.set(data);
         this.loading.set(false);
       },
-      error: () => {
-        this.error.set('Error al cargar las sucursales. Por favor, intenta de nuevo.');
+      error: (err) => {
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -103,8 +104,8 @@ export class LocationListComponent implements OnInit {
         this.loadLocations();
         this.locationsService.refreshCache();
       },
-      error: () => {
-        this.notifications.error('Error al desactivar la sucursal');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

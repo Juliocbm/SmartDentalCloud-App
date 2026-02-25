@@ -10,6 +10,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-appointment-list',
@@ -93,9 +94,9 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
         this.appointments.set(appointments);
         this.loading.set(false);
       },
-      error: (error) => {
-        this.logger.error('Error loading appointments:', error);
-        this.error.set('Error al cargar las citas');
+      error: (err) => {
+        this.logger.error('Error loading appointments:', err);
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -125,8 +126,8 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
         this.notifications.success('Cita completada correctamente.');
         this.loadAppointments();
       },
-      error: () => {
-        this.notifications.error('Error al completar la cita.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }
@@ -140,8 +141,8 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
         this.notifications.success('Cita cancelada correctamente.');
         this.loadAppointments();
       },
-      error: () => {
-        this.notifications.error('Error al cancelar la cita.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

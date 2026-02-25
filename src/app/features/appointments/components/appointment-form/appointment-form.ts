@@ -16,6 +16,8 @@ import { TimeSlot } from '../../models/appointment.models';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { DaySchedule, DAY_ORDER } from '../../../settings/models/work-schedule.models';
 import { ScheduleException, EXCEPTION_TYPE_LABELS } from '../../../settings/models/schedule-exception.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-appointment-form',
@@ -39,6 +41,7 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
   private contextService = inject(AppointmentFormContextService);
   private settingsService = inject(SettingsService);
   private logger = inject(LoggingService);
+  private notifications = inject(NotificationService);
   locationsService = inject(LocationsService);
 
   selectedLocationId = signal<string | null>(null);
@@ -257,9 +260,9 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
         }
         this.loading.set(false);
       },
-      error: (error) => {
-        this.logger.error('Error loading appointment:', error);
-        this.error.set('Error al cargar la cita');
+      error: (err) => {
+        this.logger.error('Error loading appointment:', err);
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -286,9 +289,9 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
         next: () => {
           this.router.navigate(['/appointments']);
         },
-        error: (error) => {
-          this.logger.error('Error updating appointment:', error);
-          this.error.set('Error al actualizar la cita');
+        error: (err) => {
+          this.logger.error('Error updating appointment:', err);
+          this.error.set(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });
@@ -306,9 +309,9 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
           this.contextService.resetContext();
           this.router.navigate([returnUrl]);
         },
-        error: (error) => {
-          this.logger.error('Error creating appointment:', error);
-          this.error.set('Error al crear la cita');
+        error: (err) => {
+          this.logger.error('Error creating appointment:', err);
+          this.error.set(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });
@@ -386,7 +389,8 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
         this.checkingAvailability.set(false);
         this.availabilityChecked.set(true);
       },
-      error: () => {
+      error: (err) => {
+        this.notifications.warning('No se pudo verificar disponibilidad');
         this.checkingAvailability.set(false);
       }
     });

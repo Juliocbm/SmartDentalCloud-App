@@ -7,6 +7,7 @@ import { PurchaseOrdersService } from '../../services/purchase-orders.service';
 import { PurchaseOrder, PURCHASE_ORDER_STATUS_LABELS, PurchaseOrderStatus } from '../../models/purchase-order.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-purchase-order-detail',
@@ -50,7 +51,7 @@ export class PurchaseOrderDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading purchase order:', err);
-        this.error.set('Error al cargar la orden de compra');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

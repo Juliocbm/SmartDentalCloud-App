@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle';
+import { getApiErrorMessage } from '../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-login',
@@ -54,12 +55,12 @@ export class LoginComponent {
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
         this.router.navigate([returnUrl]);
       },
-      error: (error) => {
+      error: (err) => {
         this.loading.set(false);
-        if (error.status === 401) {
+        if (err.status === 401) {
           this.errorMessage.set('Email o contraseña incorrectos');
         } else {
-          this.errorMessage.set('Error al iniciar sesión. Intenta de nuevo.');
+          this.errorMessage.set(getApiErrorMessage(err));
         }
       }
     });

@@ -7,6 +7,7 @@ import { PaymentsService } from '../../services/payments.service';
 import { Payment, PAYMENT_METHOD_OPTIONS } from '../../models/invoice.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 export interface PaymentFormModalData {
   invoiceId: string;
@@ -65,9 +66,9 @@ export class PaymentFormModalComponent implements ModalComponentBase<PaymentForm
         this.notifications.success('Pago registrado correctamente.');
         this.modalRef?.close(payment);
       },
-      error: (err: unknown) => {
+      error: (err: any) => {
         this.logger.error('Error creating payment:', err);
-        this.notifications.error('Error al registrar el pago. Verifica los datos e intenta de nuevo.');
+        this.notifications.error(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

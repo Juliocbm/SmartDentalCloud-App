@@ -11,6 +11,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-category-list',
@@ -99,7 +100,7 @@ export class CategoryListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading categories:', err);
-        this.error.set('Error al cargar las categorías. Por favor, intenta de nuevo.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -141,8 +142,8 @@ export class CategoryListComponent implements OnInit, OnDestroy {
         this.categories.update(cats => cats.filter(c => c.id !== category.id));
         this.notifications.success('Categoría eliminada correctamente.');
       },
-      error: () => {
-        this.notifications.error('Error al eliminar la categoría. Por favor, intenta de nuevo.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

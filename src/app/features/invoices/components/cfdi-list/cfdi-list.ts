@@ -7,6 +7,7 @@ import { CfdiService } from '../../services/cfdi.service';
 import { Cfdi, CFDI_STATUS_CONFIG } from '../../models/cfdi.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-cfdi-list',
@@ -104,14 +105,14 @@ export class CfdiListComponent implements OnInit {
   onDownloadXml(cfdi: Cfdi): void {
     this.cfdiService.downloadXml(cfdi.id).subscribe({
       next: (blob) => this.saveFile(blob, `${cfdi.serie || ''}${cfdi.folio || cfdi.id}.xml`, 'application/xml'),
-      error: () => this.notifications.error('Error al descargar XML')
+      error: (err) => this.notifications.error(getApiErrorMessage(err))
     });
   }
 
   onDownloadPdf(cfdi: Cfdi): void {
     this.cfdiService.downloadPdf(cfdi.id).subscribe({
       next: (blob) => this.saveFile(blob, `${cfdi.serie || ''}${cfdi.folio || cfdi.id}.pdf`, 'application/pdf'),
-      error: () => this.notifications.error('Error al descargar PDF')
+      error: (err) => this.notifications.error(getApiErrorMessage(err))
     });
   }
 

@@ -11,6 +11,7 @@ import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { DentalService } from '../../../invoices/models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-treatment-form',
@@ -118,7 +119,7 @@ export class TreatmentFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading treatment for edit:', err);
-        this.error.set('Error al cargar el tratamiento.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -166,7 +167,7 @@ export class TreatmentFormComponent implements OnInit {
         },
         error: (err) => {
           this.logger.error('Error updating treatment:', err);
-          this.error.set(err?.error?.message || 'Error al actualizar el tratamiento.');
+          this.error.set(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });
@@ -178,7 +179,7 @@ export class TreatmentFormComponent implements OnInit {
         },
         error: (err) => {
           this.logger.error('Error creating treatment:', err);
-          this.error.set(err?.error?.message || 'Error al registrar el tratamiento.');
+          this.error.set(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });

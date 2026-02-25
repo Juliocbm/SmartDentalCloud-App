@@ -10,6 +10,7 @@ import { RolesService } from '../../services/roles.service';
 import { User, Role } from '../../models/user.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-user-list',
@@ -86,7 +87,7 @@ export class UserListComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.logger.error('Error loading data:', err);
-        this.error.set('Error al cargar usuarios. Intenta de nuevo.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -170,8 +171,8 @@ export class UserListComponent implements OnInit, OnDestroy {
         }
         this.notifications.success(`Usuario ${action === 'activar' ? 'activado' : 'desactivado'} correctamente.`);
       },
-      error: () => {
-        this.notifications.error('Error al cambiar el estado del usuario.');
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }

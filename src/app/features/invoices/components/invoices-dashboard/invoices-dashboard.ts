@@ -7,6 +7,7 @@ import { InvoicesService } from '../../services/invoices.service';
 import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG } from '../../models/invoice.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { ROUTES } from '../../../../core/constants/routes.constants';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 interface AgingBucket {
   label: string;
@@ -147,7 +148,7 @@ export class InvoicesDashboardComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading invoices dashboard:', err);
-        this.error.set('Error al cargar datos de facturación');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });

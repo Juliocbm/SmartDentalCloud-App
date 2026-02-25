@@ -303,8 +303,8 @@ export class AppointmentCalendarComponent implements OnInit {
         this.updateCalendarEvents(appointments);
         this.loading.set(false);
       },
-      error: (error) => {
-        this.logger.error('Error loading appointments:', error);
+      error: (err) => {
+        this.logger.error('Error loading appointments:', err);
         this.loading.set(false);
       }
     });
@@ -431,8 +431,8 @@ export class AppointmentCalendarComponent implements OnInit {
       next: (dentists) => {
         this.dentists.set(dentists);
       },
-      error: (error) => {
-        this.logger.error('Error loading dentists:', error);
+      error: (err) => {
+        this.logger.error('Error loading dentists:', err);
         this.dentists.set([]);
       }
     });

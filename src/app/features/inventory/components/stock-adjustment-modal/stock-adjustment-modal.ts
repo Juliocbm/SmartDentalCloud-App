@@ -8,6 +8,7 @@ import { StockService } from '../../services/stock.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { StockAdjustmentRequest } from '../../models/stock.models';
 import { LocationsService } from '../../../settings/services/locations.service';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 /**
  * Datos que recibe el modal de ajuste de stock
@@ -143,7 +144,7 @@ export class StockAdjustmentModalComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error adjusting stock:', err);
-        this.error.set(err.error?.error || 'Error al ajustar el stock. Por favor, intenta de nuevo.');
+        this.error.set(getApiErrorMessage(err));
         this.saving.set(false);
       }
     });

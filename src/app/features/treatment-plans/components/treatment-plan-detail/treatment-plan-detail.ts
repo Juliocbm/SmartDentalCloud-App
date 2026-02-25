@@ -15,6 +15,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-treatment-plan-detail',
@@ -70,7 +71,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error loading treatment plan:', err);
-        this.error.set('Error al cargar el plan de tratamiento.');
+        this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
     });
@@ -123,7 +124,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error approving plan:', err);
-        this.notifications.error('Error al aprobar el plan de tratamiento.');
+        this.notifications.error(getApiErrorMessage(err));
         this.actionLoading.set(false);
       }
     });
@@ -157,7 +158,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error rejecting plan:', err);
-        this.notifications.error('Error al rechazar el plan de tratamiento.');
+        this.notifications.error(getApiErrorMessage(err));
         this.actionLoading.set(false);
       }
     });
@@ -178,7 +179,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error starting plan:', err);
-        this.notifications.error('Error al iniciar el plan de tratamiento.');
+        this.notifications.error(getApiErrorMessage(err));
         this.actionLoading.set(false);
       }
     });
@@ -256,7 +257,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error updating item progress:', err);
-        this.notifications.error('Error al actualizar el procedimiento.');
+        this.notifications.error(getApiErrorMessage(err));
         this.itemActionLoading.set(null);
       }
     });

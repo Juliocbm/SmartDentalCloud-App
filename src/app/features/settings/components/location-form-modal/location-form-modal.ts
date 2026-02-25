@@ -8,6 +8,7 @@ import { LocationsService } from '../../services/locations.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { UsersService } from '../../../users/services/users.service';
 import { Location, LocationUser, CreateLocationRequest, UpdateLocationRequest } from '../../models/location.models';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 /**
  * Datos que recibe el modal de crear/editar sucursal
@@ -101,7 +102,10 @@ export class LocationFormModalComponent implements OnInit {
         );
         this.loadingDoctors.set(false);
       },
-      error: () => this.loadingDoctors.set(false)
+      error: (err: any) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar doctores'));
+        this.loadingDoctors.set(false);
+      }
     });
   }
 
@@ -130,8 +134,8 @@ export class LocationFormModalComponent implements OnInit {
         next: () => {
           this.saveUserAssignments(data.id);
         },
-        error: () => {
-          this.notifications.error('Error al actualizar la sucursal');
+        error: (err) => {
+          this.notifications.error(getApiErrorMessage(err));
           this.saving.set(false);
         }
       });
@@ -149,8 +153,8 @@ export class LocationFormModalComponent implements OnInit {
         next: (created) => {
           this.saveUserAssignments(created.id);
         },
-        error: () => {
-          this.notifications.error('Error al crear la sucursal');
+        error: (err) => {
+          this.notifications.error(getApiErrorMessage(err));
           this.saving.set(false);
         }
       });

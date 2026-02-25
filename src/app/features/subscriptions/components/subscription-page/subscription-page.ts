@@ -12,6 +12,7 @@ import {
   SubscriptionPlan
 } from '../../models/subscription.models';
 import { environment } from '../../../../../environments/environment';
+import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 declare const Stripe: any;
 
@@ -194,7 +195,7 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.subscribing.set(false);
-          this.checkoutError.set(err?.error?.message || 'Error al procesar la suscripción');
+          this.checkoutError.set(getApiErrorMessage(err));
         }
       });
     } catch (e: any) {
@@ -244,7 +245,7 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.updatingPaymentMethod.set(false);
-          this.checkoutError.set(err?.error?.message || 'Error al actualizar el método de pago');
+          this.checkoutError.set(getApiErrorMessage(err));
         }
       });
     } catch (e: any) {
@@ -264,9 +265,9 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
         this.notifications.success('Suscripción cancelada. Mantendrás acceso hasta el final del período.');
         this.loadSubscription();
       },
-      error: () => {
+      error: (err) => {
         this.cancelling.set(false);
-        this.notifications.error('Error al cancelar la suscripción');
+        this.notifications.error(getApiErrorMessage(err));
       }
     });
   }
