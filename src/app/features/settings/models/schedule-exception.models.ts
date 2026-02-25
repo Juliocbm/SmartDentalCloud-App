@@ -7,6 +7,8 @@ export interface ScheduleException {
   id: string;
   userId: string | null;
   userName: string | null;
+  locationId: string | null;
+  locationName: string | null;
   date: string;
   type: ScheduleExceptionType;
   reason: string;
@@ -20,6 +22,7 @@ export type ScheduleExceptionType = 'closedHoliday' | 'closedVacation' | 'closed
 
 export interface CreateScheduleExceptionRequest {
   userId?: string | null;
+  locationId?: string | null;
   date: string;
   type: ScheduleExceptionType;
   reason: string;
@@ -30,6 +33,7 @@ export interface CreateScheduleExceptionRequest {
 
 export interface UpdateScheduleExceptionRequest {
   userId?: string | null;
+  locationId?: string | null;
   date: string;
   type: ScheduleExceptionType;
   reason: string;

@@ -25,7 +25,7 @@ export class AppointmentsAnalyticsService {
   /**
    * Obtiene las métricas principales del dashboard.
    */
-  getDashboardMetrics(): Observable<AppointmentDashboardMetrics> {
+  getDashboardMetrics(locationId?: string | null): Observable<AppointmentDashboardMetrics> {
     const today = new Date();
     const startOfDay = this.startOfDay(today);
     const endOfDay = this.endOfDay(today);
@@ -40,6 +40,10 @@ export class AppointmentsAnalyticsService {
       monthStats: this.appointmentsService.getStatistics(startOfMonth, endOfMonth)
     }).pipe(
       map(({ todayAppointments, weekAppointments, monthStats }) => {
+        if (locationId) {
+          todayAppointments = todayAppointments.filter(a => a.locationId === locationId);
+          weekAppointments = weekAppointments.filter(a => a.locationId === locationId);
+        }
         const todayCompleted = todayAppointments.filter(a => a.status === AppointmentStatus.Completed).length;
         const todayPending = todayAppointments.filter(a => 
           a.status === AppointmentStatus.Scheduled || a.status === AppointmentStatus.Confirmed
@@ -64,47 +68,50 @@ export class AppointmentsAnalyticsService {
   /**
    * Obtiene las próximas citas del día.
    */
-  getUpcomingToday(limit: number = 5): Observable<UpcomingAppointment[]> {
+  getUpcomingToday(limit: number = 5, locationId?: string | null): Observable<UpcomingAppointment[]> {
     const now = new Date();
     const endOfDay = this.endOfDay(now);
 
     return this.appointmentsService.getByRange(now, endOfDay).pipe(
-      map(appointments => 
-        appointments
+      map(appointments => {
+        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
+        return appointments
           .filter(a => a.status === AppointmentStatus.Scheduled || a.status === AppointmentStatus.Confirmed)
           .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
           .slice(0, limit)
-          .map(apt => this.toUpcomingAppointment(apt))
-      )
+          .map(apt => this.toUpcomingAppointment(apt));
+      })
     );
   }
 
   /**
    * Obtiene citas pendientes de confirmar.
    */
-  getPendingConfirmations(limit: number = 5): Observable<PendingConfirmation[]> {
+  getPendingConfirmations(limit: number = 5, locationId?: string | null): Observable<PendingConfirmation[]> {
     const now = new Date();
     const endOfWeek = this.endOfWeek(now);
 
     return this.appointmentsService.getByRange(now, endOfWeek, undefined, AppointmentStatus.Scheduled).pipe(
-      map(appointments =>
-        appointments
+      map(appointments => {
+        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
+        return appointments
           .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
           .slice(0, limit)
-          .map(apt => this.toPendingConfirmation(apt))
-      )
+          .map(apt => this.toPendingConfirmation(apt));
+      })
     );
   }
 
   /**
    * Obtiene la distribución de citas por estado en un rango.
    */
-  getStatusDistribution(startDate?: Date, endDate?: Date): Observable<StatusDistribution[]> {
+  getStatusDistribution(startDate?: Date, endDate?: Date, locationId?: string | null): Observable<StatusDistribution[]> {
     const start = startDate || this.startOfMonth(new Date());
     const end = endDate || this.endOfMonth(new Date());
 
     return this.appointmentsService.getByRange(start, end).pipe(
       map(appointments => {
+        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         const statusCounts = new Map<AppointmentStatus, number>();
         
         appointments.forEach(apt => {
@@ -125,13 +132,14 @@ export class AppointmentsAnalyticsService {
   /**
    * Obtiene la distribución de citas por día de la semana.
    */
-  getWeekdayDistribution(startDate?: Date, endDate?: Date): Observable<WeekdayDistribution[]> {
+  getWeekdayDistribution(startDate?: Date, endDate?: Date, locationId?: string | null): Observable<WeekdayDistribution[]> {
     const start = startDate || this.startOfMonth(new Date());
     const end = endDate || this.endOfMonth(new Date());
     const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
     return this.appointmentsService.getByRange(start, end).pipe(
       map(appointments => {
+        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         const dayCounts = new Array(7).fill(0);
         
         appointments.forEach(apt => {
@@ -151,12 +159,13 @@ export class AppointmentsAnalyticsService {
   /**
    * Obtiene actividad reciente de citas (simulada basada en citas recientes).
    */
-  getRecentActivity(limit: number = 5): Observable<AppointmentActivity[]> {
+  getRecentActivity(limit: number = 5, locationId?: string | null): Observable<AppointmentActivity[]> {
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     return this.appointmentsService.getByRange(weekAgo, now).pipe(
       map(appointments => {
+        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         const activities: AppointmentActivity[] = [];
 
         appointments.forEach(apt => {
@@ -181,12 +190,13 @@ export class AppointmentsAnalyticsService {
   /**
    * Obtiene pacientes frecuentes basado en número de citas.
    */
-  getFrequentPatients(limit: number = 5): Observable<FrequentPatient[]> {
+  getFrequentPatients(limit: number = 5, locationId?: string | null): Observable<FrequentPatient[]> {
     const now = new Date();
     const sixMonthsAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
 
     return this.appointmentsService.getByRange(sixMonthsAgo, now).pipe(
       map(appointments => {
+        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         const patientMap = new Map<string, {
           patientId: string;
           patientName: string;

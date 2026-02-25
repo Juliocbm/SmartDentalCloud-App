@@ -1,0 +1,92 @@
+<div class="location-list-container">
+  <div class="section-header">
+    <h2>
+      <i class="fa-solid fa-location-dot"></i>
+      Sucursales
+    </h2>
+    <p class="section-description">Administra las ubicaciones físicas del consultorio</p>
+  </div>
+
+  <div class="section-actions">
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <i class="fa-solid fa-plus"></i>
+      Nueva Sucursal
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando sucursales...</p>
+    </div>
+  } @else if (locations().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-location-dot"></i>
+      <h3>Sin Sucursales</h3>
+      <p>Aún no tienes sucursales registradas. Crea la primera para comenzar.</p>
+      <button class="btn btn-primary" (click)="openCreateModal()">
+        <i class="fa-solid fa-plus"></i>
+        Crear Primera Sucursal
+      </button>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Doctores</th>
+            <th>Estado</th>
+            <th class="th-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (loc of locations(); track loc.id) {
+            <tr>
+              <td>
+                <div class="location-name-cell">
+                  <span class="location-name">{{ loc.name }}</span>
+                  @if (loc.isDefault) {
+                    <span class="badge badge-info">Principal</span>
+                  }
+                </div>
+              </td>
+              <td>
+                <span class="text-truncate" [title]="loc.address">{{ loc.address }}</span>
+              </td>
+              <td>{{ loc.phone || '—' }}</td>
+              <td>{{ loc.email || '—' }}</td>
+              <td>
+                @if (loc.assignedUsers.length > 0) {
+                  <span class="badge badge-neutral">{{ loc.assignedUsers.length }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td>
+                @if (loc.isActive) {
+                  <span class="badge badge-success">Activa</span>
+                } @else {
+                  <span class="badge badge-warning">Inactiva</span>
+                }
+              </td>
+              <td class="td-actions">
+                <button class="btn btn-outline btn-sm" title="Editar" (click)="openEditModal(loc)">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                @if (!loc.isDefault) {
+                  <button class="btn btn-outline btn-sm btn-danger" title="Desactivar" (click)="deleteLocation(loc)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

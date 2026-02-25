@@ -5,8 +5,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
+import { LocationsService } from '../../../settings/services/locations.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { Role } from '../../models/role.models';
+import { LocationSummary } from '../../../settings/models/location.models';
 import { UserFormContextService } from '../../services/user-form-context.service';
 
 interface UserFormValue {
@@ -31,6 +33,7 @@ export class UserFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private usersService = inject(UsersService);
   private rolesService = inject(RolesService);
+  private locationsService = inject(LocationsService);
   private logger = inject(LoggingService);
   private contextService = inject(UserFormContextService);
 
@@ -40,6 +43,12 @@ export class UserFormComponent implements OnInit {
   roles = signal<Role[]>([]);
   selectedRoles = signal<Set<string>>(new Set());
   
+  // Locations
+  locations = signal<LocationSummary[]>([]);
+  selectedLocations = signal<Set<string>>(new Set());
+  loadingLocations = signal(false);
+  hasMultipleLocations = computed(() => this.locations().length > 1);
+
   isEditMode = signal(false);
   userId = signal<string | null>(null);
   loading = signal(false);
@@ -60,6 +69,7 @@ export class UserFormComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.loadRoles();
+    this.loadLocations();
     this.checkEditMode();
   }
 
@@ -89,6 +99,17 @@ export class UserFormComponent implements OnInit {
     });
   }
 
+  private loadLocations(): void {
+    this.loadingLocations.set(true);
+    this.locationsService.getSummaries().subscribe({
+      next: (locations) => {
+        this.locations.set(locations);
+        this.loadingLocations.set(false);
+      },
+      error: () => this.loadingLocations.set(false)
+    });
+  }
+
   private checkEditMode(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -114,6 +135,13 @@ export class UserFormComponent implements OnInit {
         
         const roleIds = new Set(user.roles.map(r => r.id));
         this.selectedRoles.set(roleIds);
+
+        // Cargar ubicaciones asignadas al usuario
+        this.usersService.getUserLocations(id).subscribe({
+          next: (locs) => {
+            this.selectedLocations.set(new Set(locs.map(l => l.id)));
+          }
+        });
         
         this.loading.set(false);
       },
@@ -137,6 +165,20 @@ export class UserFormComponent implements OnInit {
 
   isRoleSelected(roleId: string): boolean {
     return this.selectedRoles().has(roleId);
+  }
+
+  toggleLocation(locationId: string): void {
+    const selected = new Set(this.selectedLocations());
+    if (selected.has(locationId)) {
+      selected.delete(locationId);
+    } else {
+      selected.add(locationId);
+    }
+    this.selectedLocations.set(selected);
+  }
+
+  isLocationSelected(locationId: string): boolean {
+    return this.selectedLocations().has(locationId);
   }
 
   hasRoleDoctor(): boolean {
@@ -183,8 +225,8 @@ export class UserFormComponent implements OnInit {
     };
 
     this.usersService.create(request).subscribe({
-      next: () => {
-        this.router.navigate(['/users']);
+      next: (created) => {
+        this.saveUserLocations(created.id!, () => this.router.navigate(['/users']));
       },
       error: (err) => {
         this.logger.error('Error creating user:', err);
@@ -216,7 +258,7 @@ export class UserFormComponent implements OnInit {
       next: () => {
         this.usersService.updateUserRoles(id, Array.from(this.selectedRoles())).subscribe({
           next: () => {
-            this.router.navigate(['/users', id]);
+            this.saveUserLocations(id, () => this.router.navigate(['/users', id]));
           },
           error: (err) => {
             this.logger.error('Error updating roles:', err);
@@ -233,6 +275,25 @@ export class UserFormComponent implements OnInit {
           this.error.set('Error al actualizar usuario');
         }
         this.loading.set(false);
+      }
+    });
+  }
+
+  private saveUserLocations(userId: string, onSuccess: () => void): void {
+    const locationIds = Array.from(this.selectedLocations());
+
+    // Si no hay múltiples sucursales, no hay nada que guardar
+    if (!this.hasMultipleLocations()) {
+      onSuccess();
+      return;
+    }
+
+    this.usersService.updateUserLocations(userId, locationIds).subscribe({
+      next: () => onSuccess(),
+      error: (err) => {
+        this.logger.error('Error updating user locations:', err);
+        // Partial success — user/roles saved, locations failed
+        onSuccess();
       }
     });
   }

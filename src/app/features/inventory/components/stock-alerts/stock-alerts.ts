@@ -10,6 +10,7 @@ import { StockAlert, StockAlertLevel } from '../../models/stock.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { LocationsService } from '../../../settings/services/locations.service';
 import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 
@@ -24,6 +25,7 @@ export class StockAlertsComponent implements OnInit {
   private stockService = inject(StockService);
   private modalService = inject(ModalService);
   private logger = inject(LoggingService);
+  locationsService = inject(LocationsService);
   private searchSubject = new Subject<string>();
 
   alerts = signal<StockAlert[]>([]);

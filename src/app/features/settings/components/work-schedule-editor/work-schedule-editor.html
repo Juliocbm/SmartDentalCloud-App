@@ -7,6 +7,13 @@
     <p class="section-description">{{ description() }}</p>
   </div>
 
+  <!-- Selector de ubicación (golden rule) -->
+  <app-location-selector
+    [locationId]="selectedLocationId()"
+    label="Horario de Sucursal"
+    (locationChange)="selectedLocationId.set($event); loadSchedule()"
+  />
+
   @if (loading()) {
     <div class="loading-state">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>

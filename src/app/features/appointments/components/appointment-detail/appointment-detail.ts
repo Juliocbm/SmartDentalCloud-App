@@ -9,6 +9,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { LocationsService } from '../../../settings/services/locations.service';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -27,6 +28,7 @@ export class AppointmentDetailComponent implements OnInit {
   private logger = inject(LoggingService);
   private notesService = inject(ConsultationNotesService);
   private location = inject(Location);
+  locationsService = inject(LocationsService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

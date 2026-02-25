@@ -7,6 +7,8 @@ import { PurchaseOrdersService } from '../../services/purchase-orders.service';
 import { SuppliersService } from '../../services/suppliers.service';
 import { ProductsService } from '../../services/products.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { LocationsService } from '../../../settings/services/locations.service';
+import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
 import { Supplier } from '../../models/supplier.models';
 import { Product } from '../../models/product.models';
 
@@ -20,7 +22,7 @@ interface OrderItemFormValue {
 @Component({
   selector: 'app-purchase-order-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, LocationSelectorComponent],
   templateUrl: './purchase-order-form.html',
   styleUrls: ['./purchase-order-form.scss']
 })
@@ -31,7 +33,9 @@ export class PurchaseOrderFormComponent implements OnInit {
   private suppliersService = inject(SuppliersService);
   private productsService = inject(ProductsService);
   private logger = inject(LoggingService);
+  locationsService = inject(LocationsService);
 
+  selectedLocationId = signal<string | null>(null);
   orderForm!: FormGroup;
   suppliers = signal<Supplier[]>([]);
   products = signal<Product[]>([]);
@@ -169,6 +173,7 @@ export class PurchaseOrderFormComponent implements OnInit {
     const formValue = this.orderForm.value;
     const request = {
       supplierId: formValue.supplierId,
+      locationId: this.selectedLocationId() || undefined,
       expectedDate: formValue.expectedDate || undefined,
       notes: formValue.notes || undefined,
       items: formValue.items.map((item: OrderItemFormValue) => ({

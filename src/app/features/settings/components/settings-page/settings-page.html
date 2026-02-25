@@ -228,6 +228,13 @@
           </div>
         }
 
+        <!-- Locations (Sucursales) Tab -->
+        @if (activeTab() === 'locations') {
+          <div class="settings-section">
+            <app-location-list />
+          </div>
+        }
+
         <!-- Schedule Tab -->
         @if (activeTab() === 'schedule') {
           <div class="settings-section">

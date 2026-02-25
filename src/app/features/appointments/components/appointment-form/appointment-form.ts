@@ -8,6 +8,8 @@ import { AppointmentFormContextService } from '../../services/appointment-form-c
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { DentistSelectComponent } from '../../../../shared/components/dentist-select/dentist-select';
+import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { LocationsService } from '../../../settings/services/locations.service';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { DentistListItem } from '../../../../core/models/user.models';
 import { TimeSlot } from '../../models/appointment.models';
@@ -23,6 +25,7 @@ import { ScheduleException, EXCEPTION_TYPE_LABELS } from '../../../settings/mode
     ReactiveFormsModule,
     PatientAutocompleteComponent,
     DentistSelectComponent,
+    LocationSelectorComponent,
     PageHeaderComponent
   ],
   templateUrl: './appointment-form.html',
@@ -36,6 +39,9 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
   private contextService = inject(AppointmentFormContextService);
   private settingsService = inject(SettingsService);
   private logger = inject(LoggingService);
+  locationsService = inject(LocationsService);
+
+  selectedLocationId = signal<string | null>(null);
 
   appointmentForm!: FormGroup;
   loading = signal(false);
@@ -71,6 +77,7 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
     this.checkEditMode();
     this.loadWorkSchedule();
     this.loadScheduleExceptions();
+    this.locationsService.getSummaries().subscribe();
   }
 
   ngOnDestroy(): void {
@@ -208,7 +215,8 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
       userId: ['', Validators.required],
       startAt: [this.formatDateTimeLocal(startAt), Validators.required],
       endAt: [this.formatDateTimeLocal(endAt), Validators.required],
-      reason: ['', [Validators.required, Validators.minLength(3)]]
+      reason: ['', [Validators.required, Validators.minLength(3)]],
+      locationId: [null]
     });
   }
 
@@ -288,6 +296,7 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
       this.appointmentsService.create({
         patientId: formValue.patientId,
         userId: formValue.userId,
+        locationId: formValue.locationId || undefined,
         startAt: startAt,
         endAt: endAt,
         reason: formValue.reason

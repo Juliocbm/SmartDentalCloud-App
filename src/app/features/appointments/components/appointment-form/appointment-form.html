@@ -79,6 +79,20 @@
       </div>
     </div>
 
+    @if (locationsService.hasMultipleLocations()) {
+      <div class="form-section">
+        <h3 class="section-title">
+          <i class="fa-solid fa-location-dot section-icon"></i>
+          Sucursal
+        </h3>
+        <app-location-selector
+          [locationId]="selectedLocationId()"
+          [showLabel]="false"
+          (locationChange)="selectedLocationId.set($event); appointmentForm.patchValue({ locationId: $event })"
+        />
+      </div>
+    }
+
     <div class="form-section">
       <h3 class="section-title">
         <i class="fa-solid fa-calendar-days section-icon"></i>

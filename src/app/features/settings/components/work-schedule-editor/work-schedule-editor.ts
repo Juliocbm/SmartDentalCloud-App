@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { LocationsService } from '../../services/locations.service';
+import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
 import {
   DaySchedule,
   WorkSchedule,
@@ -15,13 +17,16 @@ import {
 @Component({
   selector: 'app-work-schedule-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LocationSelectorComponent],
   templateUrl: './work-schedule-editor.html',
   styleUrl: './work-schedule-editor.scss'
 })
 export class WorkScheduleEditorComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private notifications = inject(NotificationService);
+  locationsService = inject(LocationsService);
+
+  selectedLocationId = signal<string | null>(null);
 
   /** User ID del dentista. Null/undefined = horario del consultorio */
   userId = input<string | null>(null);
@@ -45,9 +50,10 @@ export class WorkScheduleEditorComponent implements OnInit {
   loadSchedule(): void {
     this.loading.set(true);
     const uid = this.userId();
+    const locId = this.selectedLocationId();
     const request$ = uid
-      ? this.settingsService.getDentistWorkSchedule(uid)
-      : this.settingsService.getWorkSchedule();
+      ? this.settingsService.getDentistWorkSchedule(uid, locId)
+      : this.settingsService.getWorkSchedule(locId);
 
     request$.subscribe({
       next: (data) => {
@@ -109,6 +115,7 @@ export class WorkScheduleEditorComponent implements OnInit {
     const uid = this.userId();
     const payload: WorkSchedule = {
       userId: uid,
+      locationId: this.selectedLocationId(),
       days: this.schedule()
     };
 

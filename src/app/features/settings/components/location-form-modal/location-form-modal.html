@@ -1,0 +1,133 @@
+<app-modal
+  [title]="modalTitle"
+  [subtitle]="modalSubtitle"
+  [icon]="'fa-location-dot'"
+  [size]="'lg'"
+  (closed)="onClose()">
+
+  <div class="form-row-2">
+    <div class="form-group">
+      <label class="form-label">Nombre <span class="required">*</span></label>
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Ej: Sucursal Apodaca"
+        [ngModel]="formName()"
+        (ngModelChange)="formName.set($event)"
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Dirección <span class="required">*</span></label>
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Ej: Calle Apodaca #132, Col. San José"
+        [ngModel]="formAddress()"
+        (ngModelChange)="formAddress.set($event)"
+      />
+    </div>
+  </div>
+
+  <div class="form-row-2">
+    <div class="form-group">
+      <label class="form-label">Teléfono</label>
+      <input
+        type="tel"
+        class="form-input"
+        placeholder="(81) 1234-5678"
+        [ngModel]="formPhone()"
+        (ngModelChange)="formPhone.set($event)"
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-input"
+        placeholder="sucursal@consultorio.com"
+        [ngModel]="formEmail()"
+        (ngModelChange)="formEmail.set($event)"
+      />
+    </div>
+  </div>
+
+  <div class="form-row-2">
+    <div class="form-group">
+      <label class="form-label">Orden</label>
+      <input
+        type="number"
+        class="form-input"
+        min="0"
+        [ngModel]="formSortOrder()"
+        (ngModelChange)="formSortOrder.set($event)"
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label">&nbsp;</label>
+      <label class="toggle-label">
+        <input
+          type="checkbox"
+          [ngModel]="formIsDefault()"
+          (ngModelChange)="formIsDefault.set($event)"
+        />
+        <span class="toggle-text">Sucursal principal</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Doctores asignados -->
+  <div class="doctors-section">
+    <label class="form-label">
+      <i class="fa-solid fa-user-doctor"></i>
+      Doctores Asignados
+    </label>
+    @if (loadingDoctors()) {
+      <div class="doctors-loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Cargando doctores...</span>
+      </div>
+    } @else if (doctors().length === 0) {
+      <p class="text-muted">No hay usuarios registrados</p>
+    } @else {
+      <div class="doctors-grid">
+        @for (doctor of doctors(); track doctor.id) {
+          <label class="doctor-option" [class.assigned]="doctor.assigned">
+            <input
+              type="checkbox"
+              [checked]="doctor.assigned"
+              (change)="toggleDoctor(doctor)"
+            />
+            <i class="fa-solid fa-user-doctor"></i>
+            <span>{{ doctor.name }}</span>
+          </label>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Footer -->
+  <div modal-footer>
+    <button
+      type="button"
+      class="btn btn-outline"
+      (click)="onClose()"
+      [disabled]="saving()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="onSubmit()"
+      [disabled]="saving() || !formName().trim() || !formAddress().trim()">
+      @if (saving()) {
+        <span class="btn-spinner"></span>
+        Guardando...
+      } @else {
+        <i class="fa-solid fa-check"></i>
+        {{ isEditing ? 'Actualizar' : 'Crear' }}
+      }
+    </button>
+  </div>
+</app-modal>

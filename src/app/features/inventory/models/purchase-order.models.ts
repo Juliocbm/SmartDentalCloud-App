@@ -7,6 +7,8 @@ export interface PurchaseOrder {
   orderNumber: string;
   supplierId: string;
   supplierName: string;
+  locationId: string | null;
+  locationName: string | null;
   orderDate: Date;
   expectedDate?: Date;
   receivedDate?: Date;
@@ -36,6 +38,7 @@ export interface PurchaseOrderItem {
 
 export interface CreatePurchaseOrderRequest {
   supplierId: string;
+  locationId?: string | null;
   expectedDate?: Date;
   notes?: string;
   items: CreatePurchaseOrderItemRequest[];

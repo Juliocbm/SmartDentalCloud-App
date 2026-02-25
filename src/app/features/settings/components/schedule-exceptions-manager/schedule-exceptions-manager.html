@@ -41,6 +41,9 @@
             <th>Motivo</th>
             <th>Horario</th>
             <th>Aplica a</th>
+            @if (locationsService.hasMultipleLocations()) {
+              <th>Sucursal</th>
+            }
             <th>Recurrente</th>
             <th class="actions-column">Acciones</th>
           </tr>
@@ -69,6 +72,9 @@
                   </span>
                 }
               </td>
+              @if (locationsService.hasMultipleLocations()) {
+                <td>{{ exception.locationName || 'Todas' }}</td>
+              }
               <td>
                 @if (exception.isRecurringYearly) {
                   <span class="badge badge-info">
@@ -198,6 +204,13 @@
           }
         </select>
       </div>
+
+      <!-- Location (golden rule) -->
+      <app-location-selector
+        [locationId]="formLocationId()"
+        label="Sucursal"
+        (locationChange)="formLocationId.set($event)"
+      />
 
       <!-- Recurring -->
       <div class="form-check">

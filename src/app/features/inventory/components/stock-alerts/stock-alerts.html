@@ -127,6 +127,9 @@
             <th>Nivel</th>
             <th>Código</th>
             <th>Producto</th>
+            @if (locationsService.hasMultipleLocations()) {
+              <th>Sucursal</th>
+            }
             <th>Categoría</th>
             <th>Stock Actual</th>
             <th>Stock Mínimo</th>
@@ -165,6 +168,11 @@
                   </div>
                 </div>
               </td>
+
+              <!-- Sucursal (golden rule) -->
+              @if (locationsService.hasMultipleLocations()) {
+                <td>{{ alert.locationName || '—' }}</td>
+              }
 
               <!-- Categoría -->
               <td class="category-cell">

@@ -5,6 +5,7 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
 import { WorkScheduleEditorComponent } from '../work-schedule-editor/work-schedule-editor';
 import { DentistScheduleManagerComponent } from '../dentist-schedule-manager/dentist-schedule-manager';
 import { ScheduleExceptionsManagerComponent } from '../schedule-exceptions-manager/schedule-exceptions-manager';
+import { LocationListComponent } from '../location-list/location-list';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import {
@@ -16,12 +17,12 @@ import {
   LANGUAGE_OPTIONS
 } from '../../models/settings.models';
 
-type SettingsTab = 'general' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'smtp' | 'branding' | 'domain';
+type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'smtp' | 'branding' | 'domain';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss'
 })
@@ -74,6 +75,7 @@ export class SettingsPageComponent implements OnInit {
 
   tabs: { key: SettingsTab; label: string; icon: string }[] = [
     { key: 'general', label: 'General', icon: 'fa-gear' },
+    { key: 'locations', label: 'Sucursales', icon: 'fa-location-dot' },
     { key: 'schedule', label: 'Horario', icon: 'fa-clock' },
     { key: 'dentist-schedule', label: 'Horarios Dentistas', icon: 'fa-user-doctor' },
     { key: 'exceptions', label: 'Excepciones', icon: 'fa-calendar-xmark' },

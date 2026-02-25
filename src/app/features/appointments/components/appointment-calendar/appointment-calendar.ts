@@ -19,11 +19,13 @@ import { DentistListItem } from '../../../../core/models/user.models';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { DaySchedule, DAY_TO_FULLCALENDAR } from '../../../settings/models/work-schedule.models';
 import { ScheduleException, EXCEPTION_TYPE_LABELS } from '../../../settings/models/schedule-exception.models';
+import { LocationsService } from '../../../settings/services/locations.service';
+import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
 
 @Component({
   selector: 'app-appointment-calendar',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, RouterLink, PageHeaderComponent, ModalComponent],
+  imports: [CommonModule, FullCalendarModule, RouterLink, PageHeaderComponent, ModalComponent, LocationSelectorComponent],
   templateUrl: './appointment-calendar.html',
   styleUrl: './appointment-calendar.scss'
 })
@@ -34,6 +36,7 @@ export class AppointmentCalendarComponent implements OnInit {
   private router = inject(Router);
   private logger = inject(LoggingService);
   private contextService = inject(AppointmentFormContextService);
+  locationsService = inject(LocationsService);
 
   private calendarRef = viewChild(FullCalendarComponent);
 
@@ -44,6 +47,7 @@ export class AppointmentCalendarComponent implements OnInit {
   selectedSlot = signal<{ start: Date; end: Date } | null>(null);
   dentists = signal<DentistListItem[]>([]);
   selectedDoctorId = signal<string>('all');
+  selectedLocationId = signal<string | null>(null);
   scheduleExceptions = signal<ScheduleException[]>([]);
   visibleRange = signal<{ start: string; end: string } | null>(null);
 
@@ -434,25 +438,39 @@ export class AppointmentCalendarComponent implements OnInit {
     });
   }
 
+  onLocationChange(locationId: string | null): void {
+    this.selectedLocationId.set(locationId);
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
+    const allAppointments = this.appointments();
+    const dentistId = this.selectedDoctorId();
+    const locationId = this.selectedLocationId();
+
+    let filtered = allAppointments;
+    if (dentistId !== 'all') {
+      filtered = filtered.filter(apt => apt.userId === dentistId);
+    }
+    if (locationId) {
+      filtered = filtered.filter(apt => apt.locationId === locationId);
+    }
+    this.updateCalendarEvents(filtered);
+  }
+
   onDentistChange(dentistId: string): void {
     this.selectedDoctorId.set(dentistId);
-    const allAppointments = this.appointments();
     
     if (dentistId === 'all') {
-      this.updateCalendarEvents(allAppointments);
-      // Reload clinic-wide schedule
       this.loadWorkSchedule();
     } else {
-      const filtered = allAppointments.filter(apt => apt.userId === dentistId);
-      this.updateCalendarEvents(filtered);
-      // Load dentist-specific schedule (falls back to clinic defaults from backend)
       this.settingsService.getDentistWorkSchedule(dentistId).subscribe({
         next: (schedule) => this.applyWorkSchedule(schedule.days),
-        error: () => this.loadWorkSchedule() // Fallback to clinic schedule
+        error: () => this.loadWorkSchedule()
       });
     }
 
-    // Re-apply exceptions with new dentist context
+    this.applyFilters();
     this.applyScheduleExceptions();
   }
 }

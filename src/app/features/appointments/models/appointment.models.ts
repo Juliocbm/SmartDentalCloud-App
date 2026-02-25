@@ -12,6 +12,8 @@ export interface Appointment {
   patientName: string;
   userId: string | null;
   doctorName: string | null;
+  locationId: string | null;
+  locationName: string | null;
   startAt: Date;
   endAt: Date;
   reason: string;
@@ -24,6 +26,7 @@ export interface Appointment {
 export interface CreateAppointmentRequest {
   patientId: string;
   userId: string;
+  locationId?: string | null;
   startAt: Date;
   endAt: Date;
   reason: string;
@@ -32,6 +35,7 @@ export interface CreateAppointmentRequest {
 export interface RescheduleAppointmentRequest {
   newStartAt: Date;
   newEndAt: Date;
+  locationId?: string | null;
 }
 
 export interface UpdateAppointmentNotesRequest {

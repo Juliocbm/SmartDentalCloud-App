@@ -5,23 +5,31 @@
 export interface Stock {
   id: string;
   productId: string;
+  locationId?: string | null;
+  locationName?: string | null;
   productCode?: string;
   productName?: string;
   categoryName?: string;
   currentStock: number;
+  reservedStock?: number;
+  availableStock?: number;
   minStock: number;
   reorderPoint: number;
   reorderQuantity: number;
   unit: string;
   lastMovementDate?: Date;
   averageCost?: number;
+  lastCost?: number;
+  totalValue?: number;
+  stockStatus?: string;
 }
 
 export interface StockMovement {
   id: string;
   productId: string;
+  locationId?: string | null;
   productName?: string;
-  movementType: 'adjustment' | 'purchase' | 'sale' | 'transfer' | 'loss';
+  movementType: 'Adjustment' | 'Purchase' | 'Sale' | 'Transfer' | 'Loss' | 'Usage' | 'Return';
   quantity: number;
   previousStock: number;
   newStock: number;
@@ -44,6 +52,8 @@ export interface StockAdjustmentRequest {
 
 export interface StockAlert {
   productId: string;
+  locationId?: string | null;
+  locationName?: string | null;
   productCode: string;
   productName: string;
   categoryName?: string;

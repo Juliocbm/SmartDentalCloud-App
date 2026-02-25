@@ -79,6 +79,14 @@ export class UsersService {
     return this.api.put<UserProfile>(`${this.baseUrl}/${userId}/profile`, data);
   }
 
+  getUserLocations(userId: string): Observable<Array<{ id: string; name: string; isDefault: boolean }>> {
+    return this.api.get<Array<{ id: string; name: string; isDefault: boolean }>>(`${this.baseUrl}/${userId}/locations`);
+  }
+
+  updateUserLocations(userId: string, locationIds: string[]): Observable<void> {
+    return this.api.put<void>(`${this.baseUrl}/${userId}/locations`, { locationIds });
+  }
+
   getDoctors(): Observable<Array<{ id: string; name: string; specialization?: string }>> {
     return this.api.get<Array<{ id: string; name: string; specialization?: string }>>(
       `${this.baseUrl}/doctors`

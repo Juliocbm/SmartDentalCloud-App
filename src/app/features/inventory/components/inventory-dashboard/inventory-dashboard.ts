@@ -7,6 +7,8 @@ import { ProductsService } from '../../services/products.service';
 import { AlertsCountService } from '../../../../core/services/alerts-count.service';
 import { InventoryAnalyticsService } from '../../services/inventory-analytics.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { LocationsService } from '../../../settings/services/locations.service';
+import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
 import { TopProduct, ExpiringProduct, CategoryStockStatus, InventoryActivity, ACTIVITY_CONFIG } from '../../models/inventory-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 
@@ -22,7 +24,7 @@ interface DashboardMetric {
 @Component({
   selector: 'app-inventory-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationSelectorComponent],
   templateUrl: './inventory-dashboard.html',
   styleUrls: ['./inventory-dashboard.scss']
 })
@@ -31,6 +33,9 @@ export class InventoryDashboardComponent implements OnInit {
   private alertsService = inject(AlertsCountService);
   private analyticsService = inject(InventoryAnalyticsService);
   private logger = inject(LoggingService);
+  locationsService = inject(LocationsService);
+
+  selectedLocationId = signal<string | null>(null);
 
   loading = signal(true);
   error = signal<string | null>(null);
@@ -126,6 +131,15 @@ export class InventoryDashboardComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.loadAllData();
+  }
+
+  onLocationChange(locationId: string | null): void {
+    this.selectedLocationId.set(locationId);
+    this.loadAllData();
+  }
+
+  private loadAllData(): void {
     this.loadDashboardData();
     this.loadInventoryValue();
     this.loadTopProducts();
@@ -158,7 +172,7 @@ export class InventoryDashboardComponent implements OnInit {
 
   private loadTopProducts(): void {
     this.loadingTopProducts.set(true);
-    this.analyticsService.getTopProducts(5).subscribe({
+    this.analyticsService.getTopProducts(5, this.selectedLocationId()).subscribe({
       next: (products) => {
         this.topProducts.set(products);
         this.loadingTopProducts.set(false);
@@ -172,7 +186,7 @@ export class InventoryDashboardComponent implements OnInit {
 
   private loadExpiringProducts(): void {
     this.loadingExpiring.set(true);
-    this.analyticsService.getExpiringProducts(30).subscribe({
+    this.analyticsService.getExpiringProducts(30, this.selectedLocationId()).subscribe({
       next: (products) => {
         this.expiringProducts.set(products);
         this.loadingExpiring.set(false);

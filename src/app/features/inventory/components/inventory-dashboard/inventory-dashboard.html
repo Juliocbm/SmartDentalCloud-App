@@ -6,6 +6,13 @@
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
+  <!-- Filtro de ubicación (golden rule) -->
+  <app-location-selector
+    [locationId]="selectedLocationId()"
+    label="Filtrar por Sucursal"
+    (locationChange)="onLocationChange($event)"
+  />
+
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>

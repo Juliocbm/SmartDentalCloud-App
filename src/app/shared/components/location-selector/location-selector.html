@@ -1,0 +1,20 @@
+@if (visible()) {
+  <div class="form-group">
+    @if (showLabel()) {
+      <label class="form-label">{{ label() }}</label>
+    }
+    <select
+      class="form-control"
+      [ngModel]="locationId()"
+      (ngModelChange)="onSelectionChange($event)"
+    >
+      <option value="">— Todas las sucursales —</option>
+      @for (loc of locations(); track loc.id) {
+        <option [value]="loc.id">
+          {{ loc.name }}
+          @if (loc.isDefault) { (Principal) }
+        </option>
+      }
+    </select>
+  </div>
+}

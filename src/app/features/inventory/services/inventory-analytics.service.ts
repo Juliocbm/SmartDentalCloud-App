@@ -40,8 +40,10 @@ export class InventoryAnalyticsService {
    * Obtiene los productos con mayor rotación/uso desde el backend
    * @param limit Número de productos a retornar (default: 5)
    */
-  getTopProducts(limit: number = 5): Observable<TopProduct[]> {
-    return this.api.get<Product[]>(`${this.baseUrl}/top-used`, { limit }).pipe(
+  getTopProducts(limit: number = 5, locationId?: string | null): Observable<TopProduct[]> {
+    const params: Record<string, any> = { limit };
+    if (locationId) params['locationId'] = locationId;
+    return this.api.get<Product[]>(`${this.baseUrl}/top-used`, params).pipe(
       map(products => products.map(p => ({
         id: p.id!,
         name: p.name,
@@ -59,10 +61,11 @@ export class InventoryAnalyticsService {
    * Obtiene productos próximos a vencer desde el backend
    * @param withinDays Días hacia adelante para buscar (default: 30)
    */
-  getExpiringProducts(withinDays: number = 30): Observable<ExpiringProduct[]> {
+  getExpiringProducts(withinDays: number = 30, locationId?: string | null): Observable<ExpiringProduct[]> {
     const today = new Date();
-
-    return this.api.get<Product[]>(`${this.baseUrl}/expiring`, { withinDays }).pipe(
+    const params: Record<string, any> = { withinDays };
+    if (locationId) params['locationId'] = locationId;
+    return this.api.get<Product[]>(`${this.baseUrl}/expiring`, params).pipe(
       map(products => products.map(p => {
         const expiryDate = new Date(p.expiryDate!);
         const daysToExpire = Math.ceil(

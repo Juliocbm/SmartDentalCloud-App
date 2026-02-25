@@ -6,6 +6,8 @@ import { PieChartComponent, BarChartComponent, ChartDataItem } from '../../../..
 import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentsAnalyticsService } from '../../services/appointments-analytics.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { LocationsService } from '../../../settings/services/locations.service';
+import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
 import {
   UpcomingAppointment,
   PendingConfirmation,
@@ -28,7 +30,7 @@ interface QuickAction {
 @Component({
   selector: 'app-appointments-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationSelectorComponent],
   templateUrl: './appointments-dashboard.html',
   styleUrls: ['./appointments-dashboard.scss']
 })
@@ -36,6 +38,9 @@ export class AppointmentsDashboardComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);
   private analyticsService = inject(AppointmentsAnalyticsService);
   private logger = inject(LoggingService);
+  locationsService = inject(LocationsService);
+
+  selectedLocationId = signal<string | null>(null);
 
   // Estados de carga
   loading = signal(true);
@@ -128,11 +133,18 @@ export class AppointmentsDashboardComponent implements OnInit {
     this.loadDashboardData();
   }
 
+  onLocationChange(locationId: string | null): void {
+    this.selectedLocationId.set(locationId);
+    this.loadDashboardData();
+  }
+
   private loadDashboardData(): void {
     this.loading.set(true);
     
     // Cargar métricas principales
-    this.analyticsService.getDashboardMetrics().subscribe({
+    const locId = this.selectedLocationId();
+
+    this.analyticsService.getDashboardMetrics(locId).subscribe({
       next: (metrics) => {
         this.metrics.set(metrics);
         this.loading.set(false);
@@ -145,17 +157,17 @@ export class AppointmentsDashboardComponent implements OnInit {
     });
 
     // Cargar datos adicionales en paralelo
-    this.loadUpcomingAppointments();
-    this.loadPendingConfirmations();
-    this.loadRecentActivity();
-    this.loadStatusDistribution();
-    this.loadWeekdayDistribution();
-    this.loadFrequentPatients();
+    this.loadUpcomingAppointments(locId);
+    this.loadPendingConfirmations(locId);
+    this.loadRecentActivity(locId);
+    this.loadStatusDistribution(locId);
+    this.loadWeekdayDistribution(locId);
+    this.loadFrequentPatients(locId);
   }
 
-  private loadUpcomingAppointments(): void {
+  private loadUpcomingAppointments(locId: string | null): void {
     this.loadingUpcoming.set(true);
-    this.analyticsService.getUpcomingToday(5).subscribe({
+    this.analyticsService.getUpcomingToday(5, locId).subscribe({
       next: (appointments) => {
         this.upcomingAppointments.set(appointments);
         this.loadingUpcoming.set(false);
@@ -167,9 +179,9 @@ export class AppointmentsDashboardComponent implements OnInit {
     });
   }
 
-  private loadPendingConfirmations(): void {
+  private loadPendingConfirmations(locId: string | null): void {
     this.loadingPending.set(true);
-    this.analyticsService.getPendingConfirmations(5).subscribe({
+    this.analyticsService.getPendingConfirmations(5, locId).subscribe({
       next: (pending) => {
         this.pendingConfirmations.set(pending);
         this.loadingPending.set(false);
@@ -181,9 +193,9 @@ export class AppointmentsDashboardComponent implements OnInit {
     });
   }
 
-  private loadRecentActivity(): void {
+  private loadRecentActivity(locId: string | null): void {
     this.loadingActivity.set(true);
-    this.analyticsService.getRecentActivity(5).subscribe({
+    this.analyticsService.getRecentActivity(5, locId).subscribe({
       next: (activities) => {
         this.recentActivity.set(activities);
         this.loadingActivity.set(false);
@@ -195,9 +207,9 @@ export class AppointmentsDashboardComponent implements OnInit {
     });
   }
 
-  private loadStatusDistribution(): void {
+  private loadStatusDistribution(locId: string | null): void {
     this.loadingStatusChart.set(true);
-    this.analyticsService.getStatusDistribution().subscribe({
+    this.analyticsService.getStatusDistribution(undefined, undefined, locId).subscribe({
       next: (distribution) => {
         this.statusDistribution.set(distribution);
         this.loadingStatusChart.set(false);
@@ -209,9 +221,9 @@ export class AppointmentsDashboardComponent implements OnInit {
     });
   }
 
-  private loadWeekdayDistribution(): void {
+  private loadWeekdayDistribution(locId: string | null): void {
     this.loadingWeekdayChart.set(true);
-    this.analyticsService.getWeekdayDistribution().subscribe({
+    this.analyticsService.getWeekdayDistribution(undefined, undefined, locId).subscribe({
       next: (distribution) => {
         this.weekdayDistribution.set(distribution);
         this.loadingWeekdayChart.set(false);
@@ -223,9 +235,9 @@ export class AppointmentsDashboardComponent implements OnInit {
     });
   }
 
-  private loadFrequentPatients(): void {
+  private loadFrequentPatients(locId: string | null): void {
     this.loadingPatients.set(true);
-    this.analyticsService.getFrequentPatients(5).subscribe({
+    this.analyticsService.getFrequentPatients(5, locId).subscribe({
       next: (patients) => {
         this.frequentPatients.set(patients);
         this.loadingPatients.set(false);

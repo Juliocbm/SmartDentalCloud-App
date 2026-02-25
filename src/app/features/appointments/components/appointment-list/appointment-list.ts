@@ -9,6 +9,7 @@ import { AppointmentListItem, AppointmentStatus, AppointmentStatusConfig } from 
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { LocationsService } from '../../../settings/services/locations.service';
 
 @Component({
   selector: 'app-appointment-list',
@@ -22,6 +23,7 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
+  locationsService = inject(LocationsService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
 import { SettingsService } from '../../services/settings.service';
+import { LocationsService } from '../../services/locations.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { UsersService } from '../../../../core/services/users.service';
 import { DentistListItem } from '../../../../core/models/user.models';
@@ -21,7 +23,7 @@ import { generateTimeOptions } from '../../models/work-schedule.models';
 @Component({
   selector: 'app-schedule-exceptions-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ModalComponent, LocationSelectorComponent],
   templateUrl: './schedule-exceptions-manager.html',
   styleUrl: './schedule-exceptions-manager.scss'
 })
@@ -29,6 +31,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private notifications = inject(NotificationService);
   private usersService = inject(UsersService);
+  locationsService = inject(LocationsService);
 
   // Data
   exceptions = signal<ScheduleException[]>([]);
@@ -47,6 +50,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
   formStartTime = signal('08:00');
   formEndTime = signal('14:00');
   formUserId = signal<string | null>(null);
+  formLocationId = signal<string | null>(null);
   formIsRecurringYearly = signal(false);
 
   // Constants
@@ -98,6 +102,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
     this.formStartTime.set('08:00');
     this.formEndTime.set('14:00');
     this.formUserId.set(null);
+    this.formLocationId.set(null);
     this.formIsRecurringYearly.set(false);
     this.showModal.set(true);
   }
@@ -110,6 +115,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
     this.formStartTime.set(exception.startTime || '08:00');
     this.formEndTime.set(exception.endTime || '14:00');
     this.formUserId.set(exception.userId);
+    this.formLocationId.set(exception.locationId);
     this.formIsRecurringYearly.set(exception.isRecurringYearly);
     this.showModal.set(true);
   }
@@ -142,6 +148,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
         startTime: this.formType() === 'modifiedHours' ? this.formStartTime() : null,
         endTime: this.formType() === 'modifiedHours' ? this.formEndTime() : null,
         userId: this.formUserId(),
+        locationId: this.formLocationId(),
         isRecurringYearly: this.formIsRecurringYearly()
       };
       this.settingsService.updateScheduleException(editing.id, request).subscribe({
@@ -164,6 +171,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
         startTime: this.formType() === 'modifiedHours' ? this.formStartTime() : null,
         endTime: this.formType() === 'modifiedHours' ? this.formEndTime() : null,
         userId: this.formUserId(),
+        locationId: this.formLocationId(),
         isRecurringYearly: this.formIsRecurringYearly()
       };
       this.settingsService.createScheduleException(request).subscribe({

@@ -29,6 +29,13 @@ export class StockService {
   }
 
   /**
+   * Obtiene el desglose de stock de un producto por ubicación
+   */
+  getStockByProductLocations(productId: string): Observable<Stock[]> {
+    return this.api.get<Stock[]>(`${this.baseUrl}/product/${productId}/locations`);
+  }
+
+  /**
    * Ajusta manualmente el stock de un producto
    */
   adjustStock(request: StockAdjustmentRequest): Observable<Stock> {

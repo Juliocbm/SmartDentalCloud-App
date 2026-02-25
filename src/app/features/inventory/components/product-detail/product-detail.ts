@@ -2,9 +2,12 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProductsService } from '../../services/products.service';
+import { StockService } from '../../services/stock.service';
 import { Product, PRODUCT_UNITS } from '../../models/product.models';
+import { Stock } from '../../models/stock.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { LocationsService } from '../../../settings/services/locations.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 
@@ -21,9 +24,11 @@ export class ProductDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private productsService = inject(ProductsService);
+  private stockService = inject(StockService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private location = inject(Location);
+  locationsService = inject(LocationsService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -35,6 +40,8 @@ export class ProductDetailComponent implements OnInit {
   product = signal<Product | null>(null);
   loading = signal(true);
   error = signal<string | null>(null);
+  stockByLocation = signal<Stock[]>([]);
+  loadingStock = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -52,12 +59,26 @@ export class ProductDetailComponent implements OnInit {
       next: (product) => {
         this.product.set(product);
         this.loading.set(false);
+        if (this.locationsService.hasMultipleLocations()) {
+          this.loadStockByLocation(id);
+        }
       },
       error: (err) => {
         this.logger.error('Error loading product:', err);
         this.error.set('Error al cargar el producto');
         this.loading.set(false);
       }
+    });
+  }
+
+  private loadStockByLocation(productId: string): void {
+    this.loadingStock.set(true);
+    this.stockService.getStockByProductLocations(productId).subscribe({
+      next: (stocks) => {
+        this.stockByLocation.set(stocks);
+        this.loadingStock.set(false);
+      },
+      error: () => this.loadingStock.set(false)
     });
   }
 

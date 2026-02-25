@@ -12,6 +12,8 @@ export interface DaySchedule {
 
 export interface WorkSchedule {
   userId: string | null;
+  locationId?: string | null;
+  locationName?: string | null;
   days: DaySchedule[];
 }
 

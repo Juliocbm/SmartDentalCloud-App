@@ -60,6 +60,13 @@
             <span class="label">Duración:</span>
             <span class="value">{{ getDuration() }} minutos</span>
           </div>
+          @if (locationsService.hasMultipleLocations() && apt.locationName) {
+            <div class="info-item">
+              <i class="fa-solid fa-location-dot"></i>
+              <span class="label">Sucursal:</span>
+              <span class="value">{{ apt.locationName }}</span>
+            </div>
+          }
         </div>
       </div>
       <div class="header-action-bar">

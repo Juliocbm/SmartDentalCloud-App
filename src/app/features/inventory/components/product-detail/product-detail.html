@@ -120,6 +120,59 @@
         </div>
       </div>
 
+      <!-- Stock por Sucursal (golden rule) -->
+      @if (locationsService.hasMultipleLocations() && stockByLocation().length > 0) {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-building"></i>
+            Stock por Sucursal
+          </h3>
+          @if (loadingStock()) {
+            <div class="loading-state">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando...</span>
+            </div>
+          } @else {
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Sucursal</th>
+                    <th>Stock Actual</th>
+                    <th>Disponible</th>
+                    <th>Reservado</th>
+                    <th>Estado</th>
+                    <th>Costo Prom.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (stock of stockByLocation(); track stock.locationId) {
+                    <tr>
+                      <td><strong>{{ stock.locationName }}</strong></td>
+                      <td>{{ stock.currentStock }}</td>
+                      <td>{{ stock.availableStock ?? stock.currentStock }}</td>
+                      <td>{{ stock.reservedStock ?? 0 }}</td>
+                      <td>
+                        <span class="badge" [ngClass]="{
+                          'badge-error': stock.stockStatus === 'OutOfStock' || stock.stockStatus === 'Critical',
+                          'badge-warning': stock.stockStatus === 'Low',
+                          'badge-success': stock.stockStatus === 'OK'
+                        }">
+                          {{ stock.stockStatus === 'OutOfStock' ? 'Sin stock' :
+                             stock.stockStatus === 'Critical' ? 'Crítico' :
+                             stock.stockStatus === 'Low' ? 'Bajo' : 'Normal' }}
+                        </span>
+                      </td>
+                      <td>{{ formatCurrency(stock.averageCost) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      }
+
       <!-- Costos y trazabilidad -->
       <div class="info-two-col">
         <div class="info-section">

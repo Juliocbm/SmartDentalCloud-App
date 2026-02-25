@@ -219,6 +219,53 @@
         }
       </div>
 
+      <!-- Locations Section (Only when multi-location) -->
+      @if (hasMultipleLocations()) {
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-location-dot section-icon"></i>
+            Sucursales Asignadas
+          </h3>
+          <p class="section-description">
+            Selecciona las sucursales donde trabaja este usuario.
+          </p>
+
+          @if (loadingLocations()) {
+            <div class="loading-small">
+              <div class="spinner-small"></div>
+              <span>Cargando sucursales...</span>
+            </div>
+          } @else {
+            <div class="locations-grid">
+              @for (loc of locations(); track loc.id) {
+                <div
+                  class="location-card"
+                  [class.location-selected]="isLocationSelected(loc.id)"
+                  (click)="toggleLocation(loc.id)"
+                >
+                  <div class="location-card-header">
+                    <input
+                      type="checkbox"
+                      [checked]="isLocationSelected(loc.id)"
+                      class="location-checkbox"
+                      (change)="toggleLocation(loc.id)"
+                      (click)="$event.stopPropagation()"
+                    />
+                    <i class="fa-solid fa-location-dot location-icon"></i>
+                    <span class="location-name">{{ loc.name }}</span>
+                  </div>
+                  @if (loc.isDefault) {
+                    <div class="location-meta">
+                      <span class="badge badge-info badge-sm">Principal</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
       <!-- Professional Profile Section (Only for Doctors) -->
       @if (hasRoleDoctor()) {
         <div class="form-section">

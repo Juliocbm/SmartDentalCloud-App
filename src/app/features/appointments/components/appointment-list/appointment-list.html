@@ -88,6 +88,9 @@
               <th>Paciente</th>
               <th>Dentista</th>
               <th>Motivo</th>
+              @if (locationsService.hasMultipleLocations()) {
+                <th>Sucursal</th>
+              }
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -134,6 +137,9 @@
                 <td class="reason-cell">
                   {{ appointment.reason }}
                 </td>
+                @if (locationsService.hasMultipleLocations()) {
+                  <td>{{ appointment.locationName || '—' }}</td>
+                }
                 <td class="status-cell">
                   <span 
                     class="badge"

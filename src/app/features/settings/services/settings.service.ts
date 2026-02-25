@@ -55,16 +55,20 @@ export class SettingsService {
     return this.api.delete<void>('/tenants/smtp-configuration');
   }
 
-  getWorkSchedule(): Observable<WorkSchedule> {
-    return this.api.get<WorkSchedule>('/tenants/work-schedule');
+  getWorkSchedule(locationId?: string | null): Observable<WorkSchedule> {
+    const params: Record<string, string> = {};
+    if (locationId) params['locationId'] = locationId;
+    return this.api.get<WorkSchedule>('/tenants/work-schedule', params);
   }
 
   updateWorkSchedule(schedule: WorkSchedule): Observable<WorkSchedule> {
     return this.api.put<WorkSchedule>('/tenants/work-schedule', schedule);
   }
 
-  getDentistWorkSchedule(userId: string): Observable<WorkSchedule> {
-    return this.api.get<WorkSchedule>(`/tenants/work-schedule/${userId}`);
+  getDentistWorkSchedule(userId: string, locationId?: string | null): Observable<WorkSchedule> {
+    const params: Record<string, string> = {};
+    if (locationId) params['locationId'] = locationId;
+    return this.api.get<WorkSchedule>(`/tenants/work-schedule/${userId}`, params);
   }
 
   updateDentistWorkSchedule(userId: string, schedule: WorkSchedule): Observable<WorkSchedule> {
