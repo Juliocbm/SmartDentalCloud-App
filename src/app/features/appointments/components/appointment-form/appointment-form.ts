@@ -380,7 +380,7 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
     this.checkingAvailability.set(true);
     this.availabilityChecked.set(false);
 
-    this.appointmentsService.getAvailability(date, formValue.userId, durationMin).subscribe({
+    this.appointmentsService.getAvailability(date, formValue.userId, durationMin, formValue.locationId).subscribe({
       next: (slots) => {
         this.availabilitySlots.set(slots);
         this.checkingAvailability.set(false);

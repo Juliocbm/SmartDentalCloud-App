@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -41,6 +41,17 @@ export class ProductListComponent implements OnInit, OnDestroy {
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
   filterCategory = signal<string>('all');
 
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
+
+  totalPages = computed(() => Math.ceil(this.filteredProducts().length / this.pageSize()) || 1);
+
+  paginatedProducts = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredProducts().slice(start, start + this.pageSize());
+  });
+
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
     { label: 'Inventario', route: '/inventory' },
@@ -55,6 +66,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
       distinctUntilChanged()
     ).subscribe(term => {
       this.searchTerm.set(term);
+      this.currentPage.set(1);
       this.applyFilters();
     });
   }
@@ -118,12 +130,32 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   onStatusFilterChange(value: 'all' | 'active' | 'inactive'): void {
     this.filterStatus.set(value);
+    this.currentPage.set(1);
     this.applyFilters();
   }
 
   onCategoryFilterChange(value: string): void {
     this.filterCategory.set(value);
+    this.currentPage.set(1);
     this.applyFilters();
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const maxVisible = 5;
+    const pages: number[] = [];
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    const end = Math.min(total, start + maxVisible - 1);
+    start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   async deleteProduct(product: Product): Promise<void> {

@@ -117,7 +117,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (product of filteredProducts(); track product.id) {
+          @for (product of paginatedProducts(); track product.id) {
             <tr [class.row-inactive]="!product.isActive">
               <!-- Código -->
               <td class="code-cell">
@@ -210,11 +210,36 @@
         </tbody>
       </table>
 
-      <!-- Footer -->
-      <div class="table-footer centered">
-        <span class="results-count">
-          Mostrando <strong>{{ filteredProducts().length }}</strong> de <strong>{{ products().length }}</strong> productos
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (currentPage() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ currentPage() * pageSize() > filteredProducts().length ? filteredProducts().length : currentPage() * pageSize() }}</strong>
+          de <strong>{{ filteredProducts().length }}</strong> productos
         </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(1)">
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(currentPage() - 1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            @for (page of getPaginationPages(); track page) {
+              <button class="btn-page" [class.active]="page === currentPage()" (click)="onPageChange(page)">
+                {{ page }}
+              </button>
+            }
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(currentPage() + 1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(totalPages())">
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
       </div>
     </div>
   }

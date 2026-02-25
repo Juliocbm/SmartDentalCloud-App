@@ -1,0 +1,141 @@
+<div class="detail-container">
+  <app-page-header
+    [title]="location() ? location()!.name : 'Sucursal'"
+    [icon]="'fa-location-dot'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems">
+    <div title-extra>
+      @if (location(); as loc) {
+        @if (loc.isDefault) {
+          <span class="badge badge-info">Principal</span>
+        }
+        @if (loc.isActive) {
+          <span class="badge badge-success">Activa</span>
+        } @else {
+          <span class="badge badge-warning">Inactiva</span>
+        }
+      }
+    </div>
+    <div actions>
+      @if (location()) {
+        <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
+        <button class="btn btn-outline" (click)="openEditModal()">
+          <i class="fa-solid fa-pen"></i>
+          Editar
+        </button>
+      }
+    </div>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando sucursal...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <h3>Error al cargar la sucursal</h3>
+      <p>{{ error() }}</p>
+      <button (click)="goBack()" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  }
+
+  @if (!loading() && !error() && location(); as loc) {
+    <div class="detail-body">
+      <div class="info-two-col">
+        <!-- Información General -->
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-location-dot"></i>
+            Información General
+          </h3>
+          <div class="info-card">
+            <div class="info-row">
+              <span class="info-label">Nombre:</span>
+              <span class="info-value">{{ loc.name }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Dirección:</span>
+              <span class="info-value">{{ loc.address }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Teléfono:</span>
+              <span class="info-value">{{ loc.phone || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span class="info-value">{{ loc.email || '—' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Estado:</span>
+              <span class="info-value">
+                @if (loc.isActive) {
+                  <span class="badge badge-success">Activa</span>
+                } @else {
+                  <span class="badge badge-warning">Inactiva</span>
+                }
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Sucursal principal:</span>
+              <span class="info-value">
+                @if (loc.isDefault) {
+                  <span class="badge badge-info">Sí</span>
+                } @else {
+                  No
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doctores Asignados -->
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-user-doctor"></i>
+            Doctores Asignados
+            @if (loc.assignedUsers.length > 0) {
+              <span class="badge badge-neutral">{{ loc.assignedUsers.length }}</span>
+            }
+          </h3>
+          @if (loc.assignedUsers.length > 0) {
+            <div class="info-card">
+              @for (user of loc.assignedUsers; track user.userId) {
+                <div class="info-row">
+                  <span class="info-value">
+                    <a [routerLink]="['/users', user.userId]" class="link-primary">
+                      <i class="fa-solid fa-user-doctor"></i>
+                      {{ user.userName }}
+                    </a>
+                  </span>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="info-card">
+              <div class="info-empty">
+                <i class="fa-solid fa-circle-info"></i>
+                No hay doctores asignados a esta sucursal
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="loc.createdAt"
+      [updatedAt]="loc.updatedAt"
+      (closed)="showAuditModal.set(false)"
+    />
+  }
+</div>

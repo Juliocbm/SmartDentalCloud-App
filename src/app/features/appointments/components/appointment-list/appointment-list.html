@@ -138,7 +138,15 @@
                   {{ appointment.reason }}
                 </td>
                 @if (locationsService.hasMultipleLocations()) {
-                  <td>{{ appointment.locationName || '—' }}</td>
+                  <td>
+                    @if (appointment.locationId) {
+                      <a [routerLink]="['/settings/locations', appointment.locationId]" class="link-primary">
+                        {{ appointment.locationName }}
+                      </a>
+                    } @else {
+                      {{ appointment.locationName || '—' }}
+                    }
+                  </td>
                 }
                 <td class="status-cell">
                   <span 

@@ -108,13 +108,11 @@ export class AppointmentsService {
     );
   }
 
-  getAvailability(date: Date, userId?: string, durationMinutes: number = 60): Observable<TimeSlot[]> {
+  getAvailability(date: Date, userId?: string, durationMinutes: number = 60, locationId?: string | null): Observable<TimeSlot[]> {
     const localDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    return this.api.get<{ startTime: string; endTime: string; isAvailable: boolean }[]>('/appointments/availability', {
-      date: localDate,
-      userId,
-      durationMinutes
-    }).pipe(
+    const params: Record<string, any> = { date: localDate, userId, durationMinutes };
+    if (locationId) params['locationId'] = locationId;
+    return this.api.get<{ startTime: string; endTime: string; isAvailable: boolean }[]>('/appointments/availability', params).pipe(
       map(slots => slots.map(slot => ({
         start: new Date(slot.startTime),
         end: new Date(slot.endTime),

@@ -64,7 +64,15 @@
             <div class="info-item">
               <i class="fa-solid fa-location-dot"></i>
               <span class="label">Sucursal:</span>
-              <span class="value">{{ apt.locationName }}</span>
+              <span class="value">
+                @if (apt.locationId) {
+                  <a [routerLink]="['/settings/locations', apt.locationId]" class="link-primary">
+                    {{ apt.locationName }}
+                  </a>
+                } @else {
+                  {{ apt.locationName }}
+                }
+              </span>
             </div>
           }
         </div>

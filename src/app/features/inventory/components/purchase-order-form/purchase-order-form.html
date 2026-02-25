@@ -14,7 +14,7 @@
         <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="orderForm.invalid || items.length === 0 || saving()">
+      <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="!isFormValid() || saving()">
         @if (saving()) {
           <span class="btn-spinner"></span>
           Guardando...
@@ -38,188 +38,191 @@
       </div>
     }
 
-    <!-- Form -->
-    <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" class="purchase-order-form">
-    
-    <!-- Información General -->
-    <div class="form-section">
-      <h3 class="section-title">
-        <i class="fa-solid fa-info-circle section-icon"></i>
-        Información General
-        <span class="required">*</span>
-      </h3>
+    <form [formGroup]="orderForm" class="standard-form">
 
-      <div class="form-row">
-        <!-- Proveedor -->
-        <div class="form-group">
-          <label for="supplierId" class="form-label">Proveedor <span class="required">*</span></label>
-          <select
-            id="supplierId"
-            class="form-select"
-            formControlName="supplierId"
-            [class.input-error]="hasError('supplierId', 'required')"
-          >
-            <option value="">Seleccionar proveedor...</option>
-            @for (supplier of suppliers(); track supplier.id) {
-              <option [value]="supplier.id">{{ supplier.name }}</option>
-            }
-          </select>
-          @if (hasError('supplierId', 'required')) {
-            <span class="error-message">El proveedor es requerido</span>
-          }
-        </div>
-
-        <!-- Fecha Esperada -->
-        <div class="form-group">
-          <label for="expectedDate" class="form-label">Fecha Esperada de Entrega</label>
-          <input
-            type="date"
-            id="expectedDate"
-            class="form-input"
-            formControlName="expectedDate"
-          />
-        </div>
-      </div>
-
-      <!-- Sucursal destino (golden rule) -->
-      <app-location-selector
-        [locationId]="selectedLocationId()"
-        label="Sucursal Destino"
-        (locationChange)="selectedLocationId.set($event)"
-      />
-
-      <!-- Notas -->
-      <div class="form-group">
-        <label for="notes" class="form-label">Notas</label>
-        <textarea
-          id="notes"
-          class="form-textarea"
-          formControlName="notes"
-          placeholder="Notas adicionales sobre la orden"
-          rows="3"
-        ></textarea>
-      </div>
-    </div>
-
-    <!-- Items -->
-    <div class="form-section">
-      <div class="section-header">
+      <!-- Información General -->
+      <div class="form-section">
         <h3 class="section-title">
-          <i class="fa-solid fa-box section-icon"></i>
-          Productos
+          <i class="fa-solid fa-info-circle section-icon"></i>
+          Información General
           <span class="required">*</span>
         </h3>
-        <button type="button" class="btn btn-outline btn-sm" (click)="addItem()">
-          <i class="fa-solid fa-plus"></i>
-          Agregar Producto
-        </button>
+
+        <div class="form-row">
+          <!-- Proveedor -->
+          <div class="form-group">
+            <label for="supplierId" class="form-label">Proveedor <span class="required">*</span></label>
+            <select
+              id="supplierId"
+              class="form-select"
+              formControlName="supplierId"
+              [class.input-error]="hasError('supplierId', 'required')"
+            >
+              <option value="">Seleccionar proveedor...</option>
+              @for (supplier of suppliers(); track supplier.id) {
+                <option [value]="supplier.id">{{ supplier.name }}</option>
+              }
+            </select>
+            @if (hasError('supplierId', 'required')) {
+              <span class="error-message">El proveedor es requerido</span>
+            }
+          </div>
+
+          <!-- Fecha Esperada -->
+          <div class="form-group">
+            <label for="expectedDate" class="form-label">Fecha Esperada de Entrega</label>
+            <input
+              type="date"
+              id="expectedDate"
+              class="form-input"
+              formControlName="expectedDate"
+            />
+          </div>
+        </div>
+
+        <!-- Sucursal destino (golden rule) -->
+        <app-location-selector
+          [locationId]="selectedLocationId()"
+          label="Sucursal Destino"
+          (locationChange)="selectedLocationId.set($event)"
+        />
+
+        <!-- Notas -->
+        <div class="form-group">
+          <label for="notes" class="form-label">Notas</label>
+          <textarea
+            id="notes"
+            class="form-textarea"
+            formControlName="notes"
+            placeholder="Notas adicionales sobre la orden"
+            rows="3"
+          ></textarea>
+        </div>
       </div>
 
-      <div formArrayName="items" class="items-container">
-        @for (item of items.controls; track $index; let i = $index) {
-          <div [formGroupName]="i" class="item-card">
-            <div class="item-header">
-              <span class="item-number">#{{ i + 1 }}</span>
-              @if (items.length > 1) {
-                <button 
-                  type="button" 
-                  class="btn-icon btn-danger btn-sm" 
-                  (click)="removeItem(i)"
-                  title="Eliminar">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              }
-            </div>
+      <!-- Productos -->
+      <div class="form-section">
+        <div class="section-header-row">
+          <h3 class="section-title">
+            <i class="fa-solid fa-box section-icon"></i>
+            Productos
+            @if (items().length > 0) {
+              <span class="section-count">{{ items().length }}</span>
+            }
+          </h3>
+          <button type="button" class="btn btn-outline btn-sm" (click)="openAddItemModal()">
+            <i class="fa-solid fa-plus"></i>
+            Agregar
+          </button>
+        </div>
 
-            <div class="item-grid">
-              <!-- Producto -->
-              <div class="form-group">
-                <label class="form-label">Producto <span class="required">*</span></label>
-                <select
-                  class="form-select"
-                  formControlName="productId"
-                  (change)="onProductChange(i)"
-                >
-                  <option value="">Seleccionar...</option>
-                  @for (product of products(); track product.id) {
-                    <option [value]="product.id">{{ product.code }} - {{ product.name }}</option>
-                  }
-                </select>
-              </div>
-
-              <!-- Cantidad -->
-              <div class="form-group">
-                <label class="form-label">Cantidad <span class="required">*</span></label>
-                <input
-                  type="number"
-                  class="form-input"
-                  formControlName="quantity"
-                  placeholder="0"
-                  step="0.01"
-                  min="0.01"
-                />
-              </div>
-
-              <!-- Costo Unitario -->
-              <div class="form-group">
-                <label class="form-label">Costo Unitario <span class="required">*</span></label>
-                <input
-                  type="number"
-                  class="form-input"
-                  formControlName="unitCost"
-                  placeholder="0.00"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-
-              <!-- Subtotal -->
-              <div class="form-group">
-                <label class="form-label">Subtotal</label>
-                <div class="form-static">
-                  {{ formatCurrency(getItemSubtotal(i)) }}
-                </div>
-              </div>
-
-              <!-- Notas del Item -->
-              <div class="form-group form-group-full">
-                <label class="form-label">Notas</label>
-                <input
-                  type="text"
-                  class="form-input"
-                  formControlName="notes"
-                  placeholder="Notas sobre este producto"
-                />
-              </div>
-            </div>
+        @if (items().length === 0) {
+          <div class="empty-items">
+            <i class="fa-solid fa-box-open"></i>
+            <p>No hay productos en la orden</p>
+            <button type="button" class="btn btn-outline btn-sm" (click)="openAddItemModal()">
+              <i class="fa-solid fa-plus"></i>
+              Agregar primer producto
+            </button>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Costo Unit.</th>
+                  <th>Subtotal</th>
+                  <th class="actions-column">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of items(); track $index) {
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>
+                      <span class="product-name">{{ item.productName || item.productId }}</span>
+                      @if (item.productCode) {
+                        <span class="product-code">{{ item.productCode }}</span>
+                      }
+                      @if (item.notes) {
+                        <span class="product-notes">{{ item.notes }}</span>
+                      }
+                    </td>
+                    <td>
+                      {{ item.quantity }}
+                      @if (item.unit) {
+                        <span class="item-unit">{{ item.unit }}</span>
+                      }
+                    </td>
+                    <td>{{ formatCurrency(item.unitCost) }}</td>
+                    <td class="subtotal-cell">{{ formatCurrency(getItemSubtotal(item)) }}</td>
+                    <td class="actions-column">
+                      <div class="action-buttons">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline btn-icon"
+                          title="Editar producto"
+                          (click)="openEditItemModal($index)"
+                        >
+                          <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline btn-icon btn-danger"
+                          title="Eliminar producto"
+                          (click)="removeItem($index)"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
         }
       </div>
-    </div>
 
-    <!-- Resumen de Totales -->
-    <div class="form-section">
-      <h3 class="section-title">
-        <i class="fa-solid fa-calculator section-icon"></i>
-        Resumen
-      </h3>
+      <!-- Resumen de Totales -->
+      @if (items().length > 0) {
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-calculator section-icon"></i>
+            Resumen
+          </h3>
 
-      <div class="totals-container">
-        <div class="total-row">
-          <span class="total-label">Subtotal:</span>
-          <span class="total-value">{{ formatCurrency(subtotal()) }}</span>
+          <div class="totals-container">
+            <div class="total-row">
+              <span class="total-label">Subtotal:</span>
+              <span class="total-value">{{ formatCurrency(subtotal()) }}</span>
+            </div>
+            <div class="total-row">
+              <span class="total-label">IVA (16%):</span>
+              <span class="total-value">{{ formatCurrency(tax()) }}</span>
+            </div>
+            <div class="total-row total-row-final">
+              <span class="total-label">Total:</span>
+              <span class="total-value">{{ formatCurrency(total()) }}</span>
+            </div>
+          </div>
         </div>
-        <div class="total-row">
-          <span class="total-label">IVA (16%):</span>
-          <span class="total-value">{{ formatCurrency(tax()) }}</span>
-        </div>
-        <div class="total-row total-row-final">
-          <span class="total-label">Total:</span>
-          <span class="total-value">{{ formatCurrency(total()) }}</span>
-        </div>
-      </div>
-    </div>
+      }
 
-  </form>
+    </form>
   </div>
 </div>
+
+<!-- Item Modal (inline, like prescription pattern) -->
+@if (showItemModal()) {
+  <app-purchase-order-item-modal
+    [products]="products()"
+    [isEditing]="isEditingItem"
+    [initialData]="editingItemData()"
+    (confirmed)="onItemConfirmed($event)"
+    (closed)="closeItemModal()"
+  />
+}

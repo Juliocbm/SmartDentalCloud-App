@@ -30,6 +30,10 @@ export class SupplierListComponent implements OnInit, OnDestroy {
   searchTerm = signal('');
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
 
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
+
   breadcrumbItems = signal<BreadcrumbItem[]>([
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
     { label: 'Inventario', route: '/inventory', icon: 'fa-boxes-stacked' },
@@ -60,6 +64,13 @@ export class SupplierListComponent implements OnInit, OnDestroy {
     return result;
   });
 
+  totalPages = computed(() => Math.ceil(this.filteredSuppliers().length / this.pageSize()) || 1);
+
+  paginatedSuppliers = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredSuppliers().slice(start, start + this.pageSize());
+  });
+
   ngOnInit(): void {
     this.loadData();
     this.setupSearchDebounce();
@@ -75,6 +86,7 @@ export class SupplierListComponent implements OnInit, OnDestroy {
       distinctUntilChanged()
     ).subscribe(term => {
       this.searchTerm.set(term);
+      this.currentPage.set(1);
     });
   }
 
@@ -101,6 +113,25 @@ export class SupplierListComponent implements OnInit, OnDestroy {
 
   onStatusFilterChange(status: 'all' | 'active' | 'inactive'): void {
     this.filterStatus.set(status);
+    this.currentPage.set(1);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const maxVisible = 5;
+    const pages: number[] = [];
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    const end = Math.min(total, start + maxVisible - 1);
+    start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   async deleteSupplier(id: string): Promise<void> {

@@ -73,7 +73,15 @@
                 }
               </td>
               @if (locationsService.hasMultipleLocations()) {
-                <td>{{ exception.locationName || 'Todas' }}</td>
+                <td>
+                  @if (exception.locationId) {
+                    <a [routerLink]="['/settings/locations', exception.locationId]" class="link-primary">
+                      {{ exception.locationName }}
+                    </a>
+                  } @else {
+                    Todas
+                  }
+                </td>
               }
               <td>
                 @if (exception.isRecurringYearly) {

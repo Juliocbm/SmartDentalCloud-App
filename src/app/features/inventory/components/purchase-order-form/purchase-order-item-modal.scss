@@ -1,0 +1,16 @@
+// ============================================
+// PurchaseOrderItemModal - Estilos Específicos
+// Base: usa .standard-form, .form-group, .form-input,
+//       .form-row de _components.scss
+// Modal: usa <app-modal> compartido
+// ============================================
+
+.subtotal-display {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--success-50);
+  border: 1px solid var(--success-200);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--success-700);
+  font-size: var(--font-size-lg);
+}

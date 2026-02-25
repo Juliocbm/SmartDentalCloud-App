@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LocationsService } from '../../services/locations.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -20,23 +20,54 @@ export class LocationListComponent implements OnInit {
 
   locations = signal<Location[]>([]);
   loading = signal(false);
+  error = signal<string | null>(null);
+
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
+
+  totalPages = computed(() => Math.ceil(this.locations().length / this.pageSize()) || 1);
+
+  paginatedLocations = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.locations().slice(start, start + this.pageSize());
+  });
 
   ngOnInit(): void {
     this.loadLocations();
   }
 
-  private loadLocations(): void {
+  loadLocations(): void {
     this.loading.set(true);
+    this.error.set(null);
     this.locationsService.getAll().subscribe({
       next: (data) => {
         this.locations.set(data);
         this.loading.set(false);
       },
       error: () => {
-        this.notifications.error('Error al cargar las sucursales');
+        this.error.set('Error al cargar las sucursales. Por favor, intenta de nuevo.');
         this.loading.set(false);
       }
     });
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const maxVisible = 5;
+    const pages: number[] = [];
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    const end = Math.min(total, start + maxVisible - 1);
+    start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   openCreateModal(): void {

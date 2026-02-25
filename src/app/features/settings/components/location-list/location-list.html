@@ -14,22 +14,41 @@
     </button>
   </div>
 
+  <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando sucursales...</p>
     </div>
-  } @else if (locations().length === 0) {
+  }
+
+  <!-- Error State -->
+  @if (error()) {
     <div class="empty-state">
-      <i class="fa-solid fa-location-dot"></i>
-      <h3>Sin Sucursales</h3>
-      <p>Aún no tienes sucursales registradas. Crea la primera para comenzar.</p>
-      <button class="btn btn-primary" (click)="openCreateModal()">
-        <i class="fa-solid fa-plus"></i>
-        Crear Primera Sucursal
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadLocations()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
       </button>
     </div>
-  } @else {
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && locations().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-location-dot"></i>
+      <h3>No hay sucursales</h3>
+      <p>Comienza creando tu primera sucursal</p>
+      <button class="btn btn-primary" (click)="openCreateModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Sucursal
+      </button>
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error() && locations().length > 0) {
     <div class="table-container">
       <table class="table">
         <thead>
@@ -40,11 +59,11 @@
             <th>Email</th>
             <th>Doctores</th>
             <th>Estado</th>
-            <th class="th-actions">Acciones</th>
+            <th class="actions-column">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          @for (loc of locations(); track loc.id) {
+          @for (loc of paginatedLocations(); track loc.id) {
             <tr>
               <td>
                 <div class="location-name-cell">
@@ -73,20 +92,56 @@
                   <span class="badge badge-warning">Inactiva</span>
                 }
               </td>
-              <td class="td-actions">
-                <button class="btn btn-outline btn-sm" title="Editar" (click)="openEditModal(loc)">
-                  <i class="fa-solid fa-pen"></i>
-                </button>
-                @if (!loc.isDefault) {
-                  <button class="btn btn-outline btn-sm btn-danger" title="Desactivar" (click)="deleteLocation(loc)">
-                    <i class="fa-solid fa-trash"></i>
+              <td class="actions-column">
+                <div class="action-buttons">
+                  <button class="btn btn-outline btn-sm btn-icon" title="Editar" (click)="openEditModal(loc)">
+                    <i class="fa-solid fa-pen"></i>
                   </button>
-                }
+                  @if (!loc.isDefault) {
+                    <button class="btn btn-outline btn-sm btn-icon btn-danger" title="Desactivar" (click)="deleteLocation(loc)">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  }
+                </div>
               </td>
             </tr>
           }
         </tbody>
       </table>
+
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (currentPage() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ currentPage() * pageSize() > locations().length ? locations().length : currentPage() * pageSize() }}</strong>
+          de <strong>{{ locations().length }}</strong> sucursales
+        </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(1)">
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(currentPage() - 1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            @for (page of getPaginationPages(); track page) {
+              <button class="btn-page" [class.active]="page === currentPage()" (click)="onPageChange(page)">
+                {{ page }}
+              </button>
+            }
+
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(currentPage() + 1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(totalPages())">
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
+      </div>
     </div>
   }
 </div>

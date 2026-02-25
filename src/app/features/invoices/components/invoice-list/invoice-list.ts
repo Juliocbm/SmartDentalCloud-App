@@ -35,6 +35,17 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
   searchTerm = signal('');
   filterStatus = signal<'all' | InvoiceStatus>('all');
 
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
+
+  totalPages = computed(() => Math.ceil(this.filteredInvoices().length / this.pageSize()) || 1);
+
+  paginatedInvoices = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredInvoices().slice(start, start + this.pageSize());
+  });
+
   // Computed
   totals = computed(() => {
     return this.invoicesService.calculateTotals(this.filteredInvoices());
@@ -59,6 +70,7 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
       distinctUntilChanged()
     ).subscribe(term => {
       this.searchTerm.set(term);
+      this.currentPage.set(1);
       this.applyFilters();
     });
   }
@@ -111,7 +123,26 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
 
   onStatusFilterChange(value: string): void {
     this.filterStatus.set(value as 'all' | InvoiceStatus);
+    this.currentPage.set(1);
     this.applyFilters();
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const maxVisible = 5;
+    const pages: number[] = [];
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    const end = Math.min(total, start + maxVisible - 1);
+    start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   getStatusConfig(status: InvoiceStatus) {

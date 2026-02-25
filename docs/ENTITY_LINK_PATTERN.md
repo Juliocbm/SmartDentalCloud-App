@@ -61,6 +61,7 @@ Estándar para convertir nombres de entidades relacionadas en hipervínculos nav
 | Plan de Tratamiento | `/treatment-plans/:id` | `link-primary` |
 | Factura | `/invoices/:id` | `link-primary` |
 | Receta | `/prescriptions/:id` | `link-primary` |
+| Sucursal | `/settings/locations/:id` | `link-primary` |
 
 ---
 
@@ -86,6 +87,18 @@ Estándar para convertir nombres de entidades relacionadas en hipervínculos nav
 ### treatment-plan-detail
 - **Paciente** → `/patients/:patientId`
 - **Tratamientos** (en tabla) → `/treatments/:treatmentId`
+
+### appointment-list
+- **Sucursal** → `/settings/locations/:locationId`
+
+### product-detail
+- **Sucursal** (tabla stock por sucursal) → `/settings/locations/:locationId`
+
+### stock-alerts
+- **Sucursal** → `/settings/locations/:locationId`
+
+### schedule-exceptions-manager
+- **Sucursal** → `/settings/locations/:locationId`
 
 ### patient-detail (tabs)
 - **Citas** → `/appointments/:id`

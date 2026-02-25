@@ -28,6 +28,10 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
   searchTerm = signal('');
   filterStatus = signal<'all' | PurchaseOrderStatus>('all');
 
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
+
   statusLabels = PURCHASE_ORDER_STATUS_LABELS;
 
   breadcrumbItems = signal<BreadcrumbItem[]>([
@@ -55,6 +59,13 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
     return result;
   });
 
+  totalPages = computed(() => Math.ceil(this.filteredOrders().length / this.pageSize()) || 1);
+
+  paginatedOrders = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredOrders().slice(start, start + this.pageSize());
+  });
+
   ngOnInit(): void {
     this.loadData();
     this.setupSearchDebounce();
@@ -70,6 +81,7 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
       distinctUntilChanged()
     ).subscribe(term => {
       this.searchTerm.set(term);
+      this.currentPage.set(1);
     });
   }
 
@@ -96,6 +108,25 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
 
   onStatusFilterChange(status: 'all' | PurchaseOrderStatus): void {
     this.filterStatus.set(status);
+    this.currentPage.set(1);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const maxVisible = 5;
+    const pages: number[] = [];
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    const end = Math.min(total, start + maxVisible - 1);
+    start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   getStatusClass(status: PurchaseOrderStatus): string {

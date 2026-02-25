@@ -1,0 +1,32 @@
+// ============================================
+// LocationDetailComponent - Estilos Específicos
+// Container: usa .detail-container de _components.scss
+// Header: usa PageHeaderComponent compartido
+// Info sections: usa .info-section, .info-card, .info-row de _components.scss
+// Loading: usa .loading-container de _components.scss
+// Empty: usa .empty-state de _components.scss
+// ============================================
+
+// Layout de dos columnas
+.info-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-md) 0;
+
+  i {
+    color: var(--text-muted);
+  }
+}

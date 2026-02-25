@@ -1,0 +1,89 @@
+<app-modal
+  [title]="isEditing() ? 'Editar Producto' : 'Agregar Producto'"
+  [subtitle]="isEditing() ? 'Modifica los datos del producto' : 'Selecciona un producto y define cantidad y costo'"
+  [icon]="'fa-box'"
+  [size]="'md'"
+  (closed)="onClose()">
+
+  <form class="standard-form">
+    <!-- Producto -->
+    <div class="form-group">
+      <label class="form-label">Producto <span class="required">*</span></label>
+      <select
+        class="form-input"
+        [ngModel]="itemForm().productId"
+        (ngModelChange)="onProductChange($event)"
+        name="modal_productId"
+      >
+        <option value="">Seleccionar producto...</option>
+        @for (product of products(); track product.id) {
+          <option [value]="product.id">{{ product.code }} - {{ product.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Cantidad + Costo Unitario -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Cantidad <span class="required">*</span></label>
+        <input
+          type="number"
+          class="form-input"
+          placeholder="1"
+          min="0.01"
+          step="0.01"
+          [ngModel]="itemForm().quantity"
+          (ngModelChange)="updateField('quantity', +$event)"
+          name="modal_quantity"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Costo Unitario <span class="required">*</span></label>
+        <input
+          type="number"
+          class="form-input"
+          placeholder="0.00"
+          min="0"
+          step="0.01"
+          [ngModel]="itemForm().unitCost"
+          (ngModelChange)="updateField('unitCost', +$event)"
+          name="modal_unitCost"
+        />
+      </div>
+    </div>
+
+    <!-- Subtotal (read-only) -->
+    @if (itemSubtotal() > 0) {
+      <div class="form-group">
+        <label class="form-label">Subtotal</label>
+        <div class="subtotal-display">
+          {{ formatCurrency(itemSubtotal()) }}
+        </div>
+      </div>
+    }
+
+    <!-- Notas -->
+    <div class="form-group">
+      <label class="form-label">Notas</label>
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Notas sobre este producto..."
+        [ngModel]="itemForm().notes"
+        (ngModelChange)="updateField('notes', $event)"
+        name="modal_notes"
+      />
+    </div>
+  </form>
+
+  <div modal-footer>
+    <button type="button" class="btn btn-outline" (click)="onClose()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button type="button" class="btn btn-primary" (click)="onConfirm()" [disabled]="!isItemValid()">
+      <i class="fa-solid fa-check"></i>
+      {{ isEditing() ? 'Guardar Cambios' : 'Agregar Producto' }}
+    </button>
+  </div>
+</app-modal>

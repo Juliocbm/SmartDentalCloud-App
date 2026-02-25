@@ -2,78 +2,91 @@
 // PurchaseOrderFormComponent - Estilos Específicos
 // Header: usa PageHeaderComponent compartido
 // Container: usa .page-container.container-medium de _layout.scss
-// Estilos de formulario base: importados desde _components.scss
+// Form: usa .standard-form, .form-section, .form-group,
+//       .form-row, .section-title de _components.scss
+// Table: usa .table-container, .table de _components.scss
 // ============================================
 
-.purchase-order-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-// Estilos únicos del purchase-order-form
-
-.section-header {
+// Section header con botón a la derecha
+.section-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-lg);
+
+  .section-title {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
 }
 
-.items-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-.item-card {
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-}
-
-.item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--gray-300);
-}
-
-.item-number {
-  font-weight: var(--font-weight-semibold);
-  color: var(--primary-600);
+.section-count {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
 }
 
-.item-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+// Product table cells
+.product-name {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.product-code {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.product-notes {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.item-unit {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-left: var(--spacing-xs);
+}
+
+.subtotal-cell {
+  font-weight: var(--font-weight-semibold);
+}
+
+// Empty items state
+.empty-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  border: 2px dashed var(--border-primary);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-secondary);
+  text-align: center;
   gap: var(--spacing-md);
 
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
+  > i {
+    font-size: 2rem;
+    color: var(--text-tertiary);
   }
 
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
+  > p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
   }
 }
 
-.form-static {
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--white);
-  border: 1px solid var(--gray-300);
-  border-radius: var(--radius-md);
-  font-weight: var(--font-weight-semibold);
-  color: var(--gray-900);
-  min-height: 42px;
-  display: flex;
-  align-items: center;
-}
-
+// Totals
 .totals-container {
   max-width: 400px;
   margin-left: auto;
@@ -110,4 +123,13 @@
 .total-value {
   color: var(--gray-900);
   font-weight: var(--font-weight-semibold);
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .section-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
 }

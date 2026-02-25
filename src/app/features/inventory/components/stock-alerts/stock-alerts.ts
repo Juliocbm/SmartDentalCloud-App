@@ -34,6 +34,10 @@ export class StockAlertsComponent implements OnInit {
   searchTerm = signal('');
   filterLevel = signal<'all' | StockAlertLevel>('all');
 
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
+
   breadcrumbItems = signal<BreadcrumbItem[]>([
     { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fa-home' },
     { label: 'Inventario', route: ROUTES.INVENTORY, icon: 'fa-boxes-stacked' },
@@ -64,6 +68,13 @@ export class StockAlertsComponent implements OnInit {
     });
   });
 
+  totalPages = computed(() => Math.ceil(this.filteredAlerts().length / this.pageSize()) || 1);
+
+  paginatedAlerts = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredAlerts().slice(start, start + this.pageSize());
+  });
+
   criticalCount = computed(() => 
     this.alerts().filter(a => a.alertLevel === 'critical').length
   );
@@ -83,6 +94,7 @@ export class StockAlertsComponent implements OnInit {
       distinctUntilChanged()
     ).subscribe(term => {
       this.searchTerm.set(term);
+      this.currentPage.set(1);
     });
   }
 
@@ -109,6 +121,25 @@ export class StockAlertsComponent implements OnInit {
 
   onLevelFilterChange(value: string): void {
     this.filterLevel.set(value as 'all' | StockAlertLevel);
+    this.currentPage.set(1);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const maxVisible = 5;
+    const pages: number[] = [];
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    const end = Math.min(total, start + maxVisible - 1);
+    start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   getStockIcon(alert: StockAlert): string {

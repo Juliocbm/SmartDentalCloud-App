@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PurchaseOrdersService } from '../../services/purchase-orders.service';
@@ -9,20 +9,14 @@ import { ProductsService } from '../../services/products.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { PurchaseOrderItemModalComponent, PurchaseOrderItemFormData } from './purchase-order-item-modal';
 import { Supplier } from '../../models/supplier.models';
 import { Product } from '../../models/product.models';
-
-interface OrderItemFormValue {
-  productId: string;
-  quantity: string;
-  unitCost: string;
-  notes: string;
-}
 
 @Component({
   selector: 'app-purchase-order-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, LocationSelectorComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, LocationSelectorComponent, PurchaseOrderItemModalComponent],
   templateUrl: './purchase-order-form.html',
   styleUrls: ['./purchase-order-form.scss']
 })
@@ -45,6 +39,14 @@ export class PurchaseOrderFormComponent implements OnInit {
   saving = signal(false);
   error = signal<string | null>(null);
 
+  // Items managed via signals (like prescription pattern)
+  items = signal<PurchaseOrderItemFormData[]>([]);
+
+  // Item Modal State
+  showItemModal = signal(false);
+  editingItemIndex = signal<number | null>(null);
+  editingItemData = signal<PurchaseOrderItemFormData | null>(null);
+
   breadcrumbItems = signal<BreadcrumbItem[]>([
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
     { label: 'Inventario', route: '/inventory', icon: 'fa-boxes-stacked' },
@@ -53,19 +55,14 @@ export class PurchaseOrderFormComponent implements OnInit {
   ]);
 
   subtotal = computed(() => {
-    const items = this.items.value;
-    return items.reduce((sum: number, item: OrderItemFormValue) => {
-      const quantity = parseFloat(item.quantity) || 0;
-      const unitCost = parseFloat(item.unitCost) || 0;
-      return sum + (quantity * unitCost);
-    }, 0);
+    return this.items().reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
   });
 
   tax = computed(() => this.subtotal() * 0.16);
   total = computed(() => this.subtotal() + this.tax());
 
-  get items(): FormArray {
-    return this.orderForm.get('items') as FormArray;
+  get isEditingItem(): boolean {
+    return this.editingItemIndex() !== null;
   }
 
   ngOnInit(): void {
@@ -78,11 +75,8 @@ export class PurchaseOrderFormComponent implements OnInit {
     this.orderForm = this.fb.group({
       supplierId: ['', Validators.required],
       expectedDate: [''],
-      notes: ['', Validators.maxLength(1000)],
-      items: this.fb.array([])
+      notes: ['', Validators.maxLength(1000)]
     });
-
-    this.addItem();
   }
 
   private loadSuppliers(): void {
@@ -111,49 +105,52 @@ export class PurchaseOrderFormComponent implements OnInit {
     });
   }
 
-  createItemFormGroup(): FormGroup {
-    return this.fb.group({
-      productId: ['', Validators.required],
-      quantity: [1, [Validators.required, Validators.min(0.01)]],
-      unitCost: [0, [Validators.required, Validators.min(0)]],
-      notes: ['']
-    });
+  // === Item Modal Methods ===
+
+  openAddItemModal(): void {
+    this.editingItemIndex.set(null);
+    this.editingItemData.set(null);
+    this.showItemModal.set(true);
   }
 
-  addItem(): void {
-    this.items.push(this.createItemFormGroup());
+  openEditItemModal(index: number): void {
+    this.editingItemIndex.set(index);
+    this.editingItemData.set({ ...this.items()[index] });
+    this.showItemModal.set(true);
+  }
+
+  onItemConfirmed(item: PurchaseOrderItemFormData): void {
+    const index = this.editingItemIndex();
+    if (index !== null) {
+      this.items.update(items => {
+        const updated = [...items];
+        updated[index] = { ...item };
+        return updated;
+      });
+    } else {
+      this.items.update(items => [...items, { ...item }]);
+    }
+    this.closeItemModal();
+  }
+
+  closeItemModal(): void {
+    this.showItemModal.set(false);
+    this.editingItemIndex.set(null);
+    this.editingItemData.set(null);
   }
 
   removeItem(index: number): void {
-    if (this.items.length > 1) {
-      this.items.removeAt(index);
-    }
+    this.items.update(items => items.filter((_, i) => i !== index));
   }
 
-  onProductChange(index: number): void {
-    const item = this.items.at(index);
-    const productId = item.get('productId')?.value;
-    
-    if (productId) {
-      const product = this.products().find(p => p.id === productId);
-      if (product) {
-        item.patchValue({
-          unitCost: product.unitCost
-        });
-      }
-    }
+  getItemSubtotal(item: PurchaseOrderItemFormData): number {
+    return (item.quantity || 0) * (item.unitCost || 0);
   }
 
-  getItemSubtotal(index: number): number {
-    const item = this.items.at(index);
-    const quantity = parseFloat(item.get('quantity')?.value) || 0;
-    const unitCost = parseFloat(item.get('unitCost')?.value) || 0;
-    return quantity * unitCost;
-  }
+  // === Form Validation & Submit ===
 
-  getProductName(productId: string): string {
-    const product = this.products().find(p => p.id === productId);
-    return product ? product.name : '';
+  isFormValid(): boolean {
+    return this.orderForm.valid && this.items().length > 0;
   }
 
   onSubmit(): void {
@@ -162,7 +159,7 @@ export class PurchaseOrderFormComponent implements OnInit {
       return;
     }
 
-    if (this.items.length === 0) {
+    if (this.items().length === 0) {
       this.error.set('Debes agregar al menos un producto a la orden');
       return;
     }
@@ -176,10 +173,10 @@ export class PurchaseOrderFormComponent implements OnInit {
       locationId: this.selectedLocationId() || undefined,
       expectedDate: formValue.expectedDate || undefined,
       notes: formValue.notes || undefined,
-      items: formValue.items.map((item: OrderItemFormValue) => ({
+      items: this.items().map(item => ({
         productId: item.productId,
-        quantity: parseFloat(item.quantity),
-        unitCost: parseFloat(item.unitCost),
+        quantity: item.quantity,
+        unitCost: item.unitCost,
         notes: item.notes || undefined
       }))
     };

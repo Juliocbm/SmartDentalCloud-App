@@ -73,9 +73,9 @@
 
 ## 7. Cache (verificación técnica)
 
-- [ ] **7.1** Crear segunda sucursal → verificar que selectores aparecen inmediatamente (cache se invalida)
-- [ ] **7.2** Cambiar sucursal default → verificar que citas sin sucursal usan la nueva default
-- [ ] **7.3** Desactivar sucursal → verificar que desaparece de dropdowns inmediatamente
+- [x] **7.1** Crear segunda sucursal → verificar que selectores aparecen inmediatamente (cache se invalida)
+- [x] **7.2** Cambiar sucursal default → verificar que citas sin sucursal usan la nueva default
+- [x] **7.3** Desactivar sucursal → verificar que desaparece de dropdowns inmediatamente
 
 ---
 

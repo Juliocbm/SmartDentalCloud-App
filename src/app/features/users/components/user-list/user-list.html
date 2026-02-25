@@ -116,7 +116,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (user of filteredUsers(); track user.id) {
+          @for (user of paginatedUsers(); track user.id) {
             <tr [class.row-inactive]="!user.isActive">
               <!-- Usuario -->
               <td>
@@ -221,11 +221,36 @@
         </tbody>
       </table>
 
-      <!-- Results Summary -->
-      <div class="table-footer centered">
-        <span class="results-count">
-          Mostrando <strong>{{ filteredUsers().length }}</strong> de <strong>{{ users().length }}</strong> usuarios
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (currentPage() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ currentPage() * pageSize() > filteredUsers().length ? filteredUsers().length : currentPage() * pageSize() }}</strong>
+          de <strong>{{ filteredUsers().length }}</strong> usuarios
         </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(1)">
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(currentPage() - 1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            @for (page of getPaginationPages(); track page) {
+              <button class="btn-page" [class.active]="page === currentPage()" (click)="onPageChange(page)">
+                {{ page }}
+              </button>
+            }
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(currentPage() + 1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(totalPages())">
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
       </div>
     </div>
   }

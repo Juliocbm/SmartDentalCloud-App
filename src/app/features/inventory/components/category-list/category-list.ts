@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -19,7 +19,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
   templateUrl: './category-list.html',
   styleUrls: ['./category-list.scss']
 })
-export class CategoryListComponent implements OnInit {
+export class CategoryListComponent implements OnInit, OnDestroy {
   private categoriesService = inject(CategoriesService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
@@ -30,6 +30,10 @@ export class CategoryListComponent implements OnInit {
   error = signal<string | null>(null);
   searchTerm = signal('');
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
+
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
 
   breadcrumbItems = signal<BreadcrumbItem[]>([
     { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fa-home' },
@@ -58,9 +62,20 @@ export class CategoryListComponent implements OnInit {
     return result;
   });
 
+  totalPages = computed(() => Math.ceil(this.filteredCategories().length / this.pageSize()) || 1);
+
+  paginatedCategories = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredCategories().slice(start, start + this.pageSize());
+  });
+
   ngOnInit(): void {
     this.loadData();
     this.setupSearchDebounce();
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubject.complete();
   }
 
   private setupSearchDebounce(): void {
@@ -69,6 +84,7 @@ export class CategoryListComponent implements OnInit {
       distinctUntilChanged()
     ).subscribe(term => {
       this.searchTerm.set(term);
+      this.currentPage.set(1);
     });
   }
 
@@ -95,6 +111,25 @@ export class CategoryListComponent implements OnInit {
 
   onStatusFilterChange(value: string): void {
     this.filterStatus.set(value as 'all' | 'active' | 'inactive');
+    this.currentPage.set(1);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const maxVisible = 5;
+    const pages: number[] = [];
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    const end = Math.min(total, start + maxVisible - 1);
+    start = Math.max(1, end - maxVisible + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
   }
 
   async deleteCategory(category: Category): Promise<void> {

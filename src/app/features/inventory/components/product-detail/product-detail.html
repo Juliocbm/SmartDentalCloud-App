@@ -153,7 +153,15 @@
                 <tbody>
                   @for (stock of stockByLocation(); track stock.locationId) {
                     <tr>
-                      <td><strong>{{ stock.locationName }}</strong></td>
+                      <td>
+                        @if (stock.locationId) {
+                          <a [routerLink]="['/settings/locations', stock.locationId]" class="link-primary">
+                            <strong>{{ stock.locationName }}</strong>
+                          </a>
+                        } @else {
+                          <strong>{{ stock.locationName }}</strong>
+                        }
+                      </td>
                       <td>{{ stock.currentStock }}</td>
                       <td>{{ stock.availableStock ?? stock.currentStock }}</td>
                       <td>{{ stock.reservedStock ?? 0 }}</td>
