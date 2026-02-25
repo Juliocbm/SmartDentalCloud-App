@@ -46,6 +46,7 @@ export interface StockMovement {
  */
 export interface StockAdjustmentRequest {
   productId: string;
+  locationId?: string | null;
   quantity: number;
   reason: string;
 }

@@ -42,32 +42,32 @@
 
 ## 4. Horarios Laborales (Work Schedules)
 
-- [ ] **4.1** Configurar horario de la clínica (sin sucursal) → Horario general del tenant
-- [ ] **4.2** Configurar horario por sucursal (multi) → Selector de sucursal visible. Horario se guarda con LocationId
-- [ ] **4.3** Cambiar sucursal en el selector → Recarga horario de esa sucursal
-- [ ] **4.4** Verificar disponibilidad de cita respeta horario de sucursal → Solo permite agendar en horario configurado de esa sucursal
+- [x] **4.1** Configurar horario de la clínica (sin sucursal) → Horario general del tenant
+- [x] **4.2** Configurar horario por sucursal (multi) → Selector de sucursal visible. Horario se guarda con LocationId
+- [x] **4.3** Cambiar sucursal en el selector → Recarga horario de esa sucursal
+- [x] **4.4** Verificar disponibilidad de cita respeta horario de sucursal → Solo permite agendar en horario configurado de esa sucursal
 
 ---
 
 ## 5. Excepciones de Horario (Schedule Exceptions)
 
-- [ ] **5.1** Crear excepción de cierre para sucursal específica → Se guarda con LocationId. Columna "Sucursal" muestra nombre
-- [ ] **5.2** Crear excepción global (sin sucursal) → Aplica a todas las sucursales
-- [ ] **5.3** Editar excepción: cambiar sucursal → LocationId se actualiza correctamente
-- [ ] **5.4** Verificar disponibilidad respeta excepciones por sucursal → Sucursal cerrada no permite citas, otra sucursal sí
+- [x] **5.1** Crear excepción de cierre para sucursal específica → Se guarda con LocationId. Columna "Sucursal" muestra nombre
+- [x] **5.2** Crear excepción global (sin sucursal) → Aplica a todas las sucursales
+- [x] **5.3** Editar excepción: cambiar sucursal → LocationId se actualiza correctamente
+- [x] **5.4** Verificar disponibilidad respeta excepciones por sucursal → Sucursal cerrada no permite citas, otra sucursal sí
 
 ---
 
 ## 6. Inventario
 
-- [ ] **6.1** Ver dashboard inventario sin filtro → Muestra totales agregados de todas las sucursales
-- [ ] **6.2** Filtrar dashboard por sucursal → KPIs, top productos y productos por vencer se filtran
-- [ ] **6.3** Ver detalle de producto (multi-sucursal) → Tabla "Stock por Sucursal" visible con stock desglosado por ubicación
-- [ ] **6.4** Ver detalle de producto (1 sucursal) → Tabla "Stock por Sucursal" **no** visible
-- [ ] **6.5** Alertas de stock bajo (multi-sucursal) → Columna "Sucursal" visible. Alerta es por producto+ubicación
-- [ ] **6.6** Ajuste manual de stock → Movimiento se registra con LocationId correcto
-- [ ] **6.7** Recepción de orden de compra con sucursal destino → Stock aumenta en la sucursal correcta. MovementType = "Purchase"
-- [ ] **6.8** Crear orden de compra con selector de sucursal destino → LocationId se guarda en la orden
+- [x] **6.1** Ver dashboard inventario sin filtro → Muestra totales agregados de todas las sucursales
+- [x] **6.2** Filtrar dashboard por sucursal → KPIs, top productos y productos por vencer se filtran
+- [x] **6.3** Ver detalle de producto (multi-sucursal) → Tabla "Stock por Sucursal" visible con stock desglosado por ubicación
+- [x] **6.4** Ver detalle de producto (1 sucursal) → Tabla "Stock por Sucursal" **no** visible
+- [x] **6.5** Alertas de stock bajo (multi-sucursal) → Columna "Sucursal" visible. Alerta es por producto+ubicación
+- [x] **6.6** Ajuste manual de stock → Movimiento se registra con LocationId correcto
+- [x] **6.7** Recepción de orden de compra con sucursal destino → Stock aumenta en la sucursal correcta. MovementType = "Purchase"
+- [x] **6.8** Crear orden de compra con selector de sucursal destino → LocationId se guarda en la orden
 
 ---
 
@@ -81,9 +81,9 @@
 
 ## 8. Backward Compatibility
 
-- [ ] **8.1** Citas existentes (sin LocationId) siguen mostrándose → No hay error. LocationId aparece como null
-- [ ] **8.2** Horarios existentes (sin LocationId) siguen funcionando → Se aplican como horario general
-- [ ] **8.3** Stock existente migrado correctamente → Cada producto tiene stock en la ubicación default
+- [x] **8.1** Citas existentes (sin LocationId) siguen mostrándose → No hay error. LocationId aparece como null
+- [x] **8.2** Horarios existentes (sin LocationId) siguen funcionando → Se aplican como horario general
+- [x] **8.3** Stock existente migrado correctamente → Cada producto tiene stock en la ubicación default
 
 ---
 

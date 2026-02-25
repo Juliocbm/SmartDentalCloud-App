@@ -7,12 +7,14 @@ import { ModalRef, ModalConfig } from '../../../../shared/services/modal.service
 import { StockService } from '../../services/stock.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { StockAdjustmentRequest } from '../../models/stock.models';
+import { LocationsService } from '../../../settings/services/locations.service';
 
 /**
  * Datos que recibe el modal de ajuste de stock
  */
 export interface StockAdjustmentModalData {
   productId: string;
+  locationId?: string | null;
   productCode: string;
   productName: string;
   currentStock: number;
@@ -34,6 +36,7 @@ export class StockAdjustmentModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private stockService = inject(StockService);
   private logger = inject(LoggingService);
+  locationsService = inject(LocationsService);
 
   // Inyectados por ModalService
   modalRef!: ModalRef<StockAdjustmentModalData, boolean>;
@@ -43,6 +46,7 @@ export class StockAdjustmentModalComponent implements OnInit {
   adjustmentForm!: FormGroup;
   saving = signal(false);
   error = signal<string | null>(null);
+  showLocationSelector = signal(false);
 
   adjustmentTypes = [
     { value: 'add', label: 'Entrada (Agregar)', icon: 'fa-plus' },
@@ -60,17 +64,23 @@ export class StockAdjustmentModalComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.showLocationSelector.set(!this.modalData.locationId && this.locationsService.hasMultipleLocations());
     this.initializeForm();
   }
 
   private initializeForm(): void {
     this.adjustmentForm = this.fb.group({
       adjustmentType: ['add', Validators.required],
+      locationId: [this.modalData.locationId || ''],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       reason: ['', Validators.required],
       customReason: [''],
       notes: ['']
     });
+
+    if (this.showLocationSelector()) {
+      this.adjustmentForm.get('locationId')?.setValidators(Validators.required);
+    }
 
     // Validar razón personalizada si se selecciona "Otro"
     this.adjustmentForm.get('reason')?.valueChanges.subscribe(value => {
@@ -118,8 +128,11 @@ export class StockAdjustmentModalComponent implements OnInit {
       ? formValue.customReason 
       : formValue.reason;
 
+    const selectedLocationId = this.adjustmentForm.value.locationId || this.modalData.locationId;
+
     const request: StockAdjustmentRequest = {
       productId: this.modalData.productId,
+      locationId: selectedLocationId || null,
       quantity: quantity,
       reason: reason
     };

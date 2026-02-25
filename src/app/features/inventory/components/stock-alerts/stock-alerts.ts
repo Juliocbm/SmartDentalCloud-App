@@ -120,6 +120,7 @@ export class StockAlertsComponent implements OnInit {
   openAdjustmentModal(alert: StockAlert): void {
     const modalData: StockAdjustmentModalData = {
       productId: alert.productId,
+      locationId: alert.locationId,
       productCode: alert.productCode,
       productName: alert.productName,
       currentStock: alert.currentStock,

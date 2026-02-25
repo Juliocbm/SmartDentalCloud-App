@@ -53,6 +53,28 @@
       </div>
     </div>
 
+    <!-- Selector de Sucursal (solo si no viene preseleccionada) -->
+    @if (showLocationSelector()) {
+      <div class="form-group">
+        <label class="form-label required">Sucursal</label>
+        <select
+          class="form-select"
+          formControlName="locationId"
+          [class.error]="hasError('locationId', 'required')">
+          <option value="">Selecciona una sucursal...</option>
+          @for (loc of locationsService.locationSummaries(); track loc.id) {
+            <option [value]="loc.id">{{ loc.name }}</option>
+          }
+        </select>
+        @if (hasError('locationId', 'required')) {
+          <span class="error-message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            Debes seleccionar una sucursal
+          </span>
+        }
+      </div>
+    }
+
     <!-- Cantidad -->
     <div class="form-group">
       <label class="form-label required">Cantidad</label>

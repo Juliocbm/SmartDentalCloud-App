@@ -8,8 +8,10 @@ import { Stock } from '../../models/stock.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
+import { ModalService } from '../../../../shared/services/modal.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
 
 @Component({
   selector: 'app-product-detail',
@@ -28,6 +30,7 @@ export class ProductDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private location = inject(Location);
+  private modalService = inject(ModalService);
   locationsService = inject(LocationsService);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -107,5 +110,30 @@ export class ProductDetailComponent implements OnInit {
   formatCurrency(value: number | undefined): string {
     if (value == null) return '—';
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(value);
+  }
+
+  openAdjustmentModal(locationId?: string | null, locationStock?: number): void {
+    const p = this.product();
+    if (!p) return;
+
+    const modalData: StockAdjustmentModalData = {
+      productId: p.id,
+      locationId: locationId,
+      productCode: p.code,
+      productName: p.name,
+      currentStock: locationStock ?? p.currentStock ?? 0,
+      unit: p.unit
+    };
+
+    const modalRef = this.modalService.open<StockAdjustmentModalData, boolean>(
+      StockAdjustmentModalComponent,
+      { data: modalData }
+    );
+
+    modalRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadProduct(p.id);
+      }
+    });
   }
 }
