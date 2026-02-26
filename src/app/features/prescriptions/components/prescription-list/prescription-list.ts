@@ -9,18 +9,23 @@ import {
   PrescriptionStatus,
   PRESCRIPTION_STATUS_CONFIG
 } from '../../models/prescription.models';
+import { PatientsService } from '../../../patients/services/patients.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-prescription-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, SendEmailModalComponent],
   templateUrl: './prescription-list.html',
   styleUrl: './prescription-list.scss'
 })
 export class PrescriptionListComponent implements OnInit {
   private prescriptionsService = inject(PrescriptionsService);
+  private patientsService = inject(PatientsService);
+  private notifications = inject(NotificationService);
   private router = inject(Router);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -40,6 +45,13 @@ export class PrescriptionListComponent implements OnInit {
   // Pagination
   currentPage = signal(1);
   pageSize = signal(10);
+
+  // Email modal state
+  showEmailModal = signal(false);
+  emailTargetId = signal<string | null>(null);
+  patientEmail = signal<string | null>(null);
+  sendingEmail = signal(false);
+  printLoadingId = signal<string | null>(null);
 
   // Search debounce
   private searchSubject = new Subject<string>();
@@ -178,5 +190,50 @@ export class PrescriptionListComponent implements OnInit {
     return prescription.status === PrescriptionStatus.Active &&
       !!prescription.expiresAt &&
       new Date(prescription.expiresAt) < new Date();
+  }
+
+  // ===== Print & Email from list =====
+
+  onPrintFromList(prescription: Prescription): void {
+    this.printLoadingId.set(prescription.id);
+    this.prescriptionsService.downloadPdf(prescription.id).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        this.printLoadingId.set(null);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.printLoadingId.set(null);
+      }
+    });
+  }
+
+  openEmailFromList(prescription: Prescription): void {
+    this.emailTargetId.set(prescription.id);
+    this.patientEmail.set(null);
+    this.sendingEmail.set(false);
+    this.showEmailModal.set(true);
+    this.patientsService.getById(prescription.patientId).subscribe({
+      next: (patient) => this.patientEmail.set(patient.email || null),
+      error: () => this.patientEmail.set(null)
+    });
+  }
+
+  onSendEmail(email: string): void {
+    const id = this.emailTargetId();
+    if (!id) return;
+    this.sendingEmail.set(true);
+    this.prescriptionsService.sendEmail(id, { email }).subscribe({
+      next: () => {
+        this.notifications.success(`Receta enviada a ${email}`);
+        this.showEmailModal.set(false);
+        this.sendingEmail.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.sendingEmail.set(false);
+      }
+    });
   }
 }

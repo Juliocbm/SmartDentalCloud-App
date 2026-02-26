@@ -5,24 +5,29 @@ import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { TreatmentPlansService } from '../../services/treatment-plans.service';
 import {
   TreatmentPlan,
   TreatmentPlanStatus,
   TREATMENT_PLAN_STATUS_CONFIG
 } from '../../models/treatment-plan.models';
+import { PatientsService } from '../../../patients/services/patients.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-treatment-plan-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, SendEmailModalComponent],
   templateUrl: './treatment-plan-list.html',
   styleUrl: './treatment-plan-list.scss'
 })
 export class TreatmentPlanListComponent implements OnInit, OnDestroy {
   private plansService = inject(TreatmentPlansService);
+  private patientsService = inject(PatientsService);
+  private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
 
@@ -31,6 +36,13 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
   filteredPlans = signal<TreatmentPlan[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
+
+  // Email modal state
+  showEmailModal = signal(false);
+  emailTargetId = signal<string | null>(null);
+  patientEmail = signal<string | null>(null);
+  sendingEmail = signal(false);
+  printLoadingId = signal<string | null>(null);
 
   // Filters
   searchTerm = signal('');
@@ -189,5 +201,50 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
       month: '2-digit',
       year: 'numeric'
     }).format(new Date(date));
+  }
+
+  // ===== Print & Email from list =====
+
+  onPrintFromList(plan: TreatmentPlan): void {
+    this.printLoadingId.set(plan.id);
+    this.plansService.downloadPdf(plan.id).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        this.printLoadingId.set(null);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.printLoadingId.set(null);
+      }
+    });
+  }
+
+  openEmailFromList(plan: TreatmentPlan): void {
+    this.emailTargetId.set(plan.id);
+    this.patientEmail.set(null);
+    this.sendingEmail.set(false);
+    this.showEmailModal.set(true);
+    this.patientsService.getById(plan.patientId).subscribe({
+      next: (patient) => this.patientEmail.set(patient.email || null),
+      error: () => this.patientEmail.set(null)
+    });
+  }
+
+  onSendEmail(email: string): void {
+    const id = this.emailTargetId();
+    if (!id) return;
+    this.sendingEmail.set(true);
+    this.plansService.sendEmail(id, email).subscribe({
+      next: () => {
+        this.notifications.success(`Plan de tratamiento enviado a ${email}`);
+        this.showEmailModal.set(false);
+        this.sendingEmail.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.sendingEmail.set(false);
+      }
+    });
   }
 }

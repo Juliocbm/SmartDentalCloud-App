@@ -172,13 +172,34 @@
                 </span>
               </td>
               <td class="actions-cell">
-                <button
-                  class="btn btn-sm btn-outline"
-                  (click)="viewDetail(prescription.id)"
-                >
-                  <i class="fa-solid fa-eye"></i>
-                  Ver
-                </button>
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-sm btn-icon"
+                    title="Imprimir"
+                    [disabled]="printLoadingId() === prescription.id"
+                    (click)="onPrintFromList(prescription)"
+                  >
+                    @if (printLoadingId() === prescription.id) {
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                    } @else {
+                      <i class="fa-solid fa-print"></i>
+                    }
+                  </button>
+                  <button
+                    class="btn btn-sm btn-icon"
+                    title="Enviar por email"
+                    (click)="openEmailFromList(prescription)"
+                  >
+                    <i class="fa-solid fa-envelope"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline"
+                    (click)="viewDetail(prescription.id)"
+                  >
+                    <i class="fa-solid fa-eye"></i>
+                    Ver
+                  </button>
+                </div>
               </td>
             </tr>
           }
@@ -239,5 +260,18 @@
         }
       </div>
     </div>
+  }
+
+  <!-- Email Modal -->
+  @if (showEmailModal()) {
+    <app-send-email-modal
+      title="Enviar Receta por Email"
+      subtitle="El PDF de la receta se adjuntará al correo"
+      icon="fa-prescription"
+      [patientEmail]="patientEmail()"
+      [sending]="sendingEmail()"
+      (send)="onSendEmail($event)"
+      (closed)="showEmailModal.set(false)"
+    />
   }
 </div>
