@@ -26,4 +26,8 @@ export class PrescriptionsService {
   sendEmail(id: string, request: { email: string }): Observable<{ message: string }> {
     return this.api.post<{ message: string }>(`/prescriptions/${id}/send-email`, request);
   }
+
+  downloadPdf(id: string): Observable<Blob> {
+    return this.api.getBlob(`/prescriptions/${id}/pdf`);
+  }
 }

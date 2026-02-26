@@ -28,9 +28,14 @@
           <i class="fa-solid fa-envelope"></i>
           Enviar Email
         </button>
-        <button class="btn btn-outline" (click)="printPrescription()">
-          <i class="fa-solid fa-print"></i>
-          Imprimir
+        <button class="btn btn-outline" (click)="printPrescription()" [disabled]="printLoading()">
+          @if (printLoading()) {
+            <span class="btn-spinner"></span>
+            Generando...
+          } @else {
+            <i class="fa-solid fa-print"></i>
+            Imprimir
+          }
         </button>
       }
     </div>
@@ -181,167 +186,6 @@
       (closed)="showAuditModal.set(false)"
     />
 
-    <!-- ========== PRINT-ONLY: Formato Profesional de Receta Médica ========== -->
-    <div class="rx-print">
-      <!-- Header: Consultorio -->
-      <header class="rx-header">
-        <div class="rx-header__clinic">
-          @if (clinicSettings()?.logoUrl) {
-            <img class="rx-header__logo-img" [src]="clinicSettings()!.logoUrl" alt="Logo" />
-          } @else {
-            <div class="rx-header__logo">
-              <i class="fa-solid fa-tooth"></i>
-            </div>
-          }
-          <div class="rx-header__info">
-            <h1 class="rx-header__name">{{ clinicSettings()?.name || 'Consultorio Dental' }}</h1>
-            @if (clinicSettings()?.legalName) {
-              <p class="rx-header__tagline">{{ clinicSettings()!.legalName }}</p>
-            }
-            @if (clinicSettings()?.taxId) {
-              <p class="rx-header__rfc">RFC: {{ clinicSettings()!.taxId }}</p>
-            }
-          </div>
-        </div>
-        <div class="rx-header__contact">
-          @if (clinicSettings()?.address) {
-            <p><i class="fa-solid fa-map-marker-alt"></i> {{ clinicSettings()!.address }}</p>
-          }
-          @if (clinicSettings()?.phone) {
-            <p><i class="fa-solid fa-phone"></i> {{ clinicSettings()!.phone }}</p>
-          }
-          @if (clinicSettings()?.email) {
-            <p><i class="fa-solid fa-envelope"></i> {{ clinicSettings()!.email }}</p>
-          }
-        </div>
-      </header>
-
-      <div class="rx-divider rx-divider--bold"></div>
-
-      <!-- Título del documento -->
-      <div class="rx-title">
-        <span class="rx-title__symbol">℞</span>
-        <h2 class="rx-title__text">Receta Médica</h2>
-        <span class="rx-title__folio">Folio: {{ rx.id.substring(0, 8).toUpperCase() }}</span>
-      </div>
-
-      <!-- Datos del paciente y doctor -->
-      <div class="rx-meta">
-        <div class="rx-meta__row">
-          <div class="rx-meta__field rx-meta__field--wide">
-            <span class="rx-meta__label">Paciente</span>
-            <span class="rx-meta__value">{{ rx.patientName }}</span>
-          </div>
-          <div class="rx-meta__field">
-            <span class="rx-meta__label">Fecha de emisión</span>
-            <span class="rx-meta__value">{{ formatDate(rx.issuedAt) }}</span>
-          </div>
-        </div>
-        <div class="rx-meta__row">
-          <div class="rx-meta__field rx-meta__field--wide">
-            <span class="rx-meta__label">Médico</span>
-            <span class="rx-meta__value">{{ rx.prescribedByName }}</span>
-          </div>
-          <div class="rx-meta__field">
-            <span class="rx-meta__label">Vigencia</span>
-            <span class="rx-meta__value">{{ rx.expiresAt ? formatDate(rx.expiresAt) : '30 días' }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="rx-divider"></div>
-
-      <!-- Diagnóstico -->
-      @if (rx.diagnosis) {
-        <div class="rx-diagnosis">
-          <h3 class="rx-section-title">Diagnóstico</h3>
-          <p class="rx-diagnosis__text">{{ rx.diagnosis }}</p>
-        </div>
-      }
-
-      <!-- Medicamentos -->
-      <div class="rx-medications">
-        <h3 class="rx-section-title">Medicamentos prescritos</h3>
-
-        @for (item of rx.items; track item.id; let i = $index) {
-          <div class="rx-med">
-            <div class="rx-med__number">{{ i + 1 }}</div>
-            <div class="rx-med__content">
-              <div class="rx-med__header">
-                <span class="rx-med__name">{{ item.medicationName }}</span>
-                @if (item.presentation) {
-                  <span class="rx-med__presentation">{{ item.presentation }}</span>
-                }
-              </div>
-              @if (item.activeIngredient) {
-                <div class="rx-med__ingredient">Principio activo: {{ item.activeIngredient }}</div>
-              }
-              <div class="rx-med__details">
-                <div class="rx-med__detail">
-                  <span class="rx-med__detail-label">Dosis:</span>
-                  <span>{{ item.dosage }}</span>
-                </div>
-                <div class="rx-med__detail">
-                  <span class="rx-med__detail-label">Frecuencia:</span>
-                  <span>{{ item.frequency }}</span>
-                </div>
-                <div class="rx-med__detail">
-                  <span class="rx-med__detail-label">Duración:</span>
-                  <span>{{ item.duration }}</span>
-                </div>
-                @if (item.route) {
-                  <div class="rx-med__detail">
-                    <span class="rx-med__detail-label">Vía:</span>
-                    <span>{{ item.route }}</span>
-                  </div>
-                }
-                <div class="rx-med__detail">
-                  <span class="rx-med__detail-label">Cantidad:</span>
-                  <span>{{ item.quantity }}</span>
-                </div>
-              </div>
-              @if (item.instructions) {
-                <div class="rx-med__instructions">
-                  <span class="rx-med__detail-label">Indicaciones:</span>
-                  {{ item.instructions }}
-                </div>
-              }
-            </div>
-          </div>
-        }
-      </div>
-
-      <!-- Notas adicionales -->
-      @if (rx.notes) {
-        <div class="rx-notes">
-          <h3 class="rx-section-title">Indicaciones generales</h3>
-          <p>{{ rx.notes }}</p>
-        </div>
-      }
-
-      <!-- Firma del médico -->
-      <div class="rx-signature">
-        <div class="rx-signature__line"></div>
-        <p class="rx-signature__name">{{ rx.prescribedByName }}</p>
-        <p class="rx-signature__cedula">Cédula Profesional: {{ rx.prescribedByLicense || '_______________' }}</p>
-      </div>
-
-      <!-- Leyendas legales -->
-      <footer class="rx-footer">
-        <div class="rx-divider"></div>
-        <div class="rx-legends">
-          <p>Este medicamento es de uso exclusivo del paciente arriba mencionado.</p>
-          <p>No se automedique. El uso inadecuado de medicamentos puede poner en riesgo su salud.</p>
-          <p>Mantenga todos los medicamentos fuera del alcance de los niños.</p>
-          <p>Si los síntomas persisten o se agravan, consulte a su médico.</p>
-          <p>Receta válida únicamente durante el periodo de vigencia indicado.</p>
-        </div>
-        <div class="rx-footer__validity">
-          Documento generado el {{ formatDate(rx.issuedAt) }} — Válido hasta {{ rx.expiresAt ? formatDate(rx.expiresAt) : 'N/A' }}
-        </div>
-      </footer>
-    </div>
-    <!-- ========== FIN PRINT ========== -->
   }
 
   <!-- Email Modal -->

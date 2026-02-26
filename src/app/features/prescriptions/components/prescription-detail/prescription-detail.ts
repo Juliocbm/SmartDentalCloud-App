@@ -12,8 +12,6 @@ import { AuditInfoComponent } from '../../../../shared/components/audit-info/aud
 import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { PatientsService } from '../../../patients/services/patients.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { SettingsService } from '../../../settings/services/settings.service';
-import { TenantSettings } from '../../../settings/models/settings.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
@@ -31,7 +29,6 @@ export class PrescriptionDetailComponent implements OnInit {
   private prescriptionsService = inject(PrescriptionsService);
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);
-  private settingsService = inject(SettingsService);
   private location = inject(Location);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -42,9 +39,9 @@ export class PrescriptionDetailComponent implements OnInit {
 
   // State
   prescription = signal<Prescription | null>(null);
-  clinicSettings = signal<TenantSettings | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+  printLoading = signal(false);
 
   // Email Modal State
   showEmailModal = signal(false);
@@ -56,14 +53,6 @@ export class PrescriptionDetailComponent implements OnInit {
     if (id) {
       this.loadPrescription(id);
     }
-    this.loadClinicSettings();
-  }
-
-  private loadClinicSettings(): void {
-    this.settingsService.getSettings().subscribe({
-      next: (data) => this.clinicSettings.set(data),
-      error: () => {} // Non-blocking: print will use fallbacks
-    });
   }
 
   private loadPrescription(id: string): void {
@@ -122,7 +111,20 @@ export class PrescriptionDetailComponent implements OnInit {
   }
 
   printPrescription(): void {
-    window.print();
+    const rx = this.prescription();
+    if (!rx) return;
+    this.printLoading.set(true);
+    this.prescriptionsService.downloadPdf(rx.id).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        this.printLoading.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.printLoading.set(false);
+      }
+    });
   }
 
   // Email

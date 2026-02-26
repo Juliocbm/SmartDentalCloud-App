@@ -16,11 +16,13 @@ import {
   UpdatePlanItemRequest
 } from '../../models/treatment-plan.models';
 import { DentalService } from '../../../invoices/models/service.models';
+import { PatientsService } from '../../../patients/services/patients.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { ServiceSelectComponent } from '../../../invoices/components/service-select/service-select';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -28,7 +30,7 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 @Component({
   selector: 'app-treatment-plan-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, AuditInfoComponent, ModalComponent, ServiceSelectComponent, DatePickerComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, AuditInfoComponent, ModalComponent, SendEmailModalComponent, ServiceSelectComponent, DatePickerComponent],
   templateUrl: './treatment-plan-detail.html',
   styleUrl: './treatment-plan-detail.scss'
 })
@@ -42,6 +44,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private location = inject(Location);
+  private patientsService = inject(PatientsService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -57,6 +60,12 @@ export class TreatmentPlanDetailComponent implements OnInit {
   itemActionLoading = signal<string | null>(null);
   rejectReason = signal('');
   showRejectModal = signal(false);
+
+  // Email modal state
+  showEmailModal = signal(false);
+  patientEmail = signal<string | null>(null);
+  sendingEmail = signal(false);
+  printLoading = signal(false);
 
   // Item modal state
   showItemModal = signal(false);
@@ -485,6 +494,53 @@ export class TreatmentPlanDetailComponent implements OnInit {
         this.logger.error('Error deleting item:', err);
         this.notifications.error(getApiErrorMessage(err));
         this.itemActionLoading.set(null);
+      }
+    });
+  }
+
+  // ===== Email & Print =====
+
+  openEmailModal(): void {
+    const p = this.plan();
+    if (!p) return;
+    this.patientEmail.set(null);
+    this.showEmailModal.set(true);
+    this.patientsService.getById(p.patientId).subscribe({
+      next: (patient) => this.patientEmail.set(patient.email || null),
+      error: () => this.patientEmail.set(null)
+    });
+  }
+
+  onSendEmail(email: string): void {
+    const p = this.plan();
+    if (!p) return;
+    this.sendingEmail.set(true);
+    this.plansService.sendEmail(p.id, email).subscribe({
+      next: () => {
+        this.notifications.success(`Plan de tratamiento enviado a ${email}`);
+        this.showEmailModal.set(false);
+        this.sendingEmail.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.sendingEmail.set(false);
+      }
+    });
+  }
+
+  onPrint(): void {
+    const p = this.plan();
+    if (!p) return;
+    this.printLoading.set(true);
+    this.plansService.downloadPdf(p.id).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        this.printLoading.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.printLoading.set(false);
       }
     });
   }

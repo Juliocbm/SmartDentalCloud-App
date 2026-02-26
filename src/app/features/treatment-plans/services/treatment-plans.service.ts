@@ -73,4 +73,12 @@ export class TreatmentPlansService {
   deleteItem(planId: string, itemId: string): Observable<void> {
     return this.api.delete<void>(`/treatment-plans/${planId}/items/${itemId}`);
   }
+
+  sendEmail(planId: string, email: string): Observable<any> {
+    return this.api.post(`/treatment-plans/${planId}/send-email`, { email });
+  }
+
+  downloadPdf(planId: string): Observable<Blob> {
+    return this.api.getBlob(`/treatment-plans/${planId}/pdf`);
+  }
 }
