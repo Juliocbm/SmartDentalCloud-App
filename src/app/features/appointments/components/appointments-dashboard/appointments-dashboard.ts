@@ -7,7 +7,8 @@ import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentsAnalyticsService } from '../../services/appointments-analytics.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
-import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
+import { LocationSummary } from '../../../settings/models/location.models';
 import {
   UpcomingAppointment,
   PendingConfirmation,
@@ -31,7 +32,7 @@ interface QuickAction {
 @Component({
   selector: 'app-appointments-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationSelectorComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent],
   templateUrl: './appointments-dashboard.html',
   styleUrls: ['./appointments-dashboard.scss']
 })
@@ -134,8 +135,8 @@ export class AppointmentsDashboardComponent implements OnInit {
     this.loadDashboardData();
   }
 
-  onLocationChange(locationId: string | null): void {
-    this.selectedLocationId.set(locationId);
+  onLocationSelected(location: LocationSummary | null): void {
+    this.selectedLocationId.set(location?.id ?? null);
     this.loadDashboardData();
   }
 

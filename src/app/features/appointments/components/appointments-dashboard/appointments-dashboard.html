@@ -7,10 +7,10 @@
   </app-page-header>
 
   <!-- Filtro de ubicación (golden rule) -->
-  <app-location-selector
-    [locationId]="selectedLocationId()"
-    label="Filtrar por Sucursal"
-    (locationChange)="onLocationChange($event)"
+  <app-location-autocomplete
+    [selectedLocationId]="selectedLocationId()"
+    placeholder="Filtrar por sucursal..."
+    (locationSelected)="onLocationSelected($event)"
   />
 
   @if (loading()) {

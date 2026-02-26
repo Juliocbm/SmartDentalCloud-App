@@ -8,6 +8,7 @@ import { AppointmentsService } from '../../../appointments/services/appointments
 import { AppointmentListItem } from '../../../appointments/models/appointment.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 export interface SessionFormModalData {
   treatmentId: string;
@@ -18,7 +19,7 @@ export interface SessionFormModalData {
 @Component({
   selector: 'app-session-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, DatePickerComponent],
   templateUrl: './session-form-modal.html',
   styleUrl: './session-form-modal.scss'
 })

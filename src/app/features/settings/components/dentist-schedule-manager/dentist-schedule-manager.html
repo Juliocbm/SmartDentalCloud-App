@@ -7,42 +7,35 @@
     <p class="section-description">Configura horarios individuales para cada dentista. Si un dentista no tiene horario propio, se usa el horario del consultorio.</p>
   </div>
 
-  @if (loadingDentists()) {
-    <div class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-      <p>Cargando dentistas...</p>
+  <div class="dentist-selector-row">
+    <div class="dentist-selector">
+      <app-dentist-autocomplete
+        [selectedDentistId]="selectedDentistId()"
+        placeholder="Buscar dentista..."
+        (dentistSelected)="onDentistSelected($event)"
+      >
+        Seleccionar Dentista
+      </app-dentist-autocomplete>
     </div>
-  } @else if (dentists().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-user-doctor"></i>
-      <p>No hay dentistas registrados en el sistema</p>
+    <div class="location-selector">
+      <app-location-autocomplete
+        [selectedLocationId]="selectedLocationId()"
+        placeholder="Seleccionar sucursal..."
+        (locationSelected)="onLocationSelected($event)"
+      >
+        Sucursal
+      </app-location-autocomplete>
     </div>
-  } @else {
-    <div class="form-group dentist-selector">
-      <label class="form-label">Seleccionar Dentista</label>
-      <select
-        class="form-input"
-        [ngModel]="selectedDentistId() ?? ''"
-        (ngModelChange)="onDentistChange($event)">
-        <option value="">— Selecciona un dentista —</option>
-        @for (dentist of dentists(); track dentist.id) {
-          <option [value]="dentist.id">
-            {{ dentist.name }}
-            @if (dentist.specialization) {
-              ({{ dentist.specialization }})
-            }
-          </option>
-        }
-      </select>
-    </div>
+  </div>
 
-    @if (selectedDentistId()) {
+  @if (selectedDentistId()) {
       <div class="dentist-editor">
         <app-work-schedule-editor
           #dentistScheduleEditor
           [userId]="selectedDentistId()"
-          [title]="'Horario de ' + selectedDentistName()"
-          [description]="'Horario de atención individual. Si no se configura, se usa el horario del consultorio.'"
+          [showHeader]="false"
+          [showLocationSelector]="false"
+          [locationId]="selectedLocationId()"
         />
       </div>
     } @else {
@@ -52,5 +45,4 @@
         <p>Elige un dentista del listado para configurar su horario individual</p>
       </div>
     }
-  }
 </div>

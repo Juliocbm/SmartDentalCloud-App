@@ -8,7 +8,8 @@ import { AlertsCountService } from '../../../../core/services/alerts-count.servi
 import { InventoryAnalyticsService } from '../../services/inventory-analytics.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
-import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
+import { LocationSummary } from '../../../settings/models/location.models';
 import { TopProduct, ExpiringProduct, CategoryStockStatus, InventoryActivity, ACTIVITY_CONFIG } from '../../models/inventory-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -25,7 +26,7 @@ interface DashboardMetric {
 @Component({
   selector: 'app-inventory-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationSelectorComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent],
   templateUrl: './inventory-dashboard.html',
   styleUrls: ['./inventory-dashboard.scss']
 })
@@ -135,8 +136,8 @@ export class InventoryDashboardComponent implements OnInit {
     this.loadAllData();
   }
 
-  onLocationChange(locationId: string | null): void {
-    this.selectedLocationId.set(locationId);
+  onLocationSelected(location: LocationSummary | null): void {
+    this.selectedLocationId.set(location?.id ?? null);
     this.loadAllData();
   }
 

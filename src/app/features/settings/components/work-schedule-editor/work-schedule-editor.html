@@ -1,18 +1,24 @@
 <div class="work-schedule-editor">
-  <div class="section-header">
-    <h3 class="section-title">
-      <i class="fa-solid fa-clock"></i>
-      {{ title() }}
-    </h3>
-    <p class="section-description">{{ description() }}</p>
-  </div>
+  @if (showHeader()) {
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="fa-solid fa-clock"></i>
+        {{ title() }}
+      </h3>
+      <p class="section-description">{{ description() }}</p>
+    </div>
+  }
 
-  <!-- Selector de ubicación (golden rule) -->
-  <app-location-selector
-    [locationId]="selectedLocationId()"
-    label="Horario de Sucursal"
-    (locationChange)="selectedLocationId.set($event); loadSchedule()"
-  />
+  @if (showLocationSelector()) {
+    <!-- Selector de ubicación (golden rule) -->
+    <app-location-autocomplete
+      [selectedLocationId]="selectedLocationId()"
+      placeholder="Seleccionar sucursal..."
+      (locationSelected)="onLocationSelected($event)"
+    >
+      Horario de Sucursal
+    </app-location-autocomplete>
+  }
 
   @if (loading()) {
     <div class="loading-state">

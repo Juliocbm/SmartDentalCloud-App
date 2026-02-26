@@ -34,6 +34,11 @@
     color: var(--text-secondary);
   }
 
+  app-location-autocomplete {
+    display: block;
+    margin-bottom: var(--spacing-xl);
+  }
+
   .schedule-table {
     border: 1px solid var(--border-primary);
     border-radius: var(--radius-lg);

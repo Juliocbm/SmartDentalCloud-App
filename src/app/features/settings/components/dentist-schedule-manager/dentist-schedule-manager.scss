@@ -76,9 +76,22 @@
     }
   }
 
-  .dentist-selector {
+  .dentist-selector-row {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
-    max-width: 480px;
+  }
+
+  .dentist-selector,
+  .location-selector {
+    flex: 1;
+  }
+
+  .dentist-hint {
+    margin: 0 0 var(--spacing-xs) 0;
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
   }
 
   .dentist-editor {

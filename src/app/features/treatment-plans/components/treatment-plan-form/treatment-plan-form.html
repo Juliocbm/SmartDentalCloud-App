@@ -1,11 +1,11 @@
 <div class="page-container container-medium">
   <!-- Page Header con Actions -->
   <app-page-header
-    [title]="'Nuevo Plan de Tratamiento'"
-    [subtitle]="'Crear un plan de tratamiento integral para un paciente'"
+    [title]="isEditMode() ? 'Editar Plan de Tratamiento' : 'Nuevo Plan de Tratamiento'"
+    [subtitle]="isEditMode() ? 'Modifica la información del plan de tratamiento' : 'Crear un plan de tratamiento integral para un paciente'"
     [icon]="'fa-clipboard-list'"
     [showBackButton]="true"
-    [backRoute]="'/treatment-plans'"
+    [backRoute]="isEditMode() ? '/treatment-plans/' + planId() : '/treatment-plans'"
     [breadcrumbs]="breadcrumbItems()">
 
     <div actions class="header-form-actions">
@@ -18,8 +18,8 @@
           <span class="btn-spinner"></span>
           Guardando...
         } @else {
-          <i class="fa-solid fa-plus"></i>
-          Crear Plan
+          <i class="fa-solid fa-save"></i>
+          {{ isEditMode() ? 'Guardar Cambios' : 'Crear Plan' }}
         }
       </button>
     </div>
@@ -50,16 +50,28 @@
 
         <div class="form-row">
           <div class="form-group">
-            <app-patient-autocomplete
-              [selectedPatientId]="selectedPatient()?.id || null"
-              [required]="true"
-              [disabled]="loading()"
-              (patientSelected)="onPatientSelected($event)"
-            >
-              Paciente
-            </app-patient-autocomplete>
-            @if (isFieldInvalid('patientId')) {
-              <span class="error-message">Seleccione un paciente</span>
+            @if (isPatientLocked()) {
+              <label class="form-label">Paciente</label>
+              <div class="locked-field">
+                <i class="fa-solid fa-lock locked-icon"></i>
+                <span>{{ selectedPatient()?.name }}</span>
+              </div>
+              <p class="field-hint">
+                <i class="fa-solid fa-circle-info"></i>
+                El paciente no se puede cambiar en planes aprobados o en progreso
+              </p>
+            } @else {
+              <app-patient-autocomplete
+                [selectedPatientId]="selectedPatient()?.id || null"
+                [required]="true"
+                [disabled]="loading()"
+                (patientSelected)="onPatientSelected($event)"
+              >
+                Paciente
+              </app-patient-autocomplete>
+              @if (isFieldInvalid('patientId')) {
+                <span class="error-message">Seleccione un paciente</span>
+              }
             }
           </div>
         </div>
@@ -128,23 +140,21 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="estimatedStartDate" class="form-label">Fecha de Inicio</label>
-            <input
-              id="estimatedStartDate"
-              type="date"
+            <app-date-picker
               formControlName="estimatedStartDate"
-              class="form-input"
-            />
+              placeholder="Seleccionar fecha de inicio..."
+            >
+              Fecha de Inicio
+            </app-date-picker>
           </div>
 
           <div class="form-group">
-            <label for="estimatedEndDate" class="form-label">Fecha de Fin</label>
-            <input
-              id="estimatedEndDate"
-              type="date"
+            <app-date-picker
               formControlName="estimatedEndDate"
-              class="form-input"
-            />
+              placeholder="Seleccionar fecha de fin..."
+            >
+              Fecha de Fin
+            </app-date-picker>
           </div>
         </div>
       </div>
@@ -159,11 +169,20 @@
               <span class="items-count">{{ items.length }}</span>
             }
           </h3>
-          <button type="button" class="btn btn-outline btn-sm" (click)="openAddProcModal()">
-            <i class="fa-solid fa-plus"></i>
-            Agregar Procedimiento
-          </button>
+          @if (!isEditMode()) {
+            <button type="button" class="btn btn-outline btn-sm" (click)="openAddProcModal()">
+              <i class="fa-solid fa-plus"></i>
+              Agregar Procedimiento
+            </button>
+          }
         </div>
+
+        @if (isEditMode()) {
+          <div class="info-banner">
+            <i class="fa-solid fa-circle-info"></i>
+            Los procedimientos se gestionan desde la vista de detalle del plan.
+          </div>
+        }
 
         @if (items.length === 0) {
           <div class="empty-items">
@@ -339,12 +358,12 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Fecha Estimada</label>
-          <input
-            type="date"
+          <app-date-picker
             formControlName="estimatedDate"
-            class="form-input"
-          />
+            placeholder="Seleccionar fecha estimada..."
+          >
+            Fecha Estimada
+          </app-date-picker>
         </div>
       </div>
 

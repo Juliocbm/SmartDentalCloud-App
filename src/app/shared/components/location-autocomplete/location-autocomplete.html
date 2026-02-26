@@ -1,0 +1,74 @@
+@if (visible()) {
+  <div class="autocomplete-container">
+    <label class="autocomplete-label">
+      <ng-content></ng-content>
+      @if (required) {
+        <span class="required">*</span>
+      }
+    </label>
+
+    <div class="autocomplete-input-wrapper">
+      <input
+        type="text"
+        [formControl]="searchControl"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+        class="autocomplete-input"
+        [class.error]="error"
+        [class.has-value]="selectedLocation()"
+      />
+      
+      @if (loading()) {
+        <i class="fa-solid fa-spinner fa-spin autocomplete-icon"></i>
+      } @else if (selectedLocation()) {
+        <button
+          type="button"
+          (click)="clearSelection()"
+          class="autocomplete-clear"
+          title="Limpiar selección"
+        >
+          <i class="fa-solid fa-times"></i>
+        </button>
+      } @else {
+        <i class="fa-solid fa-search autocomplete-icon"></i>
+      }
+
+      @if (showDropdown() && filteredLocations().length > 0) {
+        <div class="autocomplete-dropdown">
+          @for (location of filteredLocations(); track location.id) {
+            <button
+              type="button"
+              class="autocomplete-item"
+              (click)="selectLocation(location)"
+            >
+              <div class="location-info">
+                <div class="location-name">
+                  <i class="fa-solid fa-building"></i>
+                  {{ location.name }}
+                </div>
+                @if (location.isDefault) {
+                  <span class="location-badge">Principal</span>
+                }
+              </div>
+            </button>
+          }
+        </div>
+      }
+
+      @if (showDropdown() && !loading() && filteredLocations().length === 0 && searchControl.value && searchControl.value.length >= 1) {
+        <div class="autocomplete-dropdown">
+          <div class="autocomplete-empty">
+            <i class="fa-solid fa-building"></i>
+            <span>No se encontraron sucursales</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (error) {
+      <span class="error-message">{{ error }}</span>
+    }
+  </div>
+}

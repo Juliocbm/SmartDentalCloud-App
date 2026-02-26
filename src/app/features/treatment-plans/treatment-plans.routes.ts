@@ -23,6 +23,12 @@ export const TREATMENT_PLANS_ROUTES: Routes = [
           import('./components/treatment-plan-form/treatment-plan-form').then(m => m.TreatmentPlanFormComponent)
       },
       {
+        path: ':id/edit',
+        loadComponent: () =>
+          import('./components/treatment-plan-form/treatment-plan-form').then(m => m.TreatmentPlanFormComponent),
+        title: 'Editar Plan de Tratamiento'
+      },
+      {
         path: ':id',
         loadComponent: () =>
           import('./components/treatment-plan-detail/treatment-plan-detail').then(m => m.TreatmentPlanDetailComponent)

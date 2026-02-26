@@ -5,11 +5,12 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ReportsService } from '../../services/reports.service';
 import { IncomeReport } from '../../models/report.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 @Component({
   selector: 'app-income-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, DatePickerComponent],
   templateUrl: './income-report.html',
   styleUrl: './income-report.scss'
 })

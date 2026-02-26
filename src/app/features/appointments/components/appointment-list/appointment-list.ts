@@ -11,11 +11,12 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, DatePickerComponent],
   templateUrl: './appointment-list.html',
   styleUrls: ['./appointment-list.scss']
 })
@@ -100,6 +101,15 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       }
     });
+  }
+
+  onDatePickerChange(value: string | null): void {
+    if (value) {
+      this.selectedDate.set(new Date(value + 'T00:00:00'));
+    } else {
+      this.selectedDate.set(new Date());
+    }
+    this.loadAppointments();
   }
 
   onDateChange(event: Event): void {

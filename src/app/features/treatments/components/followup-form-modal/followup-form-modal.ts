@@ -6,6 +6,7 @@ import { ModalComponentBase, ModalRef, ModalConfig } from '../../../../shared/se
 import { TreatmentsService } from '../../services/treatments.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 export interface FollowUpFormModalData {
   treatmentId: string;
@@ -14,7 +15,7 @@ export interface FollowUpFormModalData {
 @Component({
   selector: 'app-followup-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, DatePickerComponent],
   templateUrl: './followup-form-modal.html',
   styleUrl: './followup-form-modal.scss'
 })

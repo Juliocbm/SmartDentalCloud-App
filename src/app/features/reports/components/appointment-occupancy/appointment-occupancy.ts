@@ -5,11 +5,12 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ReportsService } from '../../services/reports.service';
 import { AppointmentOccupancy } from '../../models/report.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 @Component({
   selector: 'app-appointment-occupancy',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, DatePickerComponent],
   templateUrl: './appointment-occupancy.html',
   styleUrl: './appointment-occupancy.scss'
 })

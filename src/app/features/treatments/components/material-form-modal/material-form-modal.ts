@@ -8,6 +8,9 @@ import { ProductsService } from '../../../inventory/services/products.service';
 import { Product } from '../../../inventory/models/product.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
+import { LocationsService } from '../../../settings/services/locations.service';
+import { LocationSummary } from '../../../settings/models/location.models';
 
 export interface MaterialFormModalData {
   treatmentId: string;
@@ -16,7 +19,7 @@ export interface MaterialFormModalData {
 @Component({
   selector: 'app-material-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, LocationAutocompleteComponent],
   templateUrl: './material-form-modal.html',
   styleUrl: './material-form-modal.scss'
 })
@@ -25,6 +28,9 @@ export class MaterialFormModalComponent implements ModalComponentBase<MaterialFo
   private treatmentsService = inject(TreatmentsService);
   private productsService = inject(ProductsService);
   private notifications = inject(NotificationService);
+  locationsService = inject(LocationsService);
+
+  selectedLocationId = signal<string | null>(null);
 
   modalData?: MaterialFormModalData;
   modalRef?: ModalRef<MaterialFormModalData, boolean>;
@@ -79,6 +85,7 @@ export class MaterialFormModalComponent implements ModalComponentBase<MaterialFo
 
     this.treatmentsService.createMaterial(this.modalData!.treatmentId, {
       productId: formValue.productId,
+      locationId: this.selectedLocationId() || undefined,
       quantity: formValue.quantity,
       unitCost: formValue.unitCost,
       notes: formValue.notes?.trim() || undefined

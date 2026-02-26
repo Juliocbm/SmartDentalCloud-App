@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
-import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
+import { DentistAutocompleteComponent } from '../../../../shared/components/dentist-autocomplete/dentist-autocomplete';
 import { SettingsService } from '../../services/settings.service';
 import { LocationsService } from '../../services/locations.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { UsersService } from '../../../../core/services/users.service';
 import { DentistListItem } from '../../../../core/models/user.models';
 import {
   ScheduleException,
@@ -20,23 +20,22 @@ import {
 } from '../../models/schedule-exception.models';
 import { generateTimeOptions } from '../../models/work-schedule.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 @Component({
   selector: 'app-schedule-exceptions-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ModalComponent, LocationSelectorComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ModalComponent, LocationAutocompleteComponent, DentistAutocompleteComponent, DatePickerComponent],
   templateUrl: './schedule-exceptions-manager.html',
   styleUrl: './schedule-exceptions-manager.scss'
 })
 export class ScheduleExceptionsManagerComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private notifications = inject(NotificationService);
-  private usersService = inject(UsersService);
   locationsService = inject(LocationsService);
 
   // Data
   exceptions = signal<ScheduleException[]>([]);
-  dentists = signal<DentistListItem[]>([]);
   loading = signal(false);
   saving = signal(false);
 
@@ -51,6 +50,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
   formStartTime = signal('08:00');
   formEndTime = signal('14:00');
   formUserId = signal<string | null>(null);
+  formUserName = signal<string | null>(null);
   formLocationId = signal<string | null>(null);
   formIsRecurringYearly = signal(false);
 
@@ -69,7 +69,6 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadExceptions();
-    this.loadDentists();
   }
 
   loadExceptions(): void {
@@ -86,15 +85,6 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
     });
   }
 
-  private loadDentists(): void {
-    this.usersService.getDentists().subscribe({
-      next: (dentists) => this.dentists.set(dentists),
-      error: () => {
-        this.notifications.warning('No se pudieron cargar los dentistas');
-        this.dentists.set([]);
-      }
-    });
-  }
 
   // === Modal ===
 
@@ -106,6 +96,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
     this.formStartTime.set('08:00');
     this.formEndTime.set('14:00');
     this.formUserId.set(null);
+    this.formUserName.set(null);
     this.formLocationId.set(null);
     this.formIsRecurringYearly.set(false);
     this.showModal.set(true);
@@ -119,6 +110,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
     this.formStartTime.set(exception.startTime || '08:00');
     this.formEndTime.set(exception.endTime || '14:00');
     this.formUserId.set(exception.userId);
+    this.formUserName.set(exception.userName);
     this.formLocationId.set(exception.locationId);
     this.formIsRecurringYearly.set(exception.isRecurringYearly);
     this.showModal.set(true);
@@ -228,7 +220,8 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
     return 'Cerrado';
   }
 
-  onUserIdChange(value: string): void {
-    this.formUserId.set(value || null);
+  onDentistSelected(dentist: DentistListItem | null): void {
+    this.formUserId.set(dentist?.id ?? null);
+    this.formUserName.set(dentist?.name ?? null);
   }
 }

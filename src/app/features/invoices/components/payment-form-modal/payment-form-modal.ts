@@ -8,6 +8,7 @@ import { Payment, PAYMENT_METHOD_OPTIONS } from '../../models/invoice.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 export interface PaymentFormModalData {
   invoiceId: string;
@@ -18,7 +19,7 @@ export interface PaymentFormModalData {
 @Component({
   selector: 'app-payment-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, DatePickerComponent],
   templateUrl: './payment-form-modal.html',
   styleUrl: './payment-form-modal.scss'
 })

@@ -10,12 +10,22 @@
   <!-- Date Filters -->
   <div class="filters-section">
     <div class="filter-group">
-      <label class="filter-label">Desde</label>
-      <input type="date" class="form-control" [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onDateChange()" />
+      <app-date-picker
+        [ngModel]="startDate()"
+        (ngModelChange)="startDate.set($event); onDateChange()"
+        placeholder="Desde..."
+      >
+        Desde
+      </app-date-picker>
     </div>
     <div class="filter-group">
-      <label class="filter-label">Hasta</label>
-      <input type="date" class="form-control" [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onDateChange()" />
+      <app-date-picker
+        [ngModel]="endDate()"
+        (ngModelChange)="endDate.set($event); onDateChange()"
+        placeholder="Hasta..."
+      >
+        Hasta
+      </app-date-picker>
     </div>
   </div>
 

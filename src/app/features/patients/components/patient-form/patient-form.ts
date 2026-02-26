@@ -8,11 +8,12 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { Patient, CreatePatientRequest, UpdatePatientRequest } from '../../models/patient.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { isFieldInvalid, getFieldError, markFormGroupTouched, applyServerErrors } from '../../../../core/utils/form-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 @Component({
   selector: 'app-patient-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, DatePickerComponent],
   templateUrl: './patient-form.html',
   styleUrl: './patient-form.scss'
 })

@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LocationsService } from '../../services/locations.service';
-import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
+import { LocationSummary } from '../../models/location.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import {
   DaySchedule,
@@ -18,7 +19,7 @@ import {
 @Component({
   selector: 'app-work-schedule-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, LocationSelectorComponent],
+  imports: [CommonModule, FormsModule, LocationAutocompleteComponent],
   templateUrl: './work-schedule-editor.html',
   styleUrl: './work-schedule-editor.scss'
 })
@@ -35,6 +36,12 @@ export class WorkScheduleEditorComponent implements OnInit {
   title = input('Horario Laboral');
   /** Descripción personalizada */
   description = input('Configura los días y horarios de atención del consultorio');
+  /** Mostrar u ocultar el header (título + descripción) */
+  showHeader = input(true);
+  /** Mostrar u ocultar el selector de ubicación interno */
+  showLocationSelector = input(true);
+  /** LocationId externo (cuando showLocationSelector=false) */
+  locationId = input<string | null>(null);
 
   schedule = signal<DaySchedule[]>([]);
   loading = signal(false);
@@ -44,7 +51,19 @@ export class WorkScheduleEditorComponent implements OnInit {
   DAY_ORDER = DAY_ORDER;
   timeOptions = generateTimeOptions();
 
+  private locationEffect = effect(() => {
+    const extLoc = this.locationId();
+    if (!this.showLocationSelector()) {
+      this.selectedLocationId.set(extLoc);
+    }
+  });
+
   ngOnInit(): void {
+    this.loadSchedule();
+  }
+
+  onLocationSelected(location: LocationSummary | null): void {
+    this.selectedLocationId.set(location?.id ?? null);
     this.loadSchedule();
   }
 

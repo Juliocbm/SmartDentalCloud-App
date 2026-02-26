@@ -102,25 +102,18 @@
           <div class="form-row">
             <!-- Fecha de Nacimiento -->
             <div class="form-group">
-              <label for="dateOfBirth" class="form-label">
-                Fecha de Nacimiento
-              </label>
-              <input
-                type="date"
-                id="dateOfBirth"
-                class="form-input"
+              <app-date-picker
                 formControlName="dateOfBirth"
-                [class.input-error]="isFieldInvalid('dateOfBirth')"
-              />
+                maxDate="today"
+                [error]="isFieldInvalid('dateOfBirth') ? getFieldError('dateOfBirth') : null"
+                placeholder="Seleccionar fecha de nacimiento..."
+              >
+                Fecha de Nacimiento
+              </app-date-picker>
               @if (calculatedAge() !== null) {
                 <span class="age-indicator">
                   <i class="fa-solid fa-calendar"></i>
                   {{ calculatedAge() }} años
-                </span>
-              }
-              @if (isFieldInvalid('dateOfBirth')) {
-                <span class="error-message">
-                  {{ getFieldError('dateOfBirth') }}
                 </span>
               }
             </div>

@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { ServiceAutocompleteComponent } from '../../../../shared/components/service-autocomplete/service-autocomplete';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { TreatmentsService } from '../../services/treatments.service';
 import { TreatmentStatus, SURFACE_OPTIONS, QUADRANT_OPTIONS } from '../../models/treatment.models';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
@@ -21,7 +22,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
     ReactiveFormsModule,
     PageHeaderComponent,
     PatientAutocompleteComponent,
-    ServiceAutocompleteComponent
+    ServiceAutocompleteComponent,
+    DatePickerComponent
   ],
   templateUrl: './treatment-form.html',
   styleUrl: './treatment-form.scss'

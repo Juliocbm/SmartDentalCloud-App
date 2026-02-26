@@ -156,6 +156,63 @@
   }
 }
 
+// ===== Section Header Row =====
+
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+// ===== Item Modal =====
+
+.modal-cost-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-md);
+  font-weight: var(--font-weight-semibold);
+
+  .modal-cost-value {
+    font-size: var(--font-size-lg);
+    color: var(--primary-500);
+  }
+}
+
+.form-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field-hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: var(--spacing-xs);
+
+  i {
+    margin-right: var(--spacing-xs);
+    color: var(--info-500);
+  }
+}
+
+.optional-badge {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-tertiary);
+  background: var(--surface-secondary);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-left: var(--spacing-sm);
+}
+
 // Responsive: .detail-container, .info-section, .info-card, .table
 // manejados globalmente en _components.scss
-// Modal: usa <app-modal> global, sin estilos custom

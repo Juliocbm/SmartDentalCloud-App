@@ -38,28 +38,20 @@
         </div>
 
         <div class="calendar-filters">
-          <div class="doctor-filter">
-            <label for="doctorSelect">
-              <i class="fa-solid fa-user-doctor"></i>
-              Dentista
-            </label>
-            <select 
-              id="doctorSelect"
-              class="doctor-select"
-              [value]="selectedDoctorId()"
-              (change)="onDentistChange($any($event.target).value)"
-            >
-              <option value="all">Todos los dentistas</option>
-              @for (dentist of dentists(); track dentist.id) {
-                <option [value]="dentist.id">{{ dentist.name }}</option>
-              }
-            </select>
-          </div>
-          <app-location-selector
-            [locationId]="selectedLocationId()"
-            label="Sucursal"
-            (locationChange)="onLocationChange($event)"
-          />
+          <app-dentist-autocomplete
+            [selectedDentistId]="selectedDoctorId()"
+            placeholder="Filtrar por dentista..."
+            (dentistSelected)="onDentistSelected($event)"
+          >
+            Dentista
+          </app-dentist-autocomplete>
+          <app-location-autocomplete
+            [selectedLocationId]="selectedLocationId()"
+            placeholder="Filtrar por sucursal..."
+            (locationSelected)="onLocationSelected($event)"
+          >
+            Sucursal
+          </app-location-autocomplete>
         </div>
       </div>
 

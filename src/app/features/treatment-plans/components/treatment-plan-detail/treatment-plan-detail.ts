@@ -1,26 +1,34 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TreatmentPlansService } from '../../services/treatment-plans.service';
 import {
   TreatmentPlan,
+  TreatmentPlanItem,
   TreatmentPlanStatus,
   ItemStatus,
+  ItemPriority,
   TREATMENT_PLAN_STATUS_CONFIG,
   ITEM_PRIORITY_CONFIG,
-  ITEM_STATUS_CONFIG
+  ITEM_STATUS_CONFIG,
+  AddPlanItemRequest,
+  UpdatePlanItemRequest
 } from '../../models/treatment-plan.models';
+import { DentalService } from '../../../invoices/models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { ServiceSelectComponent } from '../../../invoices/components/service-select/service-select';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-treatment-plan-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, ModalComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, AuditInfoComponent, ModalComponent, ServiceSelectComponent, DatePickerComponent],
   templateUrl: './treatment-plan-detail.html',
   styleUrl: './treatment-plan-detail.scss'
 })
@@ -29,6 +37,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private fb = inject(FormBuilder);
   private plansService = inject(TreatmentPlansService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
@@ -49,15 +58,36 @@ export class TreatmentPlanDetailComponent implements OnInit {
   rejectReason = signal('');
   showRejectModal = signal(false);
 
+  // Item modal state
+  showItemModal = signal(false);
+  editingItem = signal<TreatmentPlanItem | null>(null);
+  itemSaving = signal(false);
+  procForm!: FormGroup;
+  priorityOptions = Object.values(ItemPriority);
+
   // Constants
   TreatmentPlanStatus = TreatmentPlanStatus;
   ItemStatus = ItemStatus;
 
   ngOnInit(): void {
+    this.initProcForm();
     const planId = this.route.snapshot.paramMap.get('id');
     if (planId) {
       this.loadPlan(planId);
     }
+  }
+
+  private initProcForm(): void {
+    this.procForm = this.fb.group({
+      serviceId: [''],
+      description: ['', Validators.required],
+      notes: [''],
+      priority: [ItemPriority.Medium],
+      estimatedCost: [0, [Validators.required, Validators.min(0)]],
+      discount: [0, Validators.min(0)],
+      treatmentPhase: [''],
+      estimatedDate: ['']
+    });
   }
 
   private loadPlan(id: string): void {
@@ -93,6 +123,13 @@ export class TreatmentPlanDetailComponent implements OnInit {
     const p = this.plan();
     if (!p || p.totalItems === 0) return 0;
     return Math.round((p.completedItems / p.totalItems) * 100);
+  }
+
+  canEdit(): boolean {
+    const status = this.plan()?.status;
+    return status !== TreatmentPlanStatus.Completed &&
+           status !== TreatmentPlanStatus.Cancelled &&
+           status !== undefined;
   }
 
   canApprove(): boolean {
@@ -283,6 +320,169 @@ export class TreatmentPlanDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error updating item progress:', err);
+        this.notifications.error(getApiErrorMessage(err));
+        this.itemActionLoading.set(null);
+      }
+    });
+  }
+
+  // ===== Item Management =====
+
+  canManageItems(): boolean {
+    const status = this.plan()?.status;
+    return status === TreatmentPlanStatus.Draft ||
+           status === TreatmentPlanStatus.PendingApproval ||
+           status === TreatmentPlanStatus.Approved ||
+           status === TreatmentPlanStatus.InProgress;
+  }
+
+  canEditItem(item: TreatmentPlanItem): boolean {
+    return this.canManageItems() &&
+           item.status !== ItemStatus.Completed &&
+           item.status !== ItemStatus.Cancelled;
+  }
+
+  canDeleteItem(item: TreatmentPlanItem): boolean {
+    return this.canManageItems() && item.status === ItemStatus.Pending;
+  }
+
+  openAddItemModal(): void {
+    this.editingItem.set(null);
+    this.procForm.reset({
+      serviceId: '',
+      description: '',
+      notes: '',
+      priority: ItemPriority.Medium,
+      estimatedCost: 0,
+      discount: 0,
+      treatmentPhase: '',
+      estimatedDate: ''
+    });
+    this.showItemModal.set(true);
+  }
+
+  openEditItemModal(item: TreatmentPlanItem): void {
+    this.editingItem.set(item);
+    this.procForm.patchValue({
+      serviceId: item.serviceId || '',
+      description: item.description,
+      notes: item.notes || '',
+      priority: item.priority,
+      estimatedCost: item.estimatedCost,
+      discount: item.discount || 0,
+      treatmentPhase: item.treatmentPhase || '',
+      estimatedDate: item.estimatedDate ? new Date(item.estimatedDate).toISOString().split('T')[0] : ''
+    });
+    this.showItemModal.set(true);
+  }
+
+  closeItemModal(): void {
+    this.showItemModal.set(false);
+    this.editingItem.set(null);
+  }
+
+  onItemServiceSelected(service: DentalService | null): void {
+    if (service) {
+      this.procForm.patchValue({
+        serviceId: service.id,
+        description: this.procForm.get('description')?.value || service.name,
+        estimatedCost: service.cost || 0
+      });
+    } else {
+      this.procForm.patchValue({ serviceId: '' });
+    }
+  }
+
+  isProcFieldInvalid(fieldName: string): boolean {
+    const field = this.procForm.get(fieldName);
+    return !!(field && field.invalid && field.touched);
+  }
+
+  get procNetCost(): number {
+    const cost = this.procForm.get('estimatedCost')?.value || 0;
+    const discount = this.procForm.get('discount')?.value || 0;
+    return cost - discount;
+  }
+
+  get isEditingItem(): boolean {
+    return this.editingItem() !== null;
+  }
+
+  confirmItemModal(): void {
+    if (this.procForm.invalid) {
+      this.procForm.markAllAsTouched();
+      return;
+    }
+
+    const planId = this.plan()?.id;
+    if (!planId) return;
+
+    this.itemSaving.set(true);
+    const formValue = this.procForm.value;
+
+    const request: AddPlanItemRequest = {
+      serviceId: formValue.serviceId || undefined,
+      description: formValue.description,
+      notes: formValue.notes || undefined,
+      priority: formValue.priority,
+      estimatedCost: formValue.estimatedCost,
+      discount: formValue.discount || undefined,
+      treatmentPhase: formValue.treatmentPhase || undefined,
+      estimatedDate: formValue.estimatedDate || undefined
+    };
+
+    const editing = this.editingItem();
+
+    if (editing) {
+      this.plansService.updateItem(planId, editing.id, request as UpdatePlanItemRequest).subscribe({
+        next: () => {
+          this.notifications.success('Procedimiento actualizado exitosamente.');
+          this.closeItemModal();
+          this.loadPlan(planId);
+          this.itemSaving.set(false);
+        },
+        error: (err) => {
+          this.logger.error('Error updating item:', err);
+          this.notifications.error(getApiErrorMessage(err));
+          this.itemSaving.set(false);
+        }
+      });
+    } else {
+      this.plansService.addItem(planId, request).subscribe({
+        next: () => {
+          this.notifications.success('Procedimiento agregado exitosamente.');
+          this.closeItemModal();
+          this.loadPlan(planId);
+          this.itemSaving.set(false);
+        },
+        error: (err) => {
+          this.logger.error('Error adding item:', err);
+          this.notifications.error(getApiErrorMessage(err));
+          this.itemSaving.set(false);
+        }
+      });
+    }
+  }
+
+  async onDeleteItem(item: TreatmentPlanItem): Promise<void> {
+    const confirmed = await this.notifications.confirm(
+      `¿Eliminar el procedimiento "${item.description}"? Esta acción no se puede deshacer.`
+    );
+    if (!confirmed) return;
+
+    const planId = this.plan()?.id;
+    if (!planId) return;
+
+    this.itemActionLoading.set(item.id);
+
+    this.plansService.deleteItem(planId, item.id).subscribe({
+      next: () => {
+        this.notifications.success('Procedimiento eliminado exitosamente.');
+        this.loadPlan(planId);
+        this.itemActionLoading.set(null);
+      },
+      error: (err) => {
+        this.logger.error('Error deleting item:', err);
         this.notifications.error(getApiErrorMessage(err));
         this.itemActionLoading.set(null);
       }

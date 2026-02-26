@@ -157,29 +157,25 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="startDate" class="form-label">
-                Fecha de Inicio <span class="required">*</span>
-              </label>
-              <input
-                id="startDate"
-                type="date"
+              <app-date-picker
                 formControlName="startDate"
-                class="form-input"
-                [class.input-error]="isFieldInvalid('startDate')"
-              />
-              @if (isFieldInvalid('startDate')) {
-                <span class="error-message">La fecha de inicio es requerida</span>
-              }
+                [required]="true"
+                [disabled]="loading()"
+                [error]="isFieldInvalid('startDate') ? 'La fecha de inicio es requerida' : null"
+                placeholder="Seleccionar fecha de inicio..."
+              >
+                Fecha de Inicio
+              </app-date-picker>
             </div>
 
             <div class="form-group">
-              <label for="endDate" class="form-label">Fecha de Fin</label>
-              <input
-                id="endDate"
-                type="date"
+              <app-date-picker
                 formControlName="endDate"
-                class="form-input"
-              />
+                [disabled]="loading()"
+                placeholder="Seleccionar fecha de fin..."
+              >
+                Fecha de Fin
+              </app-date-picker>
             </div>
           </div>
 

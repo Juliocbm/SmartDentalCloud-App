@@ -136,6 +136,36 @@ export interface CreateTreatmentPlanRequest {
   items: CreateTreatmentPlanItemRequest[];
 }
 
+export interface UpdateTreatmentPlanRequest {
+  title: string;
+  description?: string;
+  diagnosis?: string;
+  estimatedStartDate?: string;
+  estimatedEndDate?: string;
+}
+
+export interface AddPlanItemRequest {
+  serviceId?: string;
+  description: string;
+  notes?: string;
+  priority: string;
+  estimatedCost: number;
+  discount?: number;
+  treatmentPhase?: string;
+  estimatedDate?: string;
+}
+
+export interface UpdatePlanItemRequest {
+  serviceId?: string;
+  description: string;
+  notes?: string;
+  priority: string;
+  estimatedCost: number;
+  discount?: number;
+  treatmentPhase?: string;
+  estimatedDate?: string;
+}
+
 export interface RejectPlanRequest {
   planId: string;
   reason: string;

@@ -8,16 +8,17 @@ import { SuppliersService } from '../../services/suppliers.service';
 import { ProductsService } from '../../services/products.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
-import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
 import { PurchaseOrderItemModalComponent, PurchaseOrderItemFormData } from './purchase-order-item-modal';
 import { Supplier } from '../../models/supplier.models';
 import { Product } from '../../models/product.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 @Component({
   selector: 'app-purchase-order-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, LocationSelectorComponent, PurchaseOrderItemModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, LocationAutocompleteComponent, PurchaseOrderItemModalComponent, DatePickerComponent],
   templateUrl: './purchase-order-form.html',
   styleUrls: ['./purchase-order-form.scss']
 })

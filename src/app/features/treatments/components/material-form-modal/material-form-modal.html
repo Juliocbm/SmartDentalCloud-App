@@ -5,6 +5,14 @@
   (closed)="onClose()"
 >
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <app-location-autocomplete
+      [selectedLocationId]="selectedLocationId()"
+      placeholder="Seleccionar sucursal..."
+      (locationSelected)="selectedLocationId.set($event?.id ?? null)"
+    >
+      Sucursal
+    </app-location-autocomplete>
+
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Producto <span class="required">*</span></label>

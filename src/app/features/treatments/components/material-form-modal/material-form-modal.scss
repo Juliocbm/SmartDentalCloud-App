@@ -2,3 +2,8 @@
 // MaterialFormModalComponent - Estilos Específicos
 // Usa estilos globales de _components.scss para modal y formularios
 // ============================================
+
+app-location-autocomplete {
+  display: block;
+  margin-bottom: var(--spacing-lg);
+}

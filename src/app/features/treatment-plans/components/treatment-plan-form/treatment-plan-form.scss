@@ -148,6 +148,44 @@
   }
 }
 
+// ===== Locked Field (read-only in edit mode) =====
+.locked-field {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+
+  .locked-icon {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+  }
+}
+
+// ===== Info Banner =====
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-md);
+  color: var(--primary-700);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-lg);
+
+  > i {
+    font-size: var(--font-size-base);
+    flex-shrink: 0;
+  }
+}
+
 // ===== Responsive =====
 @media (max-width: 768px) {
   .form-row-3 {

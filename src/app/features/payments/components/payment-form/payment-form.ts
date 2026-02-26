@@ -10,11 +10,12 @@ import { Invoice, InvoiceStatus } from '../../../invoices/models/invoice.models'
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 @Component({
   selector: 'app-payment-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, PageHeaderComponent, DatePickerComponent],
   templateUrl: './payment-form.html',
   styleUrl: './payment-form.scss'
 })

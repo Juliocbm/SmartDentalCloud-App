@@ -8,7 +8,7 @@ import { AppointmentFormContextService } from '../../services/appointment-form-c
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { DentistAutocompleteComponent } from '../../../../shared/components/dentist-autocomplete/dentist-autocomplete';
-import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { DentistListItem } from '../../../../core/models/user.models';
@@ -18,6 +18,7 @@ import { DaySchedule, DAY_ORDER } from '../../../settings/models/work-schedule.m
 import { ScheduleException, EXCEPTION_TYPE_LABELS } from '../../../settings/models/schedule-exception.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 @Component({
   selector: 'app-appointment-form',
@@ -27,8 +28,9 @@ import { NotificationService } from '../../../../core/services/notification.serv
     ReactiveFormsModule,
     PatientAutocompleteComponent,
     DentistAutocompleteComponent,
-    LocationSelectorComponent,
-    PageHeaderComponent
+    LocationAutocompleteComponent,
+    PageHeaderComponent,
+    DatePickerComponent
   ],
   templateUrl: './appointment-form.html',
   styleUrls: ['./appointment-form.scss']

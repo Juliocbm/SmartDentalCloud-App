@@ -1,0 +1,109 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.datepicker-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.datepicker-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  .required {
+    color: var(--error-500);
+  }
+}
+
+.datepicker-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.datepicker-input {
+  width: 100%;
+  padding: 10px 14px;
+  padding-right: var(--spacing-4xl);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+  outline: none;
+  cursor: pointer;
+
+  &:focus {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+  }
+
+  &:disabled {
+    background-color: var(--surface-secondary);
+    color: var(--text-disabled);
+    cursor: not-allowed;
+  }
+
+  &.error {
+    border-color: var(--error-500);
+
+    &:focus {
+      box-shadow: 0 0 0 3px var(--error-100);
+    }
+  }
+
+  &.has-value {
+    color: var(--text-primary);
+  }
+
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+}
+
+.datepicker-icon {
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  pointer-events: none;
+}
+
+.datepicker-clear {
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: var(--error-500);
+    background-color: var(--error-50);
+  }
+}
+
+.error-message {
+  font-size: var(--font-size-sm);
+  color: var(--error-500);
+  margin-top: var(--spacing-xs);
+}

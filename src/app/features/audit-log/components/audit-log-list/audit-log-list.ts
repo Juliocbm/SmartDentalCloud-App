@@ -11,11 +11,12 @@ import {
   AUDIT_ACTIONS,
   DEFAULT_AUDIT_ACTION_CONFIG
 } from '../../models/audit-log.models';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 
 @Component({
   selector: 'app-audit-log-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, DatePickerComponent],
   templateUrl: './audit-log-list.html',
   styleUrl: './audit-log-list.scss'
 })

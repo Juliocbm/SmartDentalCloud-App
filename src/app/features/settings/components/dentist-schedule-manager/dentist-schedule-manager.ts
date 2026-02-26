@@ -1,57 +1,42 @@
-import { Component, OnInit, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { UsersService } from '../../../../core/services/users.service';
 import { DentistListItem } from '../../../../core/models/user.models';
+import { DentistAutocompleteComponent } from '../../../../shared/components/dentist-autocomplete/dentist-autocomplete';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
+import { LocationSummary } from '../../../settings/models/location.models';
+import { LocationsService } from '../../services/locations.service';
 import { WorkScheduleEditorComponent } from '../work-schedule-editor/work-schedule-editor';
-import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-dentist-schedule-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule, WorkScheduleEditorComponent],
+  imports: [CommonModule, DentistAutocompleteComponent, LocationAutocompleteComponent, WorkScheduleEditorComponent],
   templateUrl: './dentist-schedule-manager.html',
   styleUrl: './dentist-schedule-manager.scss'
 })
-export class DentistScheduleManagerComponent implements OnInit {
-  private usersService = inject(UsersService);
-  private notifications = inject(NotificationService);
+export class DentistScheduleManagerComponent {
+  locationsService = inject(LocationsService);
 
-  dentists = signal<DentistListItem[]>([]);
   selectedDentistId = signal<string | null>(null);
-  loadingDentists = signal(false);
+  selectedLocationId = signal<string | null>(null);
+  private selectedDentist = signal<DentistListItem | null>(null);
 
   editorRef = viewChild(WorkScheduleEditorComponent);
 
   selectedDentistName(): string {
-    const id = this.selectedDentistId();
-    if (!id) return '';
-    const d = this.dentists().find(d => d.id === id);
-    return d?.name ?? '';
+    return this.selectedDentist()?.name ?? '';
   }
 
-  ngOnInit(): void {
-    this.loadDentists();
-  }
-
-  private loadDentists(): void {
-    this.loadingDentists.set(true);
-    this.usersService.getDentists().subscribe({
-      next: (dentists) => {
-        this.dentists.set(dentists);
-        this.loadingDentists.set(false);
-      },
-      error: () => {
-        this.notifications.warning('No se pudieron cargar los dentistas');
-        this.dentists.set([]);
-        this.loadingDentists.set(false);
-      }
+  onDentistSelected(dentist: DentistListItem | null): void {
+    this.selectedDentist.set(dentist);
+    this.selectedDentistId.set(dentist?.id ?? null);
+    setTimeout(() => {
+      this.editorRef()?.loadSchedule();
     });
   }
 
-  onDentistChange(dentistId: string): void {
-    this.selectedDentistId.set(dentistId || null);
-    // Reload the editor when dentist changes
+  onLocationSelected(location: LocationSummary | null): void {
+    this.selectedLocationId.set(location?.id ?? null);
     setTimeout(() => {
       this.editorRef()?.loadSchedule();
     });

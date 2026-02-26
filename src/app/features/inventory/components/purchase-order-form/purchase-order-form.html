@@ -70,21 +70,21 @@
 
           <!-- Fecha Esperada -->
           <div class="form-group">
-            <label for="expectedDate" class="form-label">Fecha Esperada de Entrega</label>
-            <input
-              type="date"
-              id="expectedDate"
-              class="form-input"
+            <app-date-picker
               formControlName="expectedDate"
-            />
+              minDate="today"
+              placeholder="Seleccionar fecha esperada..."
+            >
+              Fecha Esperada de Entrega
+            </app-date-picker>
           </div>
         </div>
 
         <!-- Sucursal destino (golden rule) -->
-        <app-location-selector
-          [locationId]="selectedLocationId()"
-          label="Sucursal Destino"
-          (locationChange)="selectedLocationId.set($event)"
+        <app-location-autocomplete
+          [selectedLocationId]="selectedLocationId()"
+          placeholder="Seleccionar sucursal..."
+          (locationSelected)="selectedLocationId.set($event?.id ?? null)"
         />
 
         <!-- Notas -->

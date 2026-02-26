@@ -33,12 +33,13 @@
     </div>
 
     <div class="filter-actions">
-      <input 
-        type="date" 
-        class="filter-input"
-        [value]="formatDateForInput(selectedDate())"
-        (change)="onDateChange($event)"
+      <app-date-picker
+        [ngModel]="formatDateForInput(selectedDate())"
+        (ngModelChange)="onDatePickerChange($event)"
+        placeholder="Filtrar por fecha..."
       >
+        Fecha
+      </app-date-picker>
       <select 
         class="filter-select"
         [value]="filterStatus()"

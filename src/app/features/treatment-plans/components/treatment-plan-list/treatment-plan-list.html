@@ -160,6 +160,15 @@
               <!-- Acciones -->
               <td class="actions-column">
                 <div class="action-buttons">
+                  @if (canEdit(plan)) {
+                    <button
+                      class="btn btn-sm btn-outline"
+                      [routerLink]="['/treatment-plans', plan.id, 'edit']"
+                      title="Editar plan"
+                    >
+                      <i class="fa-solid fa-pen"></i>
+                    </button>
+                  }
                   <button
                     class="btn btn-sm btn-outline"
                     [routerLink]="['/treatment-plans', plan.id]"

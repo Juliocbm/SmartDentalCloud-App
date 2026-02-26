@@ -86,11 +86,13 @@
           <i class="fa-solid fa-location-dot section-icon"></i>
           Sucursal
         </h3>
-        <app-location-selector
-          [locationId]="selectedLocationId()"
-          [showLabel]="false"
-          (locationChange)="selectedLocationId.set($event); appointmentForm.patchValue({ locationId: $event })"
-        />
+        <app-location-autocomplete
+          [selectedLocationId]="selectedLocationId()"
+          placeholder="Seleccionar sucursal..."
+          (locationSelected)="selectedLocationId.set($event?.id ?? null); appointmentForm.patchValue({ locationId: $event?.id ?? null })"
+        >
+          Sucursal
+        </app-location-autocomplete>
       </div>
     }
 
@@ -103,35 +105,29 @@
       
       <div class="form-row">
         <div class="form-group">
-          <label for="startAt" class="form-label">
-            Fecha y Hora de Inicio <span class="required">*</span>
-          </label>
-          <input 
-            type="datetime-local" 
-            id="startAt"
+          <app-date-picker
             formControlName="startAt"
-            class="form-input"
-            [class.input-error]="getFieldError('startAt')"
+            mode="datetime"
+            [required]="true"
+            minDate="today"
+            [error]="getFieldError('startAt')"
+            placeholder="Seleccionar fecha y hora..."
           >
-          @if (getFieldError('startAt')) {
-            <span class="error-message">{{ getFieldError('startAt') }}</span>
-          }
+            Fecha y Hora de Inicio
+          </app-date-picker>
         </div>
 
         <div class="form-group">
-          <label for="endAt" class="form-label">
-            Fecha y Hora de Fin <span class="required">*</span>
-          </label>
-          <input 
-            type="datetime-local" 
-            id="endAt"
+          <app-date-picker
             formControlName="endAt"
-            class="form-input"
-            [class.input-error]="getFieldError('endAt')"
+            mode="datetime"
+            [required]="true"
+            minDate="today"
+            [error]="getFieldError('endAt')"
+            placeholder="Seleccionar fecha y hora..."
           >
-          @if (getFieldError('endAt')) {
-            <span class="error-message">{{ getFieldError('endAt') }}</span>
-          }
+            Fecha y Hora de Fin
+          </app-date-picker>
         </div>
       </div>
 

@@ -130,13 +130,15 @@
     <div class="modal-form">
       <!-- Date -->
       <div class="form-group">
-        <label class="form-label">Fecha <span class="required">*</span></label>
-        <input
-          type="date"
-          class="form-input"
+        <app-date-picker
+          [required]="true"
+          minDate="today"
+          placeholder="Seleccionar fecha..."
           [ngModel]="formDate()"
           (ngModelChange)="formDate.set($event)"
-        />
+        >
+          Fecha
+        </app-date-picker>
       </div>
 
       <!-- Type -->
@@ -200,25 +202,23 @@
       }
 
       <!-- Applies to -->
-      <div class="form-group">
-        <label class="form-label">Aplica a</label>
-        <select
-          class="form-input"
-          [ngModel]="formUserId() ?? ''"
-          (ngModelChange)="onUserIdChange($event)">
-          <option value="">Toda la clínica</option>
-          @for (dentist of dentists(); track dentist.id) {
-            <option [value]="dentist.id">{{ dentist.name }}</option>
-          }
-        </select>
-      </div>
+      <app-dentist-autocomplete
+        [selectedDentistId]="formUserId()"
+        [selectedDentistName]="formUserName()"
+        placeholder="Toda la clínica..."
+        (dentistSelected)="onDentistSelected($event)"
+      >
+        Aplica a
+      </app-dentist-autocomplete>
 
       <!-- Location (golden rule) -->
-      <app-location-selector
-        [locationId]="formLocationId()"
-        label="Sucursal"
-        (locationChange)="formLocationId.set($event)"
-      />
+      <app-location-autocomplete
+        [selectedLocationId]="formLocationId()"
+        placeholder="Seleccionar sucursal..."
+        (locationSelected)="formLocationId.set($event?.id ?? null)"
+      >
+        Sucursal
+      </app-location-autocomplete>
 
       <!-- Recurring -->
       <div class="form-check">

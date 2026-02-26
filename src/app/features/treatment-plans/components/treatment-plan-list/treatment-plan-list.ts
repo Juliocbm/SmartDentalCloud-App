@@ -140,6 +140,11 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
     return TREATMENT_PLAN_STATUS_CONFIG[status] || { label: status, class: 'badge-neutral', icon: 'fa-circle' };
   }
 
+  canEdit(plan: TreatmentPlan): boolean {
+    return plan.status !== TreatmentPlanStatus.Completed &&
+           plan.status !== TreatmentPlanStatus.Cancelled;
+  }
+
   getProgressPercentage(plan: TreatmentPlan): number {
     if (plan.totalItems === 0) return 0;
     return Math.round((plan.completedItems / plan.totalItems) * 100);

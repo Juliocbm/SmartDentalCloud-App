@@ -1,12 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { ServiceSelectComponent } from '../../../invoices/components/service-select/service-select';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { TreatmentPlansService } from '../../services/treatment-plans.service';
-import { ItemPriority, CreateTreatmentPlanRequest, CreateTreatmentPlanItemRequest } from '../../models/treatment-plan.models';
+import { ItemPriority, TreatmentPlanStatus, CreateTreatmentPlanRequest, UpdateTreatmentPlanRequest, CreateTreatmentPlanItemRequest } from '../../models/treatment-plan.models';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { DentalService } from '../../../invoices/models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -23,7 +24,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
     PageHeaderComponent,
     PatientAutocompleteComponent,
     ServiceSelectComponent,
-    ModalComponent
+    ModalComponent,
+    DatePickerComponent
   ],
   templateUrl: './treatment-plan-form.html',
   styleUrl: './treatment-plan-form.scss'
@@ -31,6 +33,7 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 export class TreatmentPlanFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private plansService = inject(TreatmentPlansService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
@@ -39,6 +42,11 @@ export class TreatmentPlanFormComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   selectedPatient = signal<PatientSearchResult | null>(null);
+
+  // Edit mode
+  isEditMode = signal(false);
+  planId = signal<string | null>(null);
+  planStatus = signal<string | null>(null);
 
   // Form
   form!: FormGroup;
@@ -51,14 +59,92 @@ export class TreatmentPlanFormComponent implements OnInit {
   // Config
   priorityOptions = Object.values(ItemPriority);
 
-  breadcrumbItems = signal<BreadcrumbItem[]>([
+  breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     { label: 'Dashboard', route: '/dashboard' },
     { label: 'Planes de Tratamiento', route: '/treatment-plans' },
-    { label: 'Nuevo Plan' }
+    { label: this.isEditMode() ? 'Editar Plan' : 'Nuevo Plan' }
   ]);
+
+  // In edit mode for Approved/InProgress plans, patient cannot be changed
+  isPatientLocked = computed(() => {
+    const status = this.planStatus();
+    return this.isEditMode() && (
+      status === TreatmentPlanStatus.Approved ||
+      status === TreatmentPlanStatus.InProgress
+    );
+  });
 
   ngOnInit(): void {
     this.initForm();
+    this.checkEditMode();
+  }
+
+  private checkEditMode(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode.set(true);
+      this.planId.set(id);
+      this.loadPlan(id);
+    }
+  }
+
+  private loadPlan(id: string): void {
+    this.loading.set(true);
+    this.plansService.getById(id).subscribe({
+      next: (plan) => {
+        this.planStatus.set(plan.status);
+
+        this.form.patchValue({
+          patientId: plan.patientId,
+          title: plan.title,
+          description: plan.description || '',
+          diagnosis: plan.diagnosis || '',
+          estimatedStartDate: plan.estimatedStartDate
+            ? new Date(plan.estimatedStartDate).toISOString().split('T')[0]
+            : '',
+          estimatedEndDate: plan.estimatedEndDate
+            ? new Date(plan.estimatedEndDate).toISOString().split('T')[0]
+            : ''
+        });
+
+        if (plan.patientName) {
+          this.selectedPatient.set({
+            id: plan.patientId,
+            name: plan.patientName,
+            email: '',
+            phone: ''
+          });
+        }
+
+        // Load existing items into the form array (read-only display)
+        this.items.clear();
+        if (plan.items?.length) {
+          for (const item of plan.items) {
+            const itemGroup = this.fb.group({
+              serviceId: [item.serviceId || ''],
+              serviceName: [item.serviceName || ''],
+              description: [item.description, Validators.required],
+              notes: [item.notes || ''],
+              priority: [item.priority],
+              estimatedCost: [item.estimatedCost, [Validators.required, Validators.min(0)]],
+              discount: [item.discount || 0, Validators.min(0)],
+              treatmentPhase: [item.treatmentPhase || ''],
+              estimatedDate: [item.estimatedDate
+                ? new Date(item.estimatedDate).toISOString().split('T')[0]
+                : '']
+            });
+            this.items.push(itemGroup);
+          }
+        }
+
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.logger.error('Error loading treatment plan:', err);
+        this.error.set(getApiErrorMessage(err));
+        this.loading.set(false);
+      }
+    });
   }
 
   private initForm(): void {
@@ -217,6 +303,14 @@ export class TreatmentPlanFormComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
+    if (this.isEditMode()) {
+      this.submitUpdate();
+    } else {
+      this.submitCreate();
+    }
+  }
+
+  private submitCreate(): void {
     const formValue = this.form.value;
     const request: CreateTreatmentPlanRequest = {
       patientId: formValue.patientId,
@@ -245,6 +339,30 @@ export class TreatmentPlanFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating treatment plan:', err);
+        this.error.set(getApiErrorMessage(err));
+        this.loading.set(false);
+      }
+    });
+  }
+
+  private submitUpdate(): void {
+    const formValue = this.form.value;
+    const request: UpdateTreatmentPlanRequest = {
+      title: formValue.title,
+      description: formValue.description || undefined,
+      diagnosis: formValue.diagnosis || undefined,
+      estimatedStartDate: formValue.estimatedStartDate || undefined,
+      estimatedEndDate: formValue.estimatedEndDate || undefined
+    };
+
+    this.plansService.update(this.planId()!, request).subscribe({
+      next: (plan) => {
+        this.notifications.success('Plan de tratamiento actualizado exitosamente.');
+        this.router.navigate(['/treatment-plans', plan.id]);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.logger.error('Error updating treatment plan:', err);
         this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }

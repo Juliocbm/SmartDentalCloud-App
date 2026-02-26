@@ -13,25 +13,25 @@ import { AppointmentsService } from '../../services/appointments.service';
 import { Appointment, AppointmentStatusConfig } from '../../models/appointment.models';
 import { AppointmentFormContextService } from '../../services/appointment-form-context.service';
 import { CALENDAR_APPOINTMENT_CONTEXT } from '../../models/appointment-form-context.model';
-import { UsersService } from '../../../../core/services/users.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { DentistListItem } from '../../../../core/models/user.models';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { DaySchedule, DAY_TO_FULLCALENDAR } from '../../../settings/models/work-schedule.models';
 import { ScheduleException, EXCEPTION_TYPE_LABELS } from '../../../settings/models/schedule-exception.models';
 import { LocationsService } from '../../../settings/services/locations.service';
-import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
+import { LocationSummary } from '../../../settings/models/location.models';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
+import { DentistAutocompleteComponent } from '../../../../shared/components/dentist-autocomplete/dentist-autocomplete';
 
 @Component({
   selector: 'app-appointment-calendar',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, RouterLink, PageHeaderComponent, ModalComponent, LocationSelectorComponent],
+  imports: [CommonModule, FullCalendarModule, RouterLink, PageHeaderComponent, ModalComponent, LocationAutocompleteComponent, DentistAutocompleteComponent],
   templateUrl: './appointment-calendar.html',
   styleUrl: './appointment-calendar.scss'
 })
 export class AppointmentCalendarComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);
-  private usersService = inject(UsersService);
   private settingsService = inject(SettingsService);
   private router = inject(Router);
   private logger = inject(LoggingService);
@@ -45,9 +45,10 @@ export class AppointmentCalendarComponent implements OnInit {
   selectedView = signal<'week' | 'day'>('week');
   showQuickCreateModal = signal(false);
   selectedSlot = signal<{ start: Date; end: Date } | null>(null);
-  dentists = signal<DentistListItem[]>([]);
-  selectedDoctorId = signal<string>('all');
+  selectedDoctorId = signal<string | null>(null);
+  private selectedDentistObj = signal<DentistListItem | null>(null);
   selectedLocationId = signal<string | null>(null);
+  private selectedLocationObj = signal<LocationSummary | null>(null);
   scheduleExceptions = signal<ScheduleException[]>([]);
   visibleRange = signal<{ start: string; end: string } | null>(null);
 
@@ -119,7 +120,6 @@ export class AppointmentCalendarComponent implements OnInit {
   ngOnInit(): void {
     this.loadWorkSchedule();
     this.loadScheduleExceptions();
-    this.loadDentists();
     this.loadAppointments();
   }
 
@@ -162,7 +162,7 @@ export class AppointmentCalendarComponent implements OnInit {
       let showAsFull = false;
       let showAsSubtle = false;
 
-      if (selectedDentist === 'all') {
+      if (!selectedDentist) {
         // Viewing all: clinic-wide = full, dentist-specific = subtle indicator
         showAsFull = isClinicWide;
         showAsSubtle = isDentistSpecific && isClosed;
@@ -254,7 +254,7 @@ export class AppointmentCalendarComponent implements OnInit {
       if (!ex.userId) return true;
 
       // Dentist-specific closure blocks only when viewing that dentist
-      if (selectedDentist !== 'all' && ex.userId === selectedDentist) return true;
+      if (selectedDentist && ex.userId === selectedDentist) return true;
 
       return false;
     });
@@ -380,10 +380,7 @@ export class AppointmentCalendarComponent implements OnInit {
   navigateToFullForm(): void {
     const slot = this.selectedSlot();
     if (slot) {
-      const selectedId = this.selectedDoctorId();
-      const dentist = selectedId !== 'all'
-        ? this.dentists().find(d => d.id === selectedId)
-        : undefined;
+      const dentist = this.selectedDentistObj();
 
       this.contextService.setContext(
         CALENDAR_APPOINTMENT_CONTEXT(
@@ -426,20 +423,9 @@ export class AppointmentCalendarComponent implements OnInit {
     this.router.navigate(['/appointments']);
   }
 
-  private loadDentists(): void {
-    this.usersService.getDentists().subscribe({
-      next: (dentists) => {
-        this.dentists.set(dentists);
-      },
-      error: (err) => {
-        this.logger.error('Error loading dentists:', err);
-        this.dentists.set([]);
-      }
-    });
-  }
-
-  onLocationChange(locationId: string | null): void {
-    this.selectedLocationId.set(locationId);
+  onLocationSelected(location: LocationSummary | null): void {
+    this.selectedLocationObj.set(location);
+    this.selectedLocationId.set(location?.id ?? null);
     this.applyFilters();
   }
 
@@ -449,7 +435,7 @@ export class AppointmentCalendarComponent implements OnInit {
     const locationId = this.selectedLocationId();
 
     let filtered = allAppointments;
-    if (dentistId !== 'all') {
+    if (dentistId) {
       filtered = filtered.filter(apt => apt.userId === dentistId);
     }
     if (locationId) {
@@ -458,13 +444,14 @@ export class AppointmentCalendarComponent implements OnInit {
     this.updateCalendarEvents(filtered);
   }
 
-  onDentistChange(dentistId: string): void {
-    this.selectedDoctorId.set(dentistId);
+  onDentistSelected(dentist: DentistListItem | null): void {
+    this.selectedDentistObj.set(dentist);
+    this.selectedDoctorId.set(dentist?.id ?? null);
     
-    if (dentistId === 'all') {
+    if (!dentist) {
       this.loadWorkSchedule();
     } else {
-      this.settingsService.getDentistWorkSchedule(dentistId).subscribe({
+      this.settingsService.getDentistWorkSchedule(dentist.id).subscribe({
         next: (schedule) => this.applyWorkSchedule(schedule.days),
         error: () => this.loadWorkSchedule()
       });

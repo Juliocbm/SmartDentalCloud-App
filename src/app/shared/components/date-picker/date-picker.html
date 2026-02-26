@@ -1,0 +1,38 @@
+<div class="datepicker-container">
+  <label class="datepicker-label">
+    <ng-content></ng-content>
+    @if (required) {
+      <span class="required">*</span>
+    }
+  </label>
+
+  <div class="datepicker-input-wrapper">
+    <input
+      #dateInput
+      type="text"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      class="datepicker-input"
+      [class.error]="error"
+      [class.has-value]="currentValue"
+      readonly
+    />
+
+    @if (currentValue && !disabled) {
+      <button
+        type="button"
+        (click)="onClear()"
+        class="datepicker-clear"
+        title="Limpiar fecha"
+      >
+        <i class="fa-solid fa-times"></i>
+      </button>
+    } @else {
+      <i class="fa-solid fa-calendar-days datepicker-icon"></i>
+    }
+  </div>
+
+  @if (error) {
+    <span class="error-message">{{ error }}</span>
+  }
+</div>

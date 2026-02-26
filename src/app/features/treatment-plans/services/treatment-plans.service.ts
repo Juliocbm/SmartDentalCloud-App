@@ -5,6 +5,9 @@ import {
   TreatmentPlan,
   TreatmentPlanItem,
   CreateTreatmentPlanRequest,
+  UpdateTreatmentPlanRequest,
+  AddPlanItemRequest,
+  UpdatePlanItemRequest,
   RejectPlanRequest,
   UpdateItemProgressRequest,
   TreatmentPlanProgress
@@ -34,6 +37,10 @@ export class TreatmentPlansService {
     return this.api.post<TreatmentPlan>('/treatment-plans', request);
   }
 
+  update(id: string, request: UpdateTreatmentPlanRequest): Observable<TreatmentPlan> {
+    return this.api.put<TreatmentPlan>(`/treatment-plans/${id}`, request);
+  }
+
   approve(id: string): Observable<TreatmentPlan> {
     return this.api.post<TreatmentPlan>(`/treatment-plans/${id}/approve`, {});
   }
@@ -53,5 +60,17 @@ export class TreatmentPlansService {
 
   updateItemProgress(planId: string, itemId: string, request: UpdateItemProgressRequest): Observable<TreatmentPlanItem> {
     return this.api.put<TreatmentPlanItem>(`/treatment-plans/${planId}/items/${itemId}/progress`, request);
+  }
+
+  addItem(planId: string, request: AddPlanItemRequest): Observable<TreatmentPlanItem> {
+    return this.api.post<TreatmentPlanItem>(`/treatment-plans/${planId}/items`, request);
+  }
+
+  updateItem(planId: string, itemId: string, request: UpdatePlanItemRequest): Observable<TreatmentPlanItem> {
+    return this.api.put<TreatmentPlanItem>(`/treatment-plans/${planId}/items/${itemId}`, request);
+  }
+
+  deleteItem(planId: string, itemId: string): Observable<void> {
+    return this.api.delete<void>(`/treatment-plans/${planId}/items/${itemId}`);
   }
 }

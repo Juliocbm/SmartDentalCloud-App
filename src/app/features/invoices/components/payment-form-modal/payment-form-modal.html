@@ -53,16 +53,14 @@
 
     <!-- Fecha de pago -->
     <div class="form-group">
-      <label class="form-label">Fecha de Pago <span class="required">*</span></label>
-      <input
-        type="date"
+      <app-date-picker
         formControlName="paidAt"
-        class="form-input"
-        [class.input-error]="isFieldInvalid('paidAt')"
-      />
-      @if (isFieldInvalid('paidAt')) {
-        <span class="error-message">{{ getFieldError('paidAt') }}</span>
-      }
+        [required]="true"
+        [error]="isFieldInvalid('paidAt') ? getFieldError('paidAt') : null"
+        placeholder="Seleccionar fecha de pago..."
+      >
+        Fecha de Pago
+      </app-date-picker>
     </div>
 
     <!-- Referencia -->

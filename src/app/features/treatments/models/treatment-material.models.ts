@@ -22,6 +22,7 @@ export interface TreatmentMaterial {
 
 export interface CreateTreatmentMaterialRequest {
   productId: string;
+  locationId?: string;
   quantity: number;
   unitCost: number;
   notes?: string;
