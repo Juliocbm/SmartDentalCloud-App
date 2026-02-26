@@ -503,23 +503,4 @@
   }
 }
 
-// ===== Print =====
-
 // Email Modal: uses shared <app-send-email-modal>
-
-@media print {
-  .header-top,
-  .btn {
-    display: none !important;
-  }
-
-  .detail-container {
-    padding: 0;
-  }
-
-  .detail-header,
-  .info-section {
-    box-shadow: none;
-    border: 1px solid var(--border-primary);
-  }
-}

@@ -60,7 +60,8 @@ export class InvoiceDetailComponent implements OnInit {
   cancelObservaciones = signal('');
   satStatus = signal<CfdiSatStatus | null>(null);
 
-  // Email Modal State
+  // PDF & Email State
+  printLoading = signal(false);
   showEmailModal = signal(false);
   patientEmail = signal<string | null>(null);
   sendingEmail = signal(false);
@@ -134,8 +135,23 @@ export class InvoiceDetailComponent implements OnInit {
     this.location.back();
   }
 
-  printInvoice(): void {
-    window.print();
+  onPrint(): void {
+    const inv = this.invoice();
+    if (!inv || this.printLoading()) return;
+
+    this.printLoading.set(true);
+    this.invoicesService.downloadPdf(inv.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        window.URL.revokeObjectURL(url);
+        this.printLoading.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al generar PDF'));
+        this.printLoading.set(false);
+      }
+    });
   }
 
   openPaymentModal(): void {
@@ -333,7 +349,8 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   openEmailModal(): void {
-    if (!this.cfdi() || this.cfdiActionLoading()) return;
+    const inv = this.invoice();
+    if (!inv || this.sendingEmail()) return;
     this.sendingEmail.set(false);
     this.showEmailModal.set(true);
   }
@@ -343,13 +360,14 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   onSendEmail(email: string): void {
-    const cfdi = this.cfdi();
-    if (!cfdi) return;
+    const inv = this.invoice();
+    if (!inv) return;
 
     this.sendingEmail.set(true);
-    this.cfdiService.sendEmail(cfdi.id, { email, includeXml: true, includePdf: true }).subscribe({
+    this.invoicesService.sendEmail(inv.id, email).subscribe({
       next: () => {
-        this.notifications.success(`CFDI enviado a ${email}`);
+        const label = inv.cfdiUUID ? 'CFDI' : 'Factura';
+        this.notifications.success(`${label} enviada a ${email}`);
         this.sendingEmail.set(false);
         this.showEmailModal.set(false);
       },

@@ -306,6 +306,9 @@ sendingEmail = false
 |--------|---------|-----------------|-------------|-------------|
 | Recetas | `prescriptions.service.ts` | `prescription-detail.ts` | ✅ PDF server-side | ✅ Con modal |
 | Planes de Tratamiento | `treatment-plans.service.ts` | `treatment-plan-detail.ts` | ✅ PDF server-side | ✅ Con modal |
+| Facturas | `invoices.service.ts` | `invoice-detail.ts` | ✅ PDF server-side ¹ | ✅ Con modal ¹ |
+
+> ¹ El endpoint de facturas es **inteligente**: si la factura tiene un CFDI timbrado activo, genera/envía el PDF del CFDI (con XML adjunto en email). Si no, genera/envía un recibo sin validez fiscal. El frontend llama un solo endpoint y el backend decide.
 
 ---
 

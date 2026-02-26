@@ -18,9 +18,17 @@
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
-        <button class="btn btn-outline" (click)="printInvoice()">
-          <i class="fa-solid fa-print"></i>
+        <button class="btn btn-outline" (click)="onPrint()" [disabled]="printLoading()">
+          @if (printLoading()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          } @else {
+            <i class="fa-solid fa-print"></i>
+          }
           Imprimir
+        </button>
+        <button class="btn btn-outline" (click)="openEmailModal()" [disabled]="sendingEmail()">
+          <i class="fa-solid fa-envelope"></i>
+          Email
         </button>
       }
     </div>
@@ -496,8 +504,8 @@
 <!-- Email Modal -->
 @if (showEmailModal()) {
   <app-send-email-modal
-    title="Enviar CFDI por Email"
-    subtitle="Selecciona a dónde enviar el comprobante fiscal:"
+    [title]="invoice()?.cfdiUUID ? 'Enviar CFDI por Email' : 'Enviar Factura por Email'"
+    [subtitle]="invoice()?.cfdiUUID ? 'Selecciona a dónde enviar el comprobante fiscal:' : 'Selecciona a dónde enviar el recibo:'"
     [patientEmail]="patientEmail()"
     [sending]="sendingEmail()"
     (send)="onSendEmail($event)"

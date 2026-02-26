@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { InvoicesService } from '../../services/invoices.service';
+import { PatientsService } from '../../../patients/services/patients.service';
 import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG } from '../../models/invoice.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
@@ -15,12 +17,13 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 @Component({
   selector: 'app-invoice-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, SendEmailModalComponent],
   templateUrl: './invoice-list.html',
   styleUrl: './invoice-list.scss'
 })
 export class InvoiceListComponent implements OnInit, OnDestroy {
   private invoicesService = inject(InvoicesService);
+  private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private csvExport = inject(CsvExportService);
@@ -31,6 +34,13 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
   filteredInvoices = signal<Invoice[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
+
+  // PDF & Email
+  printLoadingId = signal<string | null>(null);
+  showEmailModal = signal(false);
+  emailModalInvoice = signal<Invoice | null>(null);
+  sendingEmail = signal(false);
+  patientEmail = signal<string | null>(null);
 
   // Filters
   searchTerm = signal('');
@@ -175,5 +185,60 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
       { header: 'Estado', accessor: (i) => INVOICE_STATUS_CONFIG[i.status]?.label || i.status },
       { header: 'Fecha Emisión', accessor: (i) => new Date(i.issuedAt).toLocaleDateString('es-MX') }
     ], 'facturas');
+  }
+
+  // === PDF & Email ===
+
+  onPrintFromList(invoice: Invoice): void {
+    if (this.printLoadingId()) return;
+    this.printLoadingId.set(invoice.id);
+    this.invoicesService.downloadPdf(invoice.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        window.URL.revokeObjectURL(url);
+        this.printLoadingId.set(null);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al generar PDF'));
+        this.printLoadingId.set(null);
+      }
+    });
+  }
+
+  openEmailFromList(invoice: Invoice): void {
+    this.emailModalInvoice.set(invoice);
+    this.patientEmail.set(null);
+    this.sendingEmail.set(false);
+    this.showEmailModal.set(true);
+    this.patientsService.getById(invoice.patientId).subscribe({
+      next: (patient) => this.patientEmail.set(patient.email || null),
+      error: () => this.patientEmail.set(null)
+    });
+  }
+
+  closeEmailModal(): void {
+    this.showEmailModal.set(false);
+    this.emailModalInvoice.set(null);
+  }
+
+  onSendEmail(email: string): void {
+    const invoice = this.emailModalInvoice();
+    if (!invoice) return;
+
+    this.sendingEmail.set(true);
+    this.invoicesService.sendEmail(invoice.id, email).subscribe({
+      next: () => {
+        const label = invoice.cfdiUUID ? 'CFDI' : 'Factura';
+        this.notifications.success(`${label} enviada a ${email}`);
+        this.sendingEmail.set(false);
+        this.showEmailModal.set(false);
+        this.emailModalInvoice.set(null);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.sendingEmail.set(false);
+      }
+    });
   }
 }

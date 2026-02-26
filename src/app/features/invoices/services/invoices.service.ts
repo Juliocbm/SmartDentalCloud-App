@@ -104,6 +104,20 @@ export class InvoicesService {
   }
 
   /**
+   * Descarga el PDF de una factura (recibo o CFDI según estado de timbrado)
+   */
+  downloadPdf(id: string): Observable<Blob> {
+    return this.api.getBlob(`${this.baseUrl}/${id}/pdf`);
+  }
+
+  /**
+   * Envía la factura por email (recibo o CFDI según estado de timbrado)
+   */
+  sendEmail(id: string, email: string): Observable<{ message: string }> {
+    return this.api.post<{ message: string }>(`${this.baseUrl}/${id}/send-email`, { email });
+  }
+
+  /**
    * Calcula totales de una lista de facturas
    */
   calculateTotals(invoices: Invoice[]) {
