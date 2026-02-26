@@ -185,36 +185,22 @@
               </td>
 
               <!-- Acciones -->
-              <td class="actions-column">
-                <div class="action-buttons">
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [routerLink]="['/users', user.id]"
-                  >
-                    <i class="fa-solid fa-eye"></i>
-                    Ver
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [routerLink]="['/users', user.id, 'edit']"
-                  >
-                    <i class="fa-solid fa-pen"></i>
-                    Editar
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [class.btn-warning]="user.isActive"
-                    [class.btn-success]="!user.isActive"
-                    (click)="toggleUserActive(user)"
-                  >
-                    @if (user.isActive) {
-                      <i class="fa-solid fa-toggle-on"></i>
-                    } @else {
-                      <i class="fa-solid fa-toggle-off"></i>
-                    }
-                    {{ user.isActive ? 'Desactivar' : 'Activar' }}
-                  </button>
-                </div>
+              <td class="actions-cell">
+                <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/users', user.id]">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/users', user.id, 'edit']">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button
+                  class="btn-icon"
+                  [class.btn-icon-toggle-on]="user.isActive"
+                  [class.btn-icon-toggle-off]="!user.isActive"
+                  [title]="user.isActive ? 'Desactivar' : 'Activar'"
+                  (click)="toggleUserActive(user)"
+                >
+                  <i class="fa-solid" [class.fa-toggle-on]="user.isActive" [class.fa-toggle-off]="!user.isActive"></i>
+                </button>
               </td>
             </tr>
           }

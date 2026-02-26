@@ -120,16 +120,10 @@
               </td>
 
               <!-- Acción -->
-              <td class="actions-column">
-                <div class="action-buttons">
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [routerLink]="['/consultation-notes/appointment', apt.id]"
-                  >
-                    <i class="fa-solid fa-file-medical"></i>
-                    Ver / Crear Nota
-                  </button>
-                </div>
+              <td class="actions-cell">
+                <button class="btn-icon btn-icon-notes" title="Ver / Crear Nota" [routerLink]="['/consultation-notes/appointment', apt.id]">
+                  <i class="fa-solid fa-file-medical"></i>
+                </button>
               </td>
             </tr>
           }

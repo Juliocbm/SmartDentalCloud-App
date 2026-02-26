@@ -163,23 +163,15 @@
               </td>
 
               <!-- Acciones -->
-              <td class="actions-column">
-                <div class="action-buttons">
-                  <button 
-                    class="btn btn-sm btn-outline" 
-                    [routerLink]="['/inventory/purchase-orders', order.id]">
-                    <i class="fa-solid fa-eye"></i>
-                    Ver
+              <td class="actions-cell">
+                <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/inventory/purchase-orders', order.id]">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                @if (order.status === 'Draft' || order.status === 'Sent') {
+                  <button class="btn-icon btn-icon-success" title="Recibir orden" [routerLink]="['/inventory/purchase-orders', order.id, 'receive']">
+                    <i class="fa-solid fa-box"></i>
                   </button>
-                  @if (order.status === 'Draft' || order.status === 'Sent') {
-                    <button 
-                      class="btn btn-sm btn-outline btn-success" 
-                      [routerLink]="['/inventory/purchase-orders', order.id, 'receive']">
-                      <i class="fa-solid fa-box"></i>
-                      Recibir
-                    </button>
-                  }
-                </div>
+                }
               </td>
             </tr>
           }

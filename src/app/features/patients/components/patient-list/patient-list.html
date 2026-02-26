@@ -163,48 +163,33 @@
           </td>
 
           <!-- Acciones -->
-          <td class="actions-column">
-            <div class="action-buttons">
-              <button
-                class="btn btn-sm btn-outline btn-success"
-                (click)="createAppointmentForPatient(patient)"
-                [disabled]="!patient.isActive"
-                [title]="!patient.isActive ? 'Paciente inactivo' : 'Agendar nueva cita'"
-              >
-                <i class="fa-solid fa-calendar-plus"></i>
-                Nueva Cita
-              </button>
-              <button 
-                class="btn btn-sm btn-outline" 
-                [routerLink]="['/patients', patient.id]"
-              >
-                <i class="fa-solid fa-eye"></i>
-                Ver
-              </button>
-              <button 
-                class="btn btn-sm btn-outline" 
-                [routerLink]="['/patients', patient.id, 'edit']"
-              >
-                <i class="fa-solid fa-pen"></i>
-                Editar
-              </button>
-              <button 
-                class="btn btn-sm btn-outline"
-                [class.btn-warning]="patient.isActive"
-                [class.btn-success]="!patient.isActive"
-                (click)="toggleActive(patient)"
-              >
-                <i class="fa-solid" [class.fa-toggle-on]="patient.isActive" [class.fa-toggle-off]="!patient.isActive"></i>
-                {{ patient.isActive ? 'Desactivar' : 'Activar' }}
-              </button>
-              <button 
-                class="btn btn-sm btn-outline btn-danger" 
-                (click)="deletePatient(patient)"
-              >
-                <i class="fa-solid fa-trash"></i>
-                Eliminar
-              </button>
-            </div>
+          <td class="actions-cell">
+            <button
+              class="btn-icon btn-icon-success"
+              (click)="createAppointmentForPatient(patient)"
+              [disabled]="!patient.isActive"
+              [title]="!patient.isActive ? 'Paciente inactivo' : 'Agendar nueva cita'"
+            >
+              <i class="fa-solid fa-calendar-plus"></i>
+            </button>
+            <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/patients', patient.id]">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+            <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/patients', patient.id, 'edit']">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button
+              class="btn-icon"
+              [class.btn-icon-toggle-on]="patient.isActive"
+              [class.btn-icon-toggle-off]="!patient.isActive"
+              [title]="patient.isActive ? 'Desactivar' : 'Activar'"
+              (click)="toggleActive(patient)"
+            >
+              <i class="fa-solid" [class.fa-toggle-on]="patient.isActive" [class.fa-toggle-off]="!patient.isActive"></i>
+            </button>
+            <button class="btn-icon btn-icon-danger" title="Eliminar" (click)="deletePatient(patient)">
+              <i class="fa-solid fa-trash"></i>
+            </button>
           </td>
         </tr>
         }

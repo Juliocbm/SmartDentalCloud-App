@@ -21,7 +21,7 @@ Todas las clases base viven en `src/styles/_components.scss`. **No redefinir** e
 | `.info-cell` | `_components.scss` | Celda compuesta: avatar + nombre + subtítulo |
 | `.avatar` | `_components.scss` | Círculo con ícono (40×40) |
 | `.badge` | `_components.scss` | Etiqueta de estado (success, error, warning, info, neutral) |
-| `.btn-icon` | `_components.scss` | Botón compacto solo ícono para acciones en tabla |
+| `.btn-icon` | `_components.scss` | Botón compacto 32×32 con borde, solo ícono + tooltip para acciones en tabla |
 
 ---
 
@@ -266,23 +266,9 @@ Variantes: `badge-success`, `badge-error`, `badge-warning`, `badge-info`, `badge
 ```
 
 ### 4.7 Celda de Acciones
-```html
-<td class="actions-column">
-  <div class="action-buttons">
-    <button class="btn btn-sm btn-outline" [routerLink]="['/items', item.id]">
-      <i class="fa-solid fa-eye"></i> Ver
-    </button>
-    <button class="btn btn-sm btn-outline" [routerLink]="['/items', item.id, 'edit']">
-      <i class="fa-solid fa-pen"></i> Editar
-    </button>
-    <button class="btn btn-sm btn-outline btn-danger" (click)="deleteItem(item)">
-      <i class="fa-solid fa-trash"></i> Eliminar
-    </button>
-  </div>
-</td>
-```
 
-Para acciones compactas (solo ícono): usar `btn-icon` + variantes:
+**Estándar único:** Todas las tablas usan `btn-icon` (32×32, borde, solo ícono) + variantes semánticas de hover + `title` tooltip. **NO** usar `btn btn-sm btn-outline` con texto en tablas.
+
 ```html
 <td class="actions-cell">
   <button class="btn-icon btn-icon-print" title="Imprimir" (click)="print(item)">
@@ -291,17 +277,41 @@ Para acciones compactas (solo ícono): usar `btn-icon` + variantes:
   <button class="btn-icon btn-icon-email" title="Enviar por email" (click)="email(item)">
     <i class="fa-solid fa-envelope"></i>
   </button>
-  <button class="btn-icon btn-icon-edit" title="Editar" (click)="edit(item)">
-    <i class="fa-solid fa-pen"></i>
-  </button>
-  <button class="btn-icon btn-icon-view" title="Ver" (click)="view(item)">
+  <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/items', item.id]">
     <i class="fa-solid fa-eye"></i>
   </button>
-  <button class="btn-icon btn-icon-delete" title="Eliminar" (click)="delete(item)">
+  <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/items', item.id, 'edit']">
+    <i class="fa-solid fa-pen"></i>
+  </button>
+  <button class="btn-icon btn-icon-danger" title="Eliminar" (click)="delete(item)">
     <i class="fa-solid fa-trash"></i>
   </button>
 </td>
 ```
+
+#### Variantes semánticas disponibles
+
+| Variante | Hover color | Uso |
+|----------|-------------|-----|
+| `btn-icon-view` | Info (azul) | Ver detalle |
+| `btn-icon-edit` | Primary (azul) | Editar |
+| `btn-icon-delete` | Error (rojo) | Eliminar |
+| `btn-icon-danger` | Error (rojo) + borde | Eliminar, cancelar (con color base rojo) |
+| `btn-icon-success` | Success (verde) + borde | Completar, agendar, recibir (con color base verde) |
+| `btn-icon-warning` | Warning (amarillo) + borde | Cancelar cita (con color base amarillo) |
+| `btn-icon-print` | Neutral (gris) | Imprimir/PDF |
+| `btn-icon-email` | Primary (azul) | Enviar por email |
+| `btn-icon-notes` | Info (azul) | Notas clínicas |
+| `btn-icon-toggle-on` | Success (verde) | Desactivar (estado activo) |
+| `btn-icon-toggle-off` | Error (rojo) | Activar (estado inactivo) |
+
+#### Reglas de acciones en tabla
+
+- **SIEMPRE** usar `<td class="actions-cell">` (NO `actions-column` con `<div class="action-buttons">`)
+- **SIEMPRE** usar `btn-icon` + variante semántica
+- **SIEMPRE** incluir `title="..."` como tooltip
+- **NUNCA** usar `btn btn-sm btn-outline` con texto en tablas
+- **Orden:** Print → Email → View → Edit → Toggle → Delete (de izquierda a derecha)
 
 ### 4.8 Filas Inactivas
 ```html
@@ -595,7 +605,7 @@ Orden de elementos dentro del `page-container`:
             .date-cell
             .amount-cell
             .text-muted
-            .actions-column > .action-buttons > .btn.btn-sm.btn-outline
+            .actions-cell > .btn-icon (.btn-icon-view | .btn-icon-edit | .btn-icon-danger | ...)
     .table-footer
       .pagination-info > strong
       .pagination-controls > .btn-page (.active)
@@ -612,8 +622,8 @@ Orden de elementos dentro del `page-container`:
 | `patient-list` | 10 | No | Ver, Editar, Toggle, Eliminar |
 | `service-list` | 10 | No | Editar, Eliminar |
 | `treatment-list` | 10 | No | Ver, Editar |
-| `treatment-plan-list` | 10 | No | Ver |
-| `prescription-list` | 10 | No | Ver Detalle (btn-icon) |
+| `treatment-plan-list` | 10 | No | Imprimir, Email, Editar, Ver |
+| `prescription-list` | 10 | No | Imprimir, Email, Ver |
 | `consultation-note-list` | 10 | No | Ver |
 | `user-list` | 10 | No | Ver, Editar, Eliminar |
 | `invoice-list` | 10 | No | Ver |

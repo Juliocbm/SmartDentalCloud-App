@@ -162,16 +162,10 @@
               </td>
 
               <!-- Acciones -->
-              <td class="actions-column">
-                <div class="action-buttons">
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [routerLink]="['/invoices', invoice.id]"
-                  >
-                    <i class="fa-solid fa-eye"></i>
-                    Ver
-                  </button>
-                </div>
+              <td class="actions-cell">
+                <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/invoices', invoice.id]">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
               </td>
             </tr>
           }

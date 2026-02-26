@@ -158,48 +158,26 @@
                     {{ getStatusConfig(appointment.status).label }}
                   </span>
                 </td>
-                <td class="actions-column">
-                  <div class="action-buttons">
-                    <button
-                      class="btn btn-sm btn-outline"
-                      [routerLink]="['/appointments', appointment.id]"
-                    >
-                      <i class="fa-solid fa-eye"></i>
-                      Ver
+                <td class="actions-cell">
+                  <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/appointments', appointment.id]">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                  @if (appointment.status === 'Scheduled' || appointment.status === 'Confirmed') {
+                    <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/appointments', appointment.id, 'edit']">
+                      <i class="fa-solid fa-pen"></i>
                     </button>
-                    @if (appointment.status === 'Scheduled' || appointment.status === 'Confirmed') {
-                      <button
-                        class="btn btn-sm btn-outline"
-                        [routerLink]="['/appointments', appointment.id, 'edit']"
-                      >
-                        <i class="fa-solid fa-pen"></i>
-                        Editar
-                      </button>
-                      <button
-                        class="btn btn-sm btn-outline btn-success"
-                        (click)="completeAppointment(appointment)"
-                      >
-                        <i class="fa-solid fa-check"></i>
-                        Completar
-                      </button>
-                      <button
-                        class="btn btn-sm btn-outline btn-warning"
-                        (click)="cancelAppointment(appointment)"
-                      >
-                        <i class="fa-solid fa-xmark"></i>
-                        Cancelar
-                      </button>
-                    }
-                    @if (appointment.status === 'Completed') {
-                      <button
-                        class="btn btn-sm btn-outline"
-                        [routerLink]="['/appointments', appointment.id, 'note']"
-                      >
-                        <i class="fa-solid fa-notes-medical"></i>
-                        Nota Clínica
-                      </button>
-                    }
-                  </div>
+                    <button class="btn-icon btn-icon-success" title="Completar" (click)="completeAppointment(appointment)">
+                      <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button class="btn-icon btn-icon-warning" title="Cancelar" (click)="cancelAppointment(appointment)">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  }
+                  @if (appointment.status === 'Completed') {
+                    <button class="btn-icon btn-icon-notes" title="Nota Clínica" [routerLink]="['/appointments', appointment.id, 'note']">
+                      <i class="fa-solid fa-notes-medical"></i>
+                    </button>
+                  }
                 </td>
               </tr>
             }

@@ -697,7 +697,7 @@ textarea.form-control {
   width: 32px;
   height: 32px;
   padding: 0;
-  border: none;
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
   background: transparent;
   color: var(--text-secondary);
@@ -766,6 +766,40 @@ textarea.form-control {
   &:hover:not(:disabled) {
     background: var(--primary-50);
     color: var(--primary-600);
+  }
+}
+
+.btn-icon-success {
+  color: var(--success-600);
+  
+  &:hover:not(:disabled) {
+    background: var(--success-50);
+    border-color: var(--success-500);
+  }
+}
+
+.btn-icon-warning {
+  color: var(--warning-600);
+  
+  &:hover:not(:disabled) {
+    background: var(--warning-50);
+    border-color: var(--warning-500);
+  }
+}
+
+.btn-icon-danger {
+  color: var(--error-600);
+  
+  &:hover:not(:disabled) {
+    background: var(--error-50);
+    border-color: var(--error-500);
+  }
+}
+
+.btn-icon-notes {
+  &:hover:not(:disabled) {
+    background: var(--info-50);
+    color: var(--info-600);
   }
 }
 

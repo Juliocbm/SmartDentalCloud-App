@@ -145,16 +145,10 @@
               </td>
 
               <!-- Factura -->
-              <td class="actions-column">
-                <div class="action-buttons">
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [routerLink]="['/invoices', payment.invoiceId]"
-                  >
-                    <i class="fa-solid fa-eye"></i>
-                    Ver Factura
-                  </button>
-                </div>
+              <td class="actions-cell">
+                <button class="btn-icon btn-icon-view" title="Ver factura" [routerLink]="['/invoices', payment.invoiceId]">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
               </td>
             </tr>
           }

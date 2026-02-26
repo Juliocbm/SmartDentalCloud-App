@@ -157,44 +157,30 @@
               </td>
 
               <!-- Acciones -->
-              <td class="actions-column">
-                <div class="action-buttons">
-                  <button
-                    class="btn btn-sm btn-outline btn-success"
-                    (click)="createAppointmentForDentist(dentist)"
-                    [disabled]="!dentist.isActive"
-                    [title]="!dentist.isActive ? 'Dentista inactivo' : 'Agendar nueva cita'"
-                  >
-                    <i class="fa-solid fa-calendar-plus"></i>
-                    Nueva Cita
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [routerLink]="['/users', dentist.id]"
-                    title="Ver perfil"
-                  >
-                    <i class="fa-solid fa-eye"></i>
-                    Ver
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline"
-                    (click)="editDentist(dentist.id)"
-                    title="Editar"
-                  >
-                    <i class="fa-solid fa-pen"></i>
-                    Editar
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [class.btn-warning]="dentist.isActive"
-                    [class.btn-success]="!dentist.isActive"
-                    (click)="toggleDentistActive(dentist)"
-                    [title]="dentist.isActive ? 'Desactivar dentista' : 'Activar dentista'"
-                  >
-                    <i class="fa-solid" [class.fa-toggle-on]="dentist.isActive" [class.fa-toggle-off]="!dentist.isActive"></i>
-                    {{ dentist.isActive ? 'Desactivar' : 'Activar' }}
-                  </button>
-                </div>
+              <td class="actions-cell">
+                <button
+                  class="btn-icon btn-icon-success"
+                  (click)="createAppointmentForDentist(dentist)"
+                  [disabled]="!dentist.isActive"
+                  [title]="!dentist.isActive ? 'Dentista inactivo' : 'Agendar nueva cita'"
+                >
+                  <i class="fa-solid fa-calendar-plus"></i>
+                </button>
+                <button class="btn-icon btn-icon-view" title="Ver perfil" [routerLink]="['/users', dentist.id]">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button class="btn-icon btn-icon-edit" title="Editar" (click)="editDentist(dentist.id)">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button
+                  class="btn-icon"
+                  [class.btn-icon-toggle-on]="dentist.isActive"
+                  [class.btn-icon-toggle-off]="!dentist.isActive"
+                  [title]="dentist.isActive ? 'Desactivar dentista' : 'Activar dentista'"
+                  (click)="toggleDentistActive(dentist)"
+                >
+                  <i class="fa-solid" [class.fa-toggle-on]="dentist.isActive" [class.fa-toggle-off]="!dentist.isActive"></i>
+                </button>
               </td>
             </tr>
           }

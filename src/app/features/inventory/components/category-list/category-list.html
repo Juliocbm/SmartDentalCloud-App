@@ -143,30 +143,16 @@
               </td>
 
               <!-- Acciones -->
-              <td class="actions-column">
-                <div class="action-buttons">
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [routerLink]="['/inventory/categories', category.id]"
-                  >
-                    <i class="fa-solid fa-eye"></i>
-                    Ver
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [routerLink]="['/inventory/categories', category.id, 'edit']"
-                  >
-                    <i class="fa-solid fa-pen"></i>
-                    Editar
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline btn-danger"
-                    (click)="deleteCategory(category)"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                    Eliminar
-                  </button>
-                </div>
+              <td class="actions-cell">
+                <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/inventory/categories', category.id]">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/inventory/categories', category.id, 'edit']">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="btn-icon btn-icon-danger" title="Eliminar" (click)="deleteCategory(category)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
               </td>
             </tr>
           }

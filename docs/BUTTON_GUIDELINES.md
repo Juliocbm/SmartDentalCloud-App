@@ -264,19 +264,43 @@ Los formularios usan botones en el `<div actions class="header-form-actions">` d
 
 ### **Acciones en Tablas**
 
+Todas las acciones en tablas usan **`btn-icon`** (32×32, borde, solo ícono) + variantes semánticas + `title` tooltip. **NUNCA** usar `btn btn-sm btn-outline` con texto en tablas.
+
 #### ✅ CORRECTO:
 ```html
-<div class="action-buttons">
-  <button class="btn btn-sm btn-primary" (click)="edit(item)">
+<td class="actions-cell">
+  <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/items', item.id]">
+    <i class="fa-solid fa-eye"></i>
+  </button>
+  <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/items', item.id, 'edit']">
     <i class="fa-solid fa-pen"></i>
-    Editar
   </button>
-  <button class="btn btn-sm btn-danger" (click)="delete(item)">
+  <button class="btn-icon btn-icon-danger" title="Eliminar" (click)="delete(item)">
     <i class="fa-solid fa-trash"></i>
-    Eliminar
   </button>
-</div>
+</td>
 ```
+
+#### ❌ INCORRECTO:
+```html
+<!-- ❌ btn btn-sm btn-outline con texto en tablas -->
+<button class="btn btn-sm btn-outline">
+  <i class="fa-solid fa-eye"></i> Ver
+</button>
+```
+
+#### Variantes disponibles:
+| Variante | Color | Uso |
+|----------|-------|-----|
+| `btn-icon-view` | Info | Ver detalle |
+| `btn-icon-edit` | Primary | Editar |
+| `btn-icon-delete` / `btn-icon-danger` | Error | Eliminar |
+| `btn-icon-success` | Success | Completar, agendar cita |
+| `btn-icon-warning` | Warning | Cancelar cita |
+| `btn-icon-print` | Neutral | Imprimir PDF |
+| `btn-icon-email` | Primary | Enviar email |
+| `btn-icon-notes` | Info | Notas clínicas |
+| `btn-icon-toggle-on` / `btn-icon-toggle-off` | Success/Error | Activar/Desactivar |
 
 ---
 
