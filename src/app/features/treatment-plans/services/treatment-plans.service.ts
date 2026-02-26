@@ -47,6 +47,10 @@ export class TreatmentPlansService {
     return this.api.post<TreatmentPlan>(`/treatment-plans/${id}/start`, {});
   }
 
+  complete(id: string): Observable<TreatmentPlan> {
+    return this.api.post<TreatmentPlan>(`/treatment-plans/${id}/complete`, {});
+  }
+
   updateItemProgress(planId: string, itemId: string, request: UpdateItemProgressRequest): Observable<TreatmentPlanItem> {
     return this.api.put<TreatmentPlanItem>(`/treatment-plans/${planId}/items/${itemId}/progress`, request);
   }

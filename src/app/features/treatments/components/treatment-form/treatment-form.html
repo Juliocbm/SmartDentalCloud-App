@@ -61,6 +61,7 @@
             <div class="form-group">
               <app-patient-autocomplete
                 [selectedPatientId]="selectedPatient()?.id || null"
+                [selectedPatientName]="selectedPatient()?.name || null"
                 [required]="true"
                 [disabled]="loading()"
                 (patientSelected)="onPatientSelected($event)"
@@ -73,13 +74,15 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">
-                Servicio <span class="required">*</span>
-              </label>
-              <app-service-select
+              <app-service-autocomplete
+                [selectedServiceId]="selectedService()?.id || null"
+                [selectedServiceName]="selectedService()?.name || null"
+                [required]="true"
                 [disabled]="loading()"
                 (serviceSelected)="onServiceSelected($event)"
-              />
+              >
+                Servicio
+              </app-service-autocomplete>
               @if (isFieldInvalid('serviceId')) {
                 <span class="error-message">Seleccione un servicio del catálogo</span>
               }

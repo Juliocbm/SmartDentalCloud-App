@@ -49,7 +49,7 @@ export class TreatmentPlanDashboardComponent implements OnInit {
   approvalRate = computed(() => {
     const c = this.statusCounts();
     const decided = c.approved + c.rejected + c.inProgress + c.completed;
-    const total = decided + c.pendingApproval;
+    const total = decided + c.draft + c.pendingApproval;
     if (total === 0) return 0;
     return Math.round((decided / total) * 100);
   });
@@ -60,7 +60,7 @@ export class TreatmentPlanDashboardComponent implements OnInit {
 
   pendingApprovalPlans = computed(() => {
     return this.plans()
-      .filter(p => p.status === TreatmentPlanStatus.PendingApproval)
+      .filter(p => p.status === TreatmentPlanStatus.Draft || p.status === TreatmentPlanStatus.PendingApproval)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   });
 

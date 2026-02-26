@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
-import { ServiceSelectComponent } from '../../../invoices/components/service-select/service-select';
+import { ServiceAutocompleteComponent } from '../../../../shared/components/service-autocomplete/service-autocomplete';
 import { TreatmentsService } from '../../services/treatments.service';
 import { TreatmentStatus, SURFACE_OPTIONS, QUADRANT_OPTIONS } from '../../models/treatment.models';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
@@ -21,7 +21,7 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
     ReactiveFormsModule,
     PageHeaderComponent,
     PatientAutocompleteComponent,
-    ServiceSelectComponent
+    ServiceAutocompleteComponent
   ],
   templateUrl: './treatment-form.html',
   styleUrl: './treatment-form.scss'
@@ -112,6 +112,19 @@ export class TreatmentFormComponent implements OnInit {
             name: treatment.patientName || '',
             email: '',
             phone: ''
+          });
+        }
+
+        if (treatment.serviceName) {
+          this.selectedService.set({
+            id: treatment.serviceId,
+            name: treatment.serviceName || '',
+            cost: treatment.serviceCost || 0,
+            durationMinutes: treatment.duration || null,
+            description: null,
+            isActive: true,
+            claveProdServ: null,
+            claveUnidad: null
           });
         }
 

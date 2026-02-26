@@ -109,6 +109,11 @@ export class TreatmentPlanDetailComponent implements OnInit {
     return this.plan()?.status === TreatmentPlanStatus.Approved;
   }
 
+  canComplete(): boolean {
+    const p = this.plan();
+    return p?.status === TreatmentPlanStatus.InProgress && this.getProgressPercentage() >= 100;
+  }
+
   async onApprove(): Promise<void> {
     const confirmed = await this.notifications.confirm('¿Está seguro de aprobar este plan de tratamiento?');
     if (!confirmed) return;
@@ -179,6 +184,27 @@ export class TreatmentPlanDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error starting plan:', err);
+        this.notifications.error(getApiErrorMessage(err));
+        this.actionLoading.set(false);
+      }
+    });
+  }
+
+  async onComplete(): Promise<void> {
+    const confirmed = await this.notifications.confirm('¿Marcar este plan de tratamiento como completado?');
+    if (!confirmed) return;
+
+    this.actionLoading.set(true);
+    const planId = this.plan()!.id;
+
+    this.plansService.complete(planId).subscribe({
+      next: () => {
+        this.notifications.success('Plan de tratamiento completado exitosamente.');
+        this.loadPlan(planId);
+        this.actionLoading.set(false);
+      },
+      error: (err) => {
+        this.logger.error('Error completing plan:', err);
         this.notifications.error(getApiErrorMessage(err));
         this.actionLoading.set(false);
       }

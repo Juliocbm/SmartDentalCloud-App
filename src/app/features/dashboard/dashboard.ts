@@ -36,14 +36,17 @@ export class DashboardComponent implements OnInit {
     this.data()?.treatments.filter(t => t.status === 'InProgress').length ?? 0
   );
   pendingApprovalCount = computed(() =>
-    this.data()?.treatmentPlans.filter(p => p.status === 'PendingApproval').length ?? 0
+    this.data()?.treatmentPlans.filter(p => p.status === 'Draft' || p.status === 'PendingApproval').length ?? 0
   );
-  lowStockCount = computed(() => this.data()?.inventory.lowStockProducts ?? 0);
+  lowStockCount = computed(() => {
+    const inv = this.data()?.inventory;
+    return (inv?.lowStockProducts ?? 0) + (inv?.outOfStockProducts ?? 0);
+  });
 
   upcomingAppointments = computed(() => this.data()?.upcomingAppointments ?? []);
   pendingPlans = computed(() =>
     this.data()?.treatmentPlans
-      .filter(p => p.status === 'PendingApproval')
+      .filter(p => p.status === 'Draft' || p.status === 'PendingApproval')
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 8) ?? []
   );

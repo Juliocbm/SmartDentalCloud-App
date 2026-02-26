@@ -33,6 +33,12 @@
           Iniciar Plan
         </button>
       }
+      @if (canComplete()) {
+        <button class="btn btn-outline btn-success" (click)="onComplete()" [disabled]="actionLoading()">
+          <i class="fa-solid fa-circle-check"></i>
+          Completar Plan
+        </button>
+      }
     </div>
   </app-page-header>
 
