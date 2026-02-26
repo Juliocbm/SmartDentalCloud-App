@@ -285,11 +285,17 @@ Variantes: `badge-success`, `badge-error`, `badge-warning`, `badge-info`, `badge
 Para acciones compactas (solo ícono): usar `btn-icon` + variantes:
 ```html
 <td class="actions-cell">
-  <button class="btn-icon btn-icon-view" title="Ver" (click)="view(item)">
-    <i class="fa-solid fa-eye"></i>
+  <button class="btn-icon btn-icon-print" title="Imprimir" (click)="print(item)">
+    <i class="fa-solid fa-print"></i>
+  </button>
+  <button class="btn-icon btn-icon-email" title="Enviar por email" (click)="email(item)">
+    <i class="fa-solid fa-envelope"></i>
   </button>
   <button class="btn-icon btn-icon-edit" title="Editar" (click)="edit(item)">
     <i class="fa-solid fa-pen"></i>
+  </button>
+  <button class="btn-icon btn-icon-view" title="Ver" (click)="view(item)">
+    <i class="fa-solid fa-eye"></i>
   </button>
   <button class="btn-icon btn-icon-delete" title="Eliminar" (click)="delete(item)">
     <i class="fa-solid fa-trash"></i>

@@ -755,6 +755,20 @@ textarea.form-control {
   }
 }
 
+.btn-icon-print {
+  &:hover:not(:disabled) {
+    background: var(--neutral-100);
+    color: var(--neutral-700);
+  }
+}
+
+.btn-icon-email {
+  &:hover:not(:disabled) {
+    background: var(--primary-50);
+    color: var(--primary-600);
+  }
+}
+
 // ===== TABLAS =====
 .table-container {
   background: var(--surface-primary);
