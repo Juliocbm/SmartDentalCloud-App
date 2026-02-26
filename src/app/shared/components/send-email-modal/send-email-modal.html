@@ -1,0 +1,67 @@
+<app-modal
+  [title]="title()"
+  [icon]="icon()"
+  size="sm"
+  (closed)="onClose()">
+
+  <div class="email-modal-body">
+    <p class="email-modal-description">{{ subtitle() }}</p>
+
+    <div class="email-options">
+      @if (patientEmail()) {
+        <label class="email-option" [class.selected]="emailOption() === 'patient'">
+          <input
+            type="radio"
+            name="emailOption"
+            value="patient"
+            [checked]="emailOption() === 'patient'"
+            (change)="emailOption.set('patient')" />
+          <div class="email-option-content">
+            <span class="email-option-label">Email del paciente</span>
+            <span class="email-option-value">{{ patientEmail() }}</span>
+          </div>
+        </label>
+      }
+
+      <label class="email-option" [class.selected]="emailOption() === 'custom'">
+        <input
+          type="radio"
+          name="emailOption"
+          value="custom"
+          [checked]="emailOption() === 'custom'"
+          (change)="emailOption.set('custom')" />
+        <div class="email-option-content">
+          <span class="email-option-label">Otro email</span>
+        </div>
+      </label>
+    </div>
+
+    @if (emailOption() === 'custom') {
+      <div class="form-group">
+        <label class="form-label">Email <span class="required">*</span></label>
+        <input
+          type="email"
+          class="form-input"
+          placeholder="correo@ejemplo.com"
+          [ngModel]="customEmail()"
+          (ngModelChange)="customEmail.set($event)" />
+      </div>
+    }
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-outline" (click)="onClose()" [disabled]="sending()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button class="btn btn-outline btn-success" (click)="onConfirm()" [disabled]="sending() || !isEmailValid()">
+      @if (sending()) {
+        <span class="btn-spinner"></span>
+        Enviando...
+      } @else {
+        <i class="fa-solid fa-paper-plane"></i>
+        Enviar
+      }
+    </button>
+  </div>
+</app-modal>

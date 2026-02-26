@@ -9,6 +9,9 @@ import {
 } from '../../models/prescription.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
+import { PatientsService } from '../../../patients/services/patients.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { TenantSettings } from '../../../settings/models/settings.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -16,7 +19,7 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 @Component({
   selector: 'app-prescription-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent],
   templateUrl: './prescription-detail.html',
   styleUrl: './prescription-detail.scss'
 })
@@ -26,6 +29,8 @@ export class PrescriptionDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private prescriptionsService = inject(PrescriptionsService);
+  private patientsService = inject(PatientsService);
+  private notifications = inject(NotificationService);
   private settingsService = inject(SettingsService);
   private location = inject(Location);
 
@@ -40,6 +45,11 @@ export class PrescriptionDetailComponent implements OnInit {
   clinicSettings = signal<TenantSettings | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+
+  // Email Modal State
+  showEmailModal = signal(false);
+  patientEmail = signal<string | null>(null);
+  sendingEmail = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -68,6 +78,7 @@ export class PrescriptionDetailComponent implements OnInit {
           expiresAt: data.expiresAt ? new Date(data.expiresAt) : undefined
         });
         this.loading.set(false);
+        this.loadPatientEmail(data.patientId);
       },
       error: (err) => {
         this.error.set(getApiErrorMessage(err));
@@ -112,5 +123,40 @@ export class PrescriptionDetailComponent implements OnInit {
 
   printPrescription(): void {
     window.print();
+  }
+
+  // Email
+  private loadPatientEmail(patientId: string): void {
+    this.patientsService.getById(patientId).subscribe({
+      next: (patient) => this.patientEmail.set(patient.email || null),
+      error: () => this.patientEmail.set(null)
+    });
+  }
+
+  openEmailModal(): void {
+    this.sendingEmail.set(false);
+    this.showEmailModal.set(true);
+  }
+
+  closeEmailModal(): void {
+    this.showEmailModal.set(false);
+  }
+
+  onSendEmail(email: string): void {
+    const rx = this.prescription();
+    if (!rx) return;
+
+    this.sendingEmail.set(true);
+    this.prescriptionsService.sendEmail(rx.id, { email }).subscribe({
+      next: () => {
+        this.notifications.success(`Receta enviada a ${email}`);
+        this.sendingEmail.set(false);
+        this.showEmailModal.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.sendingEmail.set(false);
+      }
+    });
   }
 }

@@ -13,14 +13,14 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
-import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { PatientsService } from '../../../patients/services/patients.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, ModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })
@@ -62,8 +62,6 @@ export class InvoiceDetailComponent implements OnInit {
 
   // Email Modal State
   showEmailModal = signal(false);
-  emailOption = signal<'patient' | 'custom'>('patient');
-  customEmail = signal('');
   patientEmail = signal<string | null>(null);
   sendingEmail = signal(false);
 
@@ -336,8 +334,6 @@ export class InvoiceDetailComponent implements OnInit {
 
   openEmailModal(): void {
     if (!this.cfdi() || this.cfdiActionLoading()) return;
-    this.emailOption.set(this.patientEmail() ? 'patient' : 'custom');
-    this.customEmail.set('');
     this.sendingEmail.set(false);
     this.showEmailModal.set(true);
   }
@@ -346,22 +342,10 @@ export class InvoiceDetailComponent implements OnInit {
     this.showEmailModal.set(false);
   }
 
-  getSelectedEmail(): string {
-    return this.emailOption() === 'patient'
-      ? (this.patientEmail() ?? '')
-      : this.customEmail().trim();
-  }
-
-  isEmailValid(): boolean {
-    const email = this.getSelectedEmail();
-    return !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  confirmSendEmail(): void {
+  onSendEmail(email: string): void {
     const cfdi = this.cfdi();
-    if (!cfdi || !this.isEmailValid()) return;
+    if (!cfdi) return;
 
-    const email = this.getSelectedEmail();
     this.sendingEmail.set(true);
     this.cfdiService.sendEmail(cfdi.id, { email, includeXml: true, includePdf: true }).subscribe({
       next: () => {

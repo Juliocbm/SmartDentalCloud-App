@@ -22,4 +22,8 @@ export class PrescriptionsService {
   create(request: CreatePrescriptionRequest): Observable<Prescription> {
     return this.api.post<Prescription>('/prescriptions', request);
   }
+
+  sendEmail(id: string, request: { email: string }): Observable<{ message: string }> {
+    return this.api.post<{ message: string }>(`/prescriptions/${id}/send-email`, request);
+  }
 }
