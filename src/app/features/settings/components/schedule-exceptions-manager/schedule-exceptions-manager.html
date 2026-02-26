@@ -23,7 +23,7 @@
       <i class="fa-solid fa-calendar-check"></i>
       <h3>No hay excepciones configuradas</h3>
       <p>Agrega días festivos, vacaciones o bloqueos para gestionar excepciones al horario regular</p>
-      <button class="btn btn-primary" (click)="openCreateModal()">
+      <button class="btn btn-outline btn-success" (click)="openCreateModal()">
         <i class="fa-solid fa-plus"></i>
         Nueva Excepción
       </button>
@@ -240,7 +240,7 @@
       </button>
       <button
         type="button"
-        class="btn btn-primary"
+        class="btn btn-outline btn-success"
         [disabled]="!isFormValid() || saving()"
         (click)="saveException()">
         @if (saving()) {

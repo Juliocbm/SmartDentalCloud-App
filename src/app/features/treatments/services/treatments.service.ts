@@ -6,7 +6,7 @@ import { TreatmentFollowUp, CreateFollowUpRequest, UpdateFollowUpRequest } from 
 import { TreatmentMaterial, CreateTreatmentMaterialRequest } from '../models/treatment-material.models';
 import { TreatmentSession, CreateSessionRequest } from '../models/treatment-session.models';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class TreatmentsService {
   private api = inject(ApiService);
 

@@ -1371,11 +1371,19 @@ textarea.form-control {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   padding: var(--spacing-lg) var(--spacing-xl);
   border-top: 1px solid var(--border-primary);
   background: var(--surface-secondary);
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+
+  [modal-footer] {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    width: 100%;
+  }
 
   &:empty {
     display: none;

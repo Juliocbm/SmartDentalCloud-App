@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -10,6 +10,9 @@ import { Patient } from '../../models/patient.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
+import { AppointmentFormContextService } from '../../../appointments/services/appointment-form-context.service';
+import { PATIENT_APPOINTMENT_CONTEXT } from '../../../appointments/models/appointment-form-context.model';
+import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
@@ -24,6 +27,8 @@ export class PatientListComponent implements OnInit, OnDestroy {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private csvExport = inject(CsvExportService);
+  private router = inject(Router);
+  private appointmentContextService = inject(AppointmentFormContextService);
   private searchSubject = new Subject<string>();
 
   patients = signal<Patient[]>([]);
@@ -188,6 +193,19 @@ export class PatientListComponent implements OnInit, OnDestroy {
     }
     
     return pages;
+  }
+
+  createAppointmentForPatient(patient: Patient): void {
+    if (!patient.isActive) {
+      this.notifications.warning('No se pueden crear citas para pacientes inactivos.');
+      return;
+    }
+
+    this.appointmentContextService.setContext({
+      ...PATIENT_APPOINTMENT_CONTEXT(patient.id, this.getFullName(patient)),
+      returnUrl: ROUTES.PATIENTS
+    });
+    this.router.navigate(['/appointments/new']);
   }
 
   exportToCsv(): void {

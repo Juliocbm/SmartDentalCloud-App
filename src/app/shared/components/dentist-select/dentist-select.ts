@@ -50,7 +50,9 @@ export class DentistSelectComponent implements OnInit, OnChanges {
         this.dentists.set(dentists);
         this.loading.set(false);
         if (this.selectedDentistId) {
-          this.selectControl.setValue(this.selectedDentistId, { emitEvent: false });
+          setTimeout(() => {
+            this.selectControl.setValue(this.selectedDentistId, { emitEvent: false });
+          });
         }
       },
       error: (error) => {

@@ -527,7 +527,25 @@ ContextService (no específico)
 dentistCtx (inconsistente)
 ```
 
-### 2. Usar Constantes Centralizadas para Rutas
+### 2. No Listar Servicios `providedIn: 'root'` en Route Providers
+
+```typescript
+// ✅ Bueno — El servicio es singleton, Angular lo resuelve automáticamente
+@Injectable({ providedIn: 'root' })
+export class FeatureFormContextService { ... }
+
+// En la ruta, NO incluirlo en providers
+export const ROUTES: Routes = [{
+  path: '', providers: [OtherScopedService], children: [...]
+}];
+
+// ❌ Malo — Crea instancia duplicada que hace shadow al singleton
+export const ROUTES: Routes = [{
+  path: '', providers: [FeatureFormContextService], children: [...]
+}];
+```
+
+### 3. Usar Constantes Centralizadas para Rutas
 
 ```typescript
 // ✅ Bueno - Usa constantes de core/constants/routes.constants.ts
@@ -635,13 +653,54 @@ navigateToForm(item: Item): void {
 
 ## Troubleshooting
 
+### ⚠️ CRÍTICO: Instancias Duplicadas por Route Providers
+
+**Síntomas:** `setContext()` se llama con datos correctos, pero `getCurrentContext()` en el formulario destino devuelve el contexto por defecto (nulls). No hay `resetContext()` intermedio.
+
+**Causa raíz:** El servicio de contexto (`providedIn: 'root'`) está **también** listado en los `providers` de una ruta lazy-loaded. Esto crea una **segunda instancia** del servicio dentro del injector de esa ruta, que hace shadow sobre el singleton root.
+
+```typescript
+// ❌ INCORRECTO — Crea instancia duplicada que shadowed al singleton root
+export const FEATURE_ROUTES: Routes = [
+  {
+    path: '',
+    providers: [
+      FeatureService,
+      ContextService  // ❌ Ya es providedIn: 'root', NO listar aquí
+    ],
+    children: [...]
+  }
+];
+
+// ✅ CORRECTO — Solo listar servicios que NO son providedIn: 'root'
+export const FEATURE_ROUTES: Routes = [
+  {
+    path: '',
+    providers: [
+      FeatureService  // ✅ Solo servicios scoped a la ruta
+      // ContextService es providedIn: 'root', no necesita estar aquí
+    ],
+    children: [...]
+  }
+];
+```
+
+**Regla:** Los servicios con `providedIn: 'root'` **NUNCA** deben aparecer en `providers` de rutas. Si necesitan estar disponibles en una ruta lazy-loaded, Angular ya los resuelve desde el injector root automáticamente.
+
+**Diagnóstico rápido:**
+1. Buscar el servicio en archivos `*.routes.ts`: si aparece en `providers`, ese es el problema
+2. Verificar que el servicio tenga `providedIn: 'root'` en su `@Injectable`
+3. Si ambos son verdad → eliminar del array `providers`
+
+---
+
 ### Problema: El contexto no se aplica
 
 **Síntomas:** El formulario no muestra las preselecciones
 
 **Causas comunes:**
 1. No se llamó `setContext()` antes de navegar
-2. El servicio no está inyectado correctamente
+2. El servicio está listado en route-level `providers` (ver sección anterior)
 3. El contexto se resetea antes de leerlo
 
 **Solución:**
@@ -782,5 +841,5 @@ El **Patrón de Servicio de Contexto** proporciona una solución profesional, ty
 ---
 
 **Última actualización:** Febrero 2026  
-**Versión:** 1.0  
+**Versión:** 1.1 — Agregada sección crítica sobre instancias duplicadas por route providers  
 **Autor:** SmartDental Development Team

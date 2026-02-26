@@ -81,7 +81,7 @@
       <i class="fa-solid fa-times"></i>
       Cancelar
     </button>
-    <button type="button" class="btn btn-primary" (click)="onConfirm()" [disabled]="!isItemValid()">
+    <button type="button" class="btn btn-outline btn-success" (click)="onConfirm()" [disabled]="!isItemValid()">
       <i class="fa-solid fa-check"></i>
       {{ isEditing() ? 'Guardar Cambios' : 'Agregar Producto' }}
     </button>

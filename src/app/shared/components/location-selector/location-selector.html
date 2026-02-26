@@ -5,7 +5,7 @@
     }
     <select
       class="form-control"
-      [ngModel]="locationId()"
+      [ngModel]="locationId() ?? ''"
       (ngModelChange)="onSelectionChange($event)"
     >
       <option value="">— Todas las sucursales —</option>

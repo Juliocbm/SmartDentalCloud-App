@@ -55,13 +55,13 @@ Componente padre
       <i class="fa-solid fa-times"></i>
       Cancelar
     </button>
-    <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading() || form.invalid">
+    <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading() || form.invalid">
       @if (loading()) {
         <span class="btn-spinner"></span>
         Guardando...
       } @else {
-        <i class="fa-solid fa-check"></i>
-        Confirmar
+        <i class="fa-solid fa-plus"></i>
+        Crear {Entidad}
       }
     </button>
   </div>
@@ -332,7 +332,7 @@ export class MiModalComponent implements ModalComponentBase<MiModalData, boolean
 [Cancelar]  [Acción Principal]
 ```
 - **Cancelar** siempre a la **izquierda** (`btn btn-outline`)
-- **Acción principal** siempre a la **derecha** (`btn btn-primary`)
+- **Acción principal** siempre a la **derecha** (`btn btn-outline btn-success` para crear/guardar, `btn btn-primary` para confirmar)
 
 ### Botón Cancelar (estándar)
 ```html
@@ -344,13 +344,13 @@ export class MiModalComponent implements ModalComponentBase<MiModalData, boolean
 
 ### Botón Acción Principal (con loading state)
 ```html
-<button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="loading() || form.invalid">
+<button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading() || form.invalid">
   @if (loading()) {
     <span class="btn-spinner"></span>
     Guardando...
   } @else {
-    <i class="fa-solid fa-check"></i>
-    Confirmar
+    <i class="fa-solid fa-plus"></i>
+    Crear {Entidad}
   }
 </button>
 ```
@@ -359,9 +359,10 @@ export class MiModalComponent implements ModalComponentBase<MiModalData, boolean
 
 | Contexto | Clase | Icono | Texto |
 |----------|-------|-------|-------|
-| Crear/Guardar | `btn-primary` | `fa-check` | "Confirmar", "Guardar" |
+| Crear | `btn-outline btn-success` | `fa-plus` | "Crear {Entidad}", "Registrar {Entidad}" |
+| Guardar (edición) | `btn-outline btn-success` | `fa-floppy-disk` | "Guardar Cambios" |
 | Eliminar | `btn-danger` | `fa-trash` | "Eliminar" |
-| Confirmar acción | `btn-primary` | `fa-check` | "Confirmar" |
+| Confirmar acción simple | `btn-primary` | `fa-check` | "Confirmar" |
 
 ---
 
@@ -390,7 +391,7 @@ export class MiModalComponent implements ModalComponentBase<MiModalData, boolean
 
     <div modal-footer>
       <button class="btn btn-outline" (click)="showConfirmModal.set(false)">Cancelar</button>
-      <button class="btn btn-primary" (click)="confirm()">Confirmar</button>
+      <button class="btn btn-outline btn-success" (click)="confirm()">Confirmar</button>
     </div>
   </app-modal>
 }
@@ -403,7 +404,7 @@ export class MiModalComponent implements ModalComponentBase<MiModalData, boolean
 - ✅ Siempre usar `<app-modal>` como shell visual
 - ✅ Implementar `ModalComponentBase<T, R>` para modales programáticos
 - ✅ Tipar `modalData` y el resultado de `modalRef.close(result)`
-- ✅ Usar `btn btn-outline` para Cancelar, `btn btn-primary` para acción principal
+- ✅ Usar `btn btn-outline` para Cancelar, `btn btn-outline btn-success` para crear/guardar
 - ✅ Incluir icono + texto en los botones del footer
 - ✅ Usar `<span class="btn-spinner"></span>` para estado de carga (NO `fa-spinner fa-spin`)
 - ✅ Deshabilitar botones durante `loading()`
@@ -417,7 +418,7 @@ export class MiModalComponent implements ModalComponentBase<MiModalData, boolean
 - ❌ NO crear modales inline con HTML custom (overlay + container + header)
 - ❌ NO duplicar estilos de `.modal-overlay`, `.modal-header`, `.modal-footer` en SCSS de componentes
 - ❌ NO usar `.close-btn` — usar `showCloseButton` input del componente
-- ❌ NO usar `btn-secondary` o `btn-success` en footer — usar `btn-outline` + `btn-primary`
+- ❌ NO usar `btn-secondary` sólido en footer — usar `btn-outline` + `btn-outline btn-success`
 - ❌ NO agregar clase custom al `<div modal-footer>` (el global ya maneja layout)
 - ❌ NO usar `z-index` custom — el componente y `_components.scss` lo manejan
 - ❌ NO usar `@keyframes slideIn` local — las animaciones son globales

@@ -197,7 +197,7 @@
               }
             </h3>
             @if (canRegisterPayment()) {
-              <button class="btn btn-sm btn-primary" (click)="openPaymentModal()">
+              <button class="btn btn-sm btn-outline btn-success" (click)="openPaymentModal()">
                 <i class="fa-solid fa-plus"></i>
                 Registrar Pago
               </button>
@@ -256,7 +256,7 @@
             <div class="cfdi-actions">
               @if (canGenerateCfdi()) {
                 <button
-                  class="btn btn-sm btn-primary"
+                  class="btn btn-sm btn-outline btn-success"
                   [disabled]="cfdiActionLoading()"
                   (click)="generateCfdi()"
                 >
@@ -551,7 +551,7 @@
         <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button class="btn btn-primary" (click)="confirmSendEmail()" [disabled]="sendingEmail() || !isEmailValid()">
+      <button class="btn btn-outline btn-success" (click)="confirmSendEmail()" [disabled]="sendingEmail() || !isEmailValid()">
         @if (sendingEmail()) {
           <span class="btn-spinner"></span>
           Enviando...

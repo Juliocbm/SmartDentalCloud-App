@@ -7,7 +7,7 @@ import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentFormContextService } from '../../services/appointment-form-context.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
-import { DentistSelectComponent } from '../../../../shared/components/dentist-select/dentist-select';
+import { DentistAutocompleteComponent } from '../../../../shared/components/dentist-autocomplete/dentist-autocomplete';
 import { LocationSelectorComponent } from '../../../../shared/components/location-selector/location-selector';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
@@ -26,7 +26,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
     CommonModule,
     ReactiveFormsModule,
     PatientAutocompleteComponent,
-    DentistSelectComponent,
+    DentistAutocompleteComponent,
     LocationSelectorComponent,
     PageHeaderComponent
   ],

@@ -266,7 +266,7 @@
                 </div>
                 <div class="form-actions-right">
                   <button
-                    class="btn btn-primary btn-sm"
+                    class="btn btn-outline btn-success btn-sm"
                     [disabled]="savingMedical()"
                     (click)="saveMedicalHistory()"
                   >
@@ -324,7 +324,7 @@
               <i class="fa-solid fa-heartbeat"></i>
               <h3>Sin Historia Médica</h3>
               <p>Este paciente no tiene información médica registrada</p>
-              <button class="btn btn-primary" (click)="toggleEditMedical()">
+              <button class="btn btn-outline btn-success" (click)="toggleEditMedical()">
                 <i class="fa-solid fa-plus"></i>
                 Agregar Historia Médica
               </button>
@@ -394,7 +394,7 @@
               </div>
               <div class="form-actions-right">
                 <button
-                  class="btn btn-primary btn-sm"
+                  class="btn btn-outline btn-success btn-sm"
                   [disabled]="savingTax() || !taxId().trim() || !legalName().trim()"
                   (click)="saveTaxInfo()"
                 >
@@ -428,7 +428,7 @@
                 <i class="fa-solid fa-file-invoice"></i>
                 <h3>Sin Datos Fiscales</h3>
                 <p>Este paciente no tiene información fiscal registrada. Es necesaria para generar CFDI.</p>
-                <button class="btn btn-primary" (click)="toggleEditTax()">
+                <button class="btn btn-outline btn-success" (click)="toggleEditTax()">
                   <i class="fa-solid fa-plus"></i>
                   Agregar Datos Fiscales
                 </button>
@@ -702,7 +702,7 @@
               <div class="form-actions-right">
                 <button
                   type="button"
-                  class="btn btn-primary btn-sm"
+                  class="btn btn-outline btn-success btn-sm"
                   [disabled]="!selectedFile() || uploading()"
                   (click)="uploadFile()"
                 >
@@ -767,7 +767,7 @@
               <i class="fa-solid fa-folder-open"></i>
               <h3>Sin Archivos</h3>
               <p>Este paciente no tiene archivos adjuntos</p>
-              <button class="btn btn-primary" (click)="toggleUploadForm()">
+              <button class="btn btn-outline btn-success" (click)="toggleUploadForm()">
                 <i class="fa-solid fa-upload"></i>
                 Subir Primer Archivo
               </button>

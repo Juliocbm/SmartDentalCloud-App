@@ -1,14 +1,12 @@
 import { Routes } from '@angular/router';
 import { UsersService } from './services/users.service';
 import { RolesService } from './services/roles.service';
-import { UserFormContextService } from './services/user-form-context.service';
-import { AppointmentFormContextService } from '../appointments/services/appointment-form-context.service';
 import { ReportsService } from '../reports/services/reports.service';
 
 export const DENTISTS_ROUTES: Routes = [
   {
     path: '',
-    providers: [UsersService, RolesService, UserFormContextService, AppointmentFormContextService, ReportsService],
+    providers: [UsersService, RolesService, ReportsService],
     children: [
       {
         path: '',

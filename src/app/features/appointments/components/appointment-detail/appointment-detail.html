@@ -84,7 +84,7 @@
           </button>
         }
         @if (canComplete()) {
-          <button (click)="onComplete()" class="btn btn-primary" [disabled]="actionLoading()">
+          <button (click)="onComplete()" class="btn btn-outline btn-success" [disabled]="actionLoading()">
             <i class="fa-solid fa-check"></i> Completar
           </button>
         }
@@ -265,7 +265,7 @@
               <i class="fa-solid fa-file-medical"></i>
               <p>No se ha documentado la nota clínica de esta cita</p>
               <a
-                class="btn btn-primary"
+                class="btn btn-outline btn-success"
                 [routerLink]="['/appointments', apt.id, 'note']"
               >
                 <i class="fa-solid fa-plus"></i>

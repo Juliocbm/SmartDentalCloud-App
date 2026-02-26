@@ -165,6 +165,15 @@
           <!-- Acciones -->
           <td class="actions-column">
             <div class="action-buttons">
+              <button
+                class="btn btn-sm btn-outline btn-success"
+                (click)="createAppointmentForPatient(patient)"
+                [disabled]="!patient.isActive"
+                [title]="!patient.isActive ? 'Paciente inactivo' : 'Agendar nueva cita'"
+              >
+                <i class="fa-solid fa-calendar-plus"></i>
+                Nueva Cita
+              </button>
               <button 
                 class="btn btn-sm btn-outline" 
                 [routerLink]="['/patients', patient.id]"

@@ -1,0 +1,71 @@
+<div class="autocomplete-container">
+  <label class="autocomplete-label">
+    <ng-content></ng-content>
+    @if (required) {
+      <span class="required">*</span>
+    }
+  </label>
+
+  <div class="autocomplete-input-wrapper">
+    <input
+      type="text"
+      [formControl]="searchControl"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      class="autocomplete-input"
+      [class.error]="error"
+      [class.has-value]="selectedDentist()"
+    />
+    
+    @if (loading()) {
+      <i class="fa-solid fa-spinner fa-spin autocomplete-icon"></i>
+    } @else if (selectedDentist()) {
+      <button
+        type="button"
+        (click)="clearSelection()"
+        class="autocomplete-clear"
+        title="Limpiar selección"
+      >
+        <i class="fa-solid fa-times"></i>
+      </button>
+    } @else {
+      <i class="fa-solid fa-search autocomplete-icon"></i>
+    }
+
+    @if (showDropdown() && filteredDentists().length > 0) {
+      <div class="autocomplete-dropdown">
+        @for (dentist of filteredDentists(); track dentist.id) {
+          <button
+            type="button"
+            class="autocomplete-item"
+            (click)="selectDentist(dentist)"
+          >
+            <div class="dentist-info">
+              <div class="dentist-name">{{ dentist.name }}</div>
+              @if (dentist.specialization) {
+                <div class="dentist-details">
+                  <span class="dentist-specialization">{{ dentist.specialization }}</span>
+                </div>
+              }
+            </div>
+          </button>
+        }
+      </div>
+    }
+
+    @if (showDropdown() && !loading() && filteredDentists().length === 0 && searchControl.value && searchControl.value.length >= 1) {
+      <div class="autocomplete-dropdown">
+        <div class="autocomplete-empty">
+          <i class="fa-solid fa-user-doctor"></i>
+          <span>No se encontraron dentistas</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (error) {
+    <span class="error-message">{{ error }}</span>
+  }
+</div>

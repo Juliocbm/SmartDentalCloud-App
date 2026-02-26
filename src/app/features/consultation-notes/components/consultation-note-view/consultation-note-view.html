@@ -29,7 +29,7 @@
       [showBackButton]="true"
       [breadcrumbs]="breadcrumbItems()">
       <div actions>
-        <button class="btn btn-primary" (click)="onEdit()">
+        <button class="btn btn-outline" (click)="onEdit()">
           <i class="fa-solid fa-pen"></i>
           Editar Nota
         </button>
@@ -123,7 +123,7 @@
           <div class="empty-note">
             <i class="fa-solid fa-file-pen"></i>
             <p>Esta nota no tiene contenido aún</p>
-            <button class="btn btn-primary" (click)="onEdit()">
+            <button class="btn btn-outline btn-success" (click)="onEdit()">
               <i class="fa-solid fa-pen"></i>
               Agregar Información
             </button>
@@ -149,7 +149,7 @@
             <i class="fa-solid fa-times"></i>
             Cancelar
           </button>
-          <button type="button" class="btn btn-primary" (click)="onCreate()" [disabled]="saving()">
+          <button type="button" class="btn btn-outline btn-success" (click)="onCreate()" [disabled]="saving()">
             @if (saving()) {
               <span class="btn-spinner"></span>
               Guardando...
@@ -269,7 +269,7 @@
             <i class="fa-solid fa-times"></i>
             Cancelar
           </button>
-          <button type="button" class="btn btn-primary" (click)="onUpdate()" [disabled]="saving()">
+          <button type="button" class="btn btn-outline btn-success" (click)="onUpdate()" [disabled]="saving()">
             @if (saving()) {
               <span class="btn-spinner"></span>
               Guardando...

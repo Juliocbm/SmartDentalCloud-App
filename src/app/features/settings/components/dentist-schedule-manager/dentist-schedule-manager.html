@@ -46,31 +46,10 @@
         />
       </div>
     } @else {
-      <div class="schedule-skeleton">
-        <div class="skeleton-header">
-          <span class="skeleton-bar skeleton-title"></span>
-          <span class="skeleton-bar skeleton-desc"></span>
-        </div>
-        <div class="skeleton-table">
-          <div class="skeleton-thead">
-            <span class="skeleton-bar"></span>
-            <span class="skeleton-bar"></span>
-            <span class="skeleton-bar"></span>
-            <span class="skeleton-bar"></span>
-          </div>
-          @for (row of [1,2,3,4,5,6,7]; track row) {
-            <div class="skeleton-row">
-              <span class="skeleton-bar skeleton-day"></span>
-              <span class="skeleton-bar skeleton-toggle"></span>
-              <span class="skeleton-bar skeleton-time"></span>
-              <span class="skeleton-bar skeleton-time"></span>
-            </div>
-          }
-        </div>
-        <div class="skeleton-overlay">
-          <i class="fa-solid fa-hand-pointer"></i>
-          <p>Selecciona un dentista para configurar su horario individual</p>
-        </div>
+      <div class="empty-state select-prompt">
+        <i class="fa-solid fa-hand-pointer"></i>
+        <h3>Selecciona un dentista</h3>
+        <p>Elige un dentista del listado para configurar su horario individual</p>
       </div>
     }
   }

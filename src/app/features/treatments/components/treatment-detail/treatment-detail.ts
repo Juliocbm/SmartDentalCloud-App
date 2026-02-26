@@ -1,26 +1,25 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TreatmentsService } from '../../services/treatments.service';
 import { Treatment, TreatmentStatus, TREATMENT_STATUS_CONFIG } from '../../models/treatment.models';
-import { TreatmentFollowUp, CreateFollowUpRequest } from '../../models/treatment-followup.models';
-import { TreatmentMaterial, CreateTreatmentMaterialRequest } from '../../models/treatment-material.models';
-import { TreatmentSession, CreateSessionRequest, SESSION_STATUS_CONFIG } from '../../models/treatment-session.models';
-import { ProductsService } from '../../../inventory/services/products.service';
-import { Product } from '../../../inventory/models/product.models';
-import { AppointmentsService } from '../../../appointments/services/appointments.service';
-import { AppointmentListItem } from '../../../appointments/models/appointment.models';
+import { TreatmentFollowUp } from '../../models/treatment-followup.models';
+import { TreatmentMaterial } from '../../models/treatment-material.models';
+import { TreatmentSession, SESSION_STATUS_CONFIG } from '../../models/treatment-session.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { ModalService } from '../../../../shared/services/modal.service';
+import { FollowUpFormModalComponent, FollowUpFormModalData } from '../followup-form-modal/followup-form-modal';
+import { MaterialFormModalComponent, MaterialFormModalData } from '../material-form-modal/material-form-modal';
+import { SessionFormModalComponent, SessionFormModalData } from '../session-form-modal/session-form-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-treatment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './treatment-detail.html',
   styleUrl: './treatment-detail.scss'
 })
@@ -30,11 +29,10 @@ export class TreatmentDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private treatmentsService = inject(TreatmentsService);
-  private productsService = inject(ProductsService);
-  private appointmentsService = inject(AppointmentsService);
   private logger = inject(LoggingService);
   private location = inject(Location);
   private notifications = inject(NotificationService);
+  private modalService = inject(ModalService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -53,32 +51,14 @@ export class TreatmentDetailComponent implements OnInit {
   // Follow-ups state
   followUps = signal<TreatmentFollowUp[]>([]);
   followUpsLoading = signal(false);
-  showFollowUpForm = signal(false);
-  savingFollowUp = signal(false);
-  newFollowUpDate = signal('');
-  newFollowUpDescription = signal('');
 
   // Materials state
   materials = signal<TreatmentMaterial[]>([]);
   materialsLoading = signal(false);
-  showMaterialForm = signal(false);
-  savingMaterial = signal(false);
-  products = signal<Product[]>([]);
-  selectedProductId = signal('');
-  materialQuantity = signal(1);
-  materialUnitCost = signal(0);
-  materialNotes = signal('');
 
   // Sessions state
   sessions = signal<TreatmentSession[]>([]);
   sessionsLoading = signal(false);
-  showSessionForm = signal(false);
-  savingSession = signal(false);
-  sessionDate = signal('');
-  sessionDuration = signal<number | null>(null);
-  sessionNotes = signal('');
-  selectedAppointmentId = signal('');
-  patientAppointments = signal<AppointmentListItem[]>([]);
 
   // Constants
   TreatmentStatus = TreatmentStatus;
@@ -138,34 +118,17 @@ export class TreatmentDetailComponent implements OnInit {
     });
   }
 
-  toggleFollowUpForm(): void {
-    this.showFollowUpForm.update(v => !v);
-    if (this.showFollowUpForm()) {
-      this.newFollowUpDate.set(new Date().toISOString().split('T')[0]);
-      this.newFollowUpDescription.set('');
-    }
-  }
-
-  saveFollowUp(): void {
+  openFollowUpModal(): void {
     const treatmentId = this.treatment()?.id;
-    if (!treatmentId || !this.newFollowUpDate() || this.savingFollowUp()) return;
+    if (!treatmentId) return;
 
-    this.savingFollowUp.set(true);
-    const request: CreateFollowUpRequest = {
-      date: new Date(this.newFollowUpDate()).toISOString(),
-      description: this.newFollowUpDescription().trim() || undefined
-    };
+    const ref = this.modalService.open<FollowUpFormModalData, boolean>(
+      FollowUpFormModalComponent,
+      { data: { treatmentId } }
+    );
 
-    this.treatmentsService.createFollowUp(treatmentId, request).subscribe({
-      next: () => {
-        this.showFollowUpForm.set(false);
-        this.savingFollowUp.set(false);
-        this.loadFollowUps(treatmentId);
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err, 'Error al guardar seguimiento'));
-        this.savingFollowUp.set(false);
-      }
+    ref.afterClosed().subscribe(result => {
+      if (result) this.loadFollowUps(treatmentId);
     });
   }
 
@@ -194,50 +157,17 @@ export class TreatmentDetailComponent implements OnInit {
     });
   }
 
-  toggleMaterialForm(): void {
-    this.showMaterialForm.update(v => !v);
-    if (this.showMaterialForm() && this.products().length === 0) {
-      this.productsService.getAll(true).subscribe({
-        next: (data) => this.products.set(data)
-      });
-    }
-    if (this.showMaterialForm()) {
-      this.selectedProductId.set('');
-      this.materialQuantity.set(1);
-      this.materialUnitCost.set(0);
-      this.materialNotes.set('');
-    }
-  }
-
-  onProductSelected(): void {
-    const product = this.products().find(p => p.id === this.selectedProductId());
-    if (product) {
-      this.materialUnitCost.set(product.unitCost || 0);
-    }
-  }
-
-  saveMaterial(): void {
+  openMaterialModal(): void {
     const treatmentId = this.treatment()?.id;
-    if (!treatmentId || !this.selectedProductId() || this.savingMaterial()) return;
+    if (!treatmentId) return;
 
-    this.savingMaterial.set(true);
-    const request: CreateTreatmentMaterialRequest = {
-      productId: this.selectedProductId(),
-      quantity: this.materialQuantity(),
-      unitCost: this.materialUnitCost(),
-      notes: this.materialNotes().trim() || undefined
-    };
+    const ref = this.modalService.open<MaterialFormModalData, boolean>(
+      MaterialFormModalComponent,
+      { data: { treatmentId } }
+    );
 
-    this.treatmentsService.createMaterial(treatmentId, request).subscribe({
-      next: () => {
-        this.showMaterialForm.set(false);
-        this.savingMaterial.set(false);
-        this.loadMaterials(treatmentId);
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err, 'Error al guardar material'));
-        this.savingMaterial.set(false);
-      }
+    ref.afterClosed().subscribe(result => {
+      if (result) this.loadMaterials(treatmentId);
     });
   }
 
@@ -276,59 +206,28 @@ export class TreatmentDetailComponent implements OnInit {
     });
   }
 
-  toggleSessionForm(): void {
-    this.showSessionForm.update(v => !v);
-    if (this.showSessionForm()) {
-      this.sessionDate.set(new Date().toISOString().split('T')[0]);
-      this.sessionDuration.set(null);
-      this.sessionNotes.set('');
-      this.selectedAppointmentId.set('');
-      this.loadPatientAppointments();
-    }
-  }
-
-  private loadPatientAppointments(): void {
-    const patientId = this.treatment()?.patientId;
-    if (!patientId) return;
-
-    this.appointmentsService.getByPatient(patientId).subscribe({
-      next: (data) => {
-        const upcoming = data
-          .filter(a => a.status === 'Scheduled' || a.status === 'Confirmed')
-          .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime());
-        this.patientAppointments.set(upcoming);
-      }
-    });
-  }
-
   getNextSessionNumber(): number {
     const max = this.sessions().reduce((m, s) => Math.max(m, s.sessionNumber), 0);
     return max + 1;
   }
 
-  saveSession(): void {
-    const treatmentId = this.treatment()?.id;
-    if (!treatmentId || !this.sessionDate() || this.savingSession()) return;
+  openSessionModal(): void {
+    const treatment = this.treatment();
+    if (!treatment) return;
 
-    this.savingSession.set(true);
-    const request: CreateSessionRequest = {
-      sessionNumber: this.getNextSessionNumber(),
-      date: new Date(this.sessionDate()).toISOString(),
-      appointmentId: this.selectedAppointmentId() || undefined,
-      duration: this.sessionDuration() || undefined,
-      notes: this.sessionNotes().trim() || undefined
-    };
-
-    this.treatmentsService.createSession(treatmentId, request).subscribe({
-      next: () => {
-        this.showSessionForm.set(false);
-        this.savingSession.set(false);
-        this.loadSessions(treatmentId);
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err, 'Error al guardar sesión'));
-        this.savingSession.set(false);
+    const ref = this.modalService.open<SessionFormModalData, boolean>(
+      SessionFormModalComponent,
+      {
+        data: {
+          treatmentId: treatment.id,
+          patientId: treatment.patientId,
+          nextSessionNumber: this.getNextSessionNumber()
+        }
       }
+    );
+
+    ref.afterClosed().subscribe(result => {
+      if (result) this.loadSessions(treatment.id);
     });
   }
 

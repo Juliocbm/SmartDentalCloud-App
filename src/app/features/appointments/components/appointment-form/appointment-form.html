@@ -67,15 +67,16 @@
       </h3>
       
       <div class="form-group">
-        <app-dentist-select
+        <app-dentist-autocomplete
           [selectedDentistId]="selectedDentist()?.id || null"
+          [selectedDentistName]="selectedDentist()?.name || null"
           [required]="true"
           [disabled]="loading()"
           [error]="getFieldError('userId')"
           (dentistSelected)="onDentistSelected($event)"
         >
-          Seleccionar Dentista
-        </app-dentist-select>
+          Buscar Dentista
+        </app-dentist-autocomplete>
       </div>
     </div>
 

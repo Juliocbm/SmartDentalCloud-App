@@ -12,7 +12,7 @@
     <div class="odontogram-error">
       <i class="fa-solid fa-circle-exclamation"></i>
       <p>{{ error() }}</p>
-      <button class="btn btn-primary btn-sm" (click)="loadChart()">Reintentar</button>
+      <button class="btn btn-secondary btn-sm" (click)="loadChart()">Reintentar</button>
     </div>
   }
 
@@ -437,7 +437,7 @@
           <!-- Save Button -->
           @if (!readonly()) {
             <div class="detail-footer">
-              <button class="btn btn-primary" (click)="saveTooth()" [disabled]="saving()">
+              <button class="btn btn-outline btn-success" (click)="saveTooth()" [disabled]="saving()">
                 @if (saving()) {
                   <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
                 } @else {

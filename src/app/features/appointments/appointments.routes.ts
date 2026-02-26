@@ -1,12 +1,11 @@
 import { Routes } from '@angular/router';
-import { AppointmentsService } from './services/appointments.service';
 import { AppointmentsAnalyticsService } from './services/appointments-analytics.service';
 import { ConsultationNotesService } from '../consultation-notes/services/consultation-notes.service';
 
 export const APPOINTMENTS_ROUTES: Routes = [
   {
     path: '',
-    providers: [AppointmentsService, AppointmentsAnalyticsService, ConsultationNotesService],
+    providers: [AppointmentsAnalyticsService, ConsultationNotesService],
     children: [
       {
         path: '',

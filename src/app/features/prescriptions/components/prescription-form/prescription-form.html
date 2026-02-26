@@ -363,7 +363,7 @@
         <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button type="button" class="btn btn-primary" (click)="confirmMedModal()" [disabled]="!isMedValid(medForm())">
+      <button type="button" class="btn btn-outline btn-success" (click)="confirmMedModal()" [disabled]="!isMedValid(medForm())">
         <i class="fa-solid fa-check"></i>
         {{ isEditingMed ? 'Guardar Cambios' : 'Agregar Medicamento' }}
       </button>

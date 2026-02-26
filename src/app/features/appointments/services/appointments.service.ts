@@ -14,7 +14,7 @@ import {
   AppointmentStatusConfig
 } from '../models/appointment.models';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AppointmentsService {
   private api = inject(ApiService);
 
