@@ -1,0 +1,257 @@
+:host {
+  display: block;
+}
+
+// ===== Main grid layout =====
+.ceph-tracer-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 320px 1fr;
+  }
+
+  @media (min-width: 1400px) {
+    grid-template-columns: 360px 1fr;
+  }
+}
+
+.ceph-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  // Last card (results) grows to fill remaining height
+  > .content-card:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.ceph-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  // Canvas card grows to fill height
+  > .content-card:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// ===== Compact card =====
+.ceph-compact-card {
+  padding: var(--spacing-md) !important;
+}
+
+// ===== Inline row — each config step is one horizontal row =====
+.ceph-inline-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: 28px;
+}
+
+.ceph-row-icon {
+  color: var(--primary-500);
+  font-size: var(--font-size-xs);
+  width: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.ceph-row-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  flex: 1;
+}
+
+// File input — compact
+.ceph-file-input {
+  flex: 1;
+  font-size: var(--font-size-xs) !important;
+  padding: var(--spacing-xs) var(--spacing-sm) !important;
+}
+
+// mm input — small fixed width
+.ceph-mm-input {
+  width: 52px;
+  font-size: var(--font-size-xs) !important;
+  padding: var(--spacing-xs) var(--spacing-sm) !important;
+  text-align: center;
+}
+
+.ceph-scale-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.ceph-divider {
+  height: 1px;
+  background: var(--border-primary);
+  margin: var(--spacing-sm) 0;
+}
+
+// ===== Checkboxes =====
+.ceph-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+
+  &.ceph-checkboxes--inline {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs) var(--spacing-md);
+  }
+}
+
+.ceph-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    accent-color: var(--primary-500);
+    width: 13px;
+    height: 13px;
+  }
+
+  &.ceph-checkbox-label--compact {
+    margin-left: auto;
+    color: var(--text-tertiary);
+  }
+}
+
+// ===== Patient grid (2 columns: wide + narrow, 2 rows) =====
+.ceph-patient-grid {
+  display: grid;
+  grid-template-columns: 1fr 90px;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+  align-items: stretch;
+
+  // Hide labels — we have our own "Paciente" header
+  .autocomplete-label,
+  .datepicker-label {
+    display: none;
+  }
+
+  .autocomplete-container,
+  .datepicker-container {
+    gap: 0;
+  }
+}
+
+// Edad & Sexo — exactly match autocomplete-input styles
+.ceph-input-match {
+  width: 100%;
+  margin-top: var(--spacing-sm);
+  padding: 10px 14px;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: var(--transition-base);
+  box-sizing: border-box;
+  text-align: center;
+
+  &:focus {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+  }
+
+  &::placeholder {
+    color: var(--text-tertiary);
+  }
+}
+
+select.ceph-input-match {
+  cursor: pointer;
+  appearance: auto;
+}
+
+// ===== Landmarks bar =====
+.ceph-landmarks-bar {
+  .ceph-inline-row {
+    flex-wrap: wrap;
+  }
+
+  .ceph-row-title {
+    flex: none;
+    margin-right: var(--spacing-xs);
+  }
+}
+
+.landmark-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  flex: 1;
+}
+
+.landmark-chip {
+  padding: 1px var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid var(--border-primary);
+  cursor: pointer;
+  background: var(--surface-primary);
+  color: var(--text-secondary);
+  transition: var(--transition-fast);
+  min-width: 28px;
+  text-align: center;
+  line-height: 1.4;
+
+  &:hover {
+    background: var(--surface-secondary);
+    border-color: var(--border-medium);
+  }
+
+  &.landmark-chip--active {
+    background: var(--primary-500);
+    color: white;
+    border-color: var(--primary-600);
+  }
+
+  &.landmark-chip--set:not(.landmark-chip--active) {
+    background: var(--success-50);
+    border-color: var(--success-500);
+    color: var(--success-700);
+  }
+}
+
+// ===== Import row =====
+.ceph-import-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--border-primary);
+
+  .form-label {
+    margin-bottom: 0;
+    white-space: nowrap;
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+  }
+
+  .form-input {
+    flex: 1;
+  }
+}

@@ -169,6 +169,7 @@ export class SidebarComponent implements OnInit {
     },
     { id: 'settings', icon: 'fa-solid fa-gear', label: 'Configuración', route: '/settings' },
     { id: 'audit-log', icon: 'fa-solid fa-shield-halved', label: 'Auditoría', route: '/audit-log' },
+    { id: 'cephalometry', icon: 'fa-solid fa-x-ray', label: 'Cefalometría', route: '/cephalometry' },
   ]);
 
   // Menú de favoritos dinámico

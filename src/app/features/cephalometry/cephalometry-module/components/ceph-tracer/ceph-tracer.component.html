@@ -1,0 +1,159 @@
+<div class="ceph-tracer-layout">
+
+  <!-- ====== LEFT SIDEBAR ====== -->
+  <div class="ceph-sidebar">
+
+    <!-- Configuración (pasos 1-3 compactos) -->
+    <div class="content-card ceph-compact-card">
+      <!-- 1) Radiografía — inline row -->
+      <div class="ceph-inline-row">
+        <i class="fa-solid fa-image ceph-row-icon"></i>
+        <input type="file" accept="image/*" (change)="onFileChange($event)" class="form-input ceph-file-input" />
+        <button class="btn btn-outline btn-sm" (click)="resetAll()" title="Reiniciar trazado">
+          <i class="fa-solid fa-rotate-left"></i>
+        </button>
+      </div>
+
+      <div class="ceph-divider"></div>
+
+      <!-- 2) Calibración — inline row -->
+      <div class="ceph-inline-row">
+        <i class="fa-solid fa-ruler ceph-row-icon"></i>
+        <button class="btn btn-outline btn-sm" [class.btn-success]="calibMode" (click)="startCalibration()">
+          <i class="fa-solid" [class.fa-crosshairs]="calibMode" [class.fa-ruler-combined]="!calibMode"></i>
+          {{ calibMode ? 'Calibrando…' : 'Calibrar' }}
+        </button>
+        <input type="number" [(ngModel)]="calibKnownMm" (ngModelChange)="onKnownMmChange()"
+          min="0.1" step="0.1" class="form-input ceph-mm-input" placeholder="mm" />
+        <span class="ceph-scale-label">{{ scaleLabel }}</span>
+      </div>
+
+      <div class="ceph-divider"></div>
+
+      <!-- 3) Análisis — inline checkboxes -->
+      <div class="ceph-inline-row">
+        <i class="fa-solid fa-flask ceph-row-icon"></i>
+        <div class="ceph-checkboxes ceph-checkboxes--inline">
+          <label class="ceph-checkbox-label">
+            <input type="checkbox" [(ngModel)]="enableSteiner" (ngModelChange)="onConfigChange()" />
+            <span>Steiner</span>
+          </label>
+          <label class="ceph-checkbox-label">
+            <input type="checkbox" [(ngModel)]="enableBjork" (ngModelChange)="onConfigChange()" />
+            <span>Björk</span>
+          </label>
+          <label class="ceph-checkbox-label">
+            <input type="checkbox" [(ngModel)]="enableExtended" (ngModelChange)="onConfigChange()" />
+            <span>Ext.</span>
+          </label>
+          <label class="ceph-checkbox-label">
+            <input type="checkbox" [(ngModel)]="showOverlay" />
+            <span>Overlay</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paciente + Puntos -->
+    <div class="content-card ceph-compact-card">
+      <!-- 4) Paciente -->
+      <div class="ceph-inline-row">
+        <i class="fa-solid fa-user ceph-row-icon"></i>
+        <span class="ceph-row-title">Paciente</span>
+      </div>
+      <div class="ceph-patient-grid">
+        <app-patient-autocomplete
+          [selectedPatientId]="selectedPatientId"
+          [selectedPatientName]="selectedPatientName"
+          placeholder="Buscar paciente..."
+          (patientSelected)="onPatientSelected($event)"
+        ></app-patient-autocomplete>
+        <input type="number" [(ngModel)]="patient.age" (ngModelChange)="onConfigChange()"
+          min="0" max="120" class="ceph-input-match" placeholder="Edad" />
+
+        <app-date-picker
+          [placeholder]="'Fecha del estudio'"
+          (valueChange)="onDateChange($event)"
+        ></app-date-picker>
+        <select [(ngModel)]="patient.sex" (ngModelChange)="onConfigChange()" class="ceph-input-match">
+          <option value="F">F</option>
+          <option value="M">M</option>
+          <option value="X">X</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 5) Resultados -->
+    <div class="content-card ceph-compact-card">
+      <ceph-results
+        [measures]="measures"
+        [clinicalSummary]="clinicalSummary"
+        [enableSteiner]="enableSteiner"
+        [enableBjork]="enableBjork"
+        [enableExtended]="enableExtended"
+        (exportCSV)="onExportCSV()"
+        (exportPNG)="onExportPNG()"
+        (exportPDF)="onExportPDF()"
+        (exportTablePNG)="onExportTablePNG()"
+        (exportJSON)="onExportJSON()">
+      </ceph-results>
+    </div>
+  </div>
+
+  <!-- ====== MAIN CANVAS ====== -->
+  <div class="ceph-main">
+    <!-- Puntos cefalométricos — barra horizontal -->
+    <div class="content-card ceph-compact-card ceph-landmarks-bar">
+      <div class="ceph-inline-row">
+        <i class="fa-solid fa-location-dot ceph-row-icon"></i>
+        <span class="ceph-row-title">Puntos</span>
+        <div class="landmark-grid">
+          @for (lm of landmarks; track lm.key) {
+            <button
+              class="landmark-chip"
+              [class.landmark-chip--active]="activeKey === lm.key"
+              [class.landmark-chip--set]="isSet(lm.key)"
+              (click)="selectLandmark(lm.key)"
+              [title]="lm.description">
+              {{ lm.key }}
+            </button>
+          }
+        </div>
+        <label class="ceph-checkbox-label ceph-checkbox-label--compact">
+          <input type="checkbox" [(ngModel)]="placingMode" />
+          <span>Colocar</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="content-card ceph-compact-card">
+      <ceph-canvas
+        [imageSrc]="imageSrc"
+        [points]="points"
+        [activeKey]="activeKey"
+        [showOverlay]="showOverlay"
+        [calibration]="calibration"
+        [calibMode]="calibMode"
+        [placingMode]="placingMode"
+        [SNA]="SNA"
+        [SNB]="SNB"
+        [ANB]="ANB"
+        [Saddle_NSAr]="Saddle_NSAr"
+        [Articular_SArGo]="Articular_SArGo"
+        [Gonial_ArGoMe]="Gonial_ArGoMe"
+        (canvasClick)="onCanvasClick($event)"
+        (pointDragged)="onPointDragged($event)"
+        (imageLoaded)="onImageLoaded($event)">
+      </ceph-canvas>
+
+      <!-- Import JSON inline -->
+      <div class="ceph-import-row">
+        <label class="form-label">
+          <i class="fa-solid fa-file-import"></i>
+          Importar JSON:
+        </label>
+        <input type="file" accept=".json" (change)="onImportJSON($event)" class="form-input form-input-sm" />
+      </div>
+    </div>
+  </div>
+</div>

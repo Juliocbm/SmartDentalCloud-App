@@ -1,0 +1,213 @@
+<!-- Status indicator -->
+<div class="ceph-status" [ngClass]="statusClass">
+  {{ statusMessage }}
+</div>
+
+<!-- Canvas area -->
+<div class="ceph-canvas-container">
+  @if (imageSrc) {
+    <div class="ceph-canvas-wrapper" (click)="onClick($event)">
+      <!-- Radiograph image -->
+      <img
+        #imgEl
+        [src]="imageSrc"
+        alt="Radiografía cefalométrica"
+        class="ceph-image"
+        (load)="onImageLoad()"
+        draggable="false"
+      />
+
+      <!-- SVG overlay -->
+      <svg class="ceph-svg-overlay" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- Structural lines -->
+        @if (hasPoint('S') && hasPoint('N')) {
+          <line [attr.x1]="points['S']!.x" [attr.y1]="points['S']!.y"
+            [attr.x2]="points['N']!.x" [attr.y2]="points['N']!.y"
+            stroke="#38bdf8" stroke-width="2" />
+        }
+
+        @if (hasPoint('N') && hasPoint('A')) {
+          <line [attr.x1]="points['N']!.x" [attr.y1]="points['N']!.y"
+            [attr.x2]="points['A']!.x" [attr.y2]="points['A']!.y"
+            stroke="#22c55e" stroke-width="2" />
+        }
+
+        @if (hasPoint('N') && hasPoint('B')) {
+          <line [attr.x1]="points['N']!.x" [attr.y1]="points['N']!.y"
+            [attr.x2]="points['B']!.x" [attr.y2]="points['B']!.y"
+            stroke="#f97316" stroke-width="2" />
+        }
+
+        @if (hasPoint('Po') && hasPoint('Or')) {
+          <line [attr.x1]="points['Po']!.x" [attr.y1]="points['Po']!.y"
+            [attr.x2]="points['Or']!.x" [attr.y2]="points['Or']!.y"
+            stroke="#a78bfa" stroke-dasharray="6 4" stroke-width="2" />
+        }
+
+        @if (hasPoint('Go') && hasPoint('Me')) {
+          <line [attr.x1]="points['Go']!.x" [attr.y1]="points['Go']!.y"
+            [attr.x2]="points['Me']!.x" [attr.y2]="points['Me']!.y"
+            stroke="#f472b6" stroke-dasharray="6 4" stroke-width="2" />
+        }
+
+        @if (hasPoint('Go') && hasPoint('Gn')) {
+          <line [attr.x1]="points['Go']!.x" [attr.y1]="points['Go']!.y"
+            [attr.x2]="points['Gn']!.x" [attr.y2]="points['Gn']!.y"
+            stroke="#94a3b8" stroke-width="2" />
+        }
+
+        <!-- Dental axes -->
+        @if (hasPoint('U1T') && hasPoint('U1A')) {
+          <line [attr.x1]="points['U1T']!.x" [attr.y1]="points['U1T']!.y"
+            [attr.x2]="points['U1A']!.x" [attr.y2]="points['U1A']!.y"
+            stroke="#eab308" stroke-width="2" />
+        }
+
+        @if (hasPoint('L1T') && hasPoint('L1A')) {
+          <line [attr.x1]="points['L1T']!.x" [attr.y1]="points['L1T']!.y"
+            [attr.x2]="points['L1A']!.x" [attr.y2]="points['L1A']!.y"
+            stroke="#22d3ee" stroke-width="2" />
+        }
+
+        <!-- Facial axis lines -->
+        @if (hasPoint('Ba') && hasPoint('N')) {
+          <line [attr.x1]="points['Ba']!.x" [attr.y1]="points['Ba']!.y"
+            [attr.x2]="points['N']!.x" [attr.y2]="points['N']!.y"
+            stroke="#60a5fa" stroke-dasharray="6 4" stroke-width="2" />
+        }
+
+        @if (hasPoint('Pt') && hasPoint('Gn')) {
+          <line [attr.x1]="points['Pt']!.x" [attr.y1]="points['Pt']!.y"
+            [attr.x2]="points['Gn']!.x" [attr.y2]="points['Gn']!.y"
+            stroke="#60a5fa" stroke-dasharray="6 4" stroke-width="2" />
+        }
+
+        <!-- Occlusal plane -->
+        @if (hasPoint('Oc1') && hasPoint('Oc2')) {
+          <line [attr.x1]="points['Oc1']!.x" [attr.y1]="points['Oc1']!.y"
+            [attr.x2]="points['Oc2']!.x" [attr.y2]="points['Oc2']!.y"
+            stroke="#f59e0b" stroke-dasharray="4 3" stroke-width="2" />
+        }
+
+        <!-- E-line -->
+        @if (hasPoint('Prn') && hasPoint('PgS')) {
+          <line [attr.x1]="points['Prn']!.x" [attr.y1]="points['Prn']!.y"
+            [attr.x2]="points['PgS']!.x" [attr.y2]="points['PgS']!.y"
+            stroke="#60a5fa" stroke-dasharray="6 4" stroke-width="2" />
+        }
+
+        <!-- Angle arcs (overlay) -->
+        @if (showOverlay) {
+          <!-- SNA arc -->
+          @if (hasPoint('S') && hasPoint('N') && hasPoint('A')) {
+            <path [attr.d]="getArcPath('N', 'S', 'A')"
+              stroke="#22c55e" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            <text [attr.x]="points['N']!.x + 40" [attr.y]="points['N']!.y - 10"
+              font-size="12" fill="#1e293b" stroke="#ffffff" stroke-width="0.5">
+              SNA {{ fmt(SNA) }}
+            </text>
+          }
+
+          <!-- SNB arc -->
+          @if (hasPoint('S') && hasPoint('N') && hasPoint('B')) {
+            <path [attr.d]="getArcPath('N', 'S', 'B')"
+              stroke="#f97316" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            <text [attr.x]="points['N']!.x + 40" [attr.y]="points['N']!.y + 12"
+              font-size="12" fill="#1e293b" stroke="#ffffff" stroke-width="0.5">
+              SNB {{ fmt(SNB) }}
+            </text>
+          }
+
+          <!-- ANB arc -->
+          @if (hasPoint('N') && hasPoint('A') && hasPoint('B')) {
+            <path [attr.d]="getArcPath('N', 'A', 'B')"
+              stroke="#38bdf8" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            <text [attr.x]="points['N']!.x - 60" [attr.y]="points['N']!.y - 12"
+              font-size="12" fill="#1e293b" stroke="#ffffff" stroke-width="0.5">
+              ANB {{ fmt(ANB) }}
+            </text>
+          }
+
+          <!-- Saddle (N-S-Ar) -->
+          @if (hasPoint('N') && hasPoint('S') && hasPoint('Ar')) {
+            <path [attr.d]="getArcPath('S', 'N', 'Ar')"
+              stroke="#16a34a" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            <text [attr.x]="points['S']!.x + 40" [attr.y]="points['S']!.y - 10"
+              font-size="12" fill="#1e293b" stroke="#ffffff" stroke-width="0.5">
+              Silla {{ fmt(Saddle_NSAr) }}
+            </text>
+          }
+
+          <!-- Articular (S-Ar-Go) -->
+          @if (hasPoint('S') && hasPoint('Ar') && hasPoint('Go')) {
+            <path [attr.d]="getArcPath('Ar', 'S', 'Go')"
+              stroke="#d946ef" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            <text [attr.x]="points['Ar']!.x + 40" [attr.y]="points['Ar']!.y - 10"
+              font-size="12" fill="#1e293b" stroke="#ffffff" stroke-width="0.5">
+              Articular {{ fmt(Articular_SArGo) }}
+            </text>
+          }
+
+          <!-- Gonial (Ar-Go-Me) -->
+          @if (hasPoint('Ar') && hasPoint('Go') && hasPoint('Me')) {
+            <path [attr.d]="getArcPath('Go', 'Ar', 'Me')"
+              stroke="#fb7185" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            <text [attr.x]="points['Go']!.x + 40" [attr.y]="points['Go']!.y - 10"
+              font-size="12" fill="#1e293b" stroke="#ffffff" stroke-width="0.5">
+              Gonial {{ fmt(Gonial_ArGoMe) }}
+            </text>
+          }
+        }
+
+        <!-- Calibration line -->
+        @if (calibration.point1) {
+          <circle [attr.cx]="calibration.point1.x" [attr.cy]="calibration.point1.y"
+            r="5" fill="#22c55e" />
+          @if (calibration.point2) {
+            <circle [attr.cx]="calibration.point2.x" [attr.cy]="calibration.point2.y"
+              r="5" fill="#22c55e" />
+            <line
+              [attr.x1]="calibration.point1.x" [attr.y1]="calibration.point1.y"
+              [attr.x2]="calibration.point2.x" [attr.y2]="calibration.point2.y"
+              stroke="#22c55e" stroke-width="2" />
+            @if (calibration.mmPerPx) {
+              <text
+                [attr.x]="(calibration.point1.x + calibration.point2.x) / 2"
+                [attr.y]="(calibration.point1.y + calibration.point2.y) / 2 - 8"
+                font-size="12" fill="#22c55e" stroke="#ffffff" stroke-width="0.5"
+                text-anchor="middle">
+                {{ calibration.knownMm }} mm
+              </text>
+            }
+          }
+        }
+
+        <!-- Landmark points (draggable) -->
+        @for (lm of landmarks; track lm.key) {
+          @if (points[lm.key]; as pt) {
+            <g class="ceph-point" (mousedown)="onPointMouseDown(lm.key, $event)">
+              <circle
+                [attr.cx]="pt.x" [attr.cy]="pt.y" r="6"
+                [attr.fill]="activeKey === lm.key ? '#3b82f6' : '#64748b'"
+                stroke="#ffffff" stroke-width="2" />
+              <text
+                [attr.x]="pt.x + 8" [attr.y]="pt.y - 8"
+                font-size="12" fill="#1e293b" stroke="#ffffff" stroke-width="0.5">
+                {{ lm.key }}
+              </text>
+            </g>
+          }
+        }
+
+      </svg>
+    </div>
+  } @else {
+    <div class="ceph-placeholder">
+      <div>
+        <i class="fa-solid fa-x-ray"></i>
+        <p>Sube una radiografía para comenzar.</p>
+      </div>
+    </div>
+  }
+</div>

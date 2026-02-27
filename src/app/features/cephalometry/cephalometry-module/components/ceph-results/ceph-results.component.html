@@ -1,0 +1,85 @@
+<section class="ceph-results">
+  <!-- Tab navigation -->
+  <div class="ceph-tabs">
+    @for (tab of availableTabs; track tab.key) {
+      <button
+        class="ceph-tab"
+        [class.ceph-tab--active]="activeTab() === tab.key"
+        (click)="selectTab(tab.key)">
+        <i class="fa-solid" [ngClass]="tab.icon"></i>
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Active tab table -->
+  @if (activeMeasures.length) {
+    <table class="ceph-table">
+      <thead>
+        <tr>
+          <th>Medida</th>
+          <th class="col-value">Valor</th>
+          <th class="col-norm">Norma</th>
+          <th class="col-z">Z</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (m of activeMeasures; track m.key) {
+          <tr>
+            <td class="col-name">{{ m.label }}</td>
+            <td class="col-value">{{ fmt(m.value) }}</td>
+            <td class="col-norm">{{ fmt(m.norm.mean) }}</td>
+            <td class="col-z" [ngClass]="toleranceClass(m)">{{ formatZScore(m.zScore) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <div class="ceph-empty-tab">
+      <i class="fa-solid fa-chart-simple"></i>
+      <span>Coloca los puntos para ver resultados</span>
+    </div>
+  }
+
+  <!-- Export + summary buttons (single row) -->
+  <div class="ceph-export-bar">
+    <button class="btn btn-outline btn-sm" (click)="exportCSV.emit()" title="Exportar CSV">
+      <i class="fa-solid fa-file-csv"></i>
+    </button>
+    <button class="btn btn-outline btn-sm btn-success" (click)="exportPNG.emit()" title="Exportar trazo PNG">
+      <i class="fa-solid fa-image"></i>
+    </button>
+    <button class="btn btn-outline btn-sm" (click)="exportPDF.emit()" title="Exportar PDF">
+      <i class="fa-solid fa-file-pdf"></i>
+    </button>
+    <button class="btn btn-outline btn-sm" (click)="exportJSON.emit()" title="Guardar JSON">
+      <i class="fa-solid fa-code"></i>
+    </button>
+    @if (clinicalSummary) {
+      <button class="btn btn-outline btn-sm ceph-summary-btn" (click)="showSummaryModal.set(true)" title="Ver resumen clínico">
+        <i class="fa-solid fa-stethoscope"></i>
+        Resumen clínico
+      </button>
+    }
+  </div>
+</section>
+
+<!-- Clinical summary modal -->
+@if (showSummaryModal()) {
+  <app-modal
+    title="Resumen Clínico"
+    subtitle="Interpretación cefalométrica"
+    icon="fa-stethoscope"
+    size="md"
+    (closed)="showSummaryModal.set(false)">
+
+    <p class="ceph-summary-text">{{ clinicalSummary }}</p>
+
+    <div modal-footer>
+      <button type="button" class="btn btn-outline" (click)="showSummaryModal.set(false)">
+        <i class="fa-solid fa-times"></i>
+        Cerrar
+      </button>
+    </div>
+  </app-modal>
+}
