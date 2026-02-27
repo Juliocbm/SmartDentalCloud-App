@@ -40,11 +40,19 @@ describe('OdontogramComponent', () => {
     expect(component.selectedTooth()).toBeNull();
   });
 
-  it('should have 8 teeth per quadrant', () => {
-    expect(component.upperRight.length).toBe(8);
-    expect(component.upperLeft.length).toBe(8);
-    expect(component.lowerRight.length).toBe(8);
-    expect(component.lowerLeft.length).toBe(8);
+  it('should have 8 teeth per quadrant for permanent dentition', () => {
+    expect(component.upperRight().length).toBe(8);
+    expect(component.upperLeft().length).toBe(8);
+    expect(component.lowerRight().length).toBe(8);
+    expect(component.lowerLeft().length).toBe(8);
+  });
+
+  it('should have 5 teeth per quadrant for primary dentition', () => {
+    component.switchDentition('primary');
+    expect(component.upperRight().length).toBe(5);
+    expect(component.upperLeft().length).toBe(5);
+    expect(component.lowerRight().length).toBe(5);
+    expect(component.lowerLeft().length).toBe(5);
   });
 
   it('should have detail panel hidden initially', () => {

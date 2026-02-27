@@ -1,0 +1,303 @@
+// ============================================
+// Tooth SVG Component Styles
+// Reusable tooth visualization with anatomy + surface mini-diagram
+// ============================================
+
+:host {
+  display: inline-flex;
+}
+
+.tooth-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 3px 2px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  position: relative;
+  gap: 2px;
+
+  &:hover,
+  &.hovered {
+    background: var(--primary-50);
+    transform: translateY(-2px);
+
+    .tooth-crown {
+      filter: brightness(1.08);
+    }
+  }
+
+  &.selected {
+    background: var(--primary-100);
+    box-shadow: 0 0 0 2px var(--primary-500);
+    border-radius: var(--radius-md);
+  }
+
+  &.absent {
+    opacity: 0.55;
+
+    &:hover,
+    &.hovered {
+      opacity: 0.75;
+    }
+  }
+}
+
+// ============================================
+// Tooth Shape SVG
+// ============================================
+.tooth-shape {
+  width: 42px;
+  height: 52px;
+  transition: var(--transition-fast);
+  overflow: visible;
+}
+
+// ── Crown ──
+.tooth-crown {
+  stroke: var(--text-tertiary);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  transition: var(--transition-base);
+
+  &.crown-selected {
+    stroke: var(--primary-600);
+    stroke-width: 1.8;
+  }
+
+  &.crown-absent {
+    fill: #E8E8E8 !important;
+    stroke: var(--border-medium);
+    stroke-dasharray: 3 2;
+  }
+}
+
+// ── Roots ──
+.tooth-root {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  transition: var(--transition-base);
+
+  &.implant-root {
+    stroke: none;
+  }
+}
+
+.absent-roots {
+  .tooth-root {
+    stroke: var(--border-light);
+    stroke-dasharray: 2 2;
+  }
+}
+
+// ── Implant screw ──
+.implant-screw {
+  stroke: var(--text-tertiary);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.implant-thread {
+  stroke: var(--text-tertiary);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+// ── Extracted X ──
+.extracted-x {
+  stroke: #D32F2F;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+// ── Missing dashed outline ──
+.missing-outline {
+  stroke: var(--border-medium);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+}
+
+// ============================================
+// Condition Overlays
+// ============================================
+.condition-corona {
+  fill: #FFC107;
+  stroke: #F9A825;
+  stroke-width: 0.8;
+  opacity: 0.75;
+}
+
+.condition-endo {
+  stroke: #E91E63;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+
+.condition-sellante {
+  fill: #8BC34A;
+  opacity: 0.45;
+  stroke: #689F38;
+  stroke-width: 0.5;
+}
+
+.condition-bracket {
+  fill: #78909C;
+  stroke: #546E7A;
+  stroke-width: 0.5;
+}
+
+.condition-wire {
+  stroke: #90A4AE;
+  stroke-width: 0.8;
+}
+
+.condition-fractura {
+  fill: none;
+  stroke: #9C27B0;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.condition-caries {
+  fill: #5D4037;
+  opacity: 0.7;
+  stroke: #3E2723;
+  stroke-width: 0.5;
+}
+
+.condition-puente {
+  stroke: #1565C0;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.condition-puente-post {
+  stroke: #1565C0;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.condition-absceso {
+  fill: #F44336;
+  opacity: 0.5;
+  stroke: none;
+}
+
+.condition-absceso-inner {
+  fill: #D32F2F;
+  opacity: 0.8;
+  stroke: none;
+}
+
+.condition-gingivitis {
+  fill: none;
+  stroke: #E53935;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.condition-movilidad {
+  fill: none;
+  stroke: #FF6F00;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.8;
+}
+
+.condition-protesis {
+  stroke: #7B1FA2;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.condition-protesis-hook {
+  fill: none;
+  stroke: #7B1FA2;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.condition-perno {
+  stroke: #455A64;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.condition-perno-head {
+  fill: #455A64;
+  stroke: none;
+}
+
+.condition-erosion {
+  stroke: #BF360C;
+  stroke-width: 1;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+
+.condition-residuo {
+  stroke: #616161;
+  stroke-width: 1.2;
+  stroke-dasharray: 3 2;
+  opacity: 0.7;
+}
+
+.condition-residuo-text {
+  font-size: 8px;
+  font-weight: 700;
+  fill: #616161;
+  opacity: 0.8;
+}
+
+// ============================================
+// Mini Surface Diagram
+// ============================================
+.surface-mini {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.mini-surface {
+  stroke: var(--border-medium);
+  stroke-width: 0.6;
+  transition: var(--transition-fast);
+}
+
+// ============================================
+// Tooth Number Label
+// ============================================
+.tooth-number {
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  line-height: 1;
+  user-select: none;
+}
+
+// ============================================
+// Responsive
+// ============================================
+@media (max-width: 768px) {
+  .tooth-shape {
+    width: 32px;
+    height: 40px;
+  }
+
+  .surface-mini {
+    width: 18px;
+    height: 18px;
+  }
+
+  .tooth-number {
+    font-size: 8px;
+  }
+}

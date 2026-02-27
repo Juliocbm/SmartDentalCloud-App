@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, input, output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToothSvgComponent } from '../tooth-svg/tooth-svg';
 import { DentalChartService } from '../../services/dental-chart.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -16,17 +17,27 @@ import {
   TOOTH_SURFACES,
   SURFACE_LABELS,
   DENTAL_CONDITIONS,
+  PREEXISTENCIAS,
+  LESIONES,
   CONDITION_LABELS,
+  PREEXISTENCIA_COLOR,
+  LESION_COLOR,
+  SURFACE_CONDITION_COLORS,
+  SURFACE_CONDITION_LABELS,
   PERMANENT_TEETH_UPPER_RIGHT,
   PERMANENT_TEETH_UPPER_LEFT,
   PERMANENT_TEETH_LOWER_RIGHT,
-  PERMANENT_TEETH_LOWER_LEFT
+  PERMANENT_TEETH_LOWER_LEFT,
+  PRIMARY_TEETH_UPPER_RIGHT,
+  PRIMARY_TEETH_UPPER_LEFT,
+  PRIMARY_TEETH_LOWER_RIGHT,
+  PRIMARY_TEETH_LOWER_LEFT
 } from '../../models/dental-chart.models';
 
 @Component({
   selector: 'app-odontogram',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ToothSvgComponent],
   templateUrl: './odontogram.html',
   styleUrl: './odontogram.scss'
 })
@@ -42,6 +53,9 @@ export class OdontogramComponent implements OnInit {
 
   // Outputs
   toothUpdated = output<DentalChartTooth>();
+
+  // Dentition type toggle
+  dentitionType = signal<'permanent' | 'primary'>('permanent');
 
   // State
   teeth = signal<DentalChartTooth[]>([]);
@@ -67,27 +81,59 @@ export class OdontogramComponent implements OnInit {
   readonly surfaceLabels = SURFACE_LABELS;
   readonly toothSurfaces = TOOTH_SURFACES;
   readonly dentalConditions = DENTAL_CONDITIONS;
+  readonly preexistencias = PREEXISTENCIAS;
+  readonly lesiones = LESIONES;
   readonly conditionLabels = CONDITION_LABELS;
+  readonly preexistenciaColor = PREEXISTENCIA_COLOR;
+  readonly lesionColor = LESION_COLOR;
+  readonly surfaceConditionColors = SURFACE_CONDITION_COLORS;
+  readonly surfaceConditionLabels = SURFACE_CONDITION_LABELS;
   readonly statusOptions: ToothStatus[] = ['Healthy', 'Treated', 'Decayed', 'Missing', 'Extracted', 'Implant'];
+  readonly surfaceConditionKeys = Object.keys(SURFACE_CONDITION_COLORS);
 
-  // Tooth layout
-  readonly upperRight = PERMANENT_TEETH_UPPER_RIGHT;
-  readonly upperLeft = PERMANENT_TEETH_UPPER_LEFT;
-  readonly lowerRight = PERMANENT_TEETH_LOWER_RIGHT;
-  readonly lowerLeft = PERMANENT_TEETH_LOWER_LEFT;
+  // Tooth layout — dynamic based on dentition type
+  upperRight = computed(() =>
+    this.dentitionType() === 'primary' ? PRIMARY_TEETH_UPPER_RIGHT : PERMANENT_TEETH_UPPER_RIGHT
+  );
+  upperLeft = computed(() =>
+    this.dentitionType() === 'primary' ? PRIMARY_TEETH_UPPER_LEFT : PERMANENT_TEETH_UPPER_LEFT
+  );
+  lowerRight = computed(() =>
+    this.dentitionType() === 'primary' ? PRIMARY_TEETH_LOWER_RIGHT : PERMANENT_TEETH_LOWER_RIGHT
+  );
+  lowerLeft = computed(() =>
+    this.dentitionType() === 'primary' ? PRIMARY_TEETH_LOWER_LEFT : PERMANENT_TEETH_LOWER_LEFT
+  );
 
-  // Computed: teeth indexed by FDI number for fast lookup
+  // Whether patient has primary teeth data loaded
+  hasPrimaryTeeth = computed(() =>
+    this.teeth().some(t => t.toothType === 'Primary')
+  );
+
+  // Whether patient has permanent teeth data loaded
+  hasPermanentTeeth = computed(() =>
+    this.teeth().some(t => t.toothType === 'Permanent')
+  );
+
+  // Computed: teeth indexed by FDI number for fast lookup (filtered by current dentition)
   teethMap = computed(() => {
+    const isPrimary = this.dentitionType() === 'primary';
     const map = new Map<string, DentalChartTooth>();
     for (const t of this.teeth()) {
-      map.set(t.toothNumber, t);
+      const matchesType = isPrimary ? t.toothType === 'Primary' : t.toothType === 'Permanent';
+      if (matchesType) {
+        map.set(t.toothNumber, t);
+      }
     }
     return map;
   });
 
-  // Computed: statistics
+  // Computed: statistics (filtered by current dentition type)
   stats = computed(() => {
-    const all = this.teeth();
+    const isPrimary = this.dentitionType() === 'primary';
+    const all = this.teeth().filter(t =>
+      isPrimary ? t.toothType === 'Primary' : t.toothType === 'Permanent'
+    );
     return {
       total: all.length,
       healthy: all.filter(t => t.status === 'Healthy').length,
@@ -138,6 +184,26 @@ export class OdontogramComponent implements OnInit {
     });
   }
 
+  initializePrimaryChart(): void {
+    this.loading.set(true);
+    this.dentalChartService.initialize(this.patientId(), true).subscribe({
+      next: (primaryTeeth) => {
+        this.teeth.update(current => [...current, ...primaryTeeth]);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.logger.error('Error initializing primary dental chart:', err);
+        this.notifications.error(getApiErrorMessage(err));
+        this.loading.set(false);
+      }
+    });
+  }
+
+  switchDentition(type: 'permanent' | 'primary'): void {
+    this.dentitionType.set(type);
+    this.closeDetail();
+  }
+
   // ============================================
   // Tooth interaction
   // ============================================
@@ -179,21 +245,26 @@ export class OdontogramComponent implements OnInit {
     return this.teethMap().get(fdi)?.status ?? 'Healthy';
   }
 
+  getToothSurfaces(fdi: string): Record<string, string | null> {
+    return this.teethMap().get(fdi)?.surfaceConditions ?? {};
+  }
+
+  getToothConditions(fdi: string): string[] {
+    return this.teethMap().get(fdi)?.conditions ?? [];
+  }
+
+  getEditSurfaceColor(surface: string): string {
+    const condition = this.editSurfaces()[surface];
+    if (!condition) return 'var(--surface-tertiary)';
+    return SURFACE_CONDITION_COLORS[condition] ?? '#FFB74D';
+  }
+
   getSurfaceColor(fdi: string, surface: ToothSurface): string {
     const tooth = this.teethMap().get(fdi);
     if (!tooth) return 'transparent';
     const condition = tooth.surfaceConditions?.[surface];
     if (!condition) return 'transparent';
-    // Map surface conditions to colors
-    const surfaceColors: Record<string, string> = {
-      caries: '#F44336',
-      resina: '#2196F3',
-      amalgama: '#607D8B',
-      corona: '#FF9800',
-      sellante: '#8BC34A',
-      fractura: '#9C27B0'
-    };
-    return surfaceColors[condition] ?? '#FFB74D';
+    return SURFACE_CONDITION_COLORS[condition] ?? '#FFB74D';
   }
 
   isSelected(fdi: string): boolean {
