@@ -18,7 +18,7 @@
 
   <!-- Main Content -->
   @if (!loading() && !error()) {
-    <div class="odontogram-layout" [class.panel-open]="showDetailPanel()">
+    <div class="odontogram-layout">
 
       <!-- Chart Area -->
       <div class="chart-area">
@@ -193,240 +193,218 @@
         }
       </div>
 
-      <!-- Detail Panel (slide-in) -->
-      @if (showDetailPanel() && selectedTooth()) {
-        <div class="detail-panel">
-          <div class="detail-header">
-            <div class="detail-title">
-              <span class="tooth-badge" [style.background]="getToothColor(selectedTooth()!.toothNumber)">
-                {{ selectedTooth()!.toothNumber }}
-              </span>
-              <div>
-                <h3>{{ toothNames[selectedTooth()!.toothNumber] }}</h3>
-                <p class="detail-subtitle">
-                  <i class="fa-solid" [class]="statusConfig[selectedTooth()!.status].icon"
-                     [style.color]="statusConfig[selectedTooth()!.status].color"></i>
-                  {{ statusConfig[selectedTooth()!.status].label }}
-                  @if (selectedTooth()!.totalChanges > 0) {
-                    <span class="changes-badge">{{ selectedTooth()!.totalChanges }} cambios</span>
-                  }
-                </p>
-              </div>
+    </div>
+  }
+
+  <!-- Tooth Detail Modal -->
+  @if (showDetailPanel() && selectedTooth()) {
+    <app-modal
+      [title]="toothNames[selectedTooth()!.toothNumber]"
+      [subtitle]="'Pieza ' + selectedTooth()!.toothNumber + ' · ' + statusConfig[selectedTooth()!.status].label + (selectedTooth()!.totalChanges > 0 ? ' · ' + selectedTooth()!.totalChanges + ' cambios' : '')"
+      icon="fa-tooth"
+      size="md"
+      (closed)="closeDetail()">
+
+      <!-- Tabs -->
+      <div class="detail-tabs">
+        <button class="tab-btn" [class.active]="activeDetailTab() === 'info'"
+                (click)="activeDetailTab.set('info')">
+          <i class="fa-solid fa-tooth"></i> Estado
+        </button>
+        <button class="tab-btn" [class.active]="activeDetailTab() === 'surfaces'"
+                (click)="activeDetailTab.set('surfaces')">
+          <i class="fa-solid fa-cube"></i> Superficies
+        </button>
+        <button class="tab-btn" [class.active]="activeDetailTab() === 'history'"
+                (click)="activeDetailTab.set('history')">
+          <i class="fa-solid fa-clock-rotate-left"></i> Historial
+        </button>
+      </div>
+
+      <!-- Info Tab -->
+      @if (activeDetailTab() === 'info') {
+        <div class="tab-content">
+          <div class="form-group">
+            <label>Estado</label>
+            <div class="status-grid">
+              @for (opt of statusOptions; track opt) {
+                <button
+                  class="status-option"
+                  [class.active]="editStatus() === opt"
+                  [style.--status-color]="statusConfig[opt].color"
+                  (click)="editStatus.set(opt)"
+                  [disabled]="readonly()">
+                  <i class="fa-solid" [class]="statusConfig[opt].icon"></i>
+                  {{ statusConfig[opt].label }}
+                </button>
+              }
             </div>
-            <button class="btn-close" (click)="closeDetail()">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
           </div>
 
-          <!-- Tabs -->
-          <div class="detail-tabs">
-            <button class="tab-btn" [class.active]="activeDetailTab() === 'info'"
-                    (click)="activeDetailTab.set('info')">
-              <i class="fa-solid fa-tooth"></i> Estado
-            </button>
-            <button class="tab-btn" [class.active]="activeDetailTab() === 'surfaces'"
-                    (click)="activeDetailTab.set('surfaces')">
-              <i class="fa-solid fa-cube"></i> Superficies
-            </button>
-            <button class="tab-btn" [class.active]="activeDetailTab() === 'history'"
-                    (click)="activeDetailTab.set('history')">
-              <i class="fa-solid fa-clock-rotate-left"></i> Historial
-            </button>
+          <div class="form-group">
+            <label>
+              <span class="category-dot category-dot--preexistencia"></span>
+              Preexistencias
+            </label>
+            <div class="conditions-grid">
+              @for (cond of preexistencias; track cond) {
+                <button
+                  class="condition-chip condition-chip--preexistencia"
+                  [class.active]="editConditions().has(cond)"
+                  (click)="toggleCondition(cond)"
+                  [disabled]="readonly()">
+                  {{ conditionLabels[cond] }}
+                </button>
+              }
+            </div>
           </div>
 
-          <div class="detail-body">
-            <!-- Info Tab -->
-            @if (activeDetailTab() === 'info') {
-              <div class="tab-content">
-                <!-- Status selector -->
-                <div class="form-group">
-                  <label>Estado</label>
-                  <div class="status-grid">
-                    @for (opt of statusOptions; track opt) {
-                      <button
-                        class="status-option"
-                        [class.active]="editStatus() === opt"
-                        [style.--status-color]="statusConfig[opt].color"
-                        (click)="editStatus.set(opt)"
-                        [disabled]="readonly()">
-                        <i class="fa-solid" [class]="statusConfig[opt].icon"></i>
-                        {{ statusConfig[opt].label }}
-                      </button>
-                    }
-                  </div>
-                </div>
+          <div class="form-group">
+            <label>
+              <span class="category-dot category-dot--lesion"></span>
+              Lesiones
+            </label>
+            <div class="conditions-grid">
+              @for (cond of lesiones; track cond) {
+                <button
+                  class="condition-chip condition-chip--lesion"
+                  [class.active]="editConditions().has(cond)"
+                  (click)="toggleCondition(cond)"
+                  [disabled]="readonly()">
+                  {{ conditionLabels[cond] }}
+                </button>
+              }
+            </div>
+          </div>
 
-                <!-- Preexistencias -->
-                <div class="form-group">
-                  <label>
-                    <span class="category-dot category-dot--preexistencia"></span>
-                    Preexistencias
-                  </label>
-                  <div class="conditions-grid">
-                    @for (cond of preexistencias; track cond) {
-                      <button
-                        class="condition-chip condition-chip--preexistencia"
-                        [class.active]="editConditions().has(cond)"
-                        (click)="toggleCondition(cond)"
-                        [disabled]="readonly()">
-                        {{ conditionLabels[cond] }}
-                      </button>
-                    }
-                  </div>
-                </div>
+          <div class="form-group">
+            <label>Notas</label>
+            <textarea
+              class="form-control"
+              rows="3"
+              [ngModel]="editNotes()"
+              (ngModelChange)="editNotes.set($event)"
+              placeholder="Observaciones sobre esta pieza..."
+              [disabled]="readonly()">
+            </textarea>
+          </div>
+        </div>
+      }
 
-                <!-- Lesiones -->
-                <div class="form-group">
-                  <label>
-                    <span class="category-dot category-dot--lesion"></span>
-                    Lesiones
-                  </label>
-                  <div class="conditions-grid">
-                    @for (cond of lesiones; track cond) {
-                      <button
-                        class="condition-chip condition-chip--lesion"
-                        [class.active]="editConditions().has(cond)"
-                        (click)="toggleCondition(cond)"
-                        [disabled]="readonly()">
-                        {{ conditionLabels[cond] }}
-                      </button>
-                    }
-                  </div>
-                </div>
+      <!-- Surfaces Tab -->
+      @if (activeDetailTab() === 'surfaces') {
+        <div class="tab-content">
+          <div class="surface-diagram">
+            <svg viewBox="0 0 200 200" class="surface-svg">
+              <path d="M30 10 L170 10 L150 50 L50 50 Z"
+                    [attr.fill]="getEditSurfaceColor('buccal')"
+                    class="surface-path"
+                    (click)="setSurfaceCondition('buccal', editSurfaces()['buccal'] ? null : 'caries')"/>
+              <text x="100" y="35" text-anchor="middle" class="surface-text">V</text>
 
-                <!-- Notes -->
-                <div class="form-group">
-                  <label>Notas</label>
-                  <textarea
-                    class="form-control"
-                    rows="3"
-                    [ngModel]="editNotes()"
-                    (ngModelChange)="editNotes.set($event)"
-                    placeholder="Observaciones sobre esta pieza..."
-                    [disabled]="readonly()">
-                  </textarea>
-                </div>
+              <path d="M50 150 L150 150 L170 190 L30 190 Z"
+                    [attr.fill]="getEditSurfaceColor('lingual')"
+                    class="surface-path"
+                    (click)="setSurfaceCondition('lingual', editSurfaces()['lingual'] ? null : 'caries')"/>
+              <text x="100" y="175" text-anchor="middle" class="surface-text">L</text>
+
+              <path d="M10 30 L50 50 L50 150 L10 170 Z"
+                    [attr.fill]="getEditSurfaceColor('mesial')"
+                    class="surface-path"
+                    (click)="setSurfaceCondition('mesial', editSurfaces()['mesial'] ? null : 'caries')"/>
+              <text x="30" y="105" text-anchor="middle" class="surface-text">M</text>
+
+              <path d="M150 50 L190 30 L190 170 L150 150 Z"
+                    [attr.fill]="getEditSurfaceColor('distal')"
+                    class="surface-path"
+                    (click)="setSurfaceCondition('distal', editSurfaces()['distal'] ? null : 'caries')"/>
+              <text x="170" y="105" text-anchor="middle" class="surface-text">D</text>
+
+              <rect x="50" y="50" width="100" height="100" rx="8"
+                    [attr.fill]="getEditSurfaceColor('occlusal')"
+                    class="surface-path"
+                    (click)="setSurfaceCondition('occlusal', editSurfaces()['occlusal'] ? null : 'caries')"/>
+              <text x="100" y="105" text-anchor="middle" class="surface-text">O</text>
+            </svg>
+          </div>
+
+          <div class="surface-details">
+            @for (surface of toothSurfaces; track surface) {
+              <div class="surface-row">
+                <span class="surface-name">{{ surfaceLabels[surface] }}</span>
+                <select
+                  class="form-control form-control-sm"
+                  [ngModel]="editSurfaces()[surface] ?? ''"
+                  (ngModelChange)="setSurfaceCondition(surface, $event || null)"
+                  [disabled]="readonly()">
+                  <option value="">Sin condición</option>
+                  <option value="caries">Caries</option>
+                  <option value="resina">Resina</option>
+                  <option value="amalgama">Amalgama</option>
+                  <option value="corona">Corona</option>
+                  <option value="sellante">Sellante</option>
+                  <option value="fractura">Fractura</option>
+                </select>
               </div>
             }
+          </div>
+        </div>
+      }
 
-            <!-- Surfaces Tab -->
-            @if (activeDetailTab() === 'surfaces') {
-              <div class="tab-content">
-                <!-- Surface Diagram -->
-                <div class="surface-diagram">
-                  <svg viewBox="0 0 200 200" class="surface-svg">
-                    <!-- Buccal (top) -->
-                    <path d="M30 10 L170 10 L150 50 L50 50 Z"
-                          [attr.fill]="getEditSurfaceColor('buccal')"
-                          class="surface-path"
-                          (click)="setSurfaceCondition('buccal', editSurfaces()['buccal'] ? null : 'caries')"/>
-                    <text x="100" y="35" text-anchor="middle" class="surface-text">V</text>
-
-                    <!-- Lingual (bottom) -->
-                    <path d="M50 150 L150 150 L170 190 L30 190 Z"
-                          [attr.fill]="getEditSurfaceColor('lingual')"
-                          class="surface-path"
-                          (click)="setSurfaceCondition('lingual', editSurfaces()['lingual'] ? null : 'caries')"/>
-                    <text x="100" y="175" text-anchor="middle" class="surface-text">L</text>
-
-                    <!-- Mesial (left) -->
-                    <path d="M10 30 L50 50 L50 150 L10 170 Z"
-                          [attr.fill]="getEditSurfaceColor('mesial')"
-                          class="surface-path"
-                          (click)="setSurfaceCondition('mesial', editSurfaces()['mesial'] ? null : 'caries')"/>
-                    <text x="30" y="105" text-anchor="middle" class="surface-text">M</text>
-
-                    <!-- Distal (right) -->
-                    <path d="M150 50 L190 30 L190 170 L150 150 Z"
-                          [attr.fill]="getEditSurfaceColor('distal')"
-                          class="surface-path"
-                          (click)="setSurfaceCondition('distal', editSurfaces()['distal'] ? null : 'caries')"/>
-                    <text x="170" y="105" text-anchor="middle" class="surface-text">D</text>
-
-                    <!-- Occlusal (center) -->
-                    <rect x="50" y="50" width="100" height="100" rx="8"
-                          [attr.fill]="getEditSurfaceColor('occlusal')"
-                          class="surface-path"
-                          (click)="setSurfaceCondition('occlusal', editSurfaces()['occlusal'] ? null : 'caries')"/>
-                    <text x="100" y="105" text-anchor="middle" class="surface-text">O</text>
-                  </svg>
-                </div>
-
-                <!-- Surface Details -->
-                <div class="surface-details">
-                  @for (surface of toothSurfaces; track surface) {
-                    <div class="surface-row">
-                      <span class="surface-name">{{ surfaceLabels[surface] }}</span>
-                      <select
-                        class="form-control form-control-sm"
-                        [ngModel]="editSurfaces()[surface] ?? ''"
-                        (ngModelChange)="setSurfaceCondition(surface, $event || null)"
-                        [disabled]="readonly()">
-                        <option value="">Sin condición</option>
-                        <option value="caries">Caries</option>
-                        <option value="resina">Resina</option>
-                        <option value="amalgama">Amalgama</option>
-                        <option value="corona">Corona</option>
-                        <option value="sellante">Sellante</option>
-                        <option value="fractura">Fractura</option>
-                      </select>
+      <!-- History Tab -->
+      @if (activeDetailTab() === 'history') {
+        <div class="tab-content">
+          @if (loadingHistory()) {
+            <div class="history-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i> Cargando historial...
+            </div>
+          } @else if (toothHistory().length === 0) {
+            <div class="history-empty">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <p>Sin cambios registrados</p>
+            </div>
+          } @else {
+            <div class="history-timeline">
+              @for (entry of toothHistory(); track entry.id) {
+                <div class="timeline-entry">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-header">
+                      <span class="timeline-type">{{ entry.changeType }}</span>
+                      <span class="timeline-date">{{ formatDate(entry.changedAt) }}</span>
                     </div>
-                  }
-                </div>
-              </div>
-            }
-
-            <!-- History Tab -->
-            @if (activeDetailTab() === 'history') {
-              <div class="tab-content">
-                @if (loadingHistory()) {
-                  <div class="history-loading">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Cargando historial...
-                  </div>
-                } @else if (toothHistory().length === 0) {
-                  <div class="history-empty">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    <p>Sin cambios registrados</p>
-                  </div>
-                } @else {
-                  <div class="history-timeline">
-                    @for (entry of toothHistory(); track entry.id) {
-                      <div class="timeline-entry">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-content">
-                          <div class="timeline-header">
-                            <span class="timeline-type">{{ entry.changeType }}</span>
-                            <span class="timeline-date">{{ formatDate(entry.changedAt) }}</span>
-                          </div>
-                          @if (entry.description) {
-                            <p class="timeline-description">{{ entry.description }}</p>
-                          }
-                          <span class="timeline-user">
-                            <i class="fa-solid fa-user"></i> {{ entry.changedByName }}
-                          </span>
-                        </div>
-                      </div>
+                    @if (entry.description) {
+                      <p class="timeline-description">{{ entry.description }}</p>
                     }
+                    <span class="timeline-user">
+                      <i class="fa-solid fa-user"></i> {{ entry.changedByName }}
+                    </span>
                   </div>
-                }
-              </div>
-            }
-          </div>
-
-          <!-- Save Button -->
-          @if (!readonly()) {
-            <div class="detail-footer">
-              <button class="btn btn-outline btn-success" (click)="saveTooth()" [disabled]="saving()">
-                @if (saving()) {
-                  <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                } @else {
-                  <i class="fa-solid fa-save"></i> Guardar Cambios
-                }
-              </button>
+                </div>
+              }
             </div>
           }
         </div>
       }
-    </div>
+
+      <!-- Footer -->
+      @if (!readonly()) {
+        <div modal-footer>
+          <button type="button" class="btn btn-outline" (click)="closeDetail()" [disabled]="saving()">
+            <i class="fa-solid fa-times"></i>
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-outline btn-success" (click)="saveTooth()" [disabled]="saving()">
+            @if (saving()) {
+              <span class="btn-spinner"></span>
+              Guardando...
+            } @else {
+              <i class="fa-solid fa-floppy-disk"></i>
+              Guardar Cambios
+            }
+          </button>
+        </div>
+      }
+    </app-modal>
   }
 </div>

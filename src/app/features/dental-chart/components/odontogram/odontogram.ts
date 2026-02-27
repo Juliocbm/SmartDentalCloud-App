@@ -2,6 +2,7 @@ import { Component, inject, signal, computed, input, output, OnInit } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToothSvgComponent } from '../tooth-svg/tooth-svg';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { DentalChartService } from '../../services/dental-chart.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -37,7 +38,7 @@ import {
 @Component({
   selector: 'app-odontogram',
   standalone: true,
-  imports: [CommonModule, FormsModule, ToothSvgComponent],
+  imports: [CommonModule, FormsModule, ToothSvgComponent, ModalComponent],
   templateUrl: './odontogram.html',
   styleUrl: './odontogram.scss'
 })
