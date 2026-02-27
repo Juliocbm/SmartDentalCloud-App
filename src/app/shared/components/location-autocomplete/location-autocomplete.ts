@@ -40,7 +40,8 @@ export class LocationAutocompleteComponent implements OnChanges {
       this.selectedLocation.set({
         id: this.selectedLocationId,
         name: this.selectedLocationName,
-        isDefault: false
+        isDefault: false,
+        maxConcurrentAppointments: null
       });
       this.searchControl.setValue(this.selectedLocationName, { emitEvent: false });
     }

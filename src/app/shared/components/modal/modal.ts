@@ -19,7 +19,7 @@ export class ModalComponent {
   icon = input<string | undefined>();
   size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
   showCloseButton = input<boolean>(true);
-  closeOnBackdrop = input<boolean>(true);
+  closeOnBackdrop = input<boolean>(false);
 
   closed = output<void>();
 

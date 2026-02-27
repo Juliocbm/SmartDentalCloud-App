@@ -76,6 +76,38 @@
     </div>
   </div>
 
+  <!-- Capacidad -->
+  <div class="form-group">
+    <label class="form-label">
+      <i class="fa-solid fa-users-between-lines"></i>
+      Capacidad de Citas Simultáneas
+    </label>
+    <label class="toggle-label">
+      <input
+        type="checkbox"
+        [ngModel]="formLimitCapacity()"
+        (ngModelChange)="formLimitCapacity.set($event)"
+      />
+      <span class="toggle-text">Limitar capacidad</span>
+    </label>
+    @if (formLimitCapacity()) {
+      <div class="capacity-input">
+        <input
+          type="number"
+          class="form-input"
+          min="1"
+          max="50"
+          placeholder="Ej: 3"
+          [ngModel]="formCapacity()"
+          (ngModelChange)="formCapacity.set($event)"
+        />
+        <span class="form-hint">Máximo de citas que pueden ocurrir al mismo tiempo en esta sucursal</span>
+      </div>
+    } @else {
+      <span class="form-hint">Sin límite — se permiten citas ilimitadas de forma simultánea</span>
+    }
+  </div>
+
   <!-- Doctores asignados -->
   <div class="doctors-section">
     <label class="form-label">

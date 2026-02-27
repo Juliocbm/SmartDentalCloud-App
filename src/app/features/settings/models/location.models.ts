@@ -12,6 +12,7 @@ export interface Location {
   isActive: boolean;
   isDefault: boolean;
   sortOrder: number;
+  maxConcurrentAppointments: number | null;
   createdAt: string;
   updatedAt: string | null;
   assignedUsers: LocationUser[];
@@ -21,6 +22,7 @@ export interface LocationSummary {
   id: string;
   name: string;
   isDefault: boolean;
+  maxConcurrentAppointments: number | null;
 }
 
 export interface LocationUser {
@@ -35,6 +37,7 @@ export interface CreateLocationRequest {
   email?: string | null;
   isDefault: boolean;
   sortOrder: number;
+  maxConcurrentAppointments?: number | null;
 }
 
 export interface UpdateLocationRequest {
@@ -45,4 +48,5 @@ export interface UpdateLocationRequest {
   email?: string | null;
   isDefault: boolean;
   sortOrder: number;
+  maxConcurrentAppointments?: number | null;
 }

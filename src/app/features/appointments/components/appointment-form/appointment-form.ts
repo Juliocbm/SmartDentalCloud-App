@@ -47,6 +47,7 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
   locationsService = inject(LocationsService);
 
   selectedLocationId = signal<string | null>(null);
+  selectedLocationName = signal<string | null>(null);
 
   appointmentForm!: FormGroup;
   loading = signal(false);
@@ -194,6 +195,15 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
       });
       this.appointmentForm.patchValue({
         patientId: context.preselectedPatientId
+      });
+    }
+
+    // Aplicar preselección de sucursal
+    if (context.preselectedLocationId && context.preselectedLocationName) {
+      this.selectedLocationId.set(context.preselectedLocationId);
+      this.selectedLocationName.set(context.preselectedLocationName);
+      this.appointmentForm.patchValue({
+        locationId: context.preselectedLocationId
       });
     }
 

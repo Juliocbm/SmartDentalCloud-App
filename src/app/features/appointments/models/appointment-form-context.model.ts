@@ -6,6 +6,8 @@ export interface AppointmentFormContext {
   preselectedDentistSpecialization: string | null;
   preselectedPatientId: string | null;
   preselectedPatientName: string | null;
+  preselectedLocationId: string | null;
+  preselectedLocationName: string | null;
   preselectedStartAt: Date | null;
   preselectedEndAt: Date | null;
   returnUrl: string;
@@ -19,6 +21,8 @@ export const DEFAULT_APPOINTMENT_CONTEXT: AppointmentFormContext = {
   preselectedDentistSpecialization: null,
   preselectedPatientId: null,
   preselectedPatientName: null,
+  preselectedLocationId: null,
+  preselectedLocationName: null,
   preselectedStartAt: null,
   preselectedEndAt: null,
   returnUrl: ROUTES.APPOINTMENTS,
@@ -53,13 +57,17 @@ export const CALENDAR_APPOINTMENT_CONTEXT = (
   endAt: Date,
   dentistId?: string,
   dentistName?: string,
-  dentistSpecialization?: string
+  dentistSpecialization?: string,
+  locationId?: string,
+  locationName?: string
 ): Partial<AppointmentFormContext> => ({
   preselectedStartAt: startAt,
   preselectedEndAt: endAt,
   preselectedDentistId: dentistId || null,
   preselectedDentistName: dentistName || null,
   preselectedDentistSpecialization: dentistSpecialization || null,
+  preselectedLocationId: locationId || null,
+  preselectedLocationName: locationName || null,
   returnUrl: ROUTES.APPOINTMENTS_CALENDAR,
   lockDentist: !!dentistId
 });

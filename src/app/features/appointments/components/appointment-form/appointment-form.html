@@ -88,8 +88,9 @@
         </h3>
         <app-location-autocomplete
           [selectedLocationId]="selectedLocationId()"
+          [selectedLocationName]="selectedLocationName()"
           placeholder="Seleccionar sucursal..."
-          (locationSelected)="selectedLocationId.set($event?.id ?? null); appointmentForm.patchValue({ locationId: $event?.id ?? null })"
+          (locationSelected)="selectedLocationId.set($event?.id ?? null); selectedLocationName.set($event?.name ?? null); appointmentForm.patchValue({ locationId: $event?.id ?? null })"
         >
           Sucursal
         </app-location-autocomplete>

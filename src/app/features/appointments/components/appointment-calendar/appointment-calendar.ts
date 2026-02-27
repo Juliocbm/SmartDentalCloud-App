@@ -381,6 +381,7 @@ export class AppointmentCalendarComponent implements OnInit {
     const slot = this.selectedSlot();
     if (slot) {
       const dentist = this.selectedDentistObj();
+      const location = this.selectedLocationObj();
 
       this.contextService.setContext(
         CALENDAR_APPOINTMENT_CONTEXT(
@@ -388,7 +389,9 @@ export class AppointmentCalendarComponent implements OnInit {
           slot.end,
           dentist?.id,
           dentist?.name,
-          dentist?.specialization ?? undefined
+          dentist?.specialization ?? undefined,
+          location?.id,
+          location?.name
         )
       );
 

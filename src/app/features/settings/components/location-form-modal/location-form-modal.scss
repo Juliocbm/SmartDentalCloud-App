@@ -25,6 +25,22 @@
   }
 }
 
+// Capacity
+.capacity-input {
+  margin-top: var(--spacing-sm);
+
+  .form-input {
+    max-width: 120px;
+  }
+}
+
+.form-hint {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
 // Doctors assignment section
 .doctors-section {
   margin-top: var(--spacing-md);

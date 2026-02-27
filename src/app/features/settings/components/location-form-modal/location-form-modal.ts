@@ -55,6 +55,10 @@ export class LocationFormModalComponent implements OnInit {
   formIsDefault = signal(false);
   formSortOrder = signal(0);
 
+  // Capacity
+  formLimitCapacity = signal(false);
+  formCapacity = signal(1);
+
   // Doctors assignment
   doctors = signal<DoctorOption[]>([]);
 
@@ -81,6 +85,8 @@ export class LocationFormModalComponent implements OnInit {
       this.formEmail.set(loc.email || '');
       this.formIsDefault.set(loc.isDefault);
       this.formSortOrder.set(loc.sortOrder);
+      this.formLimitCapacity.set(loc.maxConcurrentAppointments != null);
+      this.formCapacity.set(loc.maxConcurrentAppointments ?? 1);
       this.loadDoctors(loc.assignedUsers);
     } else {
       this.loadDoctors([]);
@@ -127,7 +133,8 @@ export class LocationFormModalComponent implements OnInit {
         phone: this.formPhone().trim() || null,
         email: this.formEmail().trim() || null,
         isDefault: this.formIsDefault(),
-        sortOrder: this.formSortOrder()
+        sortOrder: this.formSortOrder(),
+        maxConcurrentAppointments: this.formLimitCapacity() ? this.formCapacity() : null
       };
 
       this.locationsService.update(data.id, data).subscribe({
@@ -146,7 +153,8 @@ export class LocationFormModalComponent implements OnInit {
         phone: this.formPhone().trim() || null,
         email: this.formEmail().trim() || null,
         isDefault: this.formIsDefault(),
-        sortOrder: this.formSortOrder()
+        sortOrder: this.formSortOrder(),
+        maxConcurrentAppointments: this.formLimitCapacity() ? this.formCapacity() : null
       };
 
       this.locationsService.create(data).subscribe({

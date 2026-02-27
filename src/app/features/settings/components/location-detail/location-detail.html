@@ -94,6 +94,16 @@
                 }
               </span>
             </div>
+            <div class="info-row">
+              <span class="info-label">Capacidad:</span>
+              <span class="info-value">
+                @if (loc.maxConcurrentAppointments != null) {
+                  <span class="badge badge-neutral">{{ loc.maxConcurrentAppointments }} lugar{{ loc.maxConcurrentAppointments === 1 ? '' : 'es' }}</span>
+                } @else {
+                  Sin límite
+                }
+              </span>
+            </div>
           </div>
         </div>
 
