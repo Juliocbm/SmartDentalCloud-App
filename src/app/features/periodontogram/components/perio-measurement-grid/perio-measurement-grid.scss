@@ -1,0 +1,328 @@
+// ============================================
+// Perio Measurement Grid Styles
+// ============================================
+
+.perio-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  outline: none;
+}
+
+// === Jaw Section ===
+.jaw-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.jaw-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+
+  i { color: var(--color-primary); font-size: 0.8rem; }
+}
+
+.surface-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+  padding: 0.4rem 1rem 0.15rem;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border-light, #eee);
+}
+
+// === Grid Table ===
+.grid-table-wrapper {
+  overflow-x: auto;
+}
+
+.grid-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 960px;
+  table-layout: fixed;
+
+  th, td {
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-border-light, #e8e8e8);
+    border-right: 1px solid var(--color-border-light, #e8e8e8);
+  }
+}
+
+// Row label (first column: PD, Margen, NIC, etc.)
+.row-label-cell {
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-align: right;
+  padding: 0 6px 0 0 !important;
+  background: var(--color-bg);
+  border-right: 2px solid var(--color-border) !important;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+// Tooth number header
+.tooth-header {
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--color-border) !important;
+  padding: 3px 0 !important;
+  
+  .th-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  &.tooth-missing {
+    background: #f9f9f9;
+    .th-num {
+      color: #bbb;
+      text-decoration: line-through;
+    }
+  }
+}
+
+// Quadrant divider (between tooth 8 and 9 — midline)
+.quadrant-divider {
+  border-left: 2px solid var(--color-primary) !important;
+}
+
+.quadrant-divider-cell {
+  border-left: 2px solid var(--color-primary) !important;
+}
+
+// === Site Cell ===
+.site-cell {
+  width: calc((100% - 56px) / 48); // 16 teeth × 3 sites
+  height: 26px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.1s;
+
+  // Every 3rd cell (tooth boundary) gets a stronger right border
+  &:nth-child(3n + 1):not(.row-label-cell) {
+    border-right-color: var(--color-border-light, #e8e8e8);
+  }
+
+  &:hover {
+    background: var(--primary-50, #E3F2FD);
+  }
+
+  &.active-cell {
+    background: var(--primary-100, #BBDEFB);
+    box-shadow: inset 0 0 0 1.5px var(--color-primary);
+    z-index: 1;
+  }
+}
+
+// Numeric input inside cell
+.site-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text);
+  outline: none;
+  padding: 0;
+  -moz-appearance: textfield;
+  appearance: textfield;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+
+  &:focus {
+    background: var(--primary-50, #E3F2FD);
+  }
+
+  // Severity colors
+  &.pd-normal { color: #2E7D32; }
+  &.pd-moderate { color: #E65100; font-weight: 600; }
+  &.pd-severe { color: #C62828; font-weight: 700; background: #FFF5F5; }
+}
+
+// Readonly value display
+.site-value {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text);
+  display: block;
+  line-height: 26px;
+
+  &.pd-normal { color: #2E7D32; }
+  &.pd-moderate { color: #E65100; font-weight: 600; }
+  &.pd-severe { color: #C62828; font-weight: 700; }
+  &.cal-normal { color: #2E7D32; }
+  &.cal-moderate { color: #E65100; }
+  &.cal-severe { color: #C62828; font-weight: 600; }
+}
+
+// CAL row (auto-calculated, slightly muted)
+.cal-row {
+  td { background: #FAFBFC; }
+
+  .row-label-cell {
+    font-style: italic;
+    background: var(--color-bg);
+  }
+}
+
+// Boolean rows (bleeding / suppuration)
+.bool-row {
+  .site-cell {
+    height: 22px;
+  }
+}
+
+.bool-cell {
+  cursor: pointer;
+
+  &:hover .bool-dot {
+    opacity: 0.7;
+    transform: scale(1.15);
+  }
+}
+
+.bool-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #E8E8E8;
+  border: 1.5px solid #D0D0D0;
+  transition: all 0.15s;
+  vertical-align: middle;
+
+  &.bleeding-active {
+    background: #E53935;
+    border-color: #C62828;
+    box-shadow: 0 0 4px rgba(229, 57, 53, 0.35);
+  }
+
+  &.suppuration-active {
+    background: #FFB300;
+    border-color: #FF8F00;
+    box-shadow: 0 0 4px rgba(255, 179, 0, 0.35);
+  }
+}
+
+// === Charts Between Tables ===
+.charts-between-tables {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0;
+  margin-left: 56px; // Match table label column width for alignment
+}
+
+.chart-surface-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.chart-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  padding-left: 0.25rem;
+}
+
+// === Extra rows (Mobility / Furcation) ===
+.extra-row-wrapper {
+  overflow-x: auto;
+}
+
+.extra-table {
+  min-width: 960px;
+}
+
+.extra-row {
+  .row-label-cell {
+    background: var(--color-bg);
+  }
+}
+
+.tooth-extra-cell {
+  height: 24px;
+  text-align: center;
+  border-right: 1px solid var(--color-border-light, #e8e8e8);
+  border-bottom: 1px solid var(--color-border-light, #e8e8e8);
+}
+
+.extra-input {
+  width: 30px;
+  height: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text);
+  outline: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+
+  &:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary);
+  }
+}
+
+.extra-value {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+// === Responsive ===
+@media (max-width: 1400px) {
+  .grid-table {
+    min-width: 800px;
+  }
+
+  .teeth-svg-row,
+  .extra-table {
+    min-width: 800px;
+  }
+}

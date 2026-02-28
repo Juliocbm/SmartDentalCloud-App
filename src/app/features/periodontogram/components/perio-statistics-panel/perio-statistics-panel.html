@@ -1,0 +1,129 @@
+<div class="perio-stats-panel">
+  <h4 class="panel-title">
+    <i class="fa-solid fa-chart-pie"></i>
+    Resumen Periodontal
+  </h4>
+
+  @if (stats(); as s) {
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">PD Promedio</span>
+        <span class="kpi-value" [style.color]="getPDColor(s.avgPD)">
+          {{ formatDecimal(s.avgPD) }}
+        </span>
+        <span class="kpi-unit">mm</span>
+      </div>
+
+      <div class="kpi-card">
+        <span class="kpi-label">NIC Promedio</span>
+        <span class="kpi-value" [style.color]="getCALColor(s.avgCAL)">
+          {{ formatDecimal(s.avgCAL) }}
+        </span>
+        <span class="kpi-unit">mm</span>
+      </div>
+
+      <div class="kpi-card">
+        <span class="kpi-label">% Sangrado (BOP)</span>
+        <span class="kpi-value" [style.color]="getBOPColor(s.bop)">
+          {{ formatPercent(s.bop) }}
+        </span>
+        <span class="kpi-unit">{{ s.bleedingCount }} / {{ s.totalSites }} sitios</span>
+      </div>
+
+      <div class="kpi-card">
+        <span class="kpi-label">Sitios &ge; 4mm</span>
+        <span class="kpi-value kpi-warning">{{ s.sitesOver4 }}</span>
+        <span class="kpi-unit">de {{ s.totalMeasured }} medidos</span>
+      </div>
+
+      <div class="kpi-card">
+        <span class="kpi-label">Sitios &ge; 6mm</span>
+        <span class="kpi-value kpi-danger">{{ s.sitesOver6 }}</span>
+        <span class="kpi-unit">de {{ s.totalMeasured }} medidos</span>
+      </div>
+
+      <div class="kpi-card">
+        <span class="kpi-label">Supuración</span>
+        <span class="kpi-value">{{ s.suppurationCount }}</span>
+        <span class="kpi-unit">sitios</span>
+      </div>
+    </div>
+
+    <!-- PD Distribution Bar -->
+    @if (s.totalMeasured > 0) {
+      <div class="distribution-section">
+        <span class="dist-title">Distribución PD</span>
+        <div class="dist-bar">
+          @if (s.pd0to3 > 0) {
+            <div class="dist-segment dist-normal"
+              [style.width.%]="(s.pd0to3 / s.totalMeasured) * 100"
+              [title]="'0-3mm: ' + s.pd0to3 + ' sitios'">
+              {{ s.pd0to3 }}
+            </div>
+          }
+          @if (s.pd4to5 > 0) {
+            <div class="dist-segment dist-moderate"
+              [style.width.%]="(s.pd4to5 / s.totalMeasured) * 100"
+              [title]="'4-5mm: ' + s.pd4to5 + ' sitios'">
+              {{ s.pd4to5 }}
+            </div>
+          }
+          @if (s.pd6plus > 0) {
+            <div class="dist-segment dist-severe"
+              [style.width.%]="(s.pd6plus / s.totalMeasured) * 100"
+              [title]="'≥6mm: ' + s.pd6plus + ' sitios'">
+              {{ s.pd6plus }}
+            </div>
+          }
+        </div>
+        <div class="dist-legend">
+          <span class="legend-item"><span class="legend-dot dot-normal"></span> 0-3mm</span>
+          <span class="legend-item"><span class="legend-dot dot-moderate"></span> 4-5mm</span>
+          <span class="legend-item"><span class="legend-dot dot-severe"></span> &ge;6mm</span>
+        </div>
+      </div>
+    }
+
+    <!-- Tooth Summary -->
+    <div class="teeth-summary">
+      <div class="summary-row">
+        <span class="summary-label">Piezas con datos</span>
+        <span class="summary-value">{{ s.teethWithData }} / 32</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Piezas ausentes</span>
+        <span class="summary-value">{{ s.missingTeeth }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Sitios medidos</span>
+        <span class="summary-value">{{ s.totalMeasured }} / {{ s.totalSites }}</span>
+      </div>
+    </div>
+
+    <!-- Classification (from backend, if available) -->
+    @if (classification) {
+      <div class="classification-section">
+        <span class="classification-title">Clasificación</span>
+        <div class="classification-card">
+          <span class="classification-name">{{ classification }}</span>
+          @if (grade) {
+            <span class="classification-grade">Grado {{ grade }}</span>
+          }
+          @if (riskLevel) {
+            <span class="badge badge-sm"
+              [ngClass]="(RISK_LEVEL_CONFIG[riskLevel] || RISK_LEVEL_CONFIG['Desconocido']).cssClass">
+              Riesgo: {{ riskLevel }}
+            </span>
+          }
+        </div>
+      </div>
+    }
+
+  } @else {
+    <div class="stats-empty">
+      <i class="fa-solid fa-chart-bar"></i>
+      <p>Sin datos para calcular estadísticas</p>
+    </div>
+  }
+</div>

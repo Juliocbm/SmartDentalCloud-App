@@ -30,6 +30,11 @@ export const PATIENTS_ROUTES: Routes = [
         path: ':id/edit',
         loadComponent: () => import('./components/patient-form/patient-form')
           .then(m => m.PatientFormComponent)
+      },
+      {
+        path: ':id/periodontogram/:perioId',
+        loadComponent: () => import('../../features/periodontogram/components/periodontogram-page/periodontogram-page')
+          .then(m => m.PeriodontogramPageComponent)
       }
     ]
   }

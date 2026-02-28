@@ -1,0 +1,116 @@
+<div class="perio-history">
+  <div class="section-header-with-action">
+    <h3>
+      <i class="fa-solid fa-chart-line"></i>
+      Periodontogramas
+    </h3>
+    <div class="header-actions">
+      @if (items().length >= 2) {
+        <button class="btn btn-outline btn-sm" (click)="openComparison()">
+          <i class="fa-solid fa-code-compare"></i>
+          Comparar
+        </button>
+      }
+      <button class="btn btn-outline btn-sm" (click)="createNew()">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Periodontograma
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="inline-loading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <span>Cargando periodontogramas...</span>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state empty-state-sm">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-outline btn-sm" (click)="loadList()">
+        <i class="fa-solid fa-rotate"></i> Reintentar
+      </button>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="empty-state empty-state-sm">
+      <i class="fa-solid fa-chart-line"></i>
+      <h3>Sin Periodontogramas</h3>
+      <p>Este paciente no tiene periodontogramas registrados</p>
+      <button class="btn btn-outline btn-success" (click)="createNew()">
+        <i class="fa-solid fa-plus"></i>
+        Crear Primer Periodontograma
+      </button>
+    </div>
+  } @else {
+    <div class="perio-cards">
+      @for (item of items(); track item.id) {
+        <div class="perio-card" (click)="openPeriodontogram(item.id)">
+          <div class="perio-card-header">
+            <div class="perio-card-date">
+              <i class="fa-solid fa-calendar"></i>
+              {{ formatDate(item.examDate) }}
+            </div>
+            <span class="badge badge-sm"
+              [ngClass]="PERIO_STATUS_CONFIG[item.status].cssClass">
+              <i [class]="'fa-solid ' + PERIO_STATUS_CONFIG[item.status].icon"></i>
+              {{ PERIO_STATUS_CONFIG[item.status].label }}
+            </span>
+          </div>
+
+          <div class="perio-card-stats">
+            <div class="stat">
+              <span class="stat-label">PD Prom.</span>
+              <span class="stat-value">{{ formatDecimal(item.averageProbingDepth) }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">% BOP</span>
+              <span class="stat-value">{{ formatDecimal(item.bleedingPercentage) }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Sitios ≥4mm</span>
+              <span class="stat-value">{{ item.sitesOver4mm ?? '—' }}</span>
+            </div>
+          </div>
+
+          @if (item.periodontalClassification) {
+            <div class="perio-card-classification">
+              <span class="classification-label">{{ item.periodontalClassification }}</span>
+              @if (item.grade) {
+                <span class="classification-grade">Grado {{ item.grade }}</span>
+              }
+              @if (item.riskLevel) {
+                <span class="badge badge-xs"
+                  [ngClass]="(RISK_LEVEL_CONFIG[item.riskLevel] || RISK_LEVEL_CONFIG['Desconocido']).cssClass">
+                  {{ item.riskLevel }}
+                </span>
+              }
+            </div>
+          }
+
+          <div class="perio-card-footer">
+            <span class="perio-card-author">
+              <i class="fa-solid fa-user-doctor"></i>
+              {{ item.performedByName }}
+            </span>
+            <div class="perio-card-actions">
+              <button class="btn-icon-sm" title="Duplicar como nueva evaluación"
+                (click)="duplicatePeriodontogram(item); $event.stopPropagation()">
+                <i class="fa-solid fa-copy"></i>
+              </button>
+              @if (item.status !== 'Signed') {
+                <button class="btn-icon-sm" title="Eliminar"
+                  (click)="deletePeriodontogram(item); $event.stopPropagation()">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              }
+              <button class="btn-icon-sm" title="Ver detalle"
+                (click)="openPeriodontogram(item.id); $event.stopPropagation()">
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

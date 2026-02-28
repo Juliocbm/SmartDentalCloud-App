@@ -78,6 +78,13 @@
         </button>
         <button
           class="nav-item"
+          [class.active]="activeTab() === 'periodontogram'"
+          (click)="setActiveTab('periodontogram')">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Periodontograma</span>
+        </button>
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'fiscal'"
           (click)="setActiveTab('fiscal')">
           <i class="fa-solid fa-file-invoice"></i>
@@ -336,6 +343,16 @@
       @if (activeTab() === 'odontogram') {
         <div class="info-section">
           <app-odontogram
+            [patientId]="patient()!.id"
+            [patientName]="getFullName()"
+          />
+        </div>
+      }
+
+      <!-- Periodontogram Tab -->
+      @if (activeTab() === 'periodontogram') {
+        <div class="info-section">
+          <app-perio-history-list
             [patientId]="patient()!.id"
             [patientName]="getFullName()"
           />

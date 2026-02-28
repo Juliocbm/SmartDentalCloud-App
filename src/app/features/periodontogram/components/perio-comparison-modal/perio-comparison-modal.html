@@ -1,0 +1,208 @@
+<app-modal
+  title="Comparar Periodontogramas"
+  icon="fa-code-compare"
+  size="xl"
+  (closed)="close()">
+
+  <!-- Selection step -->
+  @if (!comparison()) {
+    <div class="comparison-selection">
+      <p class="selection-instruction">
+        Seleccione dos periodontogramas para comparar:
+      </p>
+
+      <div class="selection-columns">
+        <!-- Baseline (older) -->
+        <div class="selection-col">
+          <h4 class="col-title">
+            <i class="fa-solid fa-arrow-left"></i>
+            Línea Base (anterior)
+          </h4>
+          <div class="selection-list">
+            @for (item of items(); track item.id) {
+              <button class="selection-item"
+                [class.selected]="selectedId1() === item.id"
+                [class.disabled-item]="selectedId2() === item.id"
+                [disabled]="selectedId2() === item.id"
+                (click)="onSelect1(item.id)">
+                <span class="item-date">{{ formatDate(item.examDate) }}</span>
+                <span class="item-status badge badge-xs"
+                  [class.badge-warning]="item.status === 'Draft'"
+                  [class.badge-info]="item.status === 'Completed'"
+                  [class.badge-success]="item.status === 'Signed'">
+                  {{ item.status }}
+                </span>
+                <span class="item-pd">PD: {{ formatDecimal(item.averageProbingDepth) }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Current (newer) -->
+        <div class="selection-col">
+          <h4 class="col-title">
+            <i class="fa-solid fa-arrow-right"></i>
+            Actual (reciente)
+          </h4>
+          <div class="selection-list">
+            @for (item of items(); track item.id) {
+              <button class="selection-item"
+                [class.selected]="selectedId2() === item.id"
+                [class.disabled-item]="selectedId1() === item.id"
+                [disabled]="selectedId1() === item.id"
+                (click)="onSelect2(item.id)">
+                <span class="item-date">{{ formatDate(item.examDate) }}</span>
+                <span class="item-status badge badge-xs"
+                  [class.badge-warning]="item.status === 'Draft'"
+                  [class.badge-info]="item.status === 'Completed'"
+                  [class.badge-success]="item.status === 'Signed'">
+                  {{ item.status }}
+                </span>
+                <span class="item-pd">PD: {{ formatDecimal(item.averageProbingDepth) }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="comparison-error">
+          <i class="fa-solid fa-exclamation-circle"></i>
+          {{ error() }}
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Comparison results -->
+  @if (comparison(); as c) {
+    <div class="comparison-results">
+      <!-- Overall trend -->
+      <div class="overall-trend" [ngClass]="getTrendClass(c.overallTrend)">
+        <i class="fa-solid" [ngClass]="getTrendIcon(c.overallTrend)"></i>
+        <span class="trend-text">Tendencia General: <strong>{{ getTrendLabel(c.overallTrend) }}</strong></span>
+      </div>
+
+      <!-- Side-by-side summary -->
+      <div class="summary-comparison">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th class="metric-col">Métrica</th>
+              <th class="baseline-col">
+                Línea Base
+                <span class="date-sub">{{ formatDate(c.baseline.examDate) }}</span>
+              </th>
+              <th class="current-col">
+                Actual
+                <span class="date-sub">{{ formatDate(c.current.examDate) }}</span>
+              </th>
+              <th class="change-col">Cambio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="metric-label">PD Promedio</td>
+              <td>{{ formatDecimal(c.baseline.averageProbingDepth) }} mm</td>
+              <td>{{ formatDecimal(c.current.averageProbingDepth) }} mm</td>
+              <td [ngClass]="getChangeClass(c.probingDepthChange)">
+                {{ formatChange(c.probingDepthChange) }}
+              </td>
+            </tr>
+            <tr>
+              <td class="metric-label">NIC Promedio</td>
+              <td>{{ formatDecimal(c.baseline.averageCAL) }} mm</td>
+              <td>{{ formatDecimal(c.current.averageCAL) }} mm</td>
+              <td [ngClass]="getChangeClass(c.calChange)">
+                {{ formatChange(c.calChange) }}
+              </td>
+            </tr>
+            <tr>
+              <td class="metric-label">% Sangrado</td>
+              <td>{{ formatDecimal(c.baseline.bleedingPercentage) }}%</td>
+              <td>{{ formatDecimal(c.current.bleedingPercentage) }}%</td>
+              <td [ngClass]="getChangeClass(c.bleedingPercentageChange)">
+                {{ formatChange(c.bleedingPercentageChange) }}%
+              </td>
+            </tr>
+            <tr>
+              <td class="metric-label">Sitios &ge; 4mm</td>
+              <td>{{ c.baseline.sitesOver4mm ?? '—' }}</td>
+              <td>{{ c.current.sitesOver4mm ?? '—' }}</td>
+              <td [ngClass]="getChangeClass(c.sitesOver4mmChange)">
+                {{ formatChange(c.sitesOver4mmChange) }}
+              </td>
+            </tr>
+            <tr>
+              <td class="metric-label">Sitios &ge; 6mm</td>
+              <td>{{ c.baseline.sitesOver6mm ?? '—' }}</td>
+              <td>{{ c.current.sitesOver6mm ?? '—' }}</td>
+              <td [ngClass]="getChangeClass(c.sitesOver6mmChange)">
+                {{ formatChange(c.sitesOver6mmChange) }}
+              </td>
+            </tr>
+            <tr>
+              <td class="metric-label">Clasificación</td>
+              <td>{{ c.baseline.classification ?? '—' }}</td>
+              <td>{{ c.current.classification ?? '—' }}</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td class="metric-label">Grado</td>
+              <td>{{ c.baseline.grade ?? '—' }}</td>
+              <td>{{ c.current.grade ?? '—' }}</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Per-tooth changes (only showing teeth with notable changes) -->
+      @if (c.toothComparisons && c.toothComparisons.length > 0) {
+        <div class="tooth-changes">
+          <h4 class="section-title">Cambios por Pieza</h4>
+          <div class="tooth-changes-grid">
+            @for (tc of c.toothComparisons; track tc.toothNumber) {
+              @if (tc.trend !== 'Stable') {
+                <div class="tooth-change-chip" [ngClass]="getTrendClass(tc.trend)">
+                  <span class="chip-tooth">{{ tc.toothNumber }}</span>
+                  <i class="fa-solid" [ngClass]="getTrendIcon(tc.trend)"></i>
+                  @if (tc.probingDepthChange != null) {
+                    <span class="chip-detail">PD {{ formatChange(tc.probingDepthChange) }}</span>
+                  }
+                </div>
+              }
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Footer: always projected, content switches based on state -->
+  <div modal-footer>
+    @if (!comparison()) {
+      <button class="btn btn-outline" (click)="close()">
+        Cancelar
+      </button>
+      <button class="btn btn-primary"
+        [disabled]="!canCompare() || loading()"
+        (click)="compare()">
+        @if (loading()) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        } @else {
+          <i class="fa-solid fa-code-compare"></i>
+        }
+        Comparar
+      </button>
+    } @else {
+      <button class="btn btn-outline" (click)="comparison.set(null)">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver a selección
+      </button>
+      <button class="btn btn-primary" (click)="close()">
+        Cerrar
+      </button>
+    }
+  </div>
+</app-modal>

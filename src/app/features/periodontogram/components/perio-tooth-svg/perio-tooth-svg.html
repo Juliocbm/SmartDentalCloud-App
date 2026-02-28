@@ -1,0 +1,76 @@
+<div class="perio-tooth-wrapper" [class.missing]="isMissing()">
+  <!-- 1. Tooth Shape SVG (same paths as odontogram) -->
+  <svg
+    class="perio-tooth-shape"
+    [class.upper]="jaw() === 'upper'"
+    [class.lower]="jaw() === 'lower'"
+    [attr.viewBox]="viewBox()"
+    xmlns="http://www.w3.org/2000/svg">
+
+    @if (toothData(); as td) {
+      <g class="realistic-tooth" [class.absent-tooth]="isMissing()">
+        @for (p of td.paths; track $index) {
+          <path
+            [attr.d]="p.d"
+            [attr.fill]="p.role === 's' ? shadowFill() : toothFill()"/>
+        }
+      </g>
+    }
+
+    <!-- 2. Perio-specific overlays -->
+
+    <!-- Vestibular bleeding dots (BOP) -->
+    @for (site of vestibularSites(); track site.site) {
+      @if (site.bleeding) {
+        <circle
+          [attr.cx]="getSiteX(site.site)"
+          [attr.cy]="bleedingY()"
+          r="2"
+          class="bleeding-dot"/>
+      }
+      @if (site.suppuration) {
+        <circle
+          [attr.cx]="getSiteX(site.site)"
+          [attr.cy]="suppurationY()"
+          r="1.5"
+          class="suppuration-dot"/>
+      }
+    }
+
+    <!-- Furcation marker (only molars with furcation > 0) -->
+    @if (isMolar() && furcation() !== null && furcation()! > 0) {
+      <text
+        [attr.x]="cx()"
+        [attr.y]="furcationY()"
+        text-anchor="middle"
+        dominant-baseline="central"
+        class="furcation-marker"
+        [class.furcation-1]="furcation() === 1"
+        [class.furcation-2]="furcation() === 2"
+        [class.furcation-3]="furcation() === 3">
+        {{ furcationSymbol() }}
+      </text>
+    }
+
+    <!-- Missing X overlay -->
+    @if (isMissing()) {
+      <line [attr.x1]="tw()*0.2" [attr.y1]="crownCY()-th()*0.15"
+            [attr.x2]="tw()*0.8" [attr.y2]="crownCY()+th()*0.15" class="missing-x"/>
+      <line [attr.x1]="tw()*0.8" [attr.y1]="crownCY()-th()*0.15"
+            [attr.x2]="tw()*0.2" [attr.y2]="crownCY()+th()*0.15" class="missing-x"/>
+    }
+  </svg>
+
+  <!-- 3. Mobility badge (below/above tooth) -->
+  @if (mobility() !== null && mobility()! > 0) {
+    <span class="mobility-badge"
+      [class.mobility-1]="mobility() === 1"
+      [class.mobility-2]="mobility() === 2"
+      [class.mobility-3]="mobility() === 3">
+      {{ mobility() }}
+    </span>
+  }
+
+  <!-- 4. Tooth number -->
+  <span class="tooth-number">{{ fdi() }}</span>
+</div>

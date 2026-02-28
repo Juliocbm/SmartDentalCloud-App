@@ -1,0 +1,141 @@
+.perio-chart-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.perio-chart-svg {
+  width: 100%;
+  min-width: 576px;
+  height: auto;
+  display: block;
+}
+
+// Midline
+.midline {
+  stroke: var(--color-primary);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  opacity: 0.4;
+}
+
+// Root area grid lines (thin gray ruled lines behind teeth)
+.root-grid-line {
+  stroke: #d0d0d0;
+  stroke-width: 0.5;
+  opacity: 0.6;
+}
+
+// CEJ baseline
+.cej-baseline {
+  stroke: #bdbdbd;
+  stroke-width: 0.75;
+  stroke-dasharray: none;
+  opacity: 0.7;
+}
+
+// Tooth group
+.tooth-group {
+  &:hover {
+    .tooth-hitarea {
+      fill: rgba(var(--primary-rgb, 33, 150, 243), 0.05);
+    }
+  }
+}
+
+.tooth-selected {
+  .tooth-hitarea {
+    fill: rgba(var(--primary-rgb, 33, 150, 243), 0.08);
+  }
+}
+
+.tooth-selection-bg {
+  fill: rgba(var(--primary-rgb, 33, 150, 243), 0.12);
+  stroke: var(--color-primary);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+.tooth-missing-group {
+  opacity: 0.45;
+}
+
+.absent-path {
+  stroke: var(--border-medium, #BDBDBD);
+  stroke-width: 0.6;
+  stroke-dasharray: 2 1.5;
+}
+
+.missing-x {
+  stroke: #9E9E9E;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+
+// Gingival margin line
+.gingival-margin-line {
+  stroke: #E53935;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.probing-depth-line {
+  stroke: #1565C0;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+// Pocket shading
+.pocket-shading {
+  fill: rgba(229, 57, 53, 0.12);
+  stroke: none;
+}
+
+// BOP dots
+.bop-dot {
+  fill: #E53935;
+  stroke: #C62828;
+  stroke-width: 0.5;
+  opacity: 0.85;
+}
+
+.suppuration-dot {
+  fill: #FFB300;
+  stroke: #FF8F00;
+  stroke-width: 0.5;
+  opacity: 0.85;
+}
+
+// Furcation text
+.furcation-text {
+  font-size: 7px;
+  font-weight: 700;
+}
+
+// Mobility text
+.mobility-text {
+  font-size: 9px;
+  font-weight: 700;
+}
+
+// Tooth number labels
+.tooth-number-label {
+  font-size: 8px;
+  font-weight: 600;
+  fill: var(--text-secondary, #666);
+  user-select: none;
+
+  &.tooth-number-missing {
+    fill: var(--color-text-muted, #999);
+    text-decoration: line-through;
+  }
+
+  &.tooth-number-selected {
+    fill: var(--color-primary);
+    font-weight: 700;
+  }
+}

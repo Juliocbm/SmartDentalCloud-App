@@ -11,13 +11,14 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { OdontogramComponent } from '../../../dental-chart/components/odontogram/odontogram';
+import { PerioHistoryListComponent } from '../../../periodontogram/components/perio-history-list/perio-history-list';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent, PerioHistoryListComponent, PageHeaderComponent, AuditInfoComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
@@ -41,7 +42,7 @@ export class PatientDetailComponent implements OnInit {
   patient = signal<Patient | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
-  activeTab = signal<'info' | 'medical' | 'odontogram' | 'fiscal' | 'financial' | 'history' | 'files'>('info');
+  activeTab = signal<'info' | 'medical' | 'odontogram' | 'periodontogram' | 'fiscal' | 'financial' | 'history' | 'files'>('info');
 
   // Medical history editing state
   editingMedical = signal(false);
@@ -106,7 +107,7 @@ export class PatientDetailComponent implements OnInit {
     });
   }
 
-  setActiveTab(tab: 'info' | 'medical' | 'odontogram' | 'fiscal' | 'financial' | 'history' | 'files'): void {
+  setActiveTab(tab: 'info' | 'medical' | 'odontogram' | 'periodontogram' | 'fiscal' | 'financial' | 'history' | 'files'): void {
     this.activeTab.set(tab);
     if (tab === 'files' && this.files().length === 0 && !this.filesLoading()) {
       this.loadFiles();

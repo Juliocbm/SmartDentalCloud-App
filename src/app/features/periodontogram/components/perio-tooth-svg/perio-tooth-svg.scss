@@ -1,0 +1,124 @@
+:host {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.perio-tooth-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  gap: 0;
+  padding: 2px 1px;
+  width: 100%;
+  max-width: 54px;
+
+  &.missing {
+    opacity: 0.5;
+  }
+}
+
+.perio-tooth-shape {
+  width: 100%;
+  max-width: 36px;
+  height: auto;
+  aspect-ratio: auto;
+  overflow: visible;
+}
+
+// Tooth paths
+.realistic-tooth {
+  transition: opacity 0.15s;
+}
+
+.absent-tooth {
+  opacity: 0.4;
+
+  path {
+    stroke: var(--border-medium, #BDBDBD);
+    stroke-width: 0.8;
+    stroke-dasharray: 3 2;
+  }
+}
+
+// Missing X overlay
+.missing-x {
+  stroke: #9E9E9E;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+
+// Bleeding dot (BOP)
+.bleeding-dot {
+  fill: #E53935;
+  stroke: #C62828;
+  stroke-width: 0.5;
+  opacity: 0.85;
+}
+
+// Suppuration dot
+.suppuration-dot {
+  fill: #FFB300;
+  stroke: #FF8F00;
+  stroke-width: 0.5;
+  opacity: 0.85;
+}
+
+// Furcation marker
+.furcation-marker {
+  font-size: 7px;
+  font-weight: 700;
+  fill: var(--color-text-muted, #757575);
+
+  &.furcation-1 { fill: #43A047; }
+  &.furcation-2 { fill: #FB8C00; }
+  &.furcation-3 { fill: #E53935; }
+}
+
+// Mobility badge
+.mobility-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background: #757575;
+  line-height: 1;
+
+  &.mobility-1 { background: #43A047; }
+  &.mobility-2 { background: #FB8C00; }
+  &.mobility-3 { background: #E53935; }
+}
+
+// Tooth number
+.tooth-number {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-secondary, #666);
+  line-height: 1;
+  user-select: none;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .perio-tooth-shape {
+    width: 24px;
+    height: 32px;
+  }
+
+  .mobility-badge {
+    width: 11px;
+    height: 11px;
+    font-size: 7px;
+  }
+
+  .tooth-number {
+    font-size: 7px;
+  }
+}

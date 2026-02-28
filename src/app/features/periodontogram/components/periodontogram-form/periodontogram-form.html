@@ -1,0 +1,132 @@
+<div class="periodontogram-form">
+
+  <!-- Action Bar -->
+  <div class="form-action-bar">
+    <div class="action-bar-left">
+      @if (quickStats(); as stats) {
+        <div class="quick-stats">
+          <div class="qs-item">
+            <span class="qs-label">PD Prom.</span>
+            <span class="qs-value">{{ stats.avgPD }}</span>
+          </div>
+          <div class="qs-item">
+            <span class="qs-label">% BOP</span>
+            <span class="qs-value">{{ stats.bop }}%</span>
+          </div>
+          <div class="qs-item">
+            <span class="qs-label">Sitios &ge;4mm</span>
+            <span class="qs-value">{{ stats.sitesOver4 }}</span>
+          </div>
+          <div class="qs-item">
+            <span class="qs-label">Sitios &ge;6mm</span>
+            <span class="qs-value">{{ stats.sitesOver6 }}</span>
+          </div>
+          <div class="qs-item">
+            <span class="qs-label">Ausentes</span>
+            <span class="qs-value">{{ stats.missingTeeth }}</span>
+          </div>
+          <div class="qs-item">
+            <span class="qs-label">Medidos</span>
+            <span class="qs-value">{{ stats.totalMeasured }}</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="action-bar-right">
+      @if (lastSavedAt()) {
+        <span class="save-indicator">
+          <i class="fa-solid fa-check"></i>
+          Guardado {{ formatTime(lastSavedAt()) }}
+        </span>
+      }
+      @if (hasChanges()) {
+        <span class="unsaved-indicator">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          Cambios sin guardar
+        </span>
+      }
+
+      @if (!isReadonly()) {
+        <button class="btn btn-secondary btn-sm"
+          [disabled]="saving() || !hasChanges()"
+          (click)="save()">
+          @if (saving()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          } @else {
+            <i class="fa-solid fa-floppy-disk"></i>
+          }
+          Guardar
+          <kbd class="kbd-hint">Ctrl+S</kbd>
+        </button>
+
+        <button class="btn btn-success btn-sm"
+          [disabled]="signing() || !canSign()"
+          (click)="sign()">
+          @if (signing()) {
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          } @else {
+            <i class="fa-solid fa-file-signature"></i>
+          }
+          Firmar
+          <kbd class="kbd-hint">Ctrl+Enter</kbd>
+        </button>
+      } @else {
+        <span class="badge badge-success">
+          <i class="fa-solid fa-lock"></i>
+          Firmado — Solo lectura
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- Measurement Grid (includes charts and tables) -->
+  <app-perio-measurement-grid
+    [teeth]="teeth()"
+    [readonly]="isReadonly()"
+    [selectedTooth]="selectedTooth"
+    (teethChange)="onTeethChange($event)"
+    (dataChanged)="onDataChanged()"
+    (toothSelected)="onToothSelected($event)"/>
+
+  <!-- Statistics Panel -->
+  <app-perio-statistics-panel
+    [teeth]="teeth()"
+    [classification]="periodontogram?.periodontalClassification ?? null"
+    [grade]="periodontogram?.grade ?? null"
+    [riskLevel]="periodontogram?.riskLevel ?? null"/>
+
+  <!-- Notes Section -->
+  <div class="notes-section">
+    <label class="notes-label" for="perio-notes">
+      <i class="fa-solid fa-note-sticky"></i>
+      Observaciones
+    </label>
+    <textarea
+      id="perio-notes"
+      class="form-input notes-textarea"
+      rows="3"
+      placeholder="Notas generales del periodontograma..."
+      [value]="notes()"
+      [readonly]="isReadonly()"
+      (input)="onNotesChange($any($event.target).value)">
+    </textarea>
+  </div>
+
+  <!-- Keyboard Shortcuts Legend -->
+  <div class="shortcuts-legend">
+    <span class="legend-title">
+      <i class="fa-solid fa-keyboard"></i>
+      Atajos
+    </span>
+    <span class="legend-item"><kbd>Tab</kbd> Siguiente sitio</span>
+    <span class="legend-item"><kbd>&larr;</kbd><kbd>&rarr;</kbd> Navegar sitios</span>
+    <span class="legend-item"><kbd>&uarr;</kbd><kbd>&darr;</kbd> Navegar filas</span>
+    <span class="legend-item"><kbd>B</kbd> Sangrado</span>
+    <span class="legend-item"><kbd>E</kbd> Exudado</span>
+    <span class="legend-item"><kbd>M</kbd> Ausente</span>
+    <span class="legend-item"><kbd>Ctrl+S</kbd> Guardar</span>
+    <span class="legend-item"><kbd>Esc</kbd> Deseleccionar</span>
+  </div>
+
+</div>

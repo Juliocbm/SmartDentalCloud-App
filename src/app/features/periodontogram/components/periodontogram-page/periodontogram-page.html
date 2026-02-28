@@ -1,0 +1,73 @@
+<div class="detail-container">
+  <app-page-header
+    [title]="getTitle()"
+    [icon]="'fa-chart-line'"
+    [showBackButton]="true"
+    [breadcrumbs]="breadcrumbItems"
+    (backClick)="goBack()">
+    <div title-extra>
+      @if (periodontogram(); as perio) {
+        <span class="status-badge"
+          [ngClass]="PERIO_STATUS_CONFIG[perio.status].cssClass">
+          <i [class]="'fa-solid ' + PERIO_STATUS_CONFIG[perio.status].icon"></i>
+          {{ PERIO_STATUS_CONFIG[perio.status].label }}
+        </span>
+      }
+    </div>
+    <div actions>
+      <!-- Future: Sign, Export, Compare buttons -->
+    </div>
+  </app-page-header>
+
+  @if (loading() || creating()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>{{ creating() ? 'Creando periodontograma...' : 'Cargando periodontograma...' }}</p>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error</h2>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  } @else if (periodontogram(); as perio) {
+    <div class="perio-content">
+      <!-- Summary bar -->
+      <div class="perio-summary-bar">
+        <div class="summary-item">
+          <span class="summary-label">Paciente</span>
+          <span class="summary-value">{{ perio.patientName }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Fecha</span>
+          <span class="summary-value">{{ formatDate(perio.examDate) }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Realizado por</span>
+          <span class="summary-value">{{ perio.performedByName }}</span>
+        </div>
+        @if (perio.periodontalClassification) {
+          <div class="summary-item">
+            <span class="summary-label">Clasificación</span>
+            <span class="summary-value">
+              {{ perio.periodontalClassification }}
+              @if (perio.grade) { — Grado {{ perio.grade }} }
+            </span>
+          </div>
+        }
+      </div>
+
+      <!-- Measurement Form (grid + notes + actions) -->
+      <app-periodontogram-form
+        [periodontogram]="perio"
+        [patientId]="patientId"
+        (saved)="onSaved($event)"
+        (signed)="onSigned($event)"
+        (back)="goBack()"/>
+    </div>
+  }
+</div>
