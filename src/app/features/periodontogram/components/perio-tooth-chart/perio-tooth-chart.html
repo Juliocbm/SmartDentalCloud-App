@@ -147,18 +147,5 @@
       </text>
     }
 
-    <!-- Tooth numbers -->
-    @for (tn of teethOrder; track tn; let i = $index) {
-      <text
-        [attr.x]="getToothCenterX(i)"
-        [attr.y]="getToothNumberY()"
-        text-anchor="middle"
-        class="tooth-number-label"
-        [class.tooth-number-missing]="getToothByNumber(tn)?.isMissing"
-        [class.tooth-number-selected]="isSelected(tn)">
-        {{ tn }}
-      </text>
-    }
-
   </svg>
 </div>

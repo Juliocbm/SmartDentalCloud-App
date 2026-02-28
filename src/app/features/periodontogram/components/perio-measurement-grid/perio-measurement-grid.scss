@@ -5,7 +5,7 @@
 .perio-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2xl);
+  gap: var(--spacing-md);
   outline: none;
 }
 
@@ -87,9 +87,8 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--primary-500);
-  padding: var(--spacing-xs) var(--spacing-lg) 2px;
+  padding: 2px var(--spacing-lg) 1px;
   background: var(--surface-secondary);
-  border-top: 1px solid var(--border-secondary);
 }
 
 // === Grid Table ===
@@ -135,7 +134,7 @@
 .tooth-header {
   background: var(--surface-secondary);
   border-bottom: 2px solid var(--border-primary) !important;
-  padding: 3px 0 !important;
+  padding: 2px 0 !important;
   
   .th-num {
     font-size: var(--font-size-xs);
@@ -164,7 +163,7 @@
 // === Site Cell ===
 .site-cell {
   width: calc((100% - 56px) / 48); // 16 teeth × 3 sites
-  height: 26px;
+  height: 22px;
   cursor: pointer;
   position: relative;
   transition: background 0.1s;
@@ -223,7 +222,7 @@
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   display: block;
-  line-height: 26px;
+  line-height: 22px;
 
   &.pd-normal { color: var(--success-700); }
   &.pd-moderate { color: var(--warning-700); font-weight: var(--font-weight-semibold); }
@@ -246,7 +245,7 @@
 // Boolean rows (bleeding / suppuration)
 .bool-row {
   .site-cell {
-    height: 22px;
+    height: 18px;
   }
 }
 
@@ -261,8 +260,8 @@
 
 .bool-dot {
   display: inline-block;
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #E8E8E8;
   border: 1.5px solid #D0D0D0;
@@ -286,15 +285,15 @@
 .charts-between-tables {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) 0;
+  gap: 0;
+  padding: 2px 0;
   margin-left: 56px; // Match table label column width for alignment
 }
 
 .chart-surface-section {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
 }
 
 .chart-label {
@@ -322,15 +321,15 @@
 }
 
 .tooth-extra-cell {
-  height: 24px;
+  height: 20px;
   text-align: center;
   border-right: 1px solid var(--border-secondary);
   border-bottom: 1px solid var(--border-secondary);
 }
 
 .extra-input {
-  width: 30px;
-  height: 20px;
+  width: 28px;
+  height: 18px;
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-sm);
   background: var(--surface-primary);

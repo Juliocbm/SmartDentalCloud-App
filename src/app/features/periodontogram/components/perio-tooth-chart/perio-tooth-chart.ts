@@ -15,10 +15,10 @@ import {
  * Each tooth occupies a fixed-width column in the chart.
  */
 const TOOTH_COL_WIDTH = 36;
-const TOOTH_RENDER_HEIGHT = 52;  // Rendered height of each tooth
+const TOOTH_RENDER_HEIGHT = 46;  // Rendered height of each tooth
 const CHART_PADDING_LEFT = 0;
-const CHART_PADDING_TOP = 6;
-const MARGIN_AREA_HEIGHT = 30;   // Space above/below teeth for gingival/root area
+const CHART_PADDING_TOP = 2;
+const MARGIN_AREA_HEIGHT = 22;   // Space above/below teeth for gingival/root area
 const CEJ_OFFSET_RATIO = 0.30;  // CEJ is ~30% into the tooth from the root end
 const GRID_LINE_SPACING = 5;    // px between horizontal grid lines (~2mm)
 const GRID_LINE_COUNT = 8;      // number of horizontal reference lines
