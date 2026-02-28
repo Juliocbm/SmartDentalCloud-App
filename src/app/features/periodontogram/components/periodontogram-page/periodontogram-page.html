@@ -7,15 +7,49 @@
     (backClick)="goBack()">
     <div title-extra>
       @if (periodontogram(); as perio) {
-        <span class="status-badge"
+        <span class="badge"
           [ngClass]="PERIO_STATUS_CONFIG[perio.status].cssClass">
           <i [class]="'fa-solid ' + PERIO_STATUS_CONFIG[perio.status].icon"></i>
           {{ PERIO_STATUS_CONFIG[perio.status].label }}
         </span>
       }
     </div>
-    <div actions>
-      <!-- Future: Sign, Export, Compare buttons -->
+    <div actions class="header-form-actions">
+      @if (formComponent && !formComponent.isReadonly()) {
+        @if (formComponent.hasChanges()) {
+          <span class="unsaved-indicator">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            Cambios sin guardar
+          </span>
+        }
+        <button type="button" class="btn btn-outline"
+          [disabled]="formComponent.saving() || !formComponent.hasChanges()"
+          (click)="formComponent.save()">
+          @if (formComponent.saving()) {
+            <span class="btn-spinner"></span>
+            Guardando...
+          } @else {
+            <i class="fa-solid fa-floppy-disk"></i>
+            Guardar
+          }
+        </button>
+        <button type="button" class="btn btn-outline btn-success"
+          [disabled]="formComponent.signing() || !formComponent.canSign()"
+          (click)="formComponent.sign()">
+          @if (formComponent.signing()) {
+            <span class="btn-spinner"></span>
+            Firmando...
+          } @else {
+            <i class="fa-solid fa-file-signature"></i>
+            Firmar
+          }
+        </button>
+      } @else if (formComponent?.isReadonly()) {
+        <span class="badge badge-success">
+          <i class="fa-solid fa-lock"></i>
+          Firmado — Solo lectura
+        </span>
+      }
     </div>
   </app-page-header>
 
@@ -29,39 +63,47 @@
       <i class="fa-solid fa-exclamation-circle"></i>
       <h2>Error</h2>
       <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="goBack()">
+      <button class="btn btn-outline" (click)="goBack()">
         <i class="fa-solid fa-arrow-left"></i>
         Volver
       </button>
     </div>
   } @else if (periodontogram(); as perio) {
     <div class="perio-content">
-      <!-- Summary bar -->
-      <div class="perio-summary-bar">
-        <div class="summary-item">
-          <span class="summary-label">Paciente</span>
-          <span class="summary-value">{{ perio.patientName }}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">Fecha</span>
-          <span class="summary-value">{{ formatDate(perio.examDate) }}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">Realizado por</span>
-          <span class="summary-value">{{ perio.performedByName }}</span>
-        </div>
-        @if (perio.periodontalClassification) {
-          <div class="summary-item">
-            <span class="summary-label">Clasificación</span>
-            <span class="summary-value">
-              {{ perio.periodontalClassification }}
-              @if (perio.grade) { — Grado {{ perio.grade }} }
-            </span>
+      <!-- Summary header -->
+      <div class="detail-header">
+        <div class="header-content">
+          <div class="header-info">
+            <div class="info-item">
+              <i class="fa-solid fa-user"></i>
+              <span class="label">Paciente</span>
+              <span class="value">{{ perio.patientName }}</span>
+            </div>
+            <div class="info-item">
+              <i class="fa-solid fa-calendar"></i>
+              <span class="label">Fecha</span>
+              <span class="value">{{ formatDate(perio.examDate) }}</span>
+            </div>
+            <div class="info-item">
+              <i class="fa-solid fa-user-doctor"></i>
+              <span class="label">Realizado por</span>
+              <span class="value">{{ perio.performedByName }}</span>
+            </div>
+            @if (perio.periodontalClassification) {
+              <div class="info-item">
+                <i class="fa-solid fa-stethoscope"></i>
+                <span class="label">Clasificación</span>
+                <span class="value">
+                  {{ perio.periodontalClassification }}
+                  @if (perio.grade) { — Grado {{ perio.grade }} }
+                </span>
+              </div>
+            }
           </div>
-        }
+        </div>
       </div>
 
-      <!-- Measurement Form (grid + notes + actions) -->
+      <!-- Measurement Form (grid + notes) -->
       <app-periodontogram-form
         [periodontogram]="perio"
         [patientId]="patientId"

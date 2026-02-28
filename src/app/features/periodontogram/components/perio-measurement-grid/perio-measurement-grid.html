@@ -16,7 +16,7 @@
             <th class="row-label-cell"></th>
             @for (tn of UPPER_TEETH; track tn; let i = $index) {
               <th colspan="3" class="tooth-header"
-                [class.quadrant-divider]="i === 7"
+                [class.quadrant-divider]="i === 8"
                 [class.tooth-missing]="getToothByNumber(tn)?.isMissing">
                 <span class="th-num">{{ tn }}</span>
               </th>
@@ -30,7 +30,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   [class.active-cell]="isCellActive(ti, si, 'pd', 'buccal', 'upper')"
                   (click)="focusCell(ti, si, 'pd', 'buccal', 'upper')">
                   @if (!readonly && !getToothByNumber(tn)?.isMissing) {
@@ -56,7 +56,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   [class.active-cell]="isCellActive(ti, si, 'gm', 'buccal', 'upper')"
                   (click)="focusCell(ti, si, 'gm', 'buccal', 'upper')">
                   @if (!readonly && !getToothByNumber(tn)?.isMissing) {
@@ -81,7 +81,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0">
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0">
                   <span class="site-value" [class]="getCALClass(getSiteNumericValue(getToothByNumber(tn)!, 'buccal', si, 'cal'))">
                     {{ getSiteNumericValue(getToothByNumber(tn)!, 'buccal', si, 'cal') ?? '' }}
                   </span>
@@ -95,7 +95,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell bool-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   (click)="toggleBool(getToothByNumber(tn)!, 'buccal', si, 'bleeding')">
                   <span class="bool-dot"
                     [class.bleeding-active]="getSiteBoolValue(getToothByNumber(tn)!, 'buccal', si, 'bleeding')">
@@ -110,7 +110,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell bool-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   (click)="toggleBool(getToothByNumber(tn)!, 'buccal', si, 'suppuration')">
                   <span class="bool-dot"
                     [class.suppuration-active]="getSiteBoolValue(getToothByNumber(tn)!, 'buccal', si, 'suppuration')">
@@ -124,7 +124,7 @@
             <td class="row-label-cell">Movil.</td>
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 7">
+                [class.quadrant-divider-cell]="ti === 8">
                 @if (!readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"
@@ -141,7 +141,7 @@
             <td class="row-label-cell">Furca.</td>
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 7">
+                [class.quadrant-divider-cell]="ti === 8">
                 @if (!readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"
@@ -188,7 +188,7 @@
             <th class="row-label-cell"></th>
             @for (tn of UPPER_TEETH; track tn; let i = $index) {
               <th colspan="3" class="tooth-header"
-                [class.quadrant-divider]="i === 7"
+                [class.quadrant-divider]="i === 8"
                 [class.tooth-missing]="getToothByNumber(tn)?.isMissing">
                 <span class="th-num">{{ tn }}</span>
               </th>
@@ -202,7 +202,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   [class.active-cell]="isCellActive(ti, si, 'pd', 'lingual', 'upper')"
                   (click)="focusCell(ti, si, 'pd', 'lingual', 'upper')">
                   @if (!readonly && !getToothByNumber(tn)?.isMissing) {
@@ -228,7 +228,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   [class.active-cell]="isCellActive(ti, si, 'gm', 'lingual', 'upper')"
                   (click)="focusCell(ti, si, 'gm', 'lingual', 'upper')">
                   @if (!readonly && !getToothByNumber(tn)?.isMissing) {
@@ -253,7 +253,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0">
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0">
                   <span class="site-value" [class]="getCALClass(getSiteNumericValue(getToothByNumber(tn)!, 'lingual', si, 'cal'))">
                     {{ getSiteNumericValue(getToothByNumber(tn)!, 'lingual', si, 'cal') ?? '' }}
                   </span>
@@ -267,7 +267,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell bool-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   (click)="toggleBool(getToothByNumber(tn)!, 'lingual', si, 'bleeding')">
                   <span class="bool-dot"
                     [class.bleeding-active]="getSiteBoolValue(getToothByNumber(tn)!, 'lingual', si, 'bleeding')">
@@ -282,7 +282,7 @@
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell bool-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   (click)="toggleBool(getToothByNumber(tn)!, 'lingual', si, 'suppuration')">
                   <span class="bool-dot"
                     [class.suppuration-active]="getSiteBoolValue(getToothByNumber(tn)!, 'lingual', si, 'suppuration')">
@@ -296,7 +296,7 @@
             <td class="row-label-cell">Movil.</td>
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 7">
+                [class.quadrant-divider-cell]="ti === 8">
                 @if (!readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"
@@ -313,7 +313,7 @@
             <td class="row-label-cell">Furca.</td>
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 7">
+                [class.quadrant-divider-cell]="ti === 8">
                 @if (!readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"
@@ -346,7 +346,7 @@
             <th class="row-label-cell"></th>
             @for (tn of LOWER_TEETH; track tn; let i = $index) {
               <th colspan="3" class="tooth-header"
-                [class.quadrant-divider]="i === 7"
+                [class.quadrant-divider]="i === 8"
                 [class.tooth-missing]="getToothByNumber(tn)?.isMissing">
                 <span class="th-num">{{ tn }}</span>
               </th>
@@ -359,7 +359,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   [class.active-cell]="isCellActive(ti, si, 'pd', 'buccal', 'lower')"
                   (click)="focusCell(ti, si, 'pd', 'buccal', 'lower')">
                   @if (!readonly && !getToothByNumber(tn)?.isMissing) {
@@ -384,7 +384,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   [class.active-cell]="isCellActive(ti, si, 'gm', 'buccal', 'lower')"
                   (click)="focusCell(ti, si, 'gm', 'buccal', 'lower')">
                   @if (!readonly && !getToothByNumber(tn)?.isMissing) {
@@ -408,7 +408,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0">
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0">
                   <span class="site-value" [class]="getCALClass(getSiteNumericValue(getToothByNumber(tn)!, 'buccal', si, 'cal'))">
                     {{ getSiteNumericValue(getToothByNumber(tn)!, 'buccal', si, 'cal') ?? '' }}
                   </span>
@@ -421,7 +421,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell bool-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   (click)="toggleBool(getToothByNumber(tn)!, 'buccal', si, 'bleeding')">
                   <span class="bool-dot"
                     [class.bleeding-active]="getSiteBoolValue(getToothByNumber(tn)!, 'buccal', si, 'bleeding')">
@@ -435,7 +435,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell bool-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   (click)="toggleBool(getToothByNumber(tn)!, 'buccal', si, 'suppuration')">
                   <span class="bool-dot"
                     [class.suppuration-active]="getSiteBoolValue(getToothByNumber(tn)!, 'buccal', si, 'suppuration')">
@@ -449,7 +449,7 @@
             <td class="row-label-cell">Movil.</td>
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 7">
+                [class.quadrant-divider-cell]="ti === 8">
                 @if (!readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"
@@ -466,7 +466,7 @@
             <td class="row-label-cell">Furca.</td>
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 7">
+                [class.quadrant-divider-cell]="ti === 8">
                 @if (!readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"
@@ -513,7 +513,7 @@
             <th class="row-label-cell"></th>
             @for (tn of LOWER_TEETH; track tn; let i = $index) {
               <th colspan="3" class="tooth-header"
-                [class.quadrant-divider]="i === 7"
+                [class.quadrant-divider]="i === 8"
                 [class.tooth-missing]="getToothByNumber(tn)?.isMissing">
                 <span class="th-num">{{ tn }}</span>
               </th>
@@ -526,7 +526,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   [class.active-cell]="isCellActive(ti, si, 'pd', 'lingual', 'lower')"
                   (click)="focusCell(ti, si, 'pd', 'lingual', 'lower')">
                   @if (!readonly && !getToothByNumber(tn)?.isMissing) {
@@ -551,7 +551,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   [class.active-cell]="isCellActive(ti, si, 'gm', 'lingual', 'lower')"
                   (click)="focusCell(ti, si, 'gm', 'lingual', 'lower')">
                   @if (!readonly && !getToothByNumber(tn)?.isMissing) {
@@ -575,7 +575,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0">
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0">
                   <span class="site-value" [class]="getCALClass(getSiteNumericValue(getToothByNumber(tn)!, 'lingual', si, 'cal'))">
                     {{ getSiteNumericValue(getToothByNumber(tn)!, 'lingual', si, 'cal') ?? '' }}
                   </span>
@@ -588,7 +588,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell bool-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   (click)="toggleBool(getToothByNumber(tn)!, 'lingual', si, 'bleeding')">
                   <span class="bool-dot"
                     [class.bleeding-active]="getSiteBoolValue(getToothByNumber(tn)!, 'lingual', si, 'bleeding')">
@@ -602,7 +602,7 @@
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               @for (si of [0,1,2]; track si) {
                 <td class="site-cell bool-cell"
-                  [class.quadrant-divider-cell]="ti === 7 && si === 0"
+                  [class.quadrant-divider-cell]="ti === 8 && si === 0"
                   (click)="toggleBool(getToothByNumber(tn)!, 'lingual', si, 'suppuration')">
                   <span class="bool-dot"
                     [class.suppuration-active]="getSiteBoolValue(getToothByNumber(tn)!, 'lingual', si, 'suppuration')">
@@ -616,7 +616,7 @@
             <td class="row-label-cell">Movil.</td>
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 7">
+                [class.quadrant-divider-cell]="ti === 8">
                 @if (!readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"
@@ -633,7 +633,7 @@
             <td class="row-label-cell">Furca.</td>
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 7">
+                [class.quadrant-divider-cell]="ti === 8">
                 @if (!readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"

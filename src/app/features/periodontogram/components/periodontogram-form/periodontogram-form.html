@@ -1,84 +1,40 @@
 <div class="periodontogram-form">
 
-  <!-- Action Bar -->
-  <div class="form-action-bar">
-    <div class="action-bar-left">
-      @if (quickStats(); as stats) {
-        <div class="quick-stats">
-          <div class="qs-item">
-            <span class="qs-label">PD Prom.</span>
-            <span class="qs-value">{{ stats.avgPD }}</span>
-          </div>
-          <div class="qs-item">
-            <span class="qs-label">% BOP</span>
-            <span class="qs-value">{{ stats.bop }}%</span>
-          </div>
-          <div class="qs-item">
-            <span class="qs-label">Sitios &ge;4mm</span>
-            <span class="qs-value">{{ stats.sitesOver4 }}</span>
-          </div>
-          <div class="qs-item">
-            <span class="qs-label">Sitios &ge;6mm</span>
-            <span class="qs-value">{{ stats.sitesOver6 }}</span>
-          </div>
-          <div class="qs-item">
-            <span class="qs-label">Ausentes</span>
-            <span class="qs-value">{{ stats.missingTeeth }}</span>
-          </div>
-          <div class="qs-item">
-            <span class="qs-label">Medidos</span>
-            <span class="qs-value">{{ stats.totalMeasured }}</span>
-          </div>
-        </div>
-      }
-    </div>
-
-    <div class="action-bar-right">
+  <!-- Quick Stats Bar -->
+  @if (quickStats(); as stats) {
+    <div class="quick-stats-bar">
+      <div class="qs-item">
+        <span class="qs-label">PD Prom.</span>
+        <span class="qs-value">{{ stats.avgPD }}</span>
+      </div>
+      <div class="qs-item">
+        <span class="qs-label">% BOP</span>
+        <span class="qs-value">{{ stats.bop }}%</span>
+      </div>
+      <div class="qs-item">
+        <span class="qs-label">Sitios &ge;4mm</span>
+        <span class="qs-value">{{ stats.sitesOver4 }}</span>
+      </div>
+      <div class="qs-item">
+        <span class="qs-label">Sitios &ge;6mm</span>
+        <span class="qs-value">{{ stats.sitesOver6 }}</span>
+      </div>
+      <div class="qs-item">
+        <span class="qs-label">Ausentes</span>
+        <span class="qs-value">{{ stats.missingTeeth }}</span>
+      </div>
+      <div class="qs-item">
+        <span class="qs-label">Medidos</span>
+        <span class="qs-value">{{ stats.totalMeasured }}</span>
+      </div>
       @if (lastSavedAt()) {
         <span class="save-indicator">
-          <i class="fa-solid fa-check"></i>
+          <i class="fa-solid fa-check-circle"></i>
           Guardado {{ formatTime(lastSavedAt()) }}
         </span>
       }
-      @if (hasChanges()) {
-        <span class="unsaved-indicator">
-          <i class="fa-solid fa-circle-exclamation"></i>
-          Cambios sin guardar
-        </span>
-      }
-
-      @if (!isReadonly()) {
-        <button class="btn btn-secondary btn-sm"
-          [disabled]="saving() || !hasChanges()"
-          (click)="save()">
-          @if (saving()) {
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          } @else {
-            <i class="fa-solid fa-floppy-disk"></i>
-          }
-          Guardar
-          <kbd class="kbd-hint">Ctrl+S</kbd>
-        </button>
-
-        <button class="btn btn-success btn-sm"
-          [disabled]="signing() || !canSign()"
-          (click)="sign()">
-          @if (signing()) {
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          } @else {
-            <i class="fa-solid fa-file-signature"></i>
-          }
-          Firmar
-          <kbd class="kbd-hint">Ctrl+Enter</kbd>
-        </button>
-      } @else {
-        <span class="badge badge-success">
-          <i class="fa-solid fa-lock"></i>
-          Firmado — Solo lectura
-        </span>
-      }
     </div>
-  </div>
+  }
 
   <!-- Measurement Grid (includes charts and tables) -->
   <app-perio-measurement-grid

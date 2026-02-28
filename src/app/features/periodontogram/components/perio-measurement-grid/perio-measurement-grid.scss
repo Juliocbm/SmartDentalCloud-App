@@ -5,7 +5,7 @@
 .perio-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: var(--spacing-2xl);
   outline: none;
 }
 
@@ -14,36 +14,36 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
 .jaw-title {
   margin: 0;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1rem;
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--surface-secondary);
+  border-bottom: 1px solid var(--border-primary);
 
-  i { color: var(--color-primary); font-size: 0.8rem; }
+  i { color: var(--primary-500); font-size: var(--font-size-sm); }
 }
 
 .surface-label {
-  font-size: 0.65rem;
-  font-weight: 700;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--color-primary);
-  padding: 0.4rem 1rem 0.15rem;
-  background: var(--color-bg);
-  border-top: 1px solid var(--color-border-light, #eee);
+  color: var(--primary-500);
+  padding: var(--spacing-xs) var(--spacing-lg) 2px;
+  background: var(--surface-secondary);
+  border-top: 1px solid var(--border-secondary);
 }
 
 // === Grid Table ===
@@ -61,8 +61,8 @@
     padding: 0;
     text-align: center;
     vertical-align: middle;
-    border-bottom: 1px solid var(--color-border-light, #e8e8e8);
-    border-right: 1px solid var(--color-border-light, #e8e8e8);
+    border-bottom: 1px solid var(--border-secondary);
+    border-right: 1px solid var(--border-secondary);
   }
 }
 
@@ -71,13 +71,13 @@
   width: 56px;
   min-width: 56px;
   max-width: 56px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-muted);
   text-align: right;
   padding: 0 6px 0 0 !important;
-  background: var(--color-bg);
-  border-right: 2px solid var(--color-border) !important;
+  background: var(--surface-secondary);
+  border-right: 2px solid var(--border-primary) !important;
   position: sticky;
   left: 0;
   z-index: 1;
@@ -87,32 +87,32 @@
 
 // Tooth number header
 .tooth-header {
-  background: var(--color-bg);
-  border-bottom: 2px solid var(--color-border) !important;
+  background: var(--surface-secondary);
+  border-bottom: 2px solid var(--border-primary) !important;
   padding: 3px 0 !important;
   
   .th-num {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--color-text);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
   }
 
   &.tooth-missing {
-    background: #f9f9f9;
+    background: var(--surface-tertiary);
     .th-num {
-      color: #bbb;
+      color: var(--text-muted);
       text-decoration: line-through;
     }
   }
 }
 
-// Quadrant divider (between tooth 8 and 9 — midline)
+// Quadrant divider (border-left on index 8 = tooth 21/31, between 11-21 / 41-31)
 .quadrant-divider {
-  border-left: 2px solid var(--color-primary) !important;
+  border-left: 2px solid var(--primary-500) !important;
 }
 
 .quadrant-divider-cell {
-  border-left: 2px solid var(--color-primary) !important;
+  border-left: 2px solid var(--primary-500) !important;
 }
 
 // === Site Cell ===
@@ -125,7 +125,7 @@
 
   // Every 3rd cell (tooth boundary) gets a stronger right border
   &:nth-child(3n + 1):not(.row-label-cell) {
-    border-right-color: var(--color-border-light, #e8e8e8);
+    border-right-color: var(--border-secondary);
   }
 
   &:hover {
@@ -134,7 +134,7 @@
 
   &.active-cell {
     background: var(--primary-100, #BBDEFB);
-    box-shadow: inset 0 0 0 1.5px var(--color-primary);
+    box-shadow: inset 0 0 0 1.5px var(--primary-500);
     z-index: 1;
   }
 }
@@ -146,9 +146,9 @@
   border: none;
   background: transparent;
   text-align: center;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
   outline: none;
   padding: 0;
   -moz-appearance: textfield;
@@ -166,34 +166,34 @@
   }
 
   // Severity colors
-  &.pd-normal { color: #2E7D32; }
-  &.pd-moderate { color: #E65100; font-weight: 600; }
-  &.pd-severe { color: #C62828; font-weight: 700; background: #FFF5F5; }
+  &.pd-normal { color: var(--success-700); }
+  &.pd-moderate { color: var(--warning-700); font-weight: var(--font-weight-semibold); }
+  &.pd-severe { color: var(--error-700); font-weight: var(--font-weight-bold); background: var(--error-50); }
 }
 
 // Readonly value display
 .site-value {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
   display: block;
   line-height: 26px;
 
-  &.pd-normal { color: #2E7D32; }
-  &.pd-moderate { color: #E65100; font-weight: 600; }
-  &.pd-severe { color: #C62828; font-weight: 700; }
-  &.cal-normal { color: #2E7D32; }
-  &.cal-moderate { color: #E65100; }
-  &.cal-severe { color: #C62828; font-weight: 600; }
+  &.pd-normal { color: var(--success-700); }
+  &.pd-moderate { color: var(--warning-700); font-weight: var(--font-weight-semibold); }
+  &.pd-severe { color: var(--error-700); font-weight: var(--font-weight-bold); }
+  &.cal-normal { color: var(--success-700); }
+  &.cal-moderate { color: var(--warning-700); }
+  &.cal-severe { color: var(--error-700); font-weight: var(--font-weight-semibold); }
 }
 
 // CAL row (auto-calculated, slightly muted)
 .cal-row {
-  td { background: #FAFBFC; }
+  td { background: var(--surface-tertiary); }
 
   .row-label-cell {
     font-style: italic;
-    background: var(--color-bg);
+    background: var(--surface-secondary);
   }
 }
 
@@ -240,24 +240,24 @@
 .charts-between-tables {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.5rem 0;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) 0;
   margin-left: 56px; // Match table label column width for alignment
 }
 
 .chart-surface-section {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 2px;
 }
 
 .chart-label {
-  font-size: 0.6rem;
-  font-weight: 700;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-  padding-left: 0.25rem;
+  color: var(--text-muted);
+  padding-left: var(--spacing-xs);
 }
 
 // === Extra rows (Mobility / Furcation) ===
@@ -271,27 +271,27 @@
 
 .extra-row {
   .row-label-cell {
-    background: var(--color-bg);
+    background: var(--surface-secondary);
   }
 }
 
 .tooth-extra-cell {
   height: 24px;
   text-align: center;
-  border-right: 1px solid var(--color-border-light, #e8e8e8);
-  border-bottom: 1px solid var(--color-border-light, #e8e8e8);
+  border-right: 1px solid var(--border-secondary);
+  border-bottom: 1px solid var(--border-secondary);
 }
 
 .extra-input {
   width: 30px;
   height: 20px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  background: var(--surface-primary);
   text-align: center;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
   outline: none;
   -moz-appearance: textfield;
   appearance: textfield;
@@ -304,15 +304,15 @@
   }
 
   &:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 1px var(--color-primary);
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 1px var(--primary-500);
   }
 }
 
 .extra-value {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
 }
 
 // === Responsive ===

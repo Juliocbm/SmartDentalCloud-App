@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
@@ -36,6 +36,8 @@ export class PeriodontogramPageComponent implements OnInit {
   ];
 
   PERIO_STATUS_CONFIG = PERIO_STATUS_CONFIG;
+
+  @ViewChild(PeriodontogramFormComponent) formComponent?: PeriodontogramFormComponent;
 
   ngOnInit(): void {
     this.patientId = this.route.snapshot.paramMap.get('id') ?? '';

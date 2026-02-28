@@ -3,67 +3,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 4rem 2rem;
-  color: var(--color-text-muted);
+  gap: var(--spacing-lg);
+  padding: var(--spacing-4xl) var(--spacing-2xl);
+  color: var(--text-muted);
 }
 
 .perio-content {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--spacing-xl);
 }
 
-.perio-summary-bar {
+.unsaved-indicator {
+  font-size: var(--font-size-xs);
+  color: var(--warning-600);
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.25rem;
-  padding: 0.75rem 1rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-
-  .summary-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-  }
-
-  .summary-label {
-    font-size: 0.6rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--color-text-muted);
-  }
-
-  .summary-value {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--color-text);
-  }
-}
-
-.perio-placeholder {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: 4rem 2rem;
-  background: var(--color-surface);
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-text-muted);
-  text-align: center;
-
-  h3 {
-    margin: 0;
-    color: var(--color-text);
-  }
-
-  .perio-notes {
-    font-style: italic;
-    max-width: 500px;
-  }
+  gap: var(--spacing-xs);
+  white-space: nowrap;
 }
