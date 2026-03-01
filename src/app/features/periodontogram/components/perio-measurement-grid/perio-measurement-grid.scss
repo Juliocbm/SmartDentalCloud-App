@@ -9,52 +9,6 @@
   outline: none;
 }
 
-// === Jaw View Tabs ===
-.jaw-tabs {
-  display: flex;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs);
-  background: var(--surface-secondary);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-primary);
-}
-
-.jaw-tab {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: var(--transition-base);
-  white-space: nowrap;
-
-  i {
-    font-size: var(--font-size-xs);
-  }
-
-  &:hover {
-    background: var(--surface-primary);
-    color: var(--text-primary);
-  }
-
-  &--active {
-    background: var(--surface-primary);
-    color: var(--primary-700);
-    font-weight: var(--font-weight-semibold);
-    box-shadow: var(--shadow-sm);
-
-    i {
-      color: var(--primary-600);
-    }
-  }
-}
-
 // === Jaw Section ===
 .jaw-section {
   display: flex;
@@ -286,7 +240,7 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 2px 0;
+  padding: 0;
   margin-left: 56px; // Match table label column width for alignment
 }
 
@@ -297,12 +251,14 @@
 }
 
 .chart-label {
-  font-size: var(--font-size-xs);
+  font-size: 9px;
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
   padding-left: var(--spacing-xs);
+  line-height: 1;
+  margin: 0;
 }
 
 // === Extra rows (Mobility / Furcation) ===

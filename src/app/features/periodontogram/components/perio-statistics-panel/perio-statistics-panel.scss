@@ -1,210 +1,159 @@
-.perio-stats-panel {
+// ============================================
+// Perio Statistics Panel — Component Overrides
+// Uses global: .info-section, .info-card, .info-row,
+//              .empty-state, .info-empty
+// ============================================
+
+// Compact override for global .info-section within this component
+:host {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-lg);
-  background: var(--surface-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
+  gap: var(--spacing-xl);
+
+  .info-section {
+    padding: var(--spacing-lg);
+
+    h3 {
+      font-size: var(--font-size-base);
+      gap: var(--spacing-sm);
+      margin: 0 0 var(--spacing-md) 0;
+      padding-bottom: var(--spacing-sm);
+      border-bottom-width: 1px;
+    }
+  }
+
+  .info-card {
+    gap: var(--spacing-sm);
+
+    .info-row {
+      padding: var(--spacing-xs) 0;
+      gap: var(--spacing-md);
+
+      .info-label {
+        min-width: 130px;
+        font-size: var(--font-size-sm);
+      }
+
+      .info-value {
+        font-size: var(--font-size-sm);
+      }
+    }
+  }
 }
 
-.panel-title {
-  margin: 0;
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--border-secondary);
-
-  i { color: var(--primary-500); }
-}
-
-// KPI Grid
-.kpi-grid {
+// Compact KPI Grid (no global equivalent at this size)
+.perio-kpis {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
-.kpi-card {
+.perio-kpi {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0;
-  padding: var(--spacing-sm);
+  gap: 2px;
+  padding: var(--spacing-sm) var(--spacing-md);
   background: var(--surface-secondary);
   border-radius: var(--radius-md);
-  text-align: center;
+  border-left: 3px solid var(--border-primary);
+  transition: var(--transition-base);
+
+  &--success { border-left-color: var(--success-500); }
+  &--warning { border-left-color: var(--warning-500); }
+  &--critical { border-left-color: var(--error-500); }
+  &--info { border-left-color: var(--primary-500); }
+
+  &__value {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    line-height: 1.2;
+
+    small {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      font-weight: var(--font-weight-normal);
+      margin-left: 2px;
+    }
+  }
+
+  &__label {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    font-weight: var(--font-weight-medium);
+  }
 }
 
-.kpi-label {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-  white-space: nowrap;
+// 2-column detail layout
+.perio-detail-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
 }
 
-.kpi-value {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
-  line-height: 1.3;
-
-  &.kpi-warning { color: var(--warning-700); }
-  &.kpi-danger { color: var(--error-700); }
-}
-
-.kpi-unit {
-  font-size: var(--font-size-xs);
-  color: var(--text-muted);
-}
-
-// Distribution bar
-.distribution-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.dist-title {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
+// PD Distribution bar (domain-specific, no global equivalent)
 .dist-bar {
   display: flex;
-  height: 20px;
+  height: 24px;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  background: var(--surface-secondary);
+  background: var(--surface-tertiary);
 }
 
 .dist-segment {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
-  font-weight: 600;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
   color: #fff;
-  min-width: 18px;
+  min-width: 20px;
   transition: width 0.3s ease;
 
-  &.dist-normal { background: #43A047; }
-  &.dist-moderate { background: #FB8C00; }
-  &.dist-severe { background: #E53935; }
+  &.dist-normal { background: var(--success-500); }
+  &.dist-moderate { background: var(--warning-500); }
+  &.dist-severe { background: var(--error-500); }
 }
 
 .dist-legend {
   display: flex;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   justify-content: center;
+  margin-top: var(--spacing-sm);
 }
 
-.legend-item {
+.dist-legend-item {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
   font-size: var(--font-size-xs);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
-.legend-dot {
+.dist-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  flex-shrink: 0;
 
-  &.dot-normal { background: #43A047; }
-  &.dot-moderate { background: #FB8C00; }
-  &.dot-severe { background: #E53935; }
+  &--normal { background: var(--success-500); }
+  &--moderate { background: var(--warning-500); }
+  &--severe { background: var(--error-500); }
 }
 
-// Teeth summary
-.teeth-summary {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--spacing-xs) 0;
-  border-bottom: 1px solid var(--border-secondary);
-
-  &:last-child { border-bottom: none; }
-}
-
-.summary-label {
-  font-size: var(--font-size-xs);
+// No data helper
+.perio-no-data {
   color: var(--text-muted);
-}
-
-.summary-value {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-}
-
-// Classification
-.classification-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.classification-title {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.classification-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm);
-  background: var(--surface-secondary);
-  border-radius: var(--radius-md);
-  text-align: center;
-}
-
-.classification-name {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-}
-
-.classification-grade {
-  font-size: var(--font-size-sm);
-  color: var(--text-muted);
-}
-
-// Empty state
-.stats-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-2xl) var(--spacing-lg);
-  color: var(--text-muted);
-  text-align: center;
-
-  i { font-size: var(--font-size-2xl); }
-  p { margin: 0; font-size: var(--font-size-sm); }
+  font-style: italic;
 }
 
 // Responsive
-@media (max-width: 600px) {
-  .kpi-grid {
+@media (max-width: 768px) {
+  .perio-kpis {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .perio-detail-cols {
+    grid-template-columns: 1fr;
   }
 }

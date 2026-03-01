@@ -11,7 +11,38 @@
 .perio-content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-md);
+
+  // Compact detail-header override (smaller than global default)
+  .detail-header {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    margin-bottom: 0;
+    box-shadow: none;
+    border: 1px solid var(--border-primary);
+
+    .header-content .header-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-lg);
+
+      .info-item {
+        gap: var(--spacing-xs);
+
+        i {
+          font-size: var(--font-size-base);
+          width: 16px;
+        }
+
+        .label {
+          font-size: var(--font-size-xs);
+        }
+
+        .value {
+          font-size: var(--font-size-sm);
+        }
+      }
+    }
+  }
 }
 
 .unsaved-indicator {

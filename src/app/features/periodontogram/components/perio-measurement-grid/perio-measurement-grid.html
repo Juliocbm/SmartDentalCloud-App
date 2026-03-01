@@ -1,22 +1,9 @@
 <div class="perio-grid" tabindex="0">
 
-  <!-- Jaw View Tabs -->
-  <nav class="jaw-tabs">
-    @for (tab of jawTabs; track tab.key) {
-      <button
-        class="jaw-tab"
-        [class.jaw-tab--active]="activeJaw() === tab.key"
-        (click)="setJawView(tab.key)">
-        <i class="fa-solid" [ngClass]="tab.icon"></i>
-        {{ tab.label }}
-      </button>
-    }
-  </nav>
-
   <!-- ============ UPPER JAW ============ -->
-  @if (activeJaw() === 'upper' || activeJaw() === 'all') {
+  @if (jawView === 'upper' || jawView === 'all') {
   <section class="jaw-section upper-jaw">
-    @if (activeJaw() === 'all') {
+    @if (jawView === 'all') {
       <h4 class="jaw-title">
         <i class="fa-solid fa-arrow-up"></i>
         Maxilar Superior
@@ -348,9 +335,9 @@
   }
 
   <!-- ============ LOWER JAW ============ -->
-  @if (activeJaw() === 'lower' || activeJaw() === 'all') {
+  @if (jawView === 'lower' || jawView === 'all') {
   <section class="jaw-section lower-jaw">
-    @if (activeJaw() === 'all') {
+    @if (jawView === 'all') {
       <h4 class="jaw-title">
         <i class="fa-solid fa-arrow-down"></i>
         Maxilar Inferior

@@ -36,6 +36,28 @@ export class PeriodontogramFormComponent implements OnInit, OnChanges {
   private calcService = inject(PerioCalculationService);
   private notifications = inject(NotificationService);
 
+  // View tabs
+  activeView = signal<'upper' | 'lower' | 'all' | 'summary'>('upper');
+  viewTabs: { key: 'upper' | 'lower' | 'all' | 'summary'; label: string; icon: string }[] = [
+    { key: 'upper', label: 'Maxilar Superior', icon: 'fa-arrow-up' },
+    { key: 'lower', label: 'Maxilar Inferior', icon: 'fa-arrow-down' },
+    { key: 'all', label: 'Vista Completa', icon: 'fa-expand' },
+    { key: 'summary', label: 'Resumen', icon: 'fa-chart-pie' }
+  ];
+
+  setView(view: 'upper' | 'lower' | 'all' | 'summary'): void {
+    this.activeView.set(view);
+  }
+
+  get isJawView(): boolean {
+    return this.activeView() !== 'summary';
+  }
+
+  get currentJaw(): 'upper' | 'lower' | 'all' {
+    const v = this.activeView();
+    return v === 'summary' ? 'upper' : v;
+  }
+
   // Editable state
   teeth = signal<EditableTooth[]>([]);
   notes = signal('');

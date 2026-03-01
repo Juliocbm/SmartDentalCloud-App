@@ -4,7 +4,6 @@ import {
   EditableTooth,
   RISK_LEVEL_CONFIG
 } from '../../models/periodontogram.models';
-import { PerioCalculationService } from '../../services/perio-calculation.service';
 
 @Component({
   selector: 'app-perio-statistics-panel',
@@ -22,8 +21,6 @@ export class PerioStatisticsPanelComponent {
   @Input() riskLevel: string | null = null;
 
   private _teeth = signal<EditableTooth[]>([]);
-  private calc = new PerioCalculationService();
-
   RISK_LEVEL_CONFIG = RISK_LEVEL_CONFIG;
 
   stats = computed(() => {
@@ -70,19 +67,25 @@ export class PerioStatisticsPanelComponent {
     };
   });
 
-  getPDColor(avgPD: number | null): string {
-    return this.calc.getPDColor(avgPD);
+  getPDClass(avgPD: number | null): string {
+    if (avgPD == null) return '';
+    if (avgPD <= 3) return 'perio-kpi--success';
+    if (avgPD <= 5) return 'perio-kpi--warning';
+    return 'perio-kpi--critical';
   }
 
-  getCALColor(avgCAL: number | null): string {
-    return this.calc.getCALColor(avgCAL);
+  getCALClass(avgCAL: number | null): string {
+    if (avgCAL == null) return '';
+    if (avgCAL <= 2) return 'perio-kpi--success';
+    if (avgCAL <= 4) return 'perio-kpi--warning';
+    return 'perio-kpi--critical';
   }
 
-  getBOPColor(bop: number | null): string {
-    if (bop == null) return 'var(--color-text-muted)';
-    if (bop <= 10) return 'var(--color-success)';
-    if (bop <= 30) return 'var(--color-warning)';
-    return 'var(--color-danger)';
+  getBOPClass(bop: number | null): string {
+    if (bop == null) return '';
+    if (bop <= 10) return 'perio-kpi--success';
+    if (bop <= 30) return 'perio-kpi--warning';
+    return 'perio-kpi--critical';
   }
 
   formatDecimal(value: number | null, decimals = 2): string {

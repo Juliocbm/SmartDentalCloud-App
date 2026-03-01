@@ -11,9 +11,6 @@ import {
 import { PerioToothChartComponent } from '../perio-tooth-chart/perio-tooth-chart';
 import { TOOTH_NAMES } from '../../../../shared/models/fdi-tooth-layout';
 
-/** Jaw view tabs */
-type JawView = 'upper' | 'lower' | 'all';
-
 /** Row types in the measurement grid */
 type GridRow = 'pd' | 'gm' | 'cal' | 'bleeding' | 'suppuration';
 
@@ -57,17 +54,8 @@ export class PerioMeasurementGridComponent {
   // Active cell tracking
   activeCell = signal<CellRef | null>(null);
 
-  // Jaw view tabs
-  activeJaw = signal<JawView>('upper');
-  jawTabs: { key: JawView; label: string; icon: string }[] = [
-    { key: 'upper', label: 'Maxilar Superior', icon: 'fa-arrow-up' },
-    { key: 'lower', label: 'Maxilar Inferior', icon: 'fa-arrow-down' },
-    { key: 'all', label: 'Vista Completa', icon: 'fa-expand' }
-  ];
-
-  setJawView(view: JawView): void {
-    this.activeJaw.set(view);
-  }
+  // Jaw view controlled by parent
+  @Input() jawView: 'upper' | 'lower' | 'all' = 'upper';
 
   // Layout constants exposed to template
   UPPER_TEETH = UPPER_TEETH_ORDER;
