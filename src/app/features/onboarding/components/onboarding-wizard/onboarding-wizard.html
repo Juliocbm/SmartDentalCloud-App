@@ -1,0 +1,122 @@
+<div class="onboarding-page">
+  <div class="onboarding-card">
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressPercent"></div>
+    </div>
+    <div class="progress-label">Paso {{ currentStep() }} de {{ totalSteps }}</div>
+
+    <!-- Step Icon -->
+    <div class="step-icon">
+      <i class="fa-solid" [class]="currentStepData.icon"></i>
+    </div>
+
+    <!-- Step Content -->
+    <h1 class="step-title">{{ currentStepData.title }}</h1>
+    <p class="step-subtitle">{{ currentStepData.subtitle }}</p>
+
+    <!-- Step 1: Welcome -->
+    @if (currentStep() === 1) {
+      <div class="step-body">
+        <div class="feature-grid">
+          <div class="feature-item">
+            <i class="fa-solid fa-users"></i>
+            <span>Gestión de Pacientes</span>
+          </div>
+          <div class="feature-item">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Citas y Calendario</span>
+          </div>
+          <div class="feature-item">
+            <i class="fa-solid fa-tooth"></i>
+            <span>Odontograma Digital</span>
+          </div>
+          <div class="feature-item">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <span>Facturación</span>
+          </div>
+        </div>
+        <div class="trial-reminder">
+          <i class="fa-solid fa-gift"></i>
+          <span>Tienes <strong>14 días de prueba gratuita</strong> para explorar todas las funcionalidades</span>
+        </div>
+      </div>
+    }
+
+    <!-- Step 2: First Patient -->
+    @if (currentStep() === 2) {
+      <div class="step-body">
+        <div class="action-card" (click)="goToPatients()">
+          <i class="fa-solid fa-user-plus"></i>
+          <div>
+            <strong>Crear Paciente</strong>
+            <p>Abre el formulario de nuevo paciente</p>
+          </div>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+        <p class="step-hint">
+          <i class="fa-solid fa-lightbulb"></i>
+          Puedes agregar nombre, teléfono y email. Los demás campos son opcionales.
+        </p>
+      </div>
+    }
+
+    <!-- Step 3: First Appointment -->
+    @if (currentStep() === 3) {
+      <div class="step-body">
+        <div class="action-card" (click)="goToAppointments()">
+          <i class="fa-solid fa-calendar-plus"></i>
+          <div>
+            <strong>Agendar Cita</strong>
+            <p>Abre el calendario para crear una cita</p>
+          </div>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+        <p class="step-hint">
+          <i class="fa-solid fa-lightbulb"></i>
+          Selecciona el paciente que creaste y elige una fecha y hora.
+        </p>
+      </div>
+    }
+
+    <!-- Step 4: Complete -->
+    @if (currentStep() === 4) {
+      <div class="step-body">
+        <div class="complete-message">
+          <div class="checkmark-circle">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h2>¡Tu consultorio está listo!</h2>
+          <p>Ya puedes comenzar a usar SmartDental Cloud para gestionar tu práctica dental.</p>
+        </div>
+      </div>
+    }
+
+    <!-- Actions -->
+    <div class="step-actions">
+      @if (currentStep() < totalSteps) {
+        <button class="btn btn-ghost" (click)="skipAll()">
+          Omitir todo
+        </button>
+        <div class="action-right">
+          @if (currentStep() > 1) {
+            <button class="btn btn-outline" (click)="prevStep()">
+              <i class="fa-solid fa-arrow-left"></i> Anterior
+            </button>
+          }
+          <button class="btn btn-outline" (click)="skipStep()">
+            Omitir
+          </button>
+          <button class="btn btn-primary" (click)="nextStep()">
+            Siguiente <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      } @else {
+        <div></div>
+        <button class="btn btn-primary btn-lg" (click)="finish()">
+          <i class="fa-solid fa-rocket"></i> Ir al Dashboard
+        </button>
+      }
+    </div>
+  </div>
+</div>

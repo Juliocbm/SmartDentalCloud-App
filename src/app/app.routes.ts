@@ -20,6 +20,21 @@ export const routes: Routes = [
     title: 'Registrar Consultorio'
   },
   {
+    path: 'onboarding/welcome',
+    loadComponent: () => import('./features/onboarding/components/onboarding-wizard/onboarding-wizard').then(m => m.OnboardingWizardComponent),
+    title: 'Bienvenido - SmartDental Cloud'
+  },
+  {
+    path: 'subscription/expired',
+    loadComponent: () => import('./features/subscriptions/components/subscription-expired/subscription-expired').then(m => m.SubscriptionExpiredComponent),
+    title: 'Suscripción Expirada'
+  },
+  {
+    path: 'subscription/limit-exceeded',
+    loadComponent: () => import('./features/subscriptions/components/subscription-limit-exceeded/subscription-limit-exceeded').then(m => m.SubscriptionLimitExceededComponent),
+    title: 'Límite de Plan Excedido'
+  },
+  {
     path: '',
     loadComponent: () => import('./shared/components/layout/layout').then(m => m.LayoutComponent),
     canActivate: [authGuard],

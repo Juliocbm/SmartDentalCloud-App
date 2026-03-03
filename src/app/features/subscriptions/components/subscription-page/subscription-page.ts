@@ -4,13 +4,13 @@ import { RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { SubscriptionsService } from '../../services/subscriptions.service';
+import { SubscriptionsService, PAYMENT_PROVIDERS, PaymentProviderType } from '../../services/subscriptions.service';
 import {
   SubscriptionInfo,
   SUBSCRIPTION_STATUS_CONFIG,
-  AVAILABLE_PLANS,
   SubscriptionPlan
 } from '../../models/subscription.models';
+import { OnboardingService } from '../../../onboarding/services/onboarding.service';
 import { environment } from '../../../../../environments/environment';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
@@ -25,6 +25,7 @@ declare const Stripe: any;
 })
 export class SubscriptionPageComponent implements OnInit, OnDestroy {
   private subscriptionsService = inject(SubscriptionsService);
+  private onboardingService = inject(OnboardingService);
   private logger = inject(LoggingService);
   private notifications = inject(NotificationService);
 
@@ -36,9 +37,11 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
   // Checkout state
   showCheckoutModal = signal(false);
   selectedPlan = signal<SubscriptionPlan | null>(null);
+  selectedProvider = signal<PaymentProviderType>('Stripe');
   subscribing = signal(false);
   checkoutError = signal<string | null>(null);
   stripeReady = signal(false);
+  paymentProviders = PAYMENT_PROVIDERS;
 
   // Payment method update state
   showPaymentMethodModal = signal(false);
@@ -48,7 +51,7 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
   private cardElement: any = null;
   private elements: any = null;
 
-  plans = AVAILABLE_PLANS;
+  plans = signal<SubscriptionPlan[]>([]);
   STATUS_CONFIG = SUBSCRIPTION_STATUS_CONFIG;
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -59,6 +62,7 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadSubscription();
+    this.loadPlans();
     this.loadStripe();
   }
 
@@ -79,6 +83,13 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
         this.logger.error('Error loading subscription:', err);
         this.loading.set(false);
       }
+    });
+  }
+
+  private loadPlans(): void {
+    this.onboardingService.getPlans().subscribe({
+      next: (plans) => this.plans.set(plans),
+      error: (err) => this.logger.error('Error loading plans:', err)
     });
   }
 
@@ -151,8 +162,13 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
 
   // === Checkout Flow ===
 
+  selectProvider(provider: PaymentProviderType): void {
+    this.selectedProvider.set(provider);
+  }
+
   openCheckout(plan: SubscriptionPlan): void {
     this.selectedPlan.set(plan);
+    this.selectedProvider.set('Stripe');
     this.checkoutError.set(null);
     this.showCheckoutModal.set(true);
     this.mountCardElement('stripe-card-element');
@@ -185,7 +201,8 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
 
       this.subscriptionsService.createSubscription({
         planId: plan.id,
-        stripePaymentMethodId: paymentMethod.id
+        paymentProvider: this.selectedProvider(),
+        paymentMethodToken: paymentMethod.id
       }).subscribe({
         next: () => {
           this.subscribing.set(false);

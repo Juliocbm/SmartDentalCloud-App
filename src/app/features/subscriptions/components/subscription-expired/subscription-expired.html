@@ -1,0 +1,40 @@
+<div class="blocking-page">
+  <div class="blocking-card">
+    <div class="blocking-icon expired">
+      <i class="fa-solid fa-calendar-xmark"></i>
+    </div>
+
+    @if (isTrial()) {
+      <h1>Tu prueba gratuita ha terminado</h1>
+      <p class="blocking-message">
+        Tu período de prueba de 14 días ha expirado. Para seguir utilizando SmartDental Cloud,
+        activa un plan de suscripción.
+      </p>
+    } @else {
+      <h1>Tu suscripción no está activa</h1>
+      <p class="blocking-message">
+        Tu suscripción tiene estado <strong>{{ status() }}</strong>.
+        Renueva tu plan para recuperar el acceso a tu consultorio.
+      </p>
+    }
+
+    <div class="blocking-info">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>Tus datos están seguros y se mantendrán intactos al reactivar tu plan.</span>
+    </div>
+
+    <div class="blocking-actions">
+      <button class="btn btn-primary btn-lg" (click)="goToSubscription()">
+        <i class="fa-solid fa-credit-card"></i>
+        @if (isTrial()) {
+          Activar Plan
+        } @else {
+          Renovar Suscripción
+        }
+      </button>
+      <button class="btn btn-outline" (click)="goToLogin()">
+        <i class="fa-solid fa-arrow-left"></i> Volver al inicio
+      </button>
+    </div>
+  </div>
+</div>

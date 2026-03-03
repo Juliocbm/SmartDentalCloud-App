@@ -1,0 +1,51 @@
+<div class="blocking-page">
+  <div class="blocking-card">
+    <div class="blocking-icon limit">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+
+    <h1>Has alcanzado el límite de tu plan</h1>
+    <p class="blocking-message">
+      Tu plan <strong>{{ planName() }}</strong> no permite agregar más recursos.
+      Actualiza a un plan superior para seguir creciendo.
+    </p>
+
+    <!-- Usage bars -->
+    <div class="usage-section">
+      @if (patientLimit() > 0) {
+        <div class="usage-item">
+          <div class="usage-header">
+            <span><i class="fa-solid fa-users"></i> Pacientes</span>
+            <span class="usage-count">{{ currentPatients() }} / {{ patientLimit() }}</span>
+          </div>
+          <div class="usage-bar">
+            <div class="usage-fill" [class.exceeded]="currentPatients() >= patientLimit()"
+              [style.width.%]="(currentPatients() / patientLimit()) * 100"></div>
+          </div>
+        </div>
+      }
+
+      @if (userLimit() > 0) {
+        <div class="usage-item">
+          <div class="usage-header">
+            <span><i class="fa-solid fa-user-doctor"></i> Usuarios</span>
+            <span class="usage-count">{{ currentUsers() }} / {{ userLimit() }}</span>
+          </div>
+          <div class="usage-bar">
+            <div class="usage-fill" [class.exceeded]="currentUsers() >= userLimit()"
+              [style.width.%]="(currentUsers() / userLimit()) * 100"></div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="blocking-actions">
+      <button class="btn btn-primary btn-lg" (click)="goToSubscription()">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> Actualizar Plan
+      </button>
+      <button class="btn btn-outline" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
+      </button>
+    </div>
+  </div>
+</div>

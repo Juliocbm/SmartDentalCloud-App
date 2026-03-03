@@ -1,5 +1,5 @@
 <div class="register-page">
-  <div class="register-card">
+  <div class="register-card" [class.wide]="currentStep() === 3">
     <!-- Logo -->
     <div class="register-logo">
       <i class="fa-solid fa-tooth"></i>
@@ -11,7 +11,7 @@
       <div class="success-state">
         <i class="fa-solid fa-circle-check"></i>
         <h2>¡Registro exitoso!</h2>
-        <p>Tu consultorio ha sido creado. Redirigiendo al dashboard...</p>
+        <p>Tu consultorio ha sido creado. Preparando tu experiencia...</p>
       </div>
     } @else {
       <!-- Step Indicator -->
@@ -26,8 +26,13 @@
           <span class="step-label">Administrador</span>
         </div>
         <div class="step-line" [class.active]="currentStep() > 2"></div>
-        <div class="step" [class.active]="currentStep() >= 3">
+        <div class="step" [class.active]="currentStep() >= 3" [class.done]="currentStep() > 3">
           <span class="step-number">3</span>
+          <span class="step-label">Plan</span>
+        </div>
+        <div class="step-line" [class.active]="currentStep() > 3"></div>
+        <div class="step" [class.active]="currentStep() >= 4">
+          <span class="step-number">4</span>
           <span class="step-label">Confirmar</span>
         </div>
       </div>
@@ -118,8 +123,69 @@
         </div>
       }
 
-      <!-- Step 3: Confirm -->
+      <!-- Step 3: Plan Selection -->
       @if (currentStep() === 3) {
+        <div class="step-content">
+          <h2>Elige tu Plan</h2>
+          <p class="step-description">Todos los planes incluyen 14 días de prueba gratuita sin tarjeta</p>
+
+          @if (loadingPlans()) {
+            <div class="loading-plans">
+              <i class="fa-solid fa-spinner fa-spin"></i> Cargando planes...
+            </div>
+          } @else {
+            <div class="plans-grid">
+              @for (plan of plans(); track plan.id) {
+                <div class="plan-card" [class.selected]="selectedPlanId() === plan.id" [class.recommended]="plan.isRecommended" (click)="selectPlan(plan.id)">
+                  @if (plan.isRecommended) {
+                    <span class="plan-badge">Más Popular</span>
+                  }
+                  <h3 class="plan-name">{{ plan.name }}</h3>
+                  <div class="plan-price">
+                    <span class="price-amount">{{ formatCurrency(plan.monthlyPrice) }}</span>
+                    <span class="price-period">/mes</span>
+                  </div>
+                  @if (plan.description) {
+                    <p class="plan-description">{{ plan.description }}</p>
+                  }
+                  <ul class="plan-features">
+                    @for (feature of plan.features; track feature) {
+                      <li><i class="fa-solid fa-check"></i> {{ feature }}</li>
+                    }
+                  </ul>
+                  <div class="plan-limits">
+                    <span><i class="fa-solid fa-users"></i> {{ formatLimit(plan.patientLimit) }} pacientes</span>
+                    <span><i class="fa-solid fa-user-doctor"></i> {{ formatLimit(plan.userLimit) }} usuarios</span>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Trial toggle -->
+            <div class="trial-toggle">
+              <label class="toggle-label">
+                <input type="checkbox" [ngModel]="startWithTrial()" (ngModelChange)="startWithTrial.set($event)" />
+                <span class="toggle-text">
+                  <i class="fa-solid fa-gift"></i>
+                  Iniciar con <strong>14 días de prueba gratuita</strong> (sin tarjeta)
+                </span>
+              </label>
+            </div>
+          }
+
+          <div class="step-actions">
+            <button class="btn btn-outline" (click)="prevStep()">
+              <i class="fa-solid fa-arrow-left"></i> Anterior
+            </button>
+            <button class="btn btn-primary" [disabled]="!canProceedStep3()" (click)="nextStep()">
+              Siguiente <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 4: Confirm -->
+      @if (currentStep() === 4) {
         <div class="step-content">
           <h2>Confirmar Registro</h2>
           <div class="summary-card">
@@ -141,9 +207,25 @@
                 <span>Email</span><strong>{{ adminEmail() }}</strong>
               </div>
             </div>
+            @if (selectedPlan(); as plan) {
+              <div class="summary-section">
+                <h4><i class="fa-solid fa-crown"></i> Plan Seleccionado</h4>
+                <div class="summary-row">
+                  <span>Plan</span><strong>{{ plan.name }}</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Precio</span><strong>{{ formatCurrency(plan.monthlyPrice) }}/mes</strong>
+                </div>
+              </div>
+            }
             <div class="summary-section trial-info">
-              <i class="fa-solid fa-gift"></i>
-              <span>Incluye <strong>14 días de prueba gratuita</strong> con acceso completo</span>
+              @if (startWithTrial()) {
+                <i class="fa-solid fa-gift"></i>
+                <span>Incluye <strong>14 días de prueba gratuita</strong> — sin tarjeta, sin compromisos</span>
+              } @else {
+                <i class="fa-solid fa-credit-card"></i>
+                <span>Se realizará el cobro inmediatamente</span>
+              }
             </div>
           </div>
           <div class="step-actions">

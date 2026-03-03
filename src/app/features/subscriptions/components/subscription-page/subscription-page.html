@@ -94,9 +94,9 @@
     </h2>
 
     <div class="plans-grid">
-      @for (plan of plans; track plan.id) {
-        <div class="plan-card" [class.current]="isCurrentPlan(plan)" [class.popular]="plan.id === 'pro'">
-          @if (plan.id === 'pro') {
+      @for (plan of plans(); track plan.id) {
+        <div class="plan-card" [class.current]="isCurrentPlan(plan)" [class.popular]="plan.isRecommended">
+          @if (plan.isRecommended) {
             <div class="popular-badge">Más Popular</div>
           }
           <h3>{{ plan.name }}</h3>
@@ -105,8 +105,8 @@
             <span class="plan-period">/mes</span>
           </div>
           <div class="plan-limits">
-            <span><i class="fa-solid fa-user-group"></i> {{ plan.patientLimit === -1 ? 'Ilimitados' : plan.patientLimit }} pacientes</span>
-            <span><i class="fa-solid fa-users"></i> {{ plan.userLimit === -1 ? 'Ilimitados' : plan.userLimit }} usuarios</span>
+            <span><i class="fa-solid fa-user-group"></i> {{ !plan.patientLimit || plan.patientLimit < 0 ? 'Ilimitados' : plan.patientLimit }} pacientes</span>
+            <span><i class="fa-solid fa-users"></i> {{ !plan.userLimit || plan.userLimit < 0 ? 'Ilimitados' : plan.userLimit }} usuarios</span>
           </div>
           <ul class="plan-features">
             @for (feature of plan.features; track feature) {
@@ -142,6 +142,26 @@
             <span class="checkout-plan-name">Plan {{ plan.name }}</span>
             <span class="checkout-plan-price">{{ formatCurrency(plan.monthlyPrice) }}/mes</span>
           </div>
+
+          <!-- Payment Provider Selector -->
+          <div class="provider-selector">
+            <label class="form-label">Método de Pago</label>
+            <div class="provider-options">
+              @for (provider of paymentProviders; track provider.id) {
+                <button
+                  class="provider-option"
+                  [class.selected]="selectedProvider() === provider.id"
+                  (click)="selectProvider(provider.id)">
+                  <i class="fa-solid {{ provider.icon }}"></i>
+                  <div class="provider-info">
+                    <span class="provider-name">{{ provider.name }}</span>
+                    <span class="provider-desc">{{ provider.description }}</span>
+                  </div>
+                </button>
+              }
+            </div>
+          </div>
+
           <div class="stripe-element-container">
             <label class="form-label">Datos de Tarjeta</label>
             <div id="stripe-card-element" class="stripe-card-input"></div>

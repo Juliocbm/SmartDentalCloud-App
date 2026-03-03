@@ -316,3 +316,67 @@
     border-color: var(--primary-300);
   }
 }
+
+// ===== Payment Provider Selector =====
+.provider-selector {
+  margin-bottom: var(--spacing-xl);
+}
+
+.provider-options {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.provider-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+
+  i {
+    font-size: var(--font-size-lg);
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    border-color: var(--primary-300);
+    background: var(--surface-secondary);
+  }
+
+  &.selected {
+    border-color: var(--primary-500);
+    background: var(--primary-50);
+
+    i { color: var(--primary-600); }
+    .provider-name { color: var(--primary-700); }
+  }
+}
+
+.provider-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.provider-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.provider-desc {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

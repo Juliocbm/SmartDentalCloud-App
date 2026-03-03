@@ -8,15 +8,39 @@ export interface SubscriptionInfo {
   monthlyPrice: number;
   patientLimit: number;
   userLimit: number;
+  cancelAtPeriodEnd?: boolean;
+  paymentProvider?: string;
+  daysRemaining?: number;
 }
 
 export interface SubscriptionPlan {
   id: string;
   name: string;
+  description?: string;
   monthlyPrice: number;
-  patientLimit: number;
-  userLimit: number;
+  yearlyPrice?: number;
+  patientLimit?: number;
+  userLimit?: number;
+  locationLimit?: number;
+  storageLimitMB?: number;
   features: string[];
+  isRecommended?: boolean;
+}
+
+export interface SubscriptionLimits {
+  status: string;
+  isAccessible: boolean;
+  limitExceeded: boolean;
+  message?: string;
+  currentPatients: number;
+  patientLimit?: number;
+  patientLimitExceeded: boolean;
+  currentUsers: number;
+  userLimit?: number;
+  userLimitExceeded: boolean;
+  daysRemaining: number;
+  isTrial: boolean;
+  planName: string;
 }
 
 export const SUBSCRIPTION_STATUS_CONFIG: Record<string, { label: string; class: string; icon: string }> = {
@@ -30,30 +54,3 @@ export const SUBSCRIPTION_STATUS_CONFIG: Record<string, { label: string; class: 
 export interface StripeConfig {
   publishableKey: string;
 }
-
-export const AVAILABLE_PLANS: SubscriptionPlan[] = [
-  {
-    id: 'basic',
-    name: 'Básico',
-    monthlyPrice: 499,
-    patientLimit: 100,
-    userLimit: 3,
-    features: ['Citas y Calendario', 'Pacientes', 'Facturación básica', 'Soporte por email']
-  },
-  {
-    id: 'pro',
-    name: 'Profesional',
-    monthlyPrice: 999,
-    patientLimit: 500,
-    userLimit: 10,
-    features: ['Todo en Básico', 'Reportes avanzados', 'Inventario', 'CFDI / Timbrado', 'Soporte prioritario']
-  },
-  {
-    id: 'enterprise',
-    name: 'Empresarial',
-    monthlyPrice: 1999,
-    patientLimit: -1,
-    userLimit: -1,
-    features: ['Todo en Profesional', 'Pacientes ilimitados', 'Usuarios ilimitados', 'Dominio personalizado', 'Soporte dedicado']
-  }
-];

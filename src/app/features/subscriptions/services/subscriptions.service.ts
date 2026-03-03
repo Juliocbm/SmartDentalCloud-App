@@ -3,21 +3,41 @@ import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { SubscriptionInfo } from '../models/subscription.models';
 
+export type PaymentProviderType = 'Stripe' | 'Conekta' | 'OpenPay';
+
 export interface CreateSubscriptionRequest {
   planId: string;
-  stripePaymentMethodId: string;
+  paymentProvider?: PaymentProviderType;
+  paymentMethodToken: string;
+  billingEmail?: string;
 }
 
 export interface CreateSubscriptionResult {
   subscriptionId: string;
-  stripeSubscriptionId: string;
+  externalSubscriptionId: string;
+  paymentProvider: string;
   status: string;
-  currentPeriodEnd: string;
+  startDate: string;
+  endDate: string;
+  nextBillingDate?: string;
 }
 
 export interface UpdatePaymentMethodRequest {
   newStripePaymentMethodId: string;
 }
+
+export interface PaymentProviderOption {
+  id: PaymentProviderType;
+  name: string;
+  icon: string;
+  description: string;
+}
+
+export const PAYMENT_PROVIDERS: PaymentProviderOption[] = [
+  { id: 'Stripe', name: 'Tarjeta Internacional', icon: 'fa-credit-card', description: 'Visa, Mastercard, Amex' },
+  { id: 'Conekta', name: 'Conekta', icon: 'fa-building-columns', description: 'Tarjetas MX, OXXO, SPEI' },
+  { id: 'OpenPay', name: 'OpenPay', icon: 'fa-store', description: 'Tarjetas MX, Tiendas, SPEI' }
+];
 
 @Injectable({ providedIn: 'root' })
 export class SubscriptionsService {

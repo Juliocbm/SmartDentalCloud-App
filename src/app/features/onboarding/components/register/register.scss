@@ -248,6 +248,176 @@
   strong { color: var(--text-primary); }
 }
 
+// ===== Wide card for plan selection =====
+.register-card.wide {
+  max-width: 900px;
+}
+
+// ===== Step Description =====
+.step-description {
+  margin: calc(var(--spacing-md) * -1) 0 var(--spacing-xl) 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+// ===== Plans Grid =====
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.plan-card {
+  position: relative;
+  padding: var(--spacing-xl);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  background: var(--surface-primary);
+
+  &:hover {
+    border-color: var(--primary-300);
+    box-shadow: var(--shadow-md);
+  }
+
+  &.selected {
+    border-color: var(--primary-500);
+    background: var(--primary-50);
+    box-shadow: 0 0 0 3px var(--primary-100);
+  }
+
+  &.recommended {
+    border-color: var(--primary-400);
+  }
+}
+
+.plan-badge {
+  position: absolute;
+  top: calc(var(--spacing-sm) * -1);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--spacing-2xs) var(--spacing-md);
+  background: var(--primary-500);
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.plan-name {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.plan-price {
+  margin-bottom: var(--spacing-md);
+
+  .price-amount {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-600);
+  }
+
+  .price-period {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+  }
+}
+
+.plan-description {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-lg) 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-2xs) 0;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+
+    i {
+      color: var(--success-500);
+      font-size: var(--font-size-xs);
+    }
+  }
+}
+
+.plan-limits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-primary);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+}
+
+// ===== Trial Toggle =====
+.trial-toggle {
+  padding: var(--spacing-lg);
+  background: var(--success-50);
+  border: 1px solid var(--success-200);
+  border-radius: var(--radius-lg);
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--success-500);
+  }
+}
+
+.toggle-text {
+  font-size: var(--font-size-sm);
+  color: var(--success-700);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+
+  i {
+    color: var(--success-500);
+  }
+}
+
+// ===== Loading Plans =====
+.loading-plans {
+  text-align: center;
+  padding: var(--spacing-3xl);
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+
+  i {
+    margin-right: var(--spacing-sm);
+  }
+}
+
 // ===== Success State =====
 .success-state {
   text-align: center;
