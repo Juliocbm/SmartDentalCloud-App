@@ -287,30 +287,43 @@ export class TreatmentPlanDetailComponent implements OnInit {
 
   // ===== Item Progress Actions =====
 
-  canStartItem(itemStatus: string): boolean {
-    return itemStatus === ItemStatus.Pending;
+  canExecuteItem(item: TreatmentPlanItem): boolean {
+    const planStatus = this.plan()?.status;
+    return item.status === ItemStatus.Pending &&
+           !!item.serviceId &&
+           !item.linkedTreatmentId &&
+           (planStatus === TreatmentPlanStatus.Approved || planStatus === TreatmentPlanStatus.InProgress);
   }
 
-  canCompleteItem(itemStatus: string): boolean {
-    return itemStatus === ItemStatus.Pending || itemStatus === ItemStatus.InProgress;
-  }
-
-  canCancelItem(itemStatus: string): boolean {
-    return itemStatus !== ItemStatus.Completed && itemStatus !== ItemStatus.Cancelled;
-  }
-
-  async onStartItem(itemId: string): Promise<void> {
-    await this.updateItemStatus(itemId, ItemStatus.InProgress);
-  }
-
-  async onCompleteItem(itemId: string): Promise<void> {
-    const confirmed = await this.notifications.confirm('¿Marcar este procedimiento como completado?');
+  async onExecuteItem(item: TreatmentPlanItem): Promise<void> {
+    const confirmed = await this.notifications.confirm(
+      `¿Ejecutar el procedimiento "${item.description}"? Se creará un tratamiento vinculado.`
+    );
     if (!confirmed) return;
-    await this.updateItemStatus(itemId, ItemStatus.Completed);
+
+    const planId = this.plan()?.id;
+    if (!planId || this.itemActionLoading()) return;
+
+    this.itemActionLoading.set(item.id);
+
+    this.plansService.executeItem(planId, item.id, {
+      startDate: new Date().toISOString()
+    }).subscribe({
+      next: (treatment) => {
+        this.notifications.success(`Tratamiento creado y vinculado al procedimiento.`);
+        this.loadPlan(planId);
+        this.itemActionLoading.set(null);
+      },
+      error: (err) => {
+        this.logger.error('Error executing plan item:', err);
+        this.notifications.error(getApiErrorMessage(err));
+        this.itemActionLoading.set(null);
+      }
+    });
   }
 
   async onCancelItem(itemId: string): Promise<void> {
-    const confirmed = await this.notifications.confirm('¿Cancelar este procedimiento?');
+    const confirmed = await this.notifications.confirm('¿Cancelar este procedimiento? No se podrá ejecutar después.');
     if (!confirmed) return;
     await this.updateItemStatus(itemId, ItemStatus.Cancelled);
   }

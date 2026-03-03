@@ -557,6 +557,17 @@ textarea.form-control {
   color: #ffffff;
 }
 
+.badge-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease, filter 0.15s ease;
+
+  &:hover {
+    opacity: 0.85;
+    filter: brightness(1.1);
+  }
+}
+
 // ===== STATUS BADGE (estatus junto al título) =====
 // Uso: <span class="status-badge badge-active">Activo</span>
 //      <span class="status-badge badge-inactive">Inactivo</span>

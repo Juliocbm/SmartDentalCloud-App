@@ -73,8 +73,10 @@ export class SidebarComponent implements OnInit {
       route: '/treatments/dashboard',
       hasDashboard: true,
       children: [
-        { id: 'treatments-list', icon: 'fa-solid fa-list', label: 'Tratamientos', route: '/treatments' },
-        { id: 'treatments-new', icon: 'fa-solid fa-plus', label: 'Nuevo Tratamiento', route: '/treatments/new' }
+        { id: 'treatments-list', icon: 'fa-solid fa-list', label: 'Ejecutados', route: '/treatments' },
+        { id: 'treatments-new', icon: 'fa-solid fa-plus', label: 'Nuevo Tratamiento', route: '/treatments/new' },
+        { id: 'treatment-plans-list', icon: 'fa-solid fa-clipboard-list', label: 'Planes de Tratamiento', route: '/treatment-plans' },
+        { id: 'treatment-plans-new', icon: 'fa-solid fa-file-circle-plus', label: 'Nuevo Plan', route: '/treatment-plans/new' }
       ]
     },
     { 
@@ -85,17 +87,6 @@ export class SidebarComponent implements OnInit {
       children: [
         { id: 'services-list', icon: 'fa-solid fa-list', label: 'Servicios', route: '/services' },
         { id: 'services-new', icon: 'fa-solid fa-plus', label: 'Nuevo Servicio', route: '/services/new' }
-      ]
-    },
-    { 
-      id: 'treatment-plans',
-      icon: 'fa-solid fa-clipboard-list', 
-      label: 'Planes de Tratamiento', 
-      route: '/treatment-plans/dashboard',
-      hasDashboard: true,
-      children: [
-        { id: 'treatment-plans-list', icon: 'fa-solid fa-list', label: 'Planes de Tratamiento', route: '/treatment-plans' },
-        { id: 'treatment-plans-new', icon: 'fa-solid fa-plus', label: 'Nuevo Plan de Tratamiento', route: '/treatment-plans/new' }
       ]
     },
     { 
@@ -169,7 +160,6 @@ export class SidebarComponent implements OnInit {
     },
     { id: 'settings', icon: 'fa-solid fa-gear', label: 'Configuración', route: '/settings' },
     { id: 'audit-log', icon: 'fa-solid fa-shield-halved', label: 'Auditoría', route: '/audit-log' },
-    { id: 'cephalometry', icon: 'fa-solid fa-x-ray', label: 'Cefalometría', route: '/cephalometry' },
   ]);
 
   // Menú de favoritos dinámico

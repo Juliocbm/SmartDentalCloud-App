@@ -23,6 +23,7 @@ export interface Treatment {
   appointmentId?: string;
   appointmentDate?: Date;
   treatmentPlanItemId?: string;
+  treatmentPlanId?: string;
   treatmentType: string; // "Ad-hoc" | "Planned"
   notes?: string;
   // Auditoría
@@ -66,7 +67,6 @@ export interface UpdateTreatmentRequest {
   status?: string;
   duration?: number;
   appointmentId?: string;
-  treatmentPlanItemId?: string;
   notes?: string;
 }
 

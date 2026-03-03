@@ -73,8 +73,6 @@ export class TreatmentFormComponent implements OnInit {
       isMultipleTooth: [false],
       status: [TreatmentStatus.InProgress],
       duration: [null],
-      appointmentId: [''],
-      treatmentPlanItemId: [''],
       notes: ['']
     });
   }
@@ -103,8 +101,6 @@ export class TreatmentFormComponent implements OnInit {
           isMultipleTooth: treatment.isMultipleTooth,
           status: treatment.status,
           duration: treatment.duration || null,
-          appointmentId: treatment.appointmentId || '',
-          treatmentPlanItemId: treatment.treatmentPlanItemId || '',
           notes: treatment.notes || ''
         });
 
@@ -168,9 +164,7 @@ export class TreatmentFormComponent implements OnInit {
       startDate: new Date(formValue.startDate).toISOString(),
       endDate: formValue.endDate ? new Date(formValue.endDate).toISOString() : undefined,
       quadrant: formValue.quadrant ? Number(formValue.quadrant) : undefined,
-      duration: formValue.duration ? Number(formValue.duration) : undefined,
-      appointmentId: formValue.appointmentId || undefined,
-      treatmentPlanItemId: formValue.treatmentPlanItemId || undefined
+      duration: formValue.duration ? Number(formValue.duration) : undefined
     };
 
     if (this.isEditMode()) {

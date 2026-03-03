@@ -10,8 +10,10 @@ import {
   UpdatePlanItemRequest,
   RejectPlanRequest,
   UpdateItemProgressRequest,
+  ExecutePlanItemRequest,
   TreatmentPlanProgress
 } from '../models/treatment-plan.models';
+import { Treatment } from '../../treatments/models/treatment.models';
 
 @Injectable()
 export class TreatmentPlansService {
@@ -72,6 +74,10 @@ export class TreatmentPlansService {
 
   deleteItem(planId: string, itemId: string): Observable<void> {
     return this.api.delete<void>(`/treatment-plans/${planId}/items/${itemId}`);
+  }
+
+  executeItem(planId: string, itemId: string, request: ExecutePlanItemRequest): Observable<Treatment> {
+    return this.api.post<Treatment>(`/treatment-plans/${planId}/items/${itemId}/execute`, request);
   }
 
   sendEmail(planId: string, email: string): Observable<any> {

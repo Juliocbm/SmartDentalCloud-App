@@ -11,10 +11,17 @@
           {{ getStatusConfig(t.status).label }}
         </span>
         @if (t.treatmentPlanItemId) {
-          <span class="badge badge-info">
-            <i class="fa-solid fa-clipboard-list"></i>
-            Planificado
-          </span>
+          @if (t.treatmentPlanId) {
+            <a class="badge badge-info badge-link" [routerLink]="['/treatment-plans', t.treatmentPlanId]">
+              <i class="fa-solid fa-clipboard-list"></i>
+              Planificado — Ver Plan
+            </a>
+          } @else {
+            <span class="badge badge-info">
+              <i class="fa-solid fa-clipboard-list"></i>
+              Planificado
+            </span>
+          }
         }
       }
     </div>
@@ -23,11 +30,40 @@
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
-        @if (t.status !== TreatmentStatus.Cancelled) {
+        @if (t.status !== TreatmentStatus.Cancelled && t.status !== TreatmentStatus.Completed) {
           <a class="btn btn-outline" [routerLink]="['/treatments', t.id, 'edit']">
             <i class="fa-solid fa-pen"></i>
             Editar
           </a>
+        }
+        @if (canPutOnHold()) {
+          <button class="btn btn-outline btn-warning" (click)="onPutOnHold()" [disabled]="actionLoading()">
+            <i class="fa-solid fa-pause"></i>
+            En Espera
+          </button>
+        }
+        @if (canResume()) {
+          <button class="btn btn-outline" (click)="onResumeTreatment()" [disabled]="actionLoading()">
+            <i class="fa-solid fa-play"></i>
+            Reanudar
+          </button>
+        }
+        @if (canCancel()) {
+          <button class="btn btn-outline btn-danger" (click)="onCancelTreatment()" [disabled]="actionLoading()">
+            <i class="fa-solid fa-ban"></i>
+            Cancelar
+          </button>
+        }
+        @if (canComplete()) {
+          <button class="btn btn-outline btn-success" (click)="onCompleteTreatment()" [disabled]="actionLoading()">
+            @if (actionLoading()) {
+              <span class="btn-spinner"></span>
+              Completando...
+            } @else {
+              <i class="fa-solid fa-circle-check"></i>
+              Completar
+            }
+          </button>
         }
       }
     </div>

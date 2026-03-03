@@ -335,45 +335,39 @@
                             <i class="fa-solid fa-trash"></i>
                           </button>
                         }
-                        @if (p.status === TreatmentPlanStatus.InProgress && item.status !== ItemStatus.Completed && item.status !== ItemStatus.Cancelled) {
-                          @if (canStartItem(item.status)) {
-                            <button
-                              class="btn btn-sm btn-outline"
-                              (click)="onStartItem(item.id)"
-                              [disabled]="itemActionLoading() === item.id"
-                            >
-                              @if (itemActionLoading() === item.id) {
-                                <i class="fa-solid fa-spinner fa-spin"></i>
-                              } @else {
-                                <i class="fa-solid fa-play"></i>
-                              }
-                              Iniciar
-                            </button>
-                          }
-                          @if (canCompleteItem(item.status)) {
-                            <button
-                              class="btn btn-sm btn-outline btn-success"
-                              (click)="onCompleteItem(item.id)"
-                              [disabled]="itemActionLoading() === item.id"
-                            >
-                              @if (itemActionLoading() === item.id) {
-                                <i class="fa-solid fa-spinner fa-spin"></i>
-                              } @else {
-                                <i class="fa-solid fa-check"></i>
-                              }
-                              Completar
-                            </button>
-                          }
-                          @if (canCancelItem(item.status)) {
-                            <button
-                              class="btn btn-sm btn-outline btn-danger"
-                              (click)="onCancelItem(item.id)"
-                              [disabled]="itemActionLoading() === item.id"
-                            >
-                              <i class="fa-solid fa-ban"></i>
-                              Cancelar
-                            </button>
-                          }
+                        @if (item.linkedTreatmentId) {
+                          <a
+                            class="btn btn-sm btn-outline"
+                            [routerLink]="['/treatments', item.linkedTreatmentId]"
+                            title="Ver tratamiento vinculado"
+                          >
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            Ver Tratamiento
+                          </a>
+                        }
+                        @if (canExecuteItem(item)) {
+                          <button
+                            class="btn btn-sm btn-primary"
+                            (click)="onExecuteItem(item)"
+                            [disabled]="itemActionLoading() === item.id"
+                          >
+                            @if (itemActionLoading() === item.id) {
+                              <i class="fa-solid fa-spinner fa-spin"></i>
+                            } @else {
+                              <i class="fa-solid fa-play"></i>
+                            }
+                            Ejecutar
+                          </button>
+                        }
+                        @if (!item.linkedTreatmentId && item.status === ItemStatus.Pending) {
+                          <button
+                            class="btn btn-sm btn-outline btn-danger"
+                            (click)="onCancelItem(item.id)"
+                            [disabled]="itemActionLoading() === item.id"
+                          >
+                            <i class="fa-solid fa-ban"></i>
+                            Cancelar
+                          </button>
                         }
                       </div>
                     </td>

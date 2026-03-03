@@ -78,7 +78,8 @@ export interface TreatmentPlanItem {
   progressPercentage: number;
   displayOrder: number;
   treatmentPhase?: string;
-  completedTreatmentId?: string;
+  linkedTreatmentId?: string;
+  linkedTreatmentStatus?: string;
   estimatedDate?: Date;
   completedAt?: Date;
 }
@@ -174,7 +175,17 @@ export interface RejectPlanRequest {
 export interface UpdateItemProgressRequest {
   status: string;
   progressPercentage?: number;
-  completedTreatmentId?: string;
+}
+
+export interface ExecutePlanItemRequest {
+  startDate: string;
+  toothNumber?: string;
+  surface?: string;
+  quadrant?: number;
+  isMultipleTooth?: boolean;
+  duration?: number;
+  appointmentId?: string;
+  notes?: string;
 }
 
 // ===== Progress DTO =====
@@ -207,6 +218,7 @@ export interface TreatmentPlanItemProgress {
   progressPercentage: number;
   estimatedCost: number;
   actualCost?: number;
-  completedTreatmentId?: string;
+  linkedTreatmentId?: string;
+  linkedTreatmentStatus?: string;
   completedAt?: Date;
 }

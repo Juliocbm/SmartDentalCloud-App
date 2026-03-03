@@ -2,7 +2,7 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TreatmentsService } from '../../services/treatments.service';
-import { Treatment, TreatmentStatus, TREATMENT_STATUS_CONFIG } from '../../models/treatment.models';
+import { Treatment, TreatmentStatus, TREATMENT_STATUS_CONFIG, UpdateTreatmentRequest } from '../../models/treatment.models';
 import { TreatmentFollowUp } from '../../models/treatment-followup.models';
 import { TreatmentMaterial } from '../../models/treatment-material.models';
 import { TreatmentSession, SESSION_STATUS_CONFIG } from '../../models/treatment-session.models';
@@ -47,6 +47,7 @@ export class TreatmentDetailComponent implements OnInit {
   treatment = signal<Treatment | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+  actionLoading = signal(false);
 
   // Follow-ups state
   followUps = signal<TreatmentFollowUp[]>([]);
@@ -92,6 +93,87 @@ export class TreatmentDetailComponent implements OnInit {
         this.logger.error('Error loading treatment:', err);
         this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
+      }
+    });
+  }
+
+  // === Status Actions ===
+
+  canComplete(): boolean {
+    const s = this.treatment()?.status;
+    return s === TreatmentStatus.InProgress || s === TreatmentStatus.OnHold;
+  }
+
+  canCancel(): boolean {
+    const s = this.treatment()?.status;
+    return s === TreatmentStatus.InProgress || s === TreatmentStatus.OnHold;
+  }
+
+  canPutOnHold(): boolean {
+    return this.treatment()?.status === TreatmentStatus.InProgress;
+  }
+
+  canResume(): boolean {
+    return this.treatment()?.status === TreatmentStatus.OnHold;
+  }
+
+  async onCompleteTreatment(): Promise<void> {
+    const confirmed = await this.notifications.confirm('¿Marcar este tratamiento como completado?');
+    if (!confirmed) return;
+    this.changeStatus(TreatmentStatus.Completed);
+  }
+
+  async onCancelTreatment(): Promise<void> {
+    const confirmed = await this.notifications.confirm('¿Cancelar este tratamiento? Esta acción no se puede deshacer.');
+    if (!confirmed) return;
+    this.changeStatus(TreatmentStatus.Cancelled);
+  }
+
+  onPutOnHold(): void {
+    this.changeStatus(TreatmentStatus.OnHold);
+  }
+
+  onResumeTreatment(): void {
+    this.changeStatus(TreatmentStatus.InProgress);
+  }
+
+  private changeStatus(newStatus: TreatmentStatus): void {
+    const t = this.treatment();
+    if (!t || this.actionLoading()) return;
+
+    this.actionLoading.set(true);
+
+    const request: UpdateTreatmentRequest = {
+      id: t.id,
+      patientId: t.patientId,
+      serviceId: t.serviceId,
+      startDate: new Date(t.startDate).toISOString(),
+      endDate: t.endDate ? new Date(t.endDate).toISOString() : undefined,
+      toothNumber: t.toothNumber,
+      surface: t.surface,
+      quadrant: t.quadrant,
+      isMultipleTooth: t.isMultipleTooth,
+      status: newStatus,
+      duration: t.duration,
+      notes: t.notes
+    };
+
+    this.treatmentsService.update(t.id, request).subscribe({
+      next: () => {
+        const labels: Record<string, string> = {
+          [TreatmentStatus.Completed]: 'Tratamiento completado exitosamente.',
+          [TreatmentStatus.Cancelled]: 'Tratamiento cancelado.',
+          [TreatmentStatus.OnHold]: 'Tratamiento puesto en espera.',
+          [TreatmentStatus.InProgress]: 'Tratamiento reanudado.'
+        };
+        this.notifications.success(labels[newStatus] || 'Estado actualizado.');
+        this.loadTreatment(t.id);
+        this.actionLoading.set(false);
+      },
+      error: (err) => {
+        this.logger.error('Error changing treatment status:', err);
+        this.notifications.error(getApiErrorMessage(err));
+        this.actionLoading.set(false);
       }
     });
   }
