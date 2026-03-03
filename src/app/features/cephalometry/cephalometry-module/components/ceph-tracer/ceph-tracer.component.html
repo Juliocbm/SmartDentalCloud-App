@@ -73,6 +73,7 @@
 
         <app-date-picker
           [placeholder]="'Fecha del estudio'"
+          [value]="patient.date"
           (valueChange)="onDateChange($event)"
         ></app-date-picker>
         <select [(ngModel)]="patient.sex" (ngModelChange)="onConfigChange()" class="ceph-input-match">
@@ -154,6 +155,37 @@
         </label>
         <input type="file" accept=".json" (change)="onImportJSON($event)" class="form-input form-input-sm" />
       </div>
+
+      <!-- Backend persistence buttons -->
+      @if (analysisId) {
+        <div class="ceph-persist-row">
+          <button class="btn btn-primary btn-sm"
+            [disabled]="saving || isSigned"
+            (click)="saveToBackend()">
+            @if (saving) {
+              <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+            } @else {
+              <i class="fa-solid fa-floppy-disk"></i> Guardar
+            }
+          </button>
+          @if (!isSigned) {
+            <button class="btn btn-success btn-sm"
+              [disabled]="signing || saving"
+              (click)="signAnalysis()">
+              @if (signing) {
+                <i class="fa-solid fa-spinner fa-spin"></i> Firmando...
+              } @else {
+                <i class="fa-solid fa-file-signature"></i> Firmar
+              }
+            </button>
+          }
+          @if (isSigned) {
+            <span class="badge badge-success badge-sm">
+              <i class="fa-solid fa-lock"></i> Firmado
+            </span>
+          }
+        </div>
+      }
     </div>
   </div>
 </div>

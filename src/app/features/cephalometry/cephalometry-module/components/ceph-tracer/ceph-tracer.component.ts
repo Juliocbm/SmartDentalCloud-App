@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -23,6 +23,15 @@ import {
 } from '../../models/cephalometry.models';
 import { LANDMARKS } from '../../constants/landmarks.const';
 import { todayISO } from '../../utils/ceph-math.util';
+import { CephalometryApiService } from '../../../../cephalometry/services/cephalometry-api.service';
+import {
+  CephalometricAnalysis,
+  SaveCephalometricAnalysisRequest,
+  LandmarkInput,
+  MeasurementInput
+} from '../../../../cephalometry/models/cephalometric-analysis.models';
+import { NotificationService } from '../../../../../core/services/notification.service';
+import { getApiErrorMessage } from '../../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'ceph-tracer',
@@ -36,9 +45,23 @@ import { todayISO } from '../../utils/ceph-math.util';
   styleUrls: ['./ceph-tracer.component.scss'],
 })
 export class CephTracerComponent implements OnInit {
+  @Input() analysisId: string | null = null;
+  @Input() patientId: string | null = null;
+  @Input() initialAnalysis: CephalometricAnalysis | null = null;
+  @Output() saved = new EventEmitter<CephalometricAnalysis>();
+  @Output() signed = new EventEmitter<CephalometricAnalysis>();
+
   calibrationService = inject(CephalometryCalibrationService);
   private analysisService = inject(CephalometryAnalysisService);
   private exportService = inject(CephalometryExportService);
+  private cephApiService = inject(CephalometryApiService);
+  private notifications = inject(NotificationService);
+  private cdr = inject(ChangeDetectorRef);
+
+  saving = false;
+  signing = false;
+  isSigned = false;
+  private imageChanged = false;
 
   // Image
   imageSrc: string | null = null;
@@ -88,6 +111,60 @@ export class CephTracerComponent implements OnInit {
 
   ngOnInit(): void {
     this.calibrationService.calibration$.subscribe(() => this.recalculate());
+    this.hydrateFromAnalysis();
+  }
+
+  private hydrateFromAnalysis(): void {
+    const a = this.initialAnalysis;
+    if (!a) return;
+
+    this.isSigned = a.status === 'Signed';
+
+    // Config
+    this.enableSteiner = a.enableSteiner;
+    this.enableBjork = a.enableBjork;
+    this.enableExtended = a.enableExtended;
+
+    // Calibration — restore known mm and mmPerPx directly
+    if (a.calibrationKnownMm != null) {
+      this.calibKnownMm = a.calibrationKnownMm;
+      this.calibrationService.setKnownMm(a.calibrationKnownMm);
+    }
+
+    // Patient snapshot
+    this.patient = {
+      name: a.patientName || '',
+      age: a.patientAge || '',
+      sex: (a.patientSex as 'F' | 'M') || 'F',
+      date: a.examDate ? a.examDate.substring(0, 10) : todayISO(),
+      doctor: a.doctorName || '',
+    };
+    this.selectedPatientId = a.patientId;
+    this.selectedPatientName = a.patientName || null;
+
+    // Image — cargar desde endpoint dedicado via HttpClient (incluye JWT)
+    if (a.imageFileName && this.analysisId) {
+      this.cephApiService.getImage(this.analysisId).subscribe({
+        next: (blob) => {
+          this.imageSrc = URL.createObjectURL(blob);
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          // Imagen no disponible — no bloquea la hidratación
+        }
+      });
+    }
+
+    // Landmarks
+    if (a.landmarks && a.landmarks.length > 0) {
+      const pts: LandmarkMap = {};
+      for (const lm of a.landmarks) {
+        pts[lm.landmarkKey as LandmarkKey] = { x: lm.x, y: lm.y };
+      }
+      this.points = pts;
+      this.activeKey = this.nextUnsetKey('S', pts);
+      this.recalculate();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -100,7 +177,9 @@ export class CephTracerComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = () => {
       this.imageSrc = String(reader.result);
+      this.imageChanged = true;
       this.fixedScale = null;
+      this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
   }
@@ -282,5 +361,104 @@ export class CephTracerComponent implements OnInit {
 
   trackByKey(_: number, lm: { key: string }): string {
     return lm.key;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Analysis group mapping
+  // ---------------------------------------------------------------------------
+  private static readonly STEINER_KEYS = new Set([
+    'SNA', 'SNB', 'ANB', 'SN_GoGn', 'U1_NA_deg', 'U1_NA_mm',
+    'L1_NB_deg', 'L1_NB_mm', 'Interincisal', 'Pg_NB_mm'
+  ]);
+  private static readonly BJORK_KEYS = new Set([
+    'Saddle_NSAr', 'Articular_SArGo', 'Gonial_ArGoMe', 'Sum_Bjork', 'Jarabak_Ratio'
+  ]);
+  private static readonly EXTENDED_KEYS = new Set([
+    'IMPA', 'Wits', 'Ocl_SN', 'Facial_Angle', 'U1_SN'
+  ]);
+
+  private deriveAnalysisGroup(key: string): string {
+    if (CephTracerComponent.STEINER_KEYS.has(key)) return 'steiner';
+    if (CephTracerComponent.BJORK_KEYS.has(key)) return 'bjork';
+    if (CephTracerComponent.EXTENDED_KEYS.has(key)) return 'extended';
+    return 'soft';
+  }
+
+  // ---------------------------------------------------------------------------
+  // Backend persistence
+  // ---------------------------------------------------------------------------
+  saveToBackend(): void {
+    if (!this.analysisId || this.saving || this.isSigned) return;
+
+    this.saving = true;
+
+    const landmarks: LandmarkInput[] = Object.entries(this.points)
+      .filter(([, pt]) => pt != null)
+      .map(([key, pt]) => ({ landmarkKey: key, x: pt!.x, y: pt!.y }));
+
+    const measurements: MeasurementInput[] = this.measures
+      .filter(m => !isNaN(m.value))
+      .map(m => ({
+        measureKey: m.key,
+        label: m.label,
+        analysisGroup: this.deriveAnalysisGroup(m.key),
+        value: m.value,
+        units: m.units,
+        normMean: m.norm.mean,
+        normSD: m.norm.sd,
+        zScore: isNaN(m.zScore) ? null : m.zScore,
+        interpretation: m.interpretation === '—' ? null : m.interpretation,
+      }));
+
+    const request: SaveCephalometricAnalysisRequest = {
+      analysisId: this.analysisId,
+      rowVersion: this.initialAnalysis?.rowVersion ?? null,
+      imageBase64: this.imageChanged ? (this.imageSrc || null) : null,
+      calibrationMmPerPx: this.calibrationService.mmPerPx,
+      calibrationKnownMm: this.calibKnownMm,
+      enableSteiner: this.enableSteiner,
+      enableBjork: this.enableBjork,
+      enableExtended: this.enableExtended,
+      patientAge: this.patient.age ? String(this.patient.age) : null,
+      patientSex: this.patient.sex || null,
+      doctorName: this.patient.doctor || null,
+      clinicalSummary: this.clinicalSummary || null,
+      notes: null,
+      landmarks,
+      measurements,
+    };
+
+    this.cephApiService.save(this.analysisId, request).subscribe({
+      next: (updated) => {
+        this.saving = false;
+        this.imageChanged = false;
+        this.initialAnalysis = updated;
+        this.notifications.success('Análisis guardado exitosamente');
+        this.saved.emit(updated);
+      },
+      error: (err) => {
+        this.saving = false;
+        this.notifications.error(getApiErrorMessage(err, 'Error al guardar análisis'));
+      }
+    });
+  }
+
+  signAnalysis(): void {
+    if (!this.analysisId || this.signing || this.isSigned) return;
+
+    this.signing = true;
+    this.cephApiService.sign(this.analysisId).subscribe({
+      next: (updated) => {
+        this.signing = false;
+        this.isSigned = true;
+        this.initialAnalysis = updated;
+        this.notifications.success('Análisis firmado exitosamente');
+        this.signed.emit(updated);
+      },
+      error: (err) => {
+        this.signing = false;
+        this.notifications.error(getApiErrorMessage(err, 'Error al firmar análisis'));
+      }
+    });
   }
 }

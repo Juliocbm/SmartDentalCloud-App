@@ -1,11 +1,47 @@
 <div class="page-container container-wide">
   <app-page-header
-    title="Análisis Cefalométrico"
+    [title]="getTitle()"
     subtitle="Trazado y análisis cefalométrico digital"
     icon="fa-solid fa-x-ray"
     [breadcrumbs]="breadcrumbItems"
   >
+    <div actions>
+      <button class="btn btn-outline btn-sm" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver al Paciente
+      </button>
+    </div>
+    @if (analysis(); as a) {
+      <div title-extra>
+        <span class="badge"
+          [ngClass]="CEPH_STATUS_CONFIG[a.status].cssClass">
+          <i [class]="'fa-solid ' + CEPH_STATUS_CONFIG[a.status].icon"></i>
+          {{ CEPH_STATUS_CONFIG[a.status].label }}
+        </span>
+      </div>
+    }
   </app-page-header>
 
-  <ceph-tracer></ceph-tracer>
+  @if (loading() || creating()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>{{ creating() ? 'Creando análisis...' : 'Cargando análisis...' }}</p>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h3>Error</h3>
+      <p>{{ error() }}</p>
+      <button class="btn btn-outline" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  } @else if (analysis()) {
+    <ceph-tracer
+      [analysisId]="analysis()!.id"
+      [patientId]="patientId"
+      [initialAnalysis]="analysis()!"
+    ></ceph-tracer>
+  }
 </div>

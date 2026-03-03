@@ -41,6 +41,7 @@ export class DatePickerComponent implements OnInit, AfterViewInit, OnDestroy, On
   @Input() required = false;
   @Input() disabled = false;
   @Input() placeholder = 'Seleccionar fecha...';
+  @Input() value: string | null = null;
   @Input() error: string | null = null;
 
   @Output() valueChange = new EventEmitter<string | null>();
@@ -59,6 +60,18 @@ export class DatePickerComponent implements OnInit, AfterViewInit, OnDestroy, On
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // Sincronizar value input → currentValue (incluso antes de que flatpickr exista)
+    if (changes['value'] && this.value !== undefined) {
+      this.currentValue = this.value;
+      if (this.flatpickrInstance) {
+        if (this.value) {
+          this.flatpickrInstance.setDate(this.value, false);
+        } else {
+          this.flatpickrInstance.clear();
+        }
+      }
+    }
+
     if (!this.flatpickrInstance) return;
 
     if (changes['minDate']) {

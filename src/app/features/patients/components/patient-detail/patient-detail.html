@@ -85,6 +85,13 @@
         </button>
         <button
           class="nav-item"
+          [class.active]="activeTab() === 'cephalometry'"
+          (click)="setActiveTab('cephalometry')">
+          <i class="fa-solid fa-x-ray"></i>
+          <span>Cefalometría</span>
+        </button>
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'fiscal'"
           (click)="setActiveTab('fiscal')">
           <i class="fa-solid fa-file-invoice"></i>
@@ -353,6 +360,16 @@
       @if (activeTab() === 'periodontogram') {
         <div class="info-section">
           <app-perio-history-list
+            [patientId]="patient()!.id"
+            [patientName]="getFullName()"
+          />
+        </div>
+      }
+
+      <!-- Cephalometry Tab -->
+      @if (activeTab() === 'cephalometry') {
+        <div class="info-section">
+          <app-ceph-history-list
             [patientId]="patient()!.id"
             [patientName]="getFullName()"
           />

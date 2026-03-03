@@ -35,6 +35,11 @@ export const PATIENTS_ROUTES: Routes = [
         path: ':id/periodontogram/:perioId',
         loadComponent: () => import('../../features/periodontogram/components/periodontogram-page/periodontogram-page')
           .then(m => m.PeriodontogramPageComponent)
+      },
+      {
+        path: ':id/cephalometry/:cephId',
+        loadComponent: () => import('../../features/cephalometry/components/cephalometry-page/cephalometry-page')
+          .then(m => m.CephalometryPageComponent)
       }
     ]
   }

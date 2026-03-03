@@ -110,11 +110,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/audit-log/components/audit-log-list/audit-log-list').then(m => m.AuditLogListComponent),
         title: 'Auditoría'
       },
-      {
-        path: 'cephalometry',
-        loadChildren: () => import('./features/cephalometry/cephalometry.routes').then(m => m.CEPHALOMETRY_ROUTES),
-        title: 'Cefalometría'
-      }
     ]
   },
   {

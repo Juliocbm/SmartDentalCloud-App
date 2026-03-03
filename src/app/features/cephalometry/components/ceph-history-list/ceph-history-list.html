@@ -1,0 +1,102 @@
+<div class="ceph-history">
+  <div class="section-header-with-action">
+    <h3>
+      <i class="fa-solid fa-head-side"></i>
+      Análisis Cefalométricos
+    </h3>
+    <div class="header-actions">
+      <button class="btn btn-outline btn-sm" (click)="createNew()">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Análisis
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="inline-loading">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <span>Cargando análisis cefalométricos...</span>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state empty-state-sm">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-outline btn-sm" (click)="loadList()">
+        <i class="fa-solid fa-rotate"></i> Reintentar
+      </button>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="empty-state empty-state-sm">
+      <i class="fa-solid fa-head-side"></i>
+      <h3>Sin Análisis Cefalométricos</h3>
+      <p>Este paciente no tiene análisis cefalométricos registrados</p>
+      <button class="btn btn-outline btn-success" (click)="createNew()">
+        <i class="fa-solid fa-plus"></i>
+        Crear Primer Análisis
+      </button>
+    </div>
+  } @else {
+    <div class="ceph-cards">
+      @for (item of items(); track item.id) {
+        <div class="ceph-card" (click)="openAnalysis(item.id)">
+          <div class="ceph-card-header">
+            <div class="ceph-card-date">
+              <i class="fa-solid fa-calendar"></i>
+              {{ formatDate(item.examDate) }}
+            </div>
+            <span class="badge badge-sm"
+              [ngClass]="CEPH_STATUS_CONFIG[item.status].cssClass">
+              <i [class]="'fa-solid ' + CEPH_STATUS_CONFIG[item.status].icon"></i>
+              {{ CEPH_STATUS_CONFIG[item.status].label }}
+            </span>
+          </div>
+
+          <div class="ceph-card-info">
+            <div class="info-row">
+              <span class="info-label">Análisis</span>
+              <span class="info-value">{{ getAnalysisTypes(item) }}</span>
+            </div>
+            @if (item.patientAge || item.patientSex) {
+              <div class="info-row">
+                <span class="info-label">Paciente</span>
+                <span class="info-value">
+                  @if (item.patientSex) { {{ item.patientSex === 'F' ? 'Femenino' : item.patientSex === 'M' ? 'Masculino' : 'Otro' }} }
+                  @if (item.patientAge) { · {{ item.patientAge }} años }
+                </span>
+              </div>
+            }
+            <div class="info-row">
+              <span class="info-label">Imagen</span>
+              <span class="info-value">
+                @if (item.hasImage) {
+                  <i class="fa-solid fa-check-circle text-success"></i> Cargada
+                } @else {
+                  <i class="fa-solid fa-times-circle text-muted"></i> Sin imagen
+                }
+              </span>
+            </div>
+          </div>
+
+          <div class="ceph-card-footer">
+            <span class="ceph-card-author">
+              <i class="fa-solid fa-user-doctor"></i>
+              {{ item.performedByName }}
+            </span>
+            <div class="ceph-card-actions">
+              @if (item.status !== 'Signed') {
+                <button class="btn-icon-sm" title="Eliminar"
+                  (click)="deleteAnalysis(item); $event.stopPropagation()">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              }
+              <button class="btn-icon-sm" title="Ver detalle"
+                (click)="openAnalysis(item.id); $event.stopPropagation()">
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
