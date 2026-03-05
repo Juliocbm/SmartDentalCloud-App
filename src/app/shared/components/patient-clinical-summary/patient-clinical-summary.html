@@ -47,10 +47,10 @@
       </div>
     }
 
-    <!-- Link to patient -->
+    <!-- Link to clinical export -->
     @if (!compact()) {
-      <a class="summary-link" [routerLink]="['/patients', patientId()]">
-        <i class="fa-solid fa-user"></i>
+      <a class="summary-link" [routerLink]="['/patients', patientId(), 'export']">
+        <i class="fa-solid fa-file-medical"></i>
         Ver expediente
       </a>
     }
