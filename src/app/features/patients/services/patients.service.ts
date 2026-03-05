@@ -9,7 +9,12 @@ import {
   UpdateMedicalHistoryRequest,
   UpdateTaxInfoRequest,
   PatientSearchFilters,
-  PaginatedList
+  PaginatedList,
+  ChangeHistoryEntry,
+  MergePatientsRequest,
+  MergeResultDto,
+  ClinicalExportRequest,
+  PatientClinicalExportDto
 } from '../models/patient.models';
 import {
   PatientDashboard,
@@ -98,6 +103,31 @@ export class PatientsService {
 
   updateTaxInfo(id: string, data: UpdateTaxInfoRequest): Observable<void> {
     return this.api.put<void>(`${this.baseUrl}/${id}/tax-info`, data);
+  }
+
+  getChangeHistory(id: string, page = 1, pageSize = 50): Observable<ChangeHistoryEntry[]> {
+    return this.api.get<ChangeHistoryEntry[]>(`${this.baseUrl}/${id}/change-history`, {
+      page: page.toString(),
+      pageSize: pageSize.toString()
+    });
+  }
+
+  mergePatients(data: MergePatientsRequest): Observable<MergeResultDto> {
+    return this.api.post<MergeResultDto>(`${this.baseUrl}/merge`, data);
+  }
+
+  getClinicalExport(id: string, options?: ClinicalExportRequest): Observable<PatientClinicalExportDto> {
+    const params: QueryParams = {};
+    if (options) {
+      if (options.includeAllergies !== undefined) params['includeAllergies'] = options.includeAllergies;
+      if (options.includeProblems !== undefined) params['includeProblems'] = options.includeProblems;
+      if (options.includeTreatments !== undefined) params['includeTreatments'] = options.includeTreatments;
+      if (options.includePrescriptions !== undefined) params['includePrescriptions'] = options.includePrescriptions;
+      if (options.includeConsents !== undefined) params['includeConsents'] = options.includeConsents;
+      if (options.fromDate) params['fromDate'] = options.fromDate;
+      if (options.toDate) params['toDate'] = options.toDate;
+    }
+    return this.api.get<PatientClinicalExportDto>(`${this.baseUrl}/${id}/clinical-export`, params);
   }
 
   searchSimple(params: { search: string; limit?: number }): Observable<Patient[]> {

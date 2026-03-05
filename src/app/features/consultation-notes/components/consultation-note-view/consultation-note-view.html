@@ -87,11 +87,39 @@
       <!-- Diagnóstico -->
       @if (n.diagnosis) {
         <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-diagnoses"></i>
-            Diagnóstico
-          </h3>
+          <div class="section-header-with-action">
+            <h3>
+              <i class="fa-solid fa-diagnoses"></i>
+              Diagnóstico
+            </h3>
+            @if (!problemRegistered()) {
+              <button
+                class="btn btn-outline btn-sm"
+                [disabled]="registeringProblem() || !patientId()"
+                (click)="registerAsProblem()"
+                title="Registrar este diagnóstico en la lista de problemas del paciente"
+              >
+                @if (registeringProblem()) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-clipboard-list"></i>
+                }
+                Registrar como Problema
+              </button>
+            } @else {
+              <span class="badge badge-success">
+                <i class="fa-solid fa-check"></i>
+                Registrado como problema
+              </span>
+            }
+          </div>
           <div class="note-content">{{ n.diagnosis }}</div>
+          @if (n.diagnosisCie10Code) {
+            <div class="cie10-tag">
+              <i class="fa-solid fa-tag"></i>
+              CIE-10: {{ n.diagnosisCie10Code }}
+            </div>
+          }
         </div>
       }
 
@@ -212,6 +240,17 @@
                 ></textarea>
               </div>
             </div>
+            <div class="form-row">
+              <div class="form-group form-group-full">
+                <label class="form-label">
+                  Código CIE-10
+                  <span class="optional-badge">Opcional</span>
+                </label>
+                <app-cie10-autocomplete
+                  [selectedCode]="noteCie10Code()"
+                  (codeSelected)="onCie10Selected($event)" />
+              </div>
+            </div>
           </div>
 
           <div class="form-section">
@@ -330,6 +369,17 @@
                   rows="3"
                   placeholder="Diagnóstico clínico..."
                 ></textarea>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group form-group-full">
+                <label class="form-label">
+                  Código CIE-10
+                  <span class="optional-badge">Opcional</span>
+                </label>
+                <app-cie10-autocomplete
+                  [selectedCode]="noteCie10Code()"
+                  (codeSelected)="onCie10Selected($event)" />
               </div>
             </div>
           </div>

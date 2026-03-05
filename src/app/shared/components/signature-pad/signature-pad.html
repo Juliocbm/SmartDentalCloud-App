@@ -1,0 +1,16 @@
+<div class="signature-pad-container">
+  <canvas #canvas
+    [attr.width]="width()"
+    [attr.height]="height()"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp()"
+    (pointerleave)="onPointerUp()">
+  </canvas>
+  <div class="signature-actions">
+    <button type="button" class="btn btn-outline btn-sm" (click)="clear()" [disabled]="!hasSignature()">
+      <i class="fa-solid fa-eraser"></i> Limpiar
+    </button>
+  </div>
+  <p class="signature-hint">Firme dentro del recuadro</p>
+</div>

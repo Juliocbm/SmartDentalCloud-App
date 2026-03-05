@@ -15,11 +15,16 @@ import { MaterialFormModalComponent, MaterialFormModalData } from '../material-f
 import { SessionFormModalComponent, SessionFormModalData } from '../session-form-modal/session-form-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { PatientAllergiesService } from '../../../patients/services/patient-allergies.service';
+import { AllergyAlert } from '../../../patients/models/patient-allergy.models';
+import { AllergyAlertBannerComponent } from '../../../../shared/components/allergy-alert-banner/allergy-alert-banner';
+import { PatientClinicalSummaryComponent } from '../../../../shared/components/patient-clinical-summary/patient-clinical-summary';
+import { InformedConsentsService, ConsentCheck } from '../../../patients/services/informed-consents.service';
 
 @Component({
   selector: 'app-treatment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, AllergyAlertBannerComponent, PatientClinicalSummaryComponent],
   templateUrl: './treatment-detail.html',
   styleUrl: './treatment-detail.scss'
 })
@@ -33,6 +38,8 @@ export class TreatmentDetailComponent implements OnInit {
   private location = inject(Location);
   private notifications = inject(NotificationService);
   private modalService = inject(ModalService);
+  private allergiesService = inject(PatientAllergiesService);
+  private consentsService = inject(InformedConsentsService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -61,6 +68,12 @@ export class TreatmentDetailComponent implements OnInit {
   sessions = signal<TreatmentSession[]>([]);
   sessionsLoading = signal(false);
 
+  // Allergy alerts
+  allergyAlerts = signal<AllergyAlert[]>([]);
+
+  // Consent check
+  consentCheck = signal<ConsentCheck | null>(null);
+
   // Constants
   TreatmentStatus = TreatmentStatus;
   TREATMENT_STATUS_CONFIG = TREATMENT_STATUS_CONFIG;
@@ -85,6 +98,8 @@ export class TreatmentDetailComponent implements OnInit {
       next: (data) => {
         this.treatment.set(data);
         this.loading.set(false);
+        this.loadAllergyAlerts(data.patientId);
+        this.loadConsentCheck(data.patientId, id);
         this.loadFollowUps(id);
         this.loadMaterials(id);
         this.loadSessions(id);
@@ -94,6 +109,20 @@ export class TreatmentDetailComponent implements OnInit {
         this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
       }
+    });
+  }
+
+  private loadAllergyAlerts(patientId: string): void {
+    this.allergiesService.getAlerts(patientId).subscribe({
+      next: (alerts) => this.allergyAlerts.set(alerts),
+      error: () => {}
+    });
+  }
+
+  private loadConsentCheck(patientId: string, treatmentId: string): void {
+    this.consentsService.checkConsent(patientId, { treatmentId }).subscribe({
+      next: (check) => this.consentCheck.set(check),
+      error: () => {}
     });
   }
 

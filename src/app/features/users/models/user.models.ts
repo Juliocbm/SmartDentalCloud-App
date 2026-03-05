@@ -39,6 +39,8 @@ export interface UserProfile {
   emergencyContactPhone?: string;
   profilePictureUrl?: string;
   bio?: string;
+  signaturePinConfigured?: boolean;
+  hasCompleteProfessionalInfo?: boolean;
 }
 
 export interface Role {

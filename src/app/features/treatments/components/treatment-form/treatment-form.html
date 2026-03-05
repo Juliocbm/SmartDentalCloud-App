@@ -148,6 +148,38 @@
           </div>
         </div>
 
+        <!-- Sección: Diagnóstico Asociado -->
+        @if (activeProblems().length > 0) {
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fa-solid fa-diagnoses section-icon"></i>
+              Diagnóstico Asociado
+              <span class="optional-badge">Opcional</span>
+            </h3>
+
+            <div class="form-row">
+              <div class="form-group form-group-full">
+                <label for="patientProblemId" class="form-label">Problema del Paciente</label>
+                <select id="patientProblemId" formControlName="patientProblemId" class="form-input">
+                  <option [ngValue]="null">— Sin problema asociado —</option>
+                  @for (problem of activeProblems(); track problem.id) {
+                    <option [ngValue]="problem.id">
+                      {{ problem.description }}
+                      @if (problem.cie10Code) {
+                        ({{ problem.cie10Code }})
+                      }
+                    </option>
+                  }
+                </select>
+                <p class="field-hint">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Vincular este tratamiento a un diagnóstico justifica clínicamente el procedimiento
+                </p>
+              </div>
+            </div>
+          </div>
+        }
+
         <!-- Sección: Fechas y Estado -->
         <div class="form-section">
           <h3 class="section-title">

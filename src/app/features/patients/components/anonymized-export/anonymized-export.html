@@ -1,0 +1,160 @@
+<app-page-header
+  title="Exportación Anonimizada"
+  subtitle="Datos clínicos sin información identificable (NOM-024 §5.4)"
+  [breadcrumbs]="breadcrumbItems">
+</app-page-header>
+
+<div class="content-card">
+  <!-- Options Panel -->
+  <div class="export-options">
+    <h3 class="section-title">
+      <i class="fa-solid fa-sliders section-icon"></i>
+      Opciones de Exportación
+    </h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Fecha inicio</label>
+        <input type="date" class="form-input"
+          [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha fin</label>
+        <input type="date" class="form-input"
+          [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+      </div>
+    </div>
+
+    <div class="checkbox-group">
+      <label class="checkbox-label">
+        <input type="checkbox"
+          [ngModel]="includeDiagnoses()" (ngModelChange)="includeDiagnoses.set($event)" />
+        <span>Incluir diagnósticos (códigos CIE-10)</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox"
+          [ngModel]="includeTreatments()" (ngModelChange)="includeTreatments.set($event)" />
+        <span>Incluir tipos de tratamiento</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox"
+          [ngModel]="includeDemographics()" (ngModelChange)="includeDemographics.set($event)" />
+        <span>Incluir datos demográficos (edad, género, estado, tipo de sangre)</span>
+      </label>
+    </div>
+
+    <div class="export-actions">
+      <button class="btn btn-primary" [disabled]="loading()" (click)="generateExport()">
+        @if (loading()) {
+          <i class="fa-solid fa-spinner fa-spin"></i> Generando...
+        } @else {
+          <i class="fa-solid fa-database"></i> Generar Vista Previa
+        }
+      </button>
+      <button class="btn btn-outline" [disabled]="loading()" (click)="downloadCsv()">
+        <i class="fa-solid fa-file-csv"></i> Descargar CSV
+      </button>
+    </div>
+
+    <div class="info-banner">
+      <i class="fa-solid fa-shield-halved"></i>
+      <div>
+        <strong>Datos protegidos</strong>
+        <p>La exportación excluye automáticamente: CURP, nombre, apellido, dirección completa, teléfono y correo electrónico. Los IDs de pacientes se reemplazan con hashes SHA-256 irreversibles.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="alert alert-danger">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Results -->
+  @if (exportResult()) {
+    <div class="export-results">
+      <div class="results-header">
+        <h3>
+          <i class="fa-solid fa-table"></i>
+          Resultados
+          <span class="badge badge-info">{{ exportResult()!.totalRecords }} registros</span>
+        </h3>
+        <button class="btn btn-outline btn-sm" [disabled]="!exportResult()" (click)="downloadJson()">
+          <i class="fa-solid fa-download"></i> Descargar JSON
+        </button>
+      </div>
+
+      @if (exportResult()!.totalRecords === 0) {
+        <div class="empty-state">
+          <i class="fa-solid fa-database fa-3x"></i>
+          <p>No se encontraron registros en el período seleccionado</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID Anónimo</th>
+                @if (includeDemographics()) {
+                  <th>Edad</th>
+                  <th>Género</th>
+                  <th>Estado</th>
+                  <th>Tipo Sangre</th>
+                }
+                @if (includeDiagnoses()) {
+                  <th>Diagnósticos (CIE-10)</th>
+                }
+                @if (includeTreatments()) {
+                  <th>Tratamientos</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (record of exportResult()!.records; track record.anonymousId) {
+                <tr>
+                  <td><code>{{ record.anonymousId }}</code></td>
+                  @if (includeDemographics()) {
+                    <td>{{ record.age ?? '—' }}</td>
+                    <td>{{ record.gender || '—' }}</td>
+                    <td>{{ record.state || '—' }}</td>
+                    <td>{{ record.bloodType || '—' }}</td>
+                  }
+                  @if (includeDiagnoses()) {
+                    <td>
+                      @for (code of record.diagnosisCodes; track code) {
+                        <span class="badge badge-outline">{{ code }}</span>
+                      }
+                      @if (record.diagnosisCodes.length === 0) {
+                        <span class="text-muted">—</span>
+                      }
+                    </td>
+                  }
+                  @if (includeTreatments()) {
+                    <td>
+                      @for (type of record.treatmentTypes; track type) {
+                        <span class="badge badge-outline">{{ type }}</span>
+                      }
+                      @if (record.treatmentTypes.length === 0) {
+                        <span class="text-muted">—</span>
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <div class="results-footer">
+        <span class="text-muted">
+          Generado: {{ exportResult()!.generatedAt | date:'medium':'':'es-MX' }}
+          · Período: {{ exportResult()!.fromDate | date:'mediumDate':'':'es-MX' }} — {{ exportResult()!.toDate | date:'mediumDate':'':'es-MX' }}
+        </span>
+      </div>
+    </div>
+  }
+</div>

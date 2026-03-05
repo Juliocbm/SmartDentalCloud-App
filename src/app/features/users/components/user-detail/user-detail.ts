@@ -66,6 +66,13 @@ export class UserDetailComponent implements OnInit {
     this.location.back();
   }
 
+  isClinicalUser(): boolean {
+    const u = this.user();
+    if (!u?.roles) return false;
+    const clinicalRoles = ['doctor', 'dentist', 'specialist', 'dentista', 'especialista'];
+    return u.roles.some(r => clinicalRoles.includes(r.name.toLowerCase()));
+  }
+
   editUser(): void {
     const user = this.user();
     if (!user) return;

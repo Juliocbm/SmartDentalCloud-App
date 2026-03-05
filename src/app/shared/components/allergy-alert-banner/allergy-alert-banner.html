@@ -1,0 +1,33 @@
+@if (hasAlerts()) {
+  <div class="allergy-alert-banner" [class.compact]="compact()">
+    <div class="alert-header">
+      <i class="fa-solid fa-shield-virus"></i>
+      <strong>Alergias Críticas</strong>
+      <span class="alert-count">{{ alerts().length }}</span>
+    </div>
+    <div class="alert-items">
+      @for (alert of alerts(); track alert.id) {
+        <div class="alert-item" [class.life-threatening]="alert.severity === 'LifeThreatening'">
+          <i class="fa-solid" [ngClass]="getSeverityIcon(alert.severity)"></i>
+          <span class="allergen-name">{{ alert.allergenName }}</span>
+          <span class="allergen-type">({{ getAllergenTypeLabel(alert.allergenType) }})</span>
+          <span class="severity-badge" [class.severe]="alert.severity === 'Severe'" [class.life-threatening]="alert.severity === 'LifeThreatening'">
+            {{ getSeverityLabel(alert.severity) }}
+          </span>
+          @if (alert.reactionDescription) {
+            <span class="reaction">— {{ alert.reactionDescription }}</span>
+          }
+          @if (alert.verifiedByProfessional) {
+            <i class="fa-solid fa-user-check verified-icon" title="Verificada por profesional"></i>
+          }
+        </div>
+      }
+    </div>
+    @if (patientId() && !compact()) {
+      <a class="alert-link" [routerLink]="['/patients', patientId()]" fragment="allergies">
+        <i class="fa-solid fa-arrow-right"></i>
+        Ver todas las alergias
+      </a>
+    }
+  </div>
+}

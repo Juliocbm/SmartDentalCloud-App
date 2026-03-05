@@ -1,0 +1,179 @@
+// ===== Consent Print View =====
+
+.print-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  color: #1a1a1a;
+}
+
+.print-header {
+  text-align: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.clinic-name {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.document-title {
+  margin: var(--spacing-sm) 0 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.document-subtitle {
+  margin: 4px 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.print-divider {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: var(--spacing-sm) 0;
+}
+
+.print-info-row {
+  display: flex;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.print-info-item {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.print-label {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.print-value {
+  font-size: var(--font-size-sm);
+}
+
+.consent-title-print {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.consent-body-print {
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.print-signatures {
+  margin-top: var(--spacing-md);
+
+  h4, h5 {
+    margin: 0 0 var(--spacing-md);
+  }
+}
+
+.signature-blocks {
+  display: flex;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-lg);
+}
+
+.signature-block {
+  flex: 1;
+  min-width: 200px;
+  text-align: center;
+}
+
+.signature-line {
+  border-bottom: 1px solid #333;
+  height: 60px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.signature-label {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.signature-name {
+  margin: 2px 0 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.signature-date {
+  margin: 2px 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.electronic-signatures {
+  h5 {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+  }
+}
+
+.e-signature-entry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  border-bottom: 1px dashed var(--border-primary);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.revocation-notice {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 2px solid #dc2626;
+  border-radius: var(--radius-md);
+  background: #fef2f2;
+  text-align: center;
+
+  h4 {
+    margin: 0 0 var(--spacing-xs);
+    color: #dc2626;
+    font-size: var(--font-size-base);
+  }
+
+  p {
+    margin: 2px 0;
+    font-size: var(--font-size-sm);
+    color: #7f1d1d;
+  }
+}
+
+// Print-specific styles
+@media print {
+  .print-content {
+    padding: 0;
+    font-size: 12pt;
+  }
+
+  .print-divider {
+    border-color: #000;
+  }
+
+  .signature-line {
+    border-color: #000;
+  }
+}

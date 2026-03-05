@@ -1,0 +1,39 @@
+<div class="cie10-autocomplete">
+  <!-- Selected code display -->
+  @if (selectedDisplay()) {
+    <div class="selected-code">
+      <span class="selected-code-text">{{ selectedDisplay() }}</span>
+      <button type="button" class="btn-clear" (click)="clearSelection()" title="Limpiar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  } @else {
+    <!-- Search input -->
+    <div class="search-wrapper">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="form-input search-input"
+        placeholder="Buscar código CIE-10 (ej: K02, caries...)"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="onSearchInput($event)"
+        (focus)="onFocus()"
+        autocomplete="off" />
+      @if (loading()) {
+        <i class="fa-solid fa-spinner fa-spin loading-icon"></i>
+      }
+    </div>
+  }
+
+  <!-- Dropdown results -->
+  @if (showDropdown()) {
+    <div class="dropdown">
+      @for (code of results(); track code.code) {
+        <button type="button" class="dropdown-item" (click)="selectCode(code)">
+          <span class="code-badge" [class.odonto]="code.isOdontological">{{ code.code }}</span>
+          <span class="code-desc">{{ code.description }}</span>
+        </button>
+      }
+    </div>
+  }
+</div>

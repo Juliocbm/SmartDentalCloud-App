@@ -1,0 +1,114 @@
+<app-modal
+  title="Vista de Impresión — Consentimiento Informado"
+  icon="fa-print"
+  size="lg"
+  (closed)="onClose()">
+
+  <div class="print-content" id="consent-print-area">
+    <!-- Header -->
+    <div class="print-header">
+      @if (clinicName()) {
+        <h2 class="clinic-name">{{ clinicName() }}</h2>
+      }
+      <h3 class="document-title">CONSENTIMIENTO INFORMADO</h3>
+      <p class="document-subtitle">{{ getConsentTypeLabel(consent().consentType) }}</p>
+    </div>
+
+    <hr class="print-divider" />
+
+    <!-- Patient info -->
+    <div class="print-info-row">
+      <div class="print-info-item">
+        <span class="print-label">Paciente:</span>
+        <span class="print-value">{{ patientName() }}</span>
+      </div>
+      <div class="print-info-item">
+        <span class="print-label">Fecha:</span>
+        <span class="print-value">{{ formatDate(consent().createdAt) }}</span>
+      </div>
+    </div>
+    <div class="print-info-row">
+      <div class="print-info-item">
+        <span class="print-label">Estado:</span>
+        <span class="print-value">{{ getConsentStatusLabel(consent().status) }}</span>
+      </div>
+      @if (consent().expiresAt) {
+        <div class="print-info-item">
+          <span class="print-label">Vigencia:</span>
+          <span class="print-value">{{ formatDate(consent().expiresAt) }}</span>
+        </div>
+      }
+    </div>
+
+    <hr class="print-divider" />
+
+    <!-- Title & Content -->
+    <h4 class="consent-title-print">{{ consent().title }}</h4>
+    <div class="consent-body-print">{{ consent().content }}</div>
+
+    <hr class="print-divider" />
+
+    <!-- Signatures section -->
+    <div class="print-signatures">
+      <h4>Firmas</h4>
+
+      <div class="signature-blocks">
+        <!-- Patient signature -->
+        <div class="signature-block">
+          <div class="signature-line"></div>
+          <p class="signature-label">Firma del Paciente</p>
+          <p class="signature-name">{{ patientName() }}</p>
+          @if (consent().signedAt) {
+            <p class="signature-date">{{ formatDate(consent().signedAt) }}</p>
+          }
+        </div>
+
+        <!-- Witness -->
+        @if (consent().witnessName) {
+          <div class="signature-block">
+            <div class="signature-line"></div>
+            <p class="signature-label">Testigo</p>
+            <p class="signature-name">{{ consent().witnessName }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Electronic signatures -->
+      @if (signatures().length > 0) {
+        <div class="electronic-signatures">
+          <h5>Firmas Electrónicas (NOM-024-SSA3-2012)</h5>
+          @for (sig of signatures(); track sig.id) {
+            <div class="e-signature-entry">
+              <span><strong>{{ sig.userName }}</strong></span>
+              <span>{{ formatDate(sig.signedAt) }}</span>
+              @if (sig.reason) {
+                <span>Motivo: {{ sig.reason }}</span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Revocation -->
+    @if (consent().revokedAt) {
+      <div class="revocation-notice">
+        <h4><i class="fa-solid fa-ban"></i> CONSENTIMIENTO REVOCADO</h4>
+        <p>Fecha de revocación: {{ formatDate(consent().revokedAt) }}</p>
+        @if (consent().revocationReason) {
+          <p>Motivo: {{ consent().revocationReason }}</p>
+        }
+      </div>
+    }
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-outline" (click)="onClose()">
+      Cerrar
+    </button>
+    <button class="btn btn-primary" (click)="print()">
+      <i class="fa-solid fa-print"></i>
+      Imprimir
+    </button>
+  </div>
+</app-modal>

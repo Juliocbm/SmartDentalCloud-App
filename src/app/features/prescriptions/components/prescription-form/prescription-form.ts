@@ -16,12 +16,14 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
-
+import { PatientAllergiesService } from '../../../patients/services/patient-allergies.service';
+import { AllergyAlert } from '../../../patients/models/patient-allergy.models';
+import { AllergyAlertBannerComponent } from '../../../../shared/components/allergy-alert-banner/allergy-alert-banner';
 
 @Component({
   selector: 'app-prescription-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent, AllergyAlertBannerComponent],
   templateUrl: './prescription-form.html',
   styleUrl: './prescription-form.scss'
 })
@@ -32,6 +34,10 @@ export class PrescriptionFormComponent implements OnInit {
   private prescriptionsService = inject(PrescriptionsService);
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);
+  private allergiesService = inject(PatientAllergiesService);
+
+  // Allergy alerts
+  allergyAlerts = signal<AllergyAlert[]>([]);
 
   // State
   saving = signal(false);
@@ -108,11 +114,20 @@ export class PrescriptionFormComponent implements OnInit {
     this.selectedPatient.set(patient);
     this.patientSearch.set(`${patient.firstName} ${patient.lastName}`);
     this.showPatientDropdown.set(false);
+    this.loadAllergyAlerts(patient.id);
   }
 
   clearPatient(): void {
     this.selectedPatient.set(null);
     this.patientSearch.set('');
+    this.allergyAlerts.set([]);
+  }
+
+  private loadAllergyAlerts(patientId: string): void {
+    this.allergiesService.getAlerts(patientId).subscribe({
+      next: (alerts) => this.allergyAlerts.set(alerts),
+      error: () => {}
+    });
   }
 
   // === Medication Items ===

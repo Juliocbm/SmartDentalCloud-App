@@ -1,0 +1,118 @@
+<div class="consent-templates">
+  <div class="section-header">
+    <div>
+      <h3>
+        <i class="fa-solid fa-file-contract"></i>
+        Plantillas de Consentimiento Informado
+      </h3>
+      <p class="section-description">
+        Gestione las plantillas reutilizables para consentimientos informados (NOM-024).
+      </p>
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="openNewForm()" [disabled]="showForm()">
+      <i class="fa-solid fa-plus"></i>
+      Nueva Plantilla
+    </button>
+  </div>
+
+  <!-- Form -->
+  @if (showForm()) {
+    <div class="template-form card">
+      <h4>{{ editingId() ? 'Editar Plantilla' : 'Nueva Plantilla' }}</h4>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label">Tipo de Consentimiento <span class="required">*</span></label>
+          <select class="form-input"
+            [ngModel]="formConsentType()"
+            (ngModelChange)="formConsentType.set($event)">
+            @for (opt of CONSENT_TYPE_OPTIONS; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Título <span class="required">*</span></label>
+          <input type="text" class="form-input"
+            placeholder="Ej: Consentimiento para tratamiento de conducto"
+            [ngModel]="formTitle()"
+            (ngModelChange)="formTitle.set($event)" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Contenido <span class="required">*</span></label>
+        <textarea class="form-input form-textarea" rows="8"
+          placeholder="Escriba el texto completo del consentimiento informado..."
+          [ngModel]="formContent()"
+          (ngModelChange)="formContent.set($event)"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox"
+            [ngModel]="formIsDefault()"
+            (ngModelChange)="formIsDefault.set($event)" />
+          Plantilla predeterminada para este tipo
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline btn-sm" (click)="cancelForm()" [disabled]="saving()">
+          Cancelar
+        </button>
+        <button class="btn btn-primary btn-sm" (click)="saveTemplate()"
+          [disabled]="saving() || !formTitle().trim() || !formContent().trim()">
+          @if (saving()) {
+            <span class="btn-spinner"></span>
+            Guardando...
+          } @else {
+            <i class="fa-solid fa-save"></i>
+            {{ editingId() ? 'Actualizar' : 'Crear' }}
+          }
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- List -->
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Cargando plantillas...</p>
+    </div>
+  } @else if (templates().length === 0) {
+    <div class="empty-state-sm">
+      <i class="fa-solid fa-file-circle-plus"></i>
+      <p>No hay plantillas de consentimiento configuradas.</p>
+      <button class="btn btn-outline btn-sm" (click)="openNewForm()">
+        <i class="fa-solid fa-plus"></i> Crear primera plantilla
+      </button>
+    </div>
+  } @else {
+    <div class="template-grid">
+      @for (t of templates(); track t.id) {
+        <div class="template-card card">
+          <div class="template-card-header">
+            <div>
+              <span class="badge badge-info">{{ getConsentTypeLabel(t.consentType) }}</span>
+              @if (t.isDefault) {
+                <span class="badge badge-success">Predeterminada</span>
+              }
+            </div>
+            <div class="template-actions">
+              <button class="btn btn-icon btn-sm" title="Editar" (click)="editTemplate(t)">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button class="btn btn-icon btn-sm btn-danger" title="Desactivar" (click)="deactivateTemplate(t)">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <h4 class="template-title">{{ t.title }}</h4>
+          <p class="template-content-preview">{{ t.content | slice:0:150 }}{{ t.content.length > 150 ? '...' : '' }}</p>
+        </div>
+      }
+    </div>
+  }
+</div>

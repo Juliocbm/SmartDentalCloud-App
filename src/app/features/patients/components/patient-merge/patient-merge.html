@@ -1,0 +1,346 @@
+<div class="page-container container-medium">
+  <app-page-header
+    [title]="'Fusionar Pacientes'"
+    [subtitle]="'Combinar registros duplicados en uno solo'"
+    [icon]="'fa-code-merge'"
+    [showBackButton]="true"
+    [backRoute]="'/patients'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  <!-- Wizard Steps Indicator -->
+  <div class="wizard-steps">
+    <div class="wizard-step" [class.active]="step() >= 1" [class.completed]="step() > 1">
+      <span class="step-number">1</span>
+      <span class="step-label">Seleccionar</span>
+    </div>
+    <div class="wizard-connector" [class.active]="step() > 1"></div>
+    <div class="wizard-step" [class.active]="step() >= 2" [class.completed]="step() > 2">
+      <span class="step-number">2</span>
+      <span class="step-label">Revisar</span>
+    </div>
+    <div class="wizard-connector" [class.active]="step() > 2"></div>
+    <div class="wizard-step" [class.active]="step() >= 3">
+      <span class="step-number">3</span>
+      <span class="step-label">Resultado</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: Select patients -->
+  @if (step() === 1) {
+    <div class="content-card">
+      <h3 class="section-title">
+        <i class="fa-solid fa-users section-icon"></i>
+        Seleccionar Pacientes
+      </h3>
+      <p class="section-description">
+        Selecciona el paciente <strong>primario</strong> (que sobrevivirá) y el paciente
+        <strong>duplicado</strong> (que será absorbido y desactivado).
+      </p>
+
+      <div class="merge-selection">
+        <!-- Primary Patient -->
+        <div class="patient-selector">
+          <label class="selector-label">
+            <i class="fa-solid fa-star"></i>
+            Paciente Primario
+            <span class="selector-hint">Sobrevive</span>
+          </label>
+
+          @if (primaryPatient(); as p) {
+            <div class="selected-patient-card primary">
+              <div class="patient-info">
+                <span class="patient-name">{{ p.firstName }} {{ p.lastName }}</span>
+                <span class="patient-meta">{{ p.email || '—' }} · {{ p.phoneNumber || '—' }}</span>
+                <span class="patient-meta">Nac: {{ formatDate(p.dateOfBirth) }}</span>
+              </div>
+              <button class="btn btn-ghost btn-sm" (click)="clearPrimary()">
+                <i class="fa-solid fa-times"></i>
+              </button>
+            </div>
+          } @else {
+            <div class="search-wrapper">
+              <input
+                type="text"
+                class="form-input"
+                placeholder="Buscar paciente por nombre..."
+                [ngModel]="primarySearchText()"
+                (ngModelChange)="onPrimarySearch($event)" />
+              @if (primaryResults().length > 0) {
+                <div class="search-dropdown">
+                  @for (r of primaryResults(); track r.id) {
+                    <button class="dropdown-item" (click)="selectPrimary(r)"
+                      [disabled]="duplicatePatient()?.id === r.id">
+                      <span class="item-name">{{ r.firstName }} {{ r.lastName }}</span>
+                      <span class="item-meta">{{ r.email || r.phoneNumber || '—' }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Swap button -->
+        <div class="swap-container">
+          <button
+            class="btn btn-outline btn-icon swap-btn"
+            (click)="swapPatients()"
+            [disabled]="!primaryPatient() && !duplicatePatient()"
+            title="Intercambiar roles">
+            <i class="fa-solid fa-right-left"></i>
+          </button>
+        </div>
+
+        <!-- Duplicate Patient -->
+        <div class="patient-selector">
+          <label class="selector-label">
+            <i class="fa-solid fa-copy"></i>
+            Paciente Duplicado
+            <span class="selector-hint">Se absorbe</span>
+          </label>
+
+          @if (duplicatePatient(); as d) {
+            <div class="selected-patient-card duplicate">
+              <div class="patient-info">
+                <span class="patient-name">{{ d.firstName }} {{ d.lastName }}</span>
+                <span class="patient-meta">{{ d.email || '—' }} · {{ d.phoneNumber || '—' }}</span>
+                <span class="patient-meta">Nac: {{ formatDate(d.dateOfBirth) }}</span>
+              </div>
+              <button class="btn btn-ghost btn-sm" (click)="clearDuplicate()">
+                <i class="fa-solid fa-times"></i>
+              </button>
+            </div>
+          } @else {
+            <div class="search-wrapper">
+              <input
+                type="text"
+                class="form-input"
+                placeholder="Buscar paciente duplicado..."
+                [ngModel]="duplicateSearchText()"
+                (ngModelChange)="onDuplicateSearch($event)" />
+              @if (duplicateResults().length > 0) {
+                <div class="search-dropdown">
+                  @for (r of duplicateResults(); track r.id) {
+                    <button class="dropdown-item" (click)="selectDuplicate(r)"
+                      [disabled]="primaryPatient()?.id === r.id">
+                      <span class="item-name">{{ r.firstName }} {{ r.lastName }}</span>
+                      <span class="item-meta">{{ r.email || r.phoneNumber || '—' }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      @if (primaryPatient() && duplicatePatient() && primaryPatient()!.id === duplicatePatient()!.id) {
+        <div class="alert alert-error">
+          <i class="fa-solid fa-exclamation-triangle"></i>
+          No puedes fusionar un paciente consigo mismo.
+        </div>
+      }
+
+      <div class="form-actions">
+        <button class="btn btn-primary" [disabled]="!canProceedToStep2()" (click)="goToStep2()">
+          Siguiente
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- STEP 2: Review & Confirm -->
+  @if (step() === 2) {
+    <div class="content-card">
+      <h3 class="section-title">
+        <i class="fa-solid fa-magnifying-glass section-icon"></i>
+        Revisar y Confirmar
+      </h3>
+
+      @if (primaryPatient(); as p) {
+        @if (duplicatePatient(); as d) {
+          <div class="comparison-table">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Campo</th>
+                  <th>
+                    <i class="fa-solid fa-star text-primary"></i>
+                    Primario (sobrevive)
+                  </th>
+                  <th>
+                    <i class="fa-solid fa-copy text-muted"></i>
+                    Duplicado (se absorbe)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="field-label">Nombre</td>
+                  <td>{{ p.firstName }} {{ p.lastName }}</td>
+                  <td>{{ d.firstName }} {{ d.lastName }}</td>
+                </tr>
+                <tr>
+                  <td class="field-label">Fecha Nac.</td>
+                  <td>{{ formatDate(p.dateOfBirth) }}</td>
+                  <td>{{ formatDate(d.dateOfBirth) }}</td>
+                </tr>
+                <tr>
+                  <td class="field-label">Teléfono</td>
+                  <td>{{ p.phoneNumber || '—' }}</td>
+                  <td>{{ d.phoneNumber || '—' }}</td>
+                </tr>
+                <tr>
+                  <td class="field-label">Email</td>
+                  <td>{{ p.email || '—' }}</td>
+                  <td>{{ d.email || '—' }}</td>
+                </tr>
+                <tr>
+                  <td class="field-label">CURP</td>
+                  <td>{{ p.curp || '—' }}</td>
+                  <td>{{ d.curp || '—' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="merge-options">
+            <h4>Opciones de fusión</h4>
+            <label class="checkbox-label">
+              <input type="checkbox" [ngModel]="mergeMedicalHistory()"
+                (ngModelChange)="mergeMedicalHistory.set($event)" />
+              <span>Fusionar historia médica</span>
+              <span class="option-hint">Copia campos médicos vacíos del duplicado al primario</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" [ngModel]="mergeFiscalData()"
+                (ngModelChange)="mergeFiscalData.set($event)" />
+              <span>Fusionar datos fiscales</span>
+              <span class="option-hint">Copia datos fiscales del duplicado si el primario no tiene</span>
+            </label>
+          </div>
+
+          <div class="alert alert-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+              <strong>Esta operación es irreversible.</strong>
+              Todas las citas, tratamientos, notas, recetas, alergias, consentimientos,
+              problemas y facturas del paciente duplicado serán reasignadas al paciente primario.
+              El paciente duplicado será desactivado.
+            </div>
+          </div>
+
+          @if (mergeError()) {
+            <div class="alert alert-error">
+              <i class="fa-solid fa-exclamation-circle"></i>
+              {{ mergeError() }}
+            </div>
+          }
+
+          <div class="form-actions">
+            <button class="btn btn-outline" (click)="goBackToStep1()" [disabled]="merging()">
+              <i class="fa-solid fa-arrow-left"></i>
+              Atrás
+            </button>
+            <button class="btn btn-danger" (click)="executeMerge()" [disabled]="merging()">
+              @if (merging()) {
+                <span class="btn-spinner"></span>
+                Fusionando...
+              } @else {
+                <i class="fa-solid fa-code-merge"></i>
+                Confirmar Fusión
+              }
+            </button>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- STEP 3: Result -->
+  @if (step() === 3) {
+    <div class="content-card">
+      <div class="result-header">
+        <div class="result-icon success">
+          <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <h3>Fusión Completada</h3>
+        <p>Se reasignaron <strong>{{ getTotalMerged() }}</strong> entidades al paciente primario.</p>
+      </div>
+
+      @if (mergeResult(); as r) {
+        <div class="result-grid">
+          @if (r.appointmentsMerged > 0) {
+            <div class="result-item">
+              <i class="fa-solid fa-calendar-check"></i>
+              <span class="result-count">{{ r.appointmentsMerged }}</span>
+              <span class="result-label">Citas</span>
+            </div>
+          }
+          @if (r.treatmentsMerged > 0) {
+            <div class="result-item">
+              <i class="fa-solid fa-tooth"></i>
+              <span class="result-count">{{ r.treatmentsMerged }}</span>
+              <span class="result-label">Tratamientos</span>
+            </div>
+          }
+          @if (r.notesMerged > 0) {
+            <div class="result-item">
+              <i class="fa-solid fa-notes-medical"></i>
+              <span class="result-count">{{ r.notesMerged }}</span>
+              <span class="result-label">Notas</span>
+            </div>
+          }
+          @if (r.prescriptionsMerged > 0) {
+            <div class="result-item">
+              <i class="fa-solid fa-prescription"></i>
+              <span class="result-count">{{ r.prescriptionsMerged }}</span>
+              <span class="result-label">Recetas</span>
+            </div>
+          }
+          @if (r.allergiesMerged > 0) {
+            <div class="result-item">
+              <i class="fa-solid fa-shield-virus"></i>
+              <span class="result-count">{{ r.allergiesMerged }}</span>
+              <span class="result-label">Alergias</span>
+            </div>
+          }
+          @if (r.consentsMerged > 0) {
+            <div class="result-item">
+              <i class="fa-solid fa-file-signature"></i>
+              <span class="result-count">{{ r.consentsMerged }}</span>
+              <span class="result-label">Consentimientos</span>
+            </div>
+          }
+          @if (r.problemsMerged > 0) {
+            <div class="result-item">
+              <i class="fa-solid fa-clipboard-list"></i>
+              <span class="result-count">{{ r.problemsMerged }}</span>
+              <span class="result-label">Problemas</span>
+            </div>
+          }
+          @if (r.invoicesMerged > 0) {
+            <div class="result-item">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+              <span class="result-count">{{ r.invoicesMerged }}</span>
+              <span class="result-label">Facturas</span>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="form-actions">
+        <button class="btn btn-primary" (click)="goToPrimaryPatient()">
+          <i class="fa-solid fa-user"></i>
+          Ver Paciente Primario
+        </button>
+        <a routerLink="/patients" class="btn btn-outline">
+          <i class="fa-solid fa-list"></i>
+          Volver a Pacientes
+        </a>
+      </div>
+    </div>
+  }
+</div>

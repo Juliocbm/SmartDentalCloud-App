@@ -79,6 +79,19 @@
   gap: var(--spacing-xl);
 }
 
+// ===== Consent Missing =====
+.consent-missing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+
+  i {
+    color: var(--warning-500, #f59e0b);
+  }
+}
+
 @media (max-width: 768px) {
   .detail-layout {
     grid-template-columns: 1fr;

@@ -1,0 +1,73 @@
+<app-modal
+  title="Firma Electrónica"
+  icon="fa-file-signature"
+  size="sm"
+  (closed)="onClose()">
+
+  <div class="signature-modal-body">
+    <div class="document-info">
+      <i class="fa-solid fa-file-medical"></i>
+      <div>
+        <span class="document-label">Documento a firmar:</span>
+        <span class="document-title">{{ documentTitle() }}</span>
+      </div>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="form-group">
+      <label class="form-label">PIN de Firma <span class="required">*</span></label>
+      <div class="input-with-toggle">
+        <input
+          [type]="showPin() ? 'text' : 'password'"
+          class="form-input"
+          placeholder="Ingrese su PIN de firma"
+          autocomplete="off"
+          [ngModel]="pin()"
+          (ngModelChange)="pin.set($event)"
+          (keydown.enter)="sign()" />
+        <button type="button" class="toggle-visibility" (click)="toggleShowPin()">
+          <i class="fa-solid" [class.fa-eye]="!showPin()" [class.fa-eye-slash]="showPin()"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Motivo <span class="optional-badge">Opcional</span></label>
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Ej: Revisión y aprobación del documento"
+        [ngModel]="reason()"
+        (ngModelChange)="reason.set($event)" />
+    </div>
+
+    <div class="signature-disclaimer">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <p>
+        Al firmar, usted certifica que ha revisado este documento y que la información
+        es correcta. Esta acción queda registrada conforme a la NOM-024-SSA3-2012.
+      </p>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-outline" (click)="onClose()" [disabled]="signing()">
+      Cancelar
+    </button>
+    <button class="btn btn-primary" (click)="sign()" [disabled]="!canSign()">
+      @if (signing()) {
+        <span class="btn-spinner"></span>
+        Firmando...
+      } @else {
+        <i class="fa-solid fa-file-signature"></i>
+        Firmar Documento
+      }
+    </button>
+  </div>
+</app-modal>

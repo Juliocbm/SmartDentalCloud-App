@@ -22,6 +22,11 @@ export const PATIENTS_ROUTES: Routes = [
           .then(m => m.PatientFormComponent)
       },
       {
+        path: 'merge',
+        loadComponent: () => import('./components/patient-merge/patient-merge')
+          .then(m => m.PatientMergeComponent)
+      },
+      {
         path: ':id',
         loadComponent: () => import('./components/patient-detail/patient-detail')
           .then(m => m.PatientDetailComponent)
@@ -30,6 +35,11 @@ export const PATIENTS_ROUTES: Routes = [
         path: ':id/edit',
         loadComponent: () => import('./components/patient-form/patient-form')
           .then(m => m.PatientFormComponent)
+      },
+      {
+        path: ':id/export',
+        loadComponent: () => import('./components/clinical-export/clinical-export')
+          .then(m => m.ClinicalExportComponent)
       },
       {
         path: ':id/periodontogram/:perioId',

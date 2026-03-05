@@ -89,6 +89,18 @@
   }
 
   @if (!loading() && !error() && treatment(); as t) {
+    <!-- Allergy Alerts -->
+    <app-allergy-alert-banner
+      [alerts]="allergyAlerts()"
+      [patientId]="t.patientId"
+    />
+
+    <!-- Clinical Summary -->
+    <app-patient-clinical-summary
+      [patientId]="t.patientId"
+      [compact]="true"
+    />
+
     <div class="detail-layout">
       <!-- Sidebar Nav -->
       <nav class="detail-nav">
@@ -169,12 +181,52 @@
                 <span class="info-label">Costo:</span>
                 <span class="info-value price-value">{{ formatCurrency(t.serviceCost) }}</span>
               </div>
+              @if (t.patientProblemId) {
+                <div class="info-row">
+                  <span class="info-label">Diagnóstico:</span>
+                  <span class="info-value">
+                    <span class="badge badge-info">
+                      <i class="fa-solid fa-clipboard-list"></i>
+                      @if (t.patientProblemCie10Code) {
+                        {{ t.patientProblemCie10Code }} —
+                      }
+                      {{ t.patientProblemDescription }}
+                    </span>
+                  </span>
+                </div>
+              }
               @if (t.notes) {
                 <div class="info-row">
                   <span class="info-label">Notas:</span>
                   <span class="info-value">{{ t.notes }}</span>
                 </div>
               }
+              <!-- Consent indicator -->
+              <div class="info-row">
+                <span class="info-label">Consentimiento:</span>
+                <span class="info-value">
+                  @if (consentCheck(); as cc) {
+                    @if (cc.hasSignedConsent) {
+                      <span class="badge badge-success">
+                        <i class="fa-solid fa-file-signature"></i>
+                        Firmado — {{ cc.consentTitle }}
+                      </span>
+                    } @else if (cc.pendingConsentsCount > 0) {
+                      <span class="badge badge-warning">
+                        <i class="fa-solid fa-clock"></i>
+                        {{ cc.pendingConsentsCount }} pendiente{{ cc.pendingConsentsCount > 1 ? 's' : '' }}
+                      </span>
+                    } @else {
+                      <span class="consent-missing">
+                        <i class="fa-solid fa-exclamation-circle"></i>
+                        Sin consentimiento asociado
+                      </span>
+                    }
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </span>
+              </div>
             </div>
           </div>
 

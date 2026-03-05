@@ -10,6 +10,7 @@ export interface ConsultationNote {
   chiefComplaint?: string;
   clinicalFindings?: string;
   diagnosis?: string;
+  diagnosisCie10Code?: string;
   treatmentPlan?: string;
   notes?: string;
   createdAt: Date;
@@ -22,6 +23,7 @@ export interface CreateConsultationNoteRequest {
   chiefComplaint?: string;
   clinicalFindings?: string;
   diagnosis?: string;
+  diagnosisCie10Code?: string;
   treatmentPlan?: string;
   notes?: string;
 }
@@ -31,6 +33,7 @@ export interface UpdateConsultationNoteRequest {
   chiefComplaint?: string;
   clinicalFindings?: string;
   diagnosis?: string;
+  diagnosisCie10Code?: string;
   treatmentPlan?: string;
   notes?: string;
 }

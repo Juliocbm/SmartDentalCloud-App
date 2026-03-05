@@ -1,9 +1,9 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PatientsService } from '../../services/patients.service';
-import { Patient, UpdateTaxInfoRequest, UpdateMedicalHistoryRequest, BloodType, SmokingStatus } from '../../models/patient.models';
+import { Patient, UpdateTaxInfoRequest, UpdateMedicalHistoryRequest, BloodType, SmokingStatus, ChangeHistoryEntry } from '../../models/patient.models';
 import { AttachedFile, FILE_CATEGORIES, getFileIcon, formatFileSize } from '../../models/attached-file.models';
 import { PatientFinancialSummary, PatientHistory } from '../../models/patient-dashboard.models';
 import { AttachedFilesService } from '../../services/attached-files.service';
@@ -14,16 +14,57 @@ import { OdontogramComponent } from '../../../dental-chart/components/odontogram
 import { PerioHistoryListComponent } from '../../../periodontogram/components/perio-history-list/perio-history-list';
 import { CephHistoryListComponent } from '../../../cephalometry/components/ceph-history-list/ceph-history-list';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
+import { PatientClinicalSummaryComponent } from '../../../../shared/components/patient-clinical-summary/patient-clinical-summary';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PatientAllergiesService } from '../../services/patient-allergies.service';
+import {
+  PatientAllergy,
+  CreatePatientAllergyRequest,
+  ALLERGEN_TYPES,
+  ALLERGY_SEVERITIES,
+  getAllergenTypeLabel,
+  getSeverityLabel,
+  getSeverityClass
+} from '../../models/patient-allergy.models';
+import { InformedConsentsService } from '../../services/informed-consents.service';
+import {
+  InformedConsent,
+  CreateInformedConsentRequest,
+  CONSENT_TYPES,
+  getConsentTypeLabel,
+  getConsentStatusLabel,
+  getConsentStatusClass
+} from '../../models/informed-consent.models';
+import { PatientProblemsService } from '../../services/patient-problems.service';
+import { ElectronicSignatureService, SignatureResult } from '../../../../core/services/electronic-signature.service';
+import { SignaturePadComponent } from '../../../../shared/components/signature-pad/signature-pad';
+import { SignatureModalComponent } from '../../../../shared/components/signature-modal/signature-modal';
+import { SignaturePinSetupComponent } from '../../../../shared/components/signature-pin-setup/signature-pin-setup';
+import { ConsentTemplateService, ConsentTemplate as ConsentTemplateModel } from '../../../settings/services/consent-template.service';
+import { ConsentPrintViewComponent } from '../../../../shared/components/consent-print-view/consent-print-view';
+import {
+  PatientProblem,
+  CreatePatientProblemRequest,
+  getProblemStatusLabel,
+  getProblemStatusClass
+} from '../../models/patient-problem.models';
+import { RadiologicImagesService } from '../../services/radiologic-images.service';
+import { triggerBlobDownload } from '../../../../shared/utils/file.utils';
+import {
+  RadiologicImageDto,
+  IMAGE_TYPES,
+  getImageTypeLabel,
+  formatFileSize as formatRadioFileSize
+} from '../../models/radiologic-image.models';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent, PatientClinicalSummaryComponent, SignaturePadComponent, SignatureModalComponent, SignaturePinSetupComponent, ConsentPrintViewComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
-export class PatientDetailComponent implements OnInit {
+export class PatientDetailComponent implements OnInit, OnDestroy {
   showAuditModal = signal(false);
 
   private router = inject(Router);
@@ -32,7 +73,13 @@ export class PatientDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private attachedFilesService = inject(AttachedFilesService);
+  private allergiesService = inject(PatientAllergiesService);
+  private consentsService = inject(InformedConsentsService);
+  private problemsService = inject(PatientProblemsService);
+  private signatureService = inject(ElectronicSignatureService);
+  private consentTemplateService = inject(ConsentTemplateService);
   private location = inject(Location);
+  private radiologicImagesService = inject(RadiologicImagesService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -43,7 +90,91 @@ export class PatientDetailComponent implements OnInit {
   patient = signal<Patient | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
-  activeTab = signal<'info' | 'medical' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'fiscal' | 'financial' | 'history' | 'files'>('info');
+  activeTab = signal<'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'>('info');
+
+  // Allergies state (NOM-024)
+  allergies = signal<PatientAllergy[]>([]);
+  allergiesLoading = signal(false);
+  showAllergyForm = signal(false);
+  savingAllergy = signal(false);
+  allergyAllergenType = signal('Medication');
+  allergyAllergenName = signal('');
+  allergyReactionDescription = signal('');
+  allergySeverity = signal('Mild');
+  allergyDetectedAt = signal('');
+  allergyVerified = signal(false);
+  allergyNotes = signal('');
+  ALLERGEN_TYPES = ALLERGEN_TYPES;
+  ALLERGY_SEVERITIES = ALLERGY_SEVERITIES;
+  getAllergenTypeLabel = getAllergenTypeLabel;
+  getSeverityLabel = getSeverityLabel;
+  getSeverityClass = getSeverityClass;
+
+  // Consents state (NOM-024)
+  consents = signal<InformedConsent[]>([]);
+  consentsLoading = signal(false);
+  showConsentForm = signal(false);
+  savingConsent = signal(false);
+  consentType = signal('GeneralTreatment');
+  consentTitle = signal('');
+  consentContent = signal('');
+  consentAppointmentId = signal<string | null>(null);
+  consentTreatmentId = signal<string | null>(null);
+  CONSENT_TYPES = CONSENT_TYPES;
+  getConsentTypeLabel = getConsentTypeLabel;
+  getConsentStatusLabel = getConsentStatusLabel;
+  getConsentStatusClass = getConsentStatusClass;
+
+  // Consent signing flow
+  signingConsentId = signal<string | null>(null);
+  signingConsentTitle = signal('');
+  signingStep = signal<'patient-signature' | 'doctor-pin' | null>(null);
+  patientSignatureData = signal<string | null>(null);
+  witnessName = signal('');
+  showPinSetup = signal(false);
+  consentSignatures = signal<SignatureResult[]>([]);
+
+  // Consent templates
+  consentTemplates = signal<ConsentTemplateModel[]>([]);
+  selectedTemplateId = signal<string | null>(null);
+
+  // Consent print view
+  printingConsent = signal<InformedConsent | null>(null);
+
+  // Change history (NOM-024 Audit Trail)
+  changeHistory = signal<ChangeHistoryEntry[]>([]);
+  changesLoading = signal(false);
+
+  // Problems state (NOM-024)
+  problems = signal<PatientProblem[]>([]);
+  problemsLoading = signal(false);
+  showProblemForm = signal(false);
+  savingProblem = signal(false);
+  problemDescription = signal('');
+  problemCie10Code = signal('');
+  problemOnsetDate = signal('');
+  problemNotes = signal('');
+  getProblemStatusLabel = getProblemStatusLabel;
+  getProblemStatusClass = getProblemStatusClass;
+
+  // Radiologic images state (NOM-024 §5.3)
+  radioImages = signal<RadiologicImageDto[]>([]);
+  radioImagesLoading = signal(false);
+  showRadioUploadForm = signal(false);
+  radioUploading = signal(false);
+  radioImageType = signal('Periapical');
+  radioTitle = signal('');
+  radioDescription = signal('');
+  radioNotes = signal('');
+  radioTakenAt = signal('');
+  radioSelectedFile = signal<File | null>(null);
+  radioViewingImage = signal<RadiologicImageDto | null>(null);
+  radioBrightness = signal(100);
+  radioContrast = signal(100);
+  radioBlobUrls = signal<Record<string, string>>({});
+  IMAGE_TYPES = IMAGE_TYPES;
+  getImageTypeLabel = getImageTypeLabel;
+  formatRadioFileSize = formatRadioFileSize;
 
   // Medical history editing state
   editingMedical = signal(false);
@@ -81,6 +212,12 @@ export class PatientDetailComponent implements OnInit {
   uploadDescription = signal('');
   selectedFile = signal<File | null>(null);
   FILE_CATEGORIES = FILE_CATEGORIES;
+  filterCategory = signal('');
+  filteredFiles = computed(() => {
+    const cat = this.filterCategory();
+    const all = this.files();
+    return cat ? all.filter(f => f.category === cat) : all;
+  });
   getFileIcon = getFileIcon;
   formatFileSize = formatFileSize;
 
@@ -89,6 +226,30 @@ export class PatientDetailComponent implements OnInit {
     if (id) {
       this.loadPatient(id);
     }
+
+    // Read query params for tab navigation and consent context
+    const qp = this.route.snapshot.queryParamMap;
+    const tab = qp.get('tab');
+    if (tab) {
+      this.setActiveTab(tab as any);
+    }
+    const appointmentId = qp.get('appointmentId');
+    if (appointmentId) {
+      this.consentAppointmentId.set(appointmentId);
+    }
+    const treatmentId = qp.get('treatmentId');
+    if (treatmentId) {
+      this.consentTreatmentId.set(treatmentId);
+    }
+    // Auto-open consent form when arriving with context
+    if (tab === 'consents' && (appointmentId || treatmentId)) {
+      this.showConsentForm.set(true);
+    }
+  }
+
+  ngOnDestroy(): void {
+    const urls = this.radioBlobUrls();
+    Object.values(urls).forEach(url => URL.revokeObjectURL(url));
   }
 
   private loadPatient(id: string): void {
@@ -108,8 +269,20 @@ export class PatientDetailComponent implements OnInit {
     });
   }
 
-  setActiveTab(tab: 'info' | 'medical' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'fiscal' | 'financial' | 'history' | 'files'): void {
+  setActiveTab(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'): void {
     this.activeTab.set(tab);
+    if (tab === 'allergies' && this.allergies().length === 0 && !this.allergiesLoading()) {
+      this.loadAllergies();
+    }
+    if (tab === 'consents' && this.consents().length === 0 && !this.consentsLoading()) {
+      this.loadConsents();
+    }
+    if (tab === 'problems' && this.problems().length === 0 && !this.problemsLoading()) {
+      this.loadProblems();
+    }
+    if (tab === 'radiographs' && this.radioImages().length === 0 && !this.radioImagesLoading()) {
+      this.loadRadioImages();
+    }
     if (tab === 'files' && this.files().length === 0 && !this.filesLoading()) {
       this.loadFiles();
     }
@@ -122,6 +295,529 @@ export class PatientDetailComponent implements OnInit {
     if (tab === 'history' && !this.patientHistory() && !this.historyLoading()) {
       this.loadHistory();
     }
+    if (tab === 'changes' && this.changeHistory().length === 0 && !this.changesLoading()) {
+      this.loadChangeHistory();
+    }
+  }
+
+  // === Allergies (NOM-024) ===
+
+  private loadAllergies(): void {
+    const pat = this.patient();
+    if (!pat) return;
+
+    this.allergiesLoading.set(true);
+    this.allergiesService.getByPatient(pat.id, false).subscribe({
+      next: (data) => {
+        this.allergies.set(data);
+        this.allergiesLoading.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar alergias'));
+        this.allergiesLoading.set(false);
+      }
+    });
+  }
+
+  toggleAllergyForm(): void {
+    this.showAllergyForm.update(v => !v);
+    if (this.showAllergyForm()) {
+      this.resetAllergyForm();
+    }
+  }
+
+  private resetAllergyForm(): void {
+    this.allergyAllergenType.set('Medication');
+    this.allergyAllergenName.set('');
+    this.allergyReactionDescription.set('');
+    this.allergySeverity.set('Mild');
+    this.allergyDetectedAt.set('');
+    this.allergyVerified.set(false);
+    this.allergyNotes.set('');
+  }
+
+  saveAllergy(): void {
+    const pat = this.patient();
+    if (!pat || this.savingAllergy()) return;
+
+    this.savingAllergy.set(true);
+    const data: CreatePatientAllergyRequest = {
+      allergenType: this.allergyAllergenType(),
+      allergenName: this.allergyAllergenName().trim(),
+      severity: this.allergySeverity(),
+      reactionDescription: this.allergyReactionDescription().trim() || undefined,
+      detectedAt: this.allergyDetectedAt() || undefined,
+      verifiedByProfessional: this.allergyVerified(),
+      notes: this.allergyNotes().trim() || undefined
+    };
+
+    this.allergiesService.create(pat.id, data).subscribe({
+      next: () => {
+        this.notifications.success('Alergia registrada');
+        this.showAllergyForm.set(false);
+        this.savingAllergy.set(false);
+        this.loadAllergies();
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.savingAllergy.set(false);
+      }
+    });
+  }
+
+  async deactivateAllergy(allergy: PatientAllergy): Promise<void> {
+    const pat = this.patient();
+    if (!pat) return;
+
+    const confirmed = await this.notifications.confirm(
+      `¿Desactivar alergia "${allergy.allergenName}"?`
+    );
+    if (!confirmed) return;
+
+    this.allergiesService.deactivate(pat.id, allergy.id).subscribe({
+      next: () => {
+        this.notifications.success('Alergia desactivada');
+        this.loadAllergies();
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+      }
+    });
+  }
+
+  getActiveAllergiesCount(): number {
+    return this.allergies().filter(a => a.isActive).length;
+  }
+
+  hasSevereAllergies(): boolean {
+    return this.allergies().some(a => a.isActive && (a.severity === 'Severe' || a.severity === 'LifeThreatening'));
+  }
+
+  // === Informed Consents (NOM-024) ===
+
+  private loadConsents(): void {
+    const pat = this.patient();
+    if (!pat) return;
+
+    this.consentsLoading.set(true);
+    this.consentsService.getByPatient(pat.id).subscribe({
+      next: (data) => {
+        this.consents.set(data);
+        this.consentsLoading.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar consentimientos'));
+        this.consentsLoading.set(false);
+      }
+    });
+  }
+
+  toggleConsentForm(): void {
+    this.showConsentForm.update(v => !v);
+    if (this.showConsentForm()) {
+      this.consentType.set('GeneralTreatment');
+      this.consentTitle.set('');
+      this.consentContent.set('');
+    }
+  }
+
+  saveConsent(): void {
+    const pat = this.patient();
+    if (!pat || this.savingConsent()) return;
+
+    this.savingConsent.set(true);
+    const data: CreateInformedConsentRequest = {
+      consentType: this.consentType(),
+      title: this.consentTitle().trim(),
+      content: this.consentContent().trim(),
+      appointmentId: this.consentAppointmentId() || undefined,
+      treatmentId: this.consentTreatmentId() || undefined
+    };
+
+    this.consentsService.create(pat.id, data).subscribe({
+      next: () => {
+        this.notifications.success('Consentimiento creado');
+        this.showConsentForm.set(false);
+        this.savingConsent.set(false);
+        this.loadConsents();
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.savingConsent.set(false);
+      }
+    });
+  }
+
+  async revokeConsent(consent: InformedConsent): Promise<void> {
+    const pat = this.patient();
+    if (!pat) return;
+
+    const confirmed = await this.notifications.confirm(
+      `¿Revocar consentimiento "${consent.title}"?`
+    );
+    if (!confirmed) return;
+
+    this.consentsService.revoke(pat.id, consent.id, { reason: 'Revocado por el paciente' }).subscribe({
+      next: () => {
+        this.notifications.success('Consentimiento revocado');
+        this.loadConsents();
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+      }
+    });
+  }
+
+  getPendingConsentsCount(): number {
+    return this.consents().filter(c => c.status === 'Pending').length;
+  }
+
+  // Consent signing flow
+
+  startSignConsent(consent: InformedConsent): void {
+    this.signingConsentId.set(consent.id);
+    this.signingConsentTitle.set(consent.title);
+    this.patientSignatureData.set(null);
+    this.witnessName.set('');
+    this.signingStep.set('patient-signature');
+  }
+
+  onPatientSignatureChanged(data: string | null): void {
+    this.patientSignatureData.set(data);
+  }
+
+  proceedToDoctorPin(): void {
+    if (!this.patientSignatureData()) return;
+    // Don't call consentsService.sign() yet — wait until doctor PIN is verified
+    this.signingStep.set('doctor-pin');
+  }
+
+  onDocumentSigned(result: SignatureResult): void {
+    // Doctor PIN verified — NOW save patient signature + mark as Signed
+    const pat = this.patient();
+    const consentId = this.signingConsentId();
+    if (!pat || !consentId) return;
+
+    this.consentsService.sign(pat.id, consentId, {
+      patientSignatureData: this.patientSignatureData() || undefined,
+      witnessName: this.witnessName().trim() || undefined
+    }).subscribe({
+      next: () => {
+        this.notifications.success('Consentimiento firmado electrónicamente');
+        this.signingStep.set(null);
+        this.signingConsentId.set(null);
+        this.loadConsents();
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.signingStep.set(null);
+        this.signingConsentId.set(null);
+      }
+    });
+  }
+
+  cancelSigning(): void {
+    this.signingStep.set(null);
+    this.signingConsentId.set(null);
+  }
+
+  onPinConfigured(): void {
+    this.showPinSetup.set(false);
+    this.notifications.success('PIN configurado. Ahora puede firmar el documento.');
+  }
+
+  loadConsentSignatures(consent: InformedConsent): void {
+    this.signatureService.getSignatures('InformedConsent', consent.id).subscribe({
+      next: (sigs) => this.consentSignatures.set(sigs),
+      error: () => this.consentSignatures.set([])
+    });
+  }
+
+  // Template loading for consent form
+
+  loadConsentTemplates(): void {
+    this.consentTemplateService.getAll().subscribe({
+      next: (data) => this.consentTemplates.set(data),
+      error: () => this.consentTemplates.set([])
+    });
+  }
+
+  onTemplateSelected(): void {
+    const id = this.selectedTemplateId();
+    if (!id) return;
+    const tpl = this.consentTemplates().find(t => t.id === id);
+    if (tpl) {
+      this.consentType.set(tpl.consentType);
+      this.consentTitle.set(tpl.title);
+      this.consentContent.set(tpl.content);
+    }
+  }
+
+  // Print view
+
+  openConsentPrintView(consent: InformedConsent): void {
+    this.printingConsent.set(consent);
+  }
+
+  closeConsentPrintView(): void {
+    this.printingConsent.set(null);
+  }
+
+  // === Change History (NOM-024 Audit Trail) ===
+
+  private loadChangeHistory(): void {
+    const pat = this.patient();
+    if (!pat) return;
+
+    this.changesLoading.set(true);
+    this.patientsService.getChangeHistory(pat.id).subscribe({
+      next: (data) => {
+        this.changeHistory.set(data);
+        this.changesLoading.set(false);
+      },
+      error: () => {
+        this.changesLoading.set(false);
+      }
+    });
+  }
+
+  formatChangeDate(date: string): string {
+    return new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(new Date(date));
+  }
+
+  formatJson(json: string | null): string {
+    if (!json) return '';
+    try {
+      return JSON.stringify(JSON.parse(json), null, 2);
+    } catch {
+      return json;
+    }
+  }
+
+  // === Patient Problems (NOM-024) ===
+
+  private loadProblems(): void {
+    const pat = this.patient();
+    if (!pat) return;
+
+    this.problemsLoading.set(true);
+    this.problemsService.getByPatient(pat.id).subscribe({
+      next: (data) => {
+        this.problems.set(data);
+        this.problemsLoading.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar problemas'));
+        this.problemsLoading.set(false);
+      }
+    });
+  }
+
+  toggleProblemForm(): void {
+    this.showProblemForm.update(v => !v);
+    if (this.showProblemForm()) {
+      this.problemDescription.set('');
+      this.problemCie10Code.set('');
+      this.problemOnsetDate.set('');
+      this.problemNotes.set('');
+    }
+  }
+
+  saveProblem(): void {
+    const pat = this.patient();
+    if (!pat || this.savingProblem()) return;
+
+    this.savingProblem.set(true);
+    const data: CreatePatientProblemRequest = {
+      description: this.problemDescription().trim(),
+      cie10Code: this.problemCie10Code().trim() || undefined,
+      onsetDate: this.problemOnsetDate() || undefined,
+      notes: this.problemNotes().trim() || undefined
+    };
+
+    this.problemsService.create(pat.id, data).subscribe({
+      next: () => {
+        this.notifications.success('Problema registrado');
+        this.showProblemForm.set(false);
+        this.savingProblem.set(false);
+        this.loadProblems();
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.savingProblem.set(false);
+      }
+    });
+  }
+
+  async resolveProblem(problem: PatientProblem): Promise<void> {
+    const pat = this.patient();
+    if (!pat) return;
+
+    const confirmed = await this.notifications.confirm(
+      `¿Marcar como resuelto "${problem.description}"?`
+    );
+    if (!confirmed) return;
+
+    this.problemsService.resolve(pat.id, problem.id, {}).subscribe({
+      next: () => {
+        this.notifications.success('Problema marcado como resuelto');
+        this.loadProblems();
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+      }
+    });
+  }
+
+  getActiveProblemsCount(): number {
+    return this.problems().filter(p => p.status === 'Active').length;
+  }
+
+  // === Radiologic Images (NOM-024 §5.3) ===
+
+  private loadRadioImages(): void {
+    const pat = this.patient();
+    if (!pat) return;
+
+    this.radioImagesLoading.set(true);
+    this.radiologicImagesService.getByPatient(pat.id).subscribe({
+      next: (data) => {
+        this.radioImages.set(data);
+        this.radioImagesLoading.set(false);
+        this.loadRadioBlobUrls(pat.id, data);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar radiografías'));
+        this.radioImagesLoading.set(false);
+      }
+    });
+  }
+
+  private loadRadioBlobUrls(patientId: string, images: RadiologicImageDto[]): void {
+    // Revoke old blob URLs to free memory
+    const oldUrls = this.radioBlobUrls();
+    Object.values(oldUrls).forEach(url => URL.revokeObjectURL(url));
+    this.radioBlobUrls.set({});
+
+    for (const img of images) {
+      if (img.contentType.startsWith('image/')) {
+        this.radiologicImagesService.getFileBlob(patientId, img.id).subscribe({
+          next: (blob) => {
+            const blobUrl = URL.createObjectURL(blob);
+            this.radioBlobUrls.update(urls => ({ ...urls, [img.id]: blobUrl }));
+          }
+        });
+      }
+    }
+  }
+
+  toggleRadioUploadForm(): void {
+    this.showRadioUploadForm.update(v => !v);
+    if (this.showRadioUploadForm()) {
+      this.radioImageType.set('Periapical');
+      this.radioTitle.set('');
+      this.radioDescription.set('');
+      this.radioNotes.set('');
+      this.radioTakenAt.set('');
+      this.radioSelectedFile.set(null);
+    }
+  }
+
+  onRadioFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.radioSelectedFile.set(input.files[0]);
+    }
+  }
+
+  uploadRadioImage(): void {
+    const pat = this.patient();
+    const file = this.radioSelectedFile();
+    if (!pat || !file || this.radioUploading() || !this.radioTitle().trim()) return;
+
+    this.radioUploading.set(true);
+    this.radiologicImagesService.upload(
+      pat.id,
+      file,
+      this.radioImageType(),
+      this.radioTitle().trim(),
+      this.radioDescription().trim() || undefined,
+      this.radioTakenAt() || undefined,
+      undefined,
+      this.radioNotes().trim() || undefined
+    ).subscribe({
+      next: () => {
+        this.notifications.success('Radiografía subida exitosamente');
+        this.showRadioUploadForm.set(false);
+        this.radioUploading.set(false);
+        this.loadRadioImages();
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.radioUploading.set(false);
+      }
+    });
+  }
+
+  async deleteRadioImage(image: RadiologicImageDto): Promise<void> {
+    const pat = this.patient();
+    if (!pat) return;
+
+    const confirmed = await this.notifications.confirm(
+      `¿Eliminar radiografía "${image.title}"?`
+    );
+    if (!confirmed) return;
+
+    this.radiologicImagesService.delete(pat.id, image.id).subscribe({
+      next: () => {
+        this.notifications.success('Radiografía eliminada');
+        if (this.radioViewingImage()?.id === image.id) {
+          this.radioViewingImage.set(null);
+        }
+        this.loadRadioImages();
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+      }
+    });
+  }
+
+  viewRadioImage(image: RadiologicImageDto): void {
+    this.radioViewingImage.set(image);
+    this.radioBrightness.set(100);
+    this.radioContrast.set(100);
+  }
+
+  closeRadioViewer(): void {
+    this.radioViewingImage.set(null);
+  }
+
+  resetRadioFilters(): void {
+    this.radioBrightness.set(100);
+    this.radioContrast.set(100);
+  }
+
+  getRadioImageStyle(): string {
+    return `filter: brightness(${this.radioBrightness()}%) contrast(${this.radioContrast()}%);`;
+  }
+
+  getRadioFileUrl(img: RadiologicImageDto): string {
+    const blobUrl = this.radioBlobUrls()[img.id];
+    if (blobUrl) return blobUrl;
+    return '';
+  }
+
+  formatRadioDate(date: string | undefined): string {
+    if (!date) return '—';
+    return new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    }).format(new Date(date));
   }
 
   // === Attached Files ===
@@ -186,6 +882,13 @@ export class PatientDetailComponent implements OnInit {
         this.notifications.error(getApiErrorMessage(err));
         this.uploading.set(false);
       }
+    });
+  }
+
+  downloadAttachedFile(file: AttachedFile): void {
+    this.attachedFilesService.getFileBlob(file.id).subscribe({
+      next: (blob) => triggerBlobDownload(blob, file.fileName),
+      error: (err) => this.notifications.error(getApiErrorMessage(err, 'Error al descargar archivo'))
     });
   }
 

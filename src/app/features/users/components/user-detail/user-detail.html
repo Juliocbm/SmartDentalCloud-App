@@ -52,6 +52,19 @@
     </div>
   } @else if (user(); as currentUser) {
 
+    <!-- NOM-024: Alerta de perfil profesional incompleto -->
+    @if (isClinicalUser() && !currentUser.profile?.hasCompleteProfessionalInfo) {
+      <div class="alert alert-warning" style="margin-bottom: var(--spacing-md);">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <strong>Perfil profesional incompleto.</strong>
+        Este usuario tiene un rol clínico pero no ha registrado su cédula profesional y/o especialidad.
+        Estos datos son requeridos por la NOM-024-SSA3-2012 para firmar documentos clínicos.
+        <a [routerLink]="['/users', currentUser.id, 'edit']" class="alert-link" style="margin-left: var(--spacing-xs);">
+          Completar perfil
+        </a>
+      </div>
+    }
+
     <div class="detail-body">
       <!-- User Info: two columns -->
       <div class="info-two-col">

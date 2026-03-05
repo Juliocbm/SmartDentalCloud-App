@@ -8,13 +8,17 @@ import { ConsultationNote } from '../../models/consultation-note.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { AppointmentsService } from '../../../appointments/services/appointments.service';
+import { PatientProblemsService } from '../../../patients/services/patient-problems.service';
+import { Cie10AutocompleteComponent } from '../../../../shared/components/cie10-autocomplete/cie10-autocomplete';
+import { Cie10Code } from '../../../../core/services/cie10.service';
 
 type ViewMode = 'loading' | 'view' | 'edit' | 'create' | 'error';
 
 @Component({
   selector: 'app-consultation-note-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, PageHeaderComponent, Cie10AutocompleteComponent],
   templateUrl: './consultation-note-view.html',
   styleUrl: './consultation-note-view.scss'
 })
@@ -26,6 +30,8 @@ export class ConsultationNoteViewComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private location = inject(Location);
+  private appointmentsService = inject(AppointmentsService);
+  private problemsService = inject(PatientProblemsService);
 
   // State
   mode = signal<ViewMode>('loading');
@@ -33,6 +39,10 @@ export class ConsultationNoteViewComponent implements OnInit {
   saving = signal(false);
   error = signal<string | null>(null);
   appointmentId = signal('');
+  patientId = signal<string | null>(null);
+  problemRegistered = signal(false);
+  registeringProblem = signal(false);
+  noteCie10Code = signal<string | null>(null);
 
   // Form
   form!: FormGroup;
@@ -50,6 +60,7 @@ export class ConsultationNoteViewComponent implements OnInit {
     const aptId = this.route.snapshot.paramMap.get('id') || this.route.snapshot.paramMap.get('appointmentId');
     if (aptId) {
       this.appointmentId.set(aptId);
+      this.loadAppointmentPatient(aptId);
       this.loadNote(aptId);
     } else {
       this.error.set('ID de cita no válido');
@@ -97,6 +108,7 @@ export class ConsultationNoteViewComponent implements OnInit {
       treatmentPlan: note.treatmentPlan || '',
       notes: note.notes || ''
     });
+    this.noteCie10Code.set(note.diagnosisCie10Code || null);
   }
 
   onEdit(): void {
@@ -120,6 +132,7 @@ export class ConsultationNoteViewComponent implements OnInit {
       chiefComplaint: formValue.chiefComplaint || undefined,
       clinicalFindings: formValue.clinicalFindings || undefined,
       diagnosis: formValue.diagnosis || undefined,
+      diagnosisCie10Code: this.noteCie10Code() || undefined,
       treatmentPlan: formValue.treatmentPlan || undefined,
       notes: formValue.notes || undefined
     }).subscribe({
@@ -149,6 +162,7 @@ export class ConsultationNoteViewComponent implements OnInit {
       chiefComplaint: formValue.chiefComplaint || undefined,
       clinicalFindings: formValue.clinicalFindings || undefined,
       diagnosis: formValue.diagnosis || undefined,
+      diagnosisCie10Code: this.noteCie10Code() || undefined,
       treatmentPlan: formValue.treatmentPlan || undefined,
       notes: formValue.notes || undefined
     }).subscribe({
@@ -165,8 +179,43 @@ export class ConsultationNoteViewComponent implements OnInit {
     });
   }
 
+  onCie10Selected(code: Cie10Code | null): void {
+    this.noteCie10Code.set(code?.code || null);
+  }
+
   goBack(): void {
     this.location.back();
+  }
+
+  private loadAppointmentPatient(appointmentId: string): void {
+    this.appointmentsService.getById(appointmentId).subscribe({
+      next: (apt) => this.patientId.set(apt.patientId),
+      error: () => {}
+    });
+  }
+
+  registerAsProblem(): void {
+    const currentNote = this.note();
+    const pid = this.patientId();
+    if (!currentNote?.diagnosis || !pid) return;
+
+    this.registeringProblem.set(true);
+    this.problemsService.create(pid, {
+      description: currentNote.diagnosis,
+      cie10Code: currentNote.diagnosisCie10Code || undefined,
+      notes: `Registrado desde nota clínica de cita ${this.appointmentId()}`,
+      appointmentId: this.appointmentId() || undefined
+    }).subscribe({
+      next: () => {
+        this.problemRegistered.set(true);
+        this.registeringProblem.set(false);
+        this.notifications.success('Diagnóstico registrado como problema del paciente.');
+      },
+      error: (err) => {
+        this.registeringProblem.set(false);
+        this.notifications.error(getApiErrorMessage(err));
+      }
+    });
   }
 
   formatDateTime(date: Date | undefined): string {

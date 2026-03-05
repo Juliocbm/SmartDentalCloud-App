@@ -17,6 +17,7 @@ export interface TenantSettings {
   language: string;
   subdomain: string;
   customDomain?: string;
+  clues?: string;
   createdAt: Date;
   isActive: boolean;
 }
@@ -31,6 +32,7 @@ export interface UpdateTenantSettingsRequest {
   workingHours?: string;
   timeZone?: string;
   language?: string;
+  clues?: string;
 }
 
 export interface UpdateBrandingRequest {

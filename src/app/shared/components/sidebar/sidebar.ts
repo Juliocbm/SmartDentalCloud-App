@@ -158,7 +158,16 @@ export class SidebarComponent implements OnInit {
         { id: 'reports-top-services', icon: 'fa-solid fa-ranking-star', label: 'Top Servicios', route: '/reports/top-services' }
       ]
     },
-    { id: 'settings', icon: 'fa-solid fa-gear', label: 'Configuración', route: '/settings' },
+    {
+      id: 'settings',
+      icon: 'fa-solid fa-gear',
+      label: 'Configuración',
+      route: '/settings',
+      children: [
+        { id: 'settings-general', icon: 'fa-solid fa-sliders', label: 'General', route: '/settings' },
+        { id: 'settings-subscription', icon: 'fa-solid fa-crown', label: 'Suscripción', route: '/subscription' }
+      ]
+    },
     { id: 'audit-log', icon: 'fa-solid fa-shield-halved', label: 'Auditoría', route: '/audit-log' },
   ]);
 

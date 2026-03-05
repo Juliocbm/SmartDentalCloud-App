@@ -65,6 +65,11 @@
       border-radius: var(--radius-full);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
+
+      &.nav-count-danger {
+        background: var(--danger-100, #fee2e2);
+        color: var(--danger-700, #b91c1c);
+      }
     }
   }
 }
@@ -186,6 +191,22 @@
     display: flex;
     justify-content: flex-end;
     margin-top: var(--spacing-md);
+  }
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+
+  select {
+    max-width: 220px;
+  }
+
+  .filter-count {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
   }
 }
 
@@ -554,4 +575,799 @@
   font-size: var(--font-size-xs) !important;
   padding: 4px 10px !important;
   border-radius: var(--radius-sm) !important;
+}
+
+// ===== Structured Data Cards (Medical History → Tabs) =====
+
+.structured-data-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-info, #eff6ff);
+  border: 1px solid var(--border-info, #bfdbfe);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+
+  > i {
+    color: var(--color-info, #3b82f6);
+    flex-shrink: 0;
+  }
+}
+
+.structured-links-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+
+  &.view-mode {
+    margin-bottom: var(--spacing-lg);
+  }
+}
+
+.structured-link-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-secondary, #f8fafc);
+  border: 1px solid var(--border-primary, #e2e8f0);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  font-family: inherit;
+
+  &:hover {
+    background: var(--bg-hover, #f1f5f9);
+    border-color: var(--color-primary, #3b82f6);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  &.has-items {
+    border-color: var(--border-primary, #e2e8f0);
+  }
+
+  > i:first-child {
+    font-size: 1rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .card-label {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+  }
+
+  .card-count {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    background: var(--bg-tertiary, #e2e8f0);
+    color: var(--text-secondary);
+    padding: 2px 8px;
+    border-radius: 10px;
+    min-width: 22px;
+    text-align: center;
+
+    &.count-danger {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    &.count-warning {
+      background: #fef3c7;
+      color: #d97706;
+    }
+  }
+
+  > i:last-child {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+}
+
+// ===== Allergies Tab (NOM-024) =====
+
+.allergy-form {
+  margin-bottom: var(--spacing-xl);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  background: var(--surface-secondary);
+
+  .card-body {
+    padding: var(--spacing-xl);
+  }
+
+  .form-section-title {
+    margin: 0 0 var(--spacing-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--border-primary);
+  }
+}
+
+.allergies-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.allergy-card {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  background: var(--surface-primary);
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--primary-200);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  &.allergy-inactive {
+    opacity: 0.6;
+    background: var(--surface-secondary);
+  }
+
+  .allergy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .allergy-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  .allergy-name {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+  }
+
+  .allergy-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    > span {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+
+      i {
+        width: 16px;
+        text-align: center;
+        color: var(--text-muted);
+      }
+    }
+  }
+}
+
+.badge-info {
+  background: var(--info-100, #dbeafe);
+  color: var(--info-700, #1d4ed8);
+}
+
+.badge-warning {
+  background: var(--warning-100, #fef3c7);
+  color: var(--warning-700, #b45309);
+}
+
+.badge-danger {
+  background: var(--danger-100, #fee2e2);
+  color: var(--danger-700, #b91c1c);
+}
+
+.badge-danger-dark {
+  background: var(--danger-700, #b91c1c);
+  color: #fff;
+}
+
+.badge-success {
+  background: var(--success-100, #dcfce7);
+  color: var(--success-700, #15803d);
+}
+
+.badge-secondary {
+  background: var(--surface-tertiary, #f3f4f6);
+  color: var(--text-muted);
+}
+
+.btn-danger-text {
+  color: var(--danger-600, #dc2626) !important;
+
+  &:hover {
+    background: var(--danger-100, #fee2e2) !important;
+  }
+}
+
+.alert-danger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--danger-50, #fef2f2);
+  border: 1px solid var(--danger-200, #fecaca);
+  border-radius: var(--radius-md);
+  color: var(--danger-700, #b91c1c);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-600);
+  }
+
+  span {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+  }
+}
+
+// ===== Consents Tab (NOM-024) =====
+
+.consents-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.consent-card {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  background: var(--surface-primary);
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--primary-200);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  .consent-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .consent-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  .consent-name {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+  }
+
+  .consent-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    > span {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+
+      i {
+        width: 16px;
+        text-align: center;
+        color: var(--text-muted);
+      }
+    }
+  }
+}
+
+// ===== Consent Signing Flow =====
+
+.consent-card-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.template-selector-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+
+  select {
+    flex: 1;
+  }
+}
+
+.signatures-viewer {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+
+  h4 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-md);
+
+    i { color: var(--primary-500); }
+  }
+}
+
+.signature-entry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  .signature-user {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+  }
+
+  .signature-date, .signature-reason {
+    color: var(--text-secondary);
+  }
+}
+
+.signing-overlay {
+  margin-top: var(--spacing-lg);
+}
+
+.signing-panel {
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  border: 2px solid var(--primary-200);
+
+  h4 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-lg);
+
+    i { color: var(--primary-500); }
+  }
+}
+
+.signing-instructions {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.optional-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-tertiary);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+}
+
+// ===== Changes Tab (NOM-024 Audit Trail) =====
+
+.changes-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.change-entry {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  background: var(--surface-primary);
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--primary-200);
+  }
+}
+
+.change-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  align-items: center;
+  font-size: var(--font-size-sm);
+}
+
+.change-action {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+
+  i {
+    margin-right: 4px;
+    color: var(--primary-500);
+  }
+}
+
+.change-user, .change-date, .change-ip {
+  color: var(--text-secondary);
+
+  i {
+    margin-right: 4px;
+    color: var(--text-muted);
+  }
+}
+
+.change-diff {
+  margin-top: var(--spacing-sm);
+}
+
+.diff-details {
+  margin-top: var(--spacing-xs);
+
+  summary {
+    cursor: pointer;
+    font-size: var(--font-size-xs);
+    color: var(--primary-600);
+    font-weight: var(--font-weight-medium);
+    user-select: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.diff-json {
+  margin: var(--spacing-xs) 0 0;
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  font-family: monospace;
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  max-height: 200px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+// ===== Problems Tab (NOM-024) =====
+
+.problems-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.problem-card {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  background: var(--surface-primary);
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--primary-200);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  &.problem-resolved {
+    opacity: 0.6;
+    background: var(--surface-secondary);
+  }
+
+  .problem-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .problem-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+
+  .problem-name {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+  }
+
+  .problem-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    > span {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+
+      i {
+        width: 16px;
+        text-align: center;
+        color: var(--text-muted);
+      }
+    }
+  }
+}
+
+.btn-success-text {
+  color: var(--success-600, #16a34a) !important;
+
+  &:hover {
+    background: var(--success-100, #dcfce7) !important;
+  }
+}
+
+.text-danger {
+  color: var(--danger-600, #dc2626) !important;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+// ===== Radiologic Images Gallery =====
+
+.radio-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+}
+
+.radio-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+.radio-thumb {
+  position: relative;
+  height: 160px;
+  background: var(--bg-secondary, #f3f4f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.radio-thumb-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-muted);
+
+  span {
+    font-size: 0.75rem;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.radio-type-badge {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.radio-info {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.radio-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.radio-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-xs);
+  padding: 0 var(--spacing-md) var(--spacing-md);
+}
+
+// ===== Radiologic Image Viewer Modal =====
+
+.radio-viewer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+}
+
+.radio-viewer {
+  background: var(--surface-primary);
+  border-radius: var(--radius-xl);
+  width: 90vw;
+  max-width: 1100px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.radio-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.radio-viewer-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+.radio-viewer-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.radio-viewer-image {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  min-height: 400px;
+  overflow: auto;
+
+  img {
+    max-width: 100%;
+    max-height: 65vh;
+    object-fit: contain;
+    transition: filter 0.15s;
+  }
+}
+
+.radio-viewer-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  color: var(--text-muted);
+  padding: var(--spacing-2xl);
+}
+
+.radio-viewer-controls {
+  width: 220px;
+  padding: var(--spacing-lg);
+  border-left: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary-500);
+    }
+
+    span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+  }
+}
+
+.radio-viewer-footer {
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-top: 1px solid var(--border-primary);
+  font-size: 0.85rem;
+
+  p {
+    margin: 0 0 var(--spacing-xs);
+  }
+}
+
+.radio-viewer-meta {
+  color: var(--text-muted);
+  font-size: 0.8rem;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -44,7 +44,7 @@ import { getApiErrorMessage } from '../../../../../core/utils/api-error.utils';
   templateUrl: './ceph-tracer.component.html',
   styleUrls: ['./ceph-tracer.component.scss'],
 })
-export class CephTracerComponent implements OnInit {
+export class CephTracerComponent implements OnInit, OnDestroy {
   @Input() analysisId: string | null = null;
   @Input() patientId: string | null = null;
   @Input() initialAnalysis: CephalometricAnalysis | null = null;
@@ -65,6 +65,7 @@ export class CephTracerComponent implements OnInit {
 
   // Image
   imageSrc: string | null = null;
+  private imageBlobUrl: string | null = null;
   private imgElement: HTMLImageElement | null = null;
   private fixedScale: { sx: number; sy: number } | null = null;
 
@@ -114,6 +115,12 @@ export class CephTracerComponent implements OnInit {
     this.hydrateFromAnalysis();
   }
 
+  ngOnDestroy(): void {
+    if (this.imageBlobUrl) {
+      URL.revokeObjectURL(this.imageBlobUrl);
+    }
+  }
+
   private hydrateFromAnalysis(): void {
     const a = this.initialAnalysis;
     if (!a) return;
@@ -146,7 +153,8 @@ export class CephTracerComponent implements OnInit {
     if (a.imageFileName && this.analysisId) {
       this.cephApiService.getImage(this.analysisId).subscribe({
         next: (blob) => {
-          this.imageSrc = URL.createObjectURL(blob);
+          this.imageBlobUrl = URL.createObjectURL(blob);
+          this.imageSrc = this.imageBlobUrl;
           this.cdr.markForCheck();
         },
         error: () => {

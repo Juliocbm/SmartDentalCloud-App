@@ -52,7 +52,7 @@ export class CephalometryApiService {
    * Obtiene la imagen de radiografía como Blob (con auth headers)
    */
   getImage(id: string): Observable<Blob> {
-    return this.api.getBlob(`${this.base}/${id}/image`);
+    return this.api.getBlob(`${this.base}/${id}/file`);
   }
 
   /**

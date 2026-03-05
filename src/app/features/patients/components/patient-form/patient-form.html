@@ -117,6 +117,217 @@
                 </span>
               }
             </div>
+
+            <!-- Género -->
+            <div class="form-group">
+              <label for="gender" class="form-label">Género</label>
+              <select id="gender" class="form-input" formControlName="gender">
+                <option value="">— Seleccionar —</option>
+                @for (g of genderOptions; track g) {
+                  <option [value]="g">{{ g }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Identificación Oficial (NOM-024) -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-id-card section-icon"></i>
+            Identificación Oficial
+            <span class="optional-badge">Opcional</span>
+          </h3>
+
+          <div class="form-row">
+            <!-- CURP -->
+            <div class="form-group">
+              <label for="curp" class="form-label">CURP</label>
+              <input
+                type="text"
+                id="curp"
+                class="form-input"
+                formControlName="curp"
+                placeholder="Ej: GARC850101HDFRRL09"
+                maxlength="18"
+                (input)="onCurpInput($event)"
+                [class.input-error]="isFieldInvalid('curp')"
+              />
+              @if (isFieldInvalid('curp')) {
+                <span class="error-message">{{ getFieldError('curp') }}</span>
+              }
+            </div>
+
+            <!-- Ocupación -->
+            <div class="form-group">
+              <label for="occupation" class="form-label">Ocupación</label>
+              <input
+                type="text"
+                id="occupation"
+                class="form-input"
+                formControlName="occupation"
+                placeholder="Ej: Ingeniero, Maestro, Comerciante..."
+                [class.input-error]="isFieldInvalid('occupation')"
+              />
+              @if (isFieldInvalid('occupation')) {
+                <span class="error-message">{{ getFieldError('occupation') }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- Estado Civil -->
+            <div class="form-group">
+              <label for="maritalStatus" class="form-label">Estado Civil</label>
+              <select id="maritalStatus" class="form-input" formControlName="maritalStatus">
+                <option value="">— Seleccionar —</option>
+                @for (ms of maritalStatusOptions; track ms) {
+                  <option [value]="ms">{{ ms }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-location-dot section-icon"></i>
+            Dirección
+            <span class="optional-badge">Opcional</span>
+          </h3>
+
+          <div class="form-row">
+            <!-- Estado (catálogo INEGI) -->
+            <div class="form-group">
+              <label for="state" class="form-label">Estado</label>
+              <select
+                id="state"
+                class="form-input"
+                [value]="patientForm.get('state')?.value || ''"
+                (change)="onStateChange($event)"
+                [class.input-error]="isFieldInvalid('state')">
+                <option value="">— Seleccionar estado —</option>
+                @for (s of states(); track s.id) {
+                  <option [value]="s.name">{{ s.name }}</option>
+                }
+              </select>
+              @if (isFieldInvalid('state')) {
+                <span class="error-message">{{ getFieldError('state') }}</span>
+              }
+            </div>
+
+            <!-- Municipio (cascading desde estado) -->
+            <div class="form-group">
+              <label for="municipality" class="form-label">Municipio</label>
+              <select
+                id="municipality"
+                class="form-input"
+                [value]="patientForm.get('municipality')?.value || ''"
+                (change)="onMunicipalityChange($event)"
+                [disabled]="!selectedStateId()"
+                [class.input-error]="isFieldInvalid('municipality')">
+                <option value="">— Seleccionar municipio —</option>
+                @for (m of municipalities(); track m.id) {
+                  <option [value]="m.name">{{ m.name }}</option>
+                }
+              </select>
+              @if (isFieldInvalid('municipality')) {
+                <span class="error-message">{{ getFieldError('municipality') }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- Localidad -->
+            <div class="form-group">
+              <label for="locality" class="form-label">Localidad</label>
+              <input
+                type="text"
+                id="locality"
+                class="form-input"
+                formControlName="locality"
+                placeholder="Ej: Centro"
+              />
+            </div>
+
+            <!-- Código Postal -->
+            <div class="form-group">
+              <label for="zipCode" class="form-label">Código Postal</label>
+              <input
+                type="text"
+                id="zipCode"
+                class="form-input"
+                formControlName="zipCode"
+                placeholder="5 dígitos"
+                maxlength="5"
+                [class.input-error]="isFieldInvalid('zipCode')"
+              />
+              @if (isFieldInvalid('zipCode')) {
+                <span class="error-message">{{ getFieldError('zipCode') }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- Dirección libre -->
+            <div class="form-group" style="flex: 1;">
+              <label for="address" class="form-label">Dirección Completa</label>
+              <input
+                type="text"
+                id="address"
+                class="form-input"
+                formControlName="address"
+                placeholder="Calle, número, colonia..."
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Contacto de Emergencia -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-phone-volume section-icon"></i>
+            Contacto de Emergencia
+            <span class="optional-badge">Opcional</span>
+          </h3>
+
+          <div class="form-row">
+            <!-- Nombre contacto -->
+            <div class="form-group">
+              <label for="emergencyContactName" class="form-label">Nombre del Contacto</label>
+              <input
+                type="text"
+                id="emergencyContactName"
+                class="form-input"
+                formControlName="emergencyContactName"
+                placeholder="Nombre completo del contacto"
+                [class.input-error]="isFieldInvalid('emergencyContactName')"
+              />
+              @if (isFieldInvalid('emergencyContactName')) {
+                <span class="error-message">{{ getFieldError('emergencyContactName') }}</span>
+              }
+            </div>
+
+            <!-- Teléfono contacto -->
+            <div class="form-group">
+              <label for="emergencyContactPhone" class="form-label">Teléfono del Contacto</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-phone"></i>
+                <input
+                  type="tel"
+                  id="emergencyContactPhone"
+                  class="form-input"
+                  formControlName="emergencyContactPhone"
+                  placeholder="10 dígitos"
+                  maxlength="10"
+                  [class.input-error]="isFieldInvalid('emergencyContactPhone')"
+                />
+              </div>
+              @if (isFieldInvalid('emergencyContactPhone')) {
+                <span class="error-message">{{ getFieldError('emergencyContactPhone') }}</span>
+              }
+            </div>
           </div>
         </div>
 

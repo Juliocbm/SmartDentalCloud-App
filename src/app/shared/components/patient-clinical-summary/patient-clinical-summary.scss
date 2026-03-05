@@ -1,0 +1,118 @@
+.clinical-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: var(--bg-secondary, #f8fafc);
+  border: 1px solid var(--border-primary, #e2e8f0);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  .summary-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+
+    > i:first-child {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      width: 16px;
+      text-align: center;
+    }
+
+    .item-label {
+      font-weight: var(--font-weight-medium);
+      color: var(--text-secondary);
+    }
+
+    .item-value {
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+    }
+
+    .item-count {
+      font-weight: var(--font-weight-bold);
+      font-size: 0.75rem;
+      padding: 1px 7px;
+      border-radius: 10px;
+      min-width: 20px;
+      text-align: center;
+
+      &.count-neutral {
+        background: var(--bg-tertiary, #e2e8f0);
+        color: var(--text-muted);
+      }
+
+      &.count-danger {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      &.count-warning {
+        background: #fef3c7;
+        color: #d97706;
+      }
+    }
+
+    .alert-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: #dc2626;
+
+      i {
+        font-size: 0.625rem;
+      }
+    }
+
+    &.blood-type {
+      > i:first-child {
+        color: #dc2626;
+      }
+    }
+
+    &.has-alerts {
+      > i:first-child {
+        color: #dc2626;
+      }
+    }
+  }
+
+  .summary-link {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--color-primary, #3b82f6);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // Compact mode
+  &.compact {
+    padding: 6px 12px;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .summary-item {
+      font-size: 0.75rem;
+
+      .item-label {
+        display: none;
+      }
+
+      .alert-indicator {
+        display: none;
+      }
+    }
+  }
+}

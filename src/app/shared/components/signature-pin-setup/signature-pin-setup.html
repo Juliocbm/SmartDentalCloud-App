@@ -1,0 +1,79 @@
+<app-modal
+  title="Configurar PIN de Firma Electrónica"
+  icon="fa-key"
+  size="sm"
+  (closed)="onClose()">
+
+  <div class="pin-setup-body">
+    <div class="pin-info">
+      <i class="fa-solid fa-shield-halved"></i>
+      <p>
+        El PIN de firma electrónica se utiliza para firmar documentos clínicos
+        conforme a la NOM-024-SSA3-2012. Debe contener al menos 6 caracteres,
+        incluyendo mayúsculas, minúsculas y números.
+      </p>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="form-group">
+      <label class="form-label">PIN de Firma <span class="required">*</span></label>
+      <div class="input-with-toggle">
+        <input
+          [type]="showPin() ? 'text' : 'password'"
+          class="form-input"
+          placeholder="Mínimo 6 caracteres"
+          autocomplete="new-password"
+          [ngModel]="pin()"
+          (ngModelChange)="pin.set($event)" />
+        <button type="button" class="toggle-visibility" (click)="toggleShowPin()">
+          <i class="fa-solid" [class.fa-eye]="!showPin()" [class.fa-eye-slash]="showPin()"></i>
+        </button>
+      </div>
+      @if (pin().length > 0 && !pinValid()) {
+        <span class="form-error">
+          Debe contener al menos 6 caracteres, una mayúscula, una minúscula y un número
+        </span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Confirmar PIN <span class="required">*</span></label>
+      <div class="input-with-toggle">
+        <input
+          [type]="showConfirmPin() ? 'text' : 'password'"
+          class="form-input"
+          placeholder="Repita el PIN"
+          autocomplete="new-password"
+          [ngModel]="confirmPin()"
+          (ngModelChange)="confirmPin.set($event)" />
+        <button type="button" class="toggle-visibility" (click)="toggleShowConfirmPin()">
+          <i class="fa-solid" [class.fa-eye]="!showConfirmPin()" [class.fa-eye-slash]="showConfirmPin()"></i>
+        </button>
+      </div>
+      @if (confirmPin().length > 0 && !pinsMatch()) {
+        <span class="form-error">Los PINs no coinciden</span>
+      }
+    </div>
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-outline" (click)="onClose()" [disabled]="saving()">
+      Cancelar
+    </button>
+    <button class="btn btn-primary" (click)="submit()" [disabled]="!canSubmit()">
+      @if (saving()) {
+        <span class="btn-spinner"></span>
+        Configurando...
+      } @else {
+        <i class="fa-solid fa-key"></i>
+        Configurar PIN
+      }
+    </button>
+  </div>
+</app-modal>

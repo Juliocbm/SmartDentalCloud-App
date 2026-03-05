@@ -1,0 +1,58 @@
+@if (patientId()) {
+  <div class="clinical-summary" [class.compact]="compact()">
+    <!-- Blood Type -->
+    @if (bloodType()) {
+      <div class="summary-item blood-type">
+        <i class="fa-solid fa-droplet"></i>
+        <span class="item-label">Sangre</span>
+        <span class="item-value">{{ bloodType() }}</span>
+      </div>
+    }
+
+    <!-- Allergies -->
+    <div class="summary-item" [class.has-alerts]="severeAllergiesCount > 0">
+      <i class="fa-solid fa-shield-virus"></i>
+      <span class="item-label">Alergias</span>
+      <span class="item-count" [class.count-danger]="severeAllergiesCount > 0" [class.count-neutral]="activeAllergiesCount === 0">
+        {{ activeAllergiesCount }}
+      </span>
+      @if (severeAllergiesCount > 0) {
+        <span class="alert-indicator">
+          <i class="fa-solid fa-exclamation-triangle"></i>
+          {{ severeAllergiesCount }} severa{{ severeAllergiesCount > 1 ? 's' : '' }}
+        </span>
+      }
+    </div>
+
+    <!-- Problems -->
+    <div class="summary-item">
+      <i class="fa-solid fa-clipboard-list"></i>
+      <span class="item-label">Problemas</span>
+      <span class="item-count" [class.count-warning]="activeProblemsCount > 0" [class.count-neutral]="activeProblemsCount === 0">
+        {{ activeProblemsCount }}
+      </span>
+    </div>
+
+    <!-- Pending Consents -->
+    @if (pendingConsentsCount() > 0) {
+      <div class="summary-item">
+        <i class="fa-solid fa-file-signature"></i>
+        <span class="item-label">Consentimientos</span>
+        <span class="item-count count-warning">
+          {{ pendingConsentsCount() }}
+        </span>
+        <span class="alert-indicator" style="color: var(--warning-600, #d97706)">
+          pendiente{{ pendingConsentsCount() > 1 ? 's' : '' }}
+        </span>
+      </div>
+    }
+
+    <!-- Link to patient -->
+    @if (!compact()) {
+      <a class="summary-link" [routerLink]="['/patients', patientId()]">
+        <i class="fa-solid fa-user"></i>
+        Ver expediente
+      </a>
+    }
+  </div>
+}

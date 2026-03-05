@@ -2,11 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/services/api.service';
 import { AttachedFile } from '../models/attached-file.models';
 
 @Injectable({ providedIn: 'root' })
 export class AttachedFilesService {
   private http = inject(HttpClient);
+  private api = inject(ApiService);
   private apiUrl = environment.apiUrl;
 
   getByPatient(patientId: string, category?: string): Observable<AttachedFile[]> {
@@ -38,6 +40,10 @@ export class AttachedFilesService {
       `${this.apiUrl}/patients/${patientId}/files`,
       formData
     );
+  }
+
+  getFileBlob(fileId: string): Observable<Blob> {
+    return this.api.getBlob(`/files/${fileId}/file`);
   }
 
   delete(fileId: string): Observable<void> {

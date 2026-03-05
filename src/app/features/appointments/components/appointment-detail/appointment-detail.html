@@ -121,6 +121,18 @@
       </div>
     }
 
+    <!-- Allergy Alerts -->
+    <app-allergy-alert-banner
+      [alerts]="allergyAlerts()"
+      [patientId]="apt.patientId"
+    />
+
+    <!-- Clinical Summary -->
+    <app-patient-clinical-summary
+      [patientId]="apt.patientId"
+      [compact]="true"
+    />
+
     <div class="detail-body">
       <!-- Patient & Doctor -->
       <div class="info-two-col">
@@ -194,6 +206,62 @@
         [createdAt]="apt.createdAt"
         (closed)="showAuditModal.set(false)"
       />
+
+      <!-- Consents Section (Confirmed/Completed) -->
+      @if (apt.status === AppointmentStatus.Confirmed || apt.status === AppointmentStatus.Completed) {
+        <div class="info-section">
+          <div class="section-header-with-action">
+            <h3>
+              <i class="fa-solid fa-file-signature"></i>
+              Consentimientos
+            </h3>
+            <a class="btn btn-outline btn-sm"
+              [routerLink]="['/patients', apt.patientId]"
+              [queryParams]="{ tab: 'consents', appointmentId: apt.id }">
+              <i class="fa-solid fa-plus"></i>
+              Solicitar Consentimiento
+            </a>
+          </div>
+
+          @if (consentsLoading()) {
+            <div class="note-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando consentimientos...</span>
+            </div>
+          } @else if (appointmentConsents().length === 0) {
+            <div class="consent-empty">
+              <i class="fa-solid fa-info-circle"></i>
+              <span>No hay consentimientos vinculados a esta cita.</span>
+            </div>
+          } @else {
+            <div class="consents-list">
+              @for (consent of appointmentConsents(); track consent.id) {
+                <div class="consent-item">
+                  <div class="consent-info">
+                    <span class="consent-title">{{ consent.title }}</span>
+                    <span class="badge" [ngClass]="{
+                      'badge-warning': consent.status === 'Pending',
+                      'badge-success': consent.status === 'Signed',
+                      'badge-danger': consent.status === 'Revoked',
+                      'badge-secondary': consent.status === 'Expired'
+                    }">
+                      {{ consent.status === 'Pending' ? 'Pendiente' :
+                         consent.status === 'Signed' ? 'Firmado' :
+                         consent.status === 'Revoked' ? 'Revocado' : 'Expirado' }}
+                    </span>
+                  </div>
+                  @if (consent.signedAt) {
+                    <span class="consent-date text-muted">
+                      <i class="fa-solid fa-check-circle"></i>
+                      Firmado: {{ consent.signedAt | date:'dd/MM/yyyy HH:mm' }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
 
       <!-- Consultation Note Section (only for Completed appointments) -->
       @if (apt.status === AppointmentStatus.Completed) {

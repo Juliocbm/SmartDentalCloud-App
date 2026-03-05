@@ -29,11 +29,9 @@ export interface UploadFileRequest {
 }
 
 export const FILE_CATEGORIES = [
-  { value: 'radiografia', label: 'Radiografía' },
   { value: 'fotografia', label: 'Fotografía' },
   { value: 'documento', label: 'Documento' },
   { value: 'laboratorio', label: 'Resultado de Laboratorio' },
-  { value: 'consentimiento', label: 'Consentimiento Informado' },
   { value: 'otro', label: 'Otro' }
 ];
 
@@ -46,9 +44,5 @@ export function getFileIcon(fileType?: string): string {
   return 'fa-file';
 }
 
-export function formatFileSize(bytes?: number): string {
-  if (!bytes) return '—';
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
+// formatFileSize moved to shared/utils/file.utils.ts
+export { formatFileSize } from '../../../shared/utils/file.utils';

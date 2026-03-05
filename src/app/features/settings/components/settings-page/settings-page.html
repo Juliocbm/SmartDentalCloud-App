@@ -225,6 +225,26 @@
                 </select>
               </div>
             </div>
+
+            <!-- NOM-024: Datos Regulatorios -->
+            <h4 class="subsection-title">
+              <i class="fa-solid fa-shield-halved"></i>
+              Datos Regulatorios (NOM-024)
+            </h4>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label">CLUES</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Ej: JCSSA001234"
+                  maxlength="11"
+                  [ngModel]="generalClues()"
+                  (ngModelChange)="generalClues.set($event.toUpperCase())"
+                />
+                <span class="form-hint">Clave Única de Establecimiento de Salud (11 caracteres)</span>
+              </div>
+            </div>
           </div>
         }
 
@@ -253,6 +273,13 @@
         @if (activeTab() === 'exceptions') {
           <div class="settings-section">
             <app-schedule-exceptions-manager #exceptionsManager />
+          </div>
+        }
+
+        <!-- Consent Templates Tab -->
+        @if (activeTab() === 'consent-templates') {
+          <div class="settings-section">
+            <app-consent-template-list />
           </div>
         }
 

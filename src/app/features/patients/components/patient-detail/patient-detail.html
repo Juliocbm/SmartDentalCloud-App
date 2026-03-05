@@ -35,6 +35,14 @@
     </div>
   </app-page-header>
 
+  <!-- Clinical Summary -->
+  @if (patient(); as pat) {
+    <app-patient-clinical-summary
+      [patientId]="pat.id"
+      [bloodType]="pat.bloodType || null"
+    />
+  }
+
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
@@ -71,6 +79,36 @@
         </button>
         <button
           class="nav-item"
+          [class.active]="activeTab() === 'allergies'"
+          (click)="setActiveTab('allergies')">
+          <i class="fa-solid fa-shield-virus"></i>
+          <span>Alergias</span>
+          @if (getActiveAllergiesCount() > 0) {
+            <span class="nav-count" [class.nav-count-danger]="hasSevereAllergies()">{{ getActiveAllergiesCount() }}</span>
+          }
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'consents'"
+          (click)="setActiveTab('consents')">
+          <i class="fa-solid fa-file-signature"></i>
+          <span>Consentimientos</span>
+          @if (getPendingConsentsCount() > 0) {
+            <span class="nav-count">{{ getPendingConsentsCount() }}</span>
+          }
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'problems'"
+          (click)="setActiveTab('problems')">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <span>Problemas</span>
+          @if (getActiveProblemsCount() > 0) {
+            <span class="nav-count nav-count-danger">{{ getActiveProblemsCount() }}</span>
+          }
+        </button>
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'odontogram'"
           (click)="setActiveTab('odontogram')">
           <i class="fa-solid fa-tooth"></i>
@@ -92,6 +130,13 @@
         </button>
         <button
           class="nav-item"
+          [class.active]="activeTab() === 'radiographs'"
+          (click)="setActiveTab('radiographs')">
+          <i class="fa-solid fa-image"></i>
+          <span>Radiografías</span>
+        </button>
+        <button
+          class="nav-item"
           [class.active]="activeTab() === 'fiscal'"
           (click)="setActiveTab('fiscal')">
           <i class="fa-solid fa-file-invoice"></i>
@@ -110,6 +155,13 @@
           (click)="setActiveTab('history')">
           <i class="fa-solid fa-clock-rotate-left"></i>
           <span>Historial</span>
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'changes'"
+          (click)="setActiveTab('changes')">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Cambios</span>
         </button>
         <button
           class="nav-item"
@@ -188,6 +240,101 @@
             </div>
           </div>
         </div>
+
+        <!-- Identificación Oficial + Dirección + Contacto Emergencia (NOM-024) -->
+        @if (patient()!.curp || patient()!.occupation || patient()!.maritalStatus || patient()!.state || patient()!.municipality || patient()!.emergencyContactName) {
+          <div class="info-two-col">
+            <!-- Identificación Oficial -->
+            @if (patient()!.curp || patient()!.occupation || patient()!.maritalStatus) {
+              <div class="info-section">
+                <h3>
+                  <i class="fa-solid fa-id-card"></i>
+                  Identificación Oficial
+                </h3>
+                <div class="info-card">
+                  @if (patient()!.curp) {
+                    <div class="info-row">
+                      <span class="info-label">CURP:</span>
+                      <span class="info-value" style="font-family: monospace; letter-spacing: 0.5px;">{{ patient()!.curp }}</span>
+                    </div>
+                  }
+                  @if (patient()!.occupation) {
+                    <div class="info-row">
+                      <span class="info-label">Ocupación:</span>
+                      <span class="info-value">{{ patient()!.occupation }}</span>
+                    </div>
+                  }
+                  @if (patient()!.maritalStatus) {
+                    <div class="info-row">
+                      <span class="info-label">Estado Civil:</span>
+                      <span class="info-value">{{ patient()!.maritalStatus }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Dirección Estructurada -->
+            @if (patient()!.state || patient()!.municipality || patient()!.locality || patient()!.zipCode) {
+              <div class="info-section">
+                <h3>
+                  <i class="fa-solid fa-location-dot"></i>
+                  Dirección
+                </h3>
+                <div class="info-card">
+                  @if (patient()!.state) {
+                    <div class="info-row">
+                      <span class="info-label">Estado:</span>
+                      <span class="info-value">{{ patient()!.state }}</span>
+                    </div>
+                  }
+                  @if (patient()!.municipality) {
+                    <div class="info-row">
+                      <span class="info-label">Municipio:</span>
+                      <span class="info-value">{{ patient()!.municipality }}</span>
+                    </div>
+                  }
+                  @if (patient()!.locality) {
+                    <div class="info-row">
+                      <span class="info-label">Localidad:</span>
+                      <span class="info-value">{{ patient()!.locality }}</span>
+                    </div>
+                  }
+                  @if (patient()!.zipCode) {
+                    <div class="info-row">
+                      <span class="info-label">Código Postal:</span>
+                      <span class="info-value">{{ patient()!.zipCode }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Contacto de Emergencia -->
+          @if (patient()!.emergencyContactName || patient()!.emergencyContactPhone) {
+            <div class="info-section">
+              <h3>
+                <i class="fa-solid fa-phone-volume"></i>
+                Contacto de Emergencia
+              </h3>
+              <div class="info-card">
+                @if (patient()!.emergencyContactName) {
+                  <div class="info-row">
+                    <span class="info-label">Nombre:</span>
+                    <span class="info-value">{{ patient()!.emergencyContactName }}</span>
+                  </div>
+                }
+                @if (patient()!.emergencyContactPhone) {
+                  <div class="info-row">
+                    <span class="info-label">Teléfono:</span>
+                    <span class="info-value">{{ patient()!.emergencyContactPhone }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
       }
 
       <!-- Medical Tab -->
@@ -238,25 +385,23 @@
                     </select>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Alergias</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Ej: Penicilina, Látex..."
-                    [ngModel]="medAllergies()"
-                    (ngModelChange)="medAllergies.set($event)"
-                  />
+                <div class="structured-data-notice">
+                  <i class="fa-solid fa-info-circle"></i>
+                  Las alergias y problemas/diagnósticos se gestionan en sus tabs dedicados para mayor trazabilidad clínica.
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Enfermedades Crónicas</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Ej: Diabetes, Hipertensión..."
-                    [ngModel]="medChronicDiseases()"
-                    (ngModelChange)="medChronicDiseases.set($event)"
-                  />
+                <div class="structured-links-row">
+                  <button class="structured-link-card" (click)="setActiveTab('allergies')">
+                    <i class="fa-solid fa-shield-virus"></i>
+                    <span class="card-label">Alergias</span>
+                    <span class="card-count">{{ allergies().length }}</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </button>
+                  <button class="structured-link-card" (click)="setActiveTab('problems')">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    <span class="card-label">Problemas / Diagnósticos</span>
+                    <span class="card-count">{{ problems().length }}</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </button>
                 </div>
                 <div class="form-group">
                   <label class="form-label">Medicamentos Actuales</label>
@@ -294,23 +439,25 @@
                 </div>
               </div>
             } @else {
+              <div class="structured-links-row view-mode">
+                <button class="structured-link-card" [class.has-items]="allergies().length > 0" (click)="setActiveTab('allergies')">
+                  <i class="fa-solid fa-shield-virus"></i>
+                  <span class="card-label">Alergias</span>
+                  <span class="card-count" [class.count-danger]="allergies().length > 0">{{ allergies().length }}</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <button class="structured-link-card" [class.has-items]="problems().length > 0" (click)="setActiveTab('problems')">
+                  <i class="fa-solid fa-clipboard-list"></i>
+                  <span class="card-label">Problemas</span>
+                  <span class="card-count" [class.count-warning]="problems().length > 0">{{ problems().length }}</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
               <div class="info-card">
                 @if (patient()!.bloodType) {
                   <div class="info-row">
                     <span class="info-label">Tipo de Sangre:</span>
                     <span class="info-value">{{ patient()!.bloodType }}</span>
-                  </div>
-                }
-                @if (hasAllergies()) {
-                  <div class="info-row">
-                    <span class="info-label">Alergias:</span>
-                    <span class="info-value">{{ patient()!.allergies }}</span>
-                  </div>
-                }
-                @if (patient()!.chronicDiseases) {
-                  <div class="info-row">
-                    <span class="info-label">Enfermedades Crónicas:</span>
-                    <span class="info-value">{{ patient()!.chronicDiseases }}</span>
                   </div>
                 }
                 @if (patient()!.currentMedications) {
@@ -346,6 +493,561 @@
           }
         </div>
       }
+      <!-- Allergies Tab (NOM-024) -->
+      @if (activeTab() === 'allergies') {
+        <div class="info-section">
+          <div class="section-header-with-action">
+            <h3>
+              <i class="fa-solid fa-shield-virus"></i>
+              Alergias Registradas
+            </h3>
+            <button class="btn btn-primary btn-sm" (click)="toggleAllergyForm()">
+              @if (showAllergyForm()) {
+                <i class="fa-solid fa-xmark"></i> Cancelar
+              } @else {
+                <i class="fa-solid fa-plus"></i> Nueva Alergia
+              }
+            </button>
+          </div>
+
+          @if (hasSevereAllergies()) {
+            <div class="alert alert-danger">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <strong>Atención:</strong> Este paciente tiene alergias severas registradas.
+            </div>
+          }
+
+          @if (showAllergyForm()) {
+            <div class="allergy-form card">
+              <div class="card-body">
+                <h4 class="form-section-title">Registrar Nueva Alergia</h4>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Tipo de Alérgeno *</label>
+                    <select class="form-control"
+                      [ngModel]="allergyAllergenType()"
+                      (ngModelChange)="allergyAllergenType.set($event)">
+                      @for (t of ALLERGEN_TYPES; track t.value) {
+                        <option [value]="t.value">{{ t.label }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Nombre del Alérgeno *</label>
+                    <input type="text" class="form-control"
+                      placeholder="Ej: Penicilina, Maní, Polen..."
+                      [ngModel]="allergyAllergenName()"
+                      (ngModelChange)="allergyAllergenName.set($event)">
+                  </div>
+                </div>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Severidad *</label>
+                    <select class="form-control"
+                      [ngModel]="allergySeverity()"
+                      (ngModelChange)="allergySeverity.set($event)">
+                      @for (s of ALLERGY_SEVERITIES; track s.value) {
+                        <option [value]="s.value">{{ s.label }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Fecha de Detección</label>
+                    <input type="date" class="form-control"
+                      [ngModel]="allergyDetectedAt()"
+                      (ngModelChange)="allergyDetectedAt.set($event)">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Descripción de la Reacción</label>
+                  <textarea class="form-control" rows="2"
+                    placeholder="Describa la reacción alérgica..."
+                    [ngModel]="allergyReactionDescription()"
+                    (ngModelChange)="allergyReactionDescription.set($event)"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Notas</label>
+                  <textarea class="form-control" rows="2"
+                    placeholder="Observaciones adicionales..."
+                    [ngModel]="allergyNotes()"
+                    (ngModelChange)="allergyNotes.set($event)"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-check">
+                    <input type="checkbox"
+                      [ngModel]="allergyVerified()"
+                      (ngModelChange)="allergyVerified.set($event)">
+                    <span>Verificado por profesional de salud</span>
+                  </label>
+                </div>
+                <div class="form-actions">
+                  <button class="btn btn-outline" (click)="toggleAllergyForm()">Cancelar</button>
+                  <button class="btn btn-primary"
+                    [disabled]="!allergyAllergenName().trim() || savingAllergy()"
+                    (click)="saveAllergy()">
+                    @if (savingAllergy()) {
+                      <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                    } @else {
+                      <i class="fa-solid fa-check"></i> Guardar Alergia
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (allergiesLoading()) {
+            <div class="loading-container">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando alergias...</span>
+            </div>
+          } @else if (allergies().length === 0) {
+            <div class="empty-state empty-state-sm">
+              <i class="fa-solid fa-shield-virus"></i>
+              <h3>Sin Alergias Registradas</h3>
+              <p>No se han registrado alergias para este paciente</p>
+            </div>
+          } @else {
+            <div class="allergies-list">
+              @for (allergy of allergies(); track allergy.id) {
+                <div class="allergy-card" [class.allergy-inactive]="!allergy.isActive">
+                  <div class="allergy-header">
+                    <div class="allergy-title">
+                      <span class="allergy-name">{{ allergy.allergenName }}</span>
+                      <span class="badge" [ngClass]="getSeverityClass(allergy.severity)">
+                        {{ getSeverityLabel(allergy.severity) }}
+                      </span>
+                      @if (!allergy.isActive) {
+                        <span class="badge badge-secondary">Inactiva</span>
+                      }
+                      @if (allergy.verifiedByProfessional) {
+                        <span class="badge badge-success" title="Verificado por profesional">
+                          <i class="fa-solid fa-check-circle"></i> Verificado
+                        </span>
+                      }
+                    </div>
+                    @if (allergy.isActive) {
+                      <button class="btn btn-ghost btn-sm btn-danger-text" title="Desactivar"
+                        (click)="deactivateAllergy(allergy)">
+                        <i class="fa-solid fa-ban"></i>
+                      </button>
+                    }
+                  </div>
+                  <div class="allergy-details">
+                    <span class="allergy-type">
+                      <i class="fa-solid fa-tag"></i> {{ getAllergenTypeLabel(allergy.allergenType) }}
+                    </span>
+                    @if (allergy.reactionDescription) {
+                      <span class="allergy-reaction">
+                        <i class="fa-solid fa-notes-medical"></i> {{ allergy.reactionDescription }}
+                      </span>
+                    }
+                    @if (allergy.detectedAt) {
+                      <span class="allergy-date">
+                        <i class="fa-solid fa-calendar"></i> Detectada: {{ formatDateFile(allergy.detectedAt) }}
+                      </span>
+                    }
+                    @if (allergy.notes) {
+                      <span class="allergy-notes">
+                        <i class="fa-solid fa-comment"></i> {{ allergy.notes }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Consents Tab (NOM-024) -->
+      @if (activeTab() === 'consents') {
+        <div class="info-section">
+          <div class="section-header-with-action">
+            <h3>
+              <i class="fa-solid fa-file-signature"></i>
+              Consentimientos Informados
+            </h3>
+            <div class="btn-group">
+              <button class="btn btn-outline btn-sm" (click)="showPinSetup.set(true)">
+                <i class="fa-solid fa-key"></i> Configurar PIN
+              </button>
+              <button class="btn btn-primary btn-sm" (click)="toggleConsentForm()">
+                @if (showConsentForm()) {
+                  <i class="fa-solid fa-xmark"></i> Cancelar
+                } @else {
+                  <i class="fa-solid fa-plus"></i> Nuevo Consentimiento
+                }
+              </button>
+            </div>
+          </div>
+
+          @if (showConsentForm()) {
+            <div class="allergy-form card">
+              <div class="card-body">
+                <h4 class="form-section-title">Crear Consentimiento Informado</h4>
+
+                <!-- Template selector -->
+                <div class="form-group">
+                  <label class="form-label">Cargar desde plantilla</label>
+                  <div class="template-selector-row">
+                    <select class="form-control"
+                      [ngModel]="selectedTemplateId()"
+                      (ngModelChange)="selectedTemplateId.set($event)"
+                      (focus)="loadConsentTemplates()">
+                      <option [ngValue]="null">— Escribir manualmente —</option>
+                      @for (tpl of consentTemplates(); track tpl.id) {
+                        <option [value]="tpl.id">{{ tpl.title }} ({{ getConsentTypeLabel(tpl.consentType) }})</option>
+                      }
+                    </select>
+                    <button class="btn btn-outline btn-sm" [disabled]="!selectedTemplateId()"
+                      (click)="onTemplateSelected()">
+                      <i class="fa-solid fa-file-import"></i> Cargar
+                    </button>
+                  </div>
+                </div>
+
+                @if (consentAppointmentId() || consentTreatmentId()) {
+                  <div class="alert alert-info" style="margin-bottom: var(--spacing-md);">
+                    <i class="fa-solid fa-link"></i>
+                    Este consentimiento se vinculará automáticamente
+                    @if (consentAppointmentId()) { a la <strong>cita</strong> }
+                    @if (consentTreatmentId()) { al <strong>tratamiento</strong> }
+                    de origen.
+                  </div>
+                }
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Tipo *</label>
+                    <select class="form-control"
+                      [ngModel]="consentType()"
+                      (ngModelChange)="consentType.set($event)">
+                      @for (t of CONSENT_TYPES; track t.value) {
+                        <option [value]="t.value">{{ t.label }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Título *</label>
+                    <input type="text" class="form-control"
+                      placeholder="Ej: Consentimiento para extracción dental"
+                      [ngModel]="consentTitle()"
+                      (ngModelChange)="consentTitle.set($event)">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Contenido del Consentimiento *</label>
+                  <textarea class="form-control" rows="6"
+                    placeholder="Texto completo del consentimiento informado..."
+                    [ngModel]="consentContent()"
+                    (ngModelChange)="consentContent.set($event)"></textarea>
+                </div>
+                <div class="form-actions">
+                  <button class="btn btn-outline" (click)="toggleConsentForm()">Cancelar</button>
+                  <button class="btn btn-primary"
+                    [disabled]="!consentTitle().trim() || !consentContent().trim() || savingConsent()"
+                    (click)="saveConsent()">
+                    @if (savingConsent()) {
+                      <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                    } @else {
+                      <i class="fa-solid fa-check"></i> Crear Consentimiento
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (consentsLoading()) {
+            <div class="loading-container">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando consentimientos...</span>
+            </div>
+          } @else if (consents().length === 0) {
+            <div class="empty-state empty-state-sm">
+              <i class="fa-solid fa-file-signature"></i>
+              <h3>Sin Consentimientos</h3>
+              <p>No se han registrado consentimientos informados para este paciente</p>
+            </div>
+          } @else {
+            <div class="consents-list">
+              @for (consent of consents(); track consent.id) {
+                <div class="consent-card">
+                  <div class="consent-header">
+                    <div class="consent-title">
+                      <span class="consent-name">{{ consent.title }}</span>
+                      <span class="badge" [ngClass]="getConsentStatusClass(consent.status)">
+                        {{ getConsentStatusLabel(consent.status) }}
+                      </span>
+                    </div>
+                    <div class="consent-card-actions">
+                      @if (consent.status === 'Pending') {
+                        <button class="btn btn-primary btn-sm" (click)="startSignConsent(consent)">
+                          <i class="fa-solid fa-file-signature"></i> Firmar
+                        </button>
+                      }
+                      @if (consent.status === 'Signed') {
+                        <button class="btn btn-ghost btn-sm" title="Imprimir"
+                          (click)="openConsentPrintView(consent)">
+                          <i class="fa-solid fa-print"></i>
+                        </button>
+                        <button class="btn btn-ghost btn-sm" title="Ver firmas"
+                          (click)="loadConsentSignatures(consent)">
+                          <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button class="btn btn-ghost btn-sm btn-danger-text" title="Revocar"
+                          (click)="revokeConsent(consent)">
+                          <i class="fa-solid fa-ban"></i> Revocar
+                        </button>
+                      }
+                    </div>
+                  </div>
+                  <div class="consent-details">
+                    <span>
+                      <i class="fa-solid fa-tag"></i> {{ getConsentTypeLabel(consent.consentType) }}
+                    </span>
+                    @if (consent.signedAt) {
+                      <span>
+                        <i class="fa-solid fa-pen-nib"></i> Firmado: {{ formatDateFile(consent.signedAt) }}
+                      </span>
+                    }
+                    @if (consent.witnessName) {
+                      <span>
+                        <i class="fa-solid fa-user"></i> Testigo: {{ consent.witnessName }}
+                      </span>
+                    }
+                    @if (consent.revokedAt) {
+                      <span class="text-danger">
+                        <i class="fa-solid fa-ban"></i> Revocado: {{ formatDateFile(consent.revokedAt) }}
+                        @if (consent.revocationReason) {
+                          — {{ consent.revocationReason }}
+                        }
+                      </span>
+                    }
+                    <span class="text-muted">
+                      <i class="fa-solid fa-clock"></i> Creado: {{ formatDateFile(consent.createdAt) }}
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Consent Signatures Viewer -->
+          @if (consentSignatures().length > 0) {
+            <div class="signatures-viewer card">
+              <h4><i class="fa-solid fa-file-signature"></i> Firmas Electrónicas</h4>
+              @for (sig of consentSignatures(); track sig.id) {
+                <div class="signature-entry">
+                  <span class="signature-user">
+                    <i class="fa-solid fa-user-check"></i> {{ sig.userName }}
+                  </span>
+                  <span class="signature-date">
+                    <i class="fa-solid fa-clock"></i> {{ formatDateFile(sig.signedAt) }}
+                  </span>
+                  @if (sig.reason) {
+                    <span class="signature-reason">
+                      <i class="fa-solid fa-comment"></i> {{ sig.reason }}
+                    </span>
+                  }
+                </div>
+              }
+              <button class="btn btn-outline btn-sm" (click)="consentSignatures.set([])">
+                Cerrar
+              </button>
+            </div>
+          }
+
+          <!-- Signing Flow: Patient Signature -->
+          @if (signingStep() === 'patient-signature') {
+            <div class="signing-overlay">
+              <div class="signing-panel card">
+                <h4>
+                  <i class="fa-solid fa-pen-fancy"></i>
+                  Firma del Paciente — {{ signingConsentTitle() }}
+                </h4>
+                <p class="signing-instructions">
+                  El paciente debe firmar dentro del recuadro para expresar su consentimiento.
+                </p>
+                <app-signature-pad (signatureChanged)="onPatientSignatureChanged($event)" />
+                <div class="form-group">
+                  <label class="form-label">Nombre del Testigo <span class="optional-badge">Opcional</span></label>
+                  <input type="text" class="form-input"
+                    placeholder="Nombre completo del testigo"
+                    [ngModel]="witnessName()"
+                    (ngModelChange)="witnessName.set($event)" />
+                </div>
+                <div class="form-actions">
+                  <button class="btn btn-outline" (click)="cancelSigning()">Cancelar</button>
+                  <button class="btn btn-primary" [disabled]="!patientSignatureData()"
+                    (click)="proceedToDoctorPin()">
+                    <i class="fa-solid fa-arrow-right"></i> Continuar con firma del profesional
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Signing Flow: Doctor Electronic Signature -->
+          @if (signingStep() === 'doctor-pin') {
+            <app-signature-modal
+              [entityType]="'InformedConsent'"
+              [entityId]="signingConsentId()!"
+              [documentTitle]="signingConsentTitle()"
+              (signed)="onDocumentSigned($event)"
+              (cancelled)="cancelSigning()" />
+          }
+
+          <!-- PIN Setup Modal -->
+          @if (showPinSetup()) {
+            <app-signature-pin-setup
+              (closed)="showPinSetup.set(false)"
+              (pinConfigured)="onPinConfigured()" />
+          }
+
+          <!-- Consent Print View -->
+          @if (printingConsent(); as pc) {
+            <app-consent-print-view
+              [consent]="pc"
+              [patientName]="getFullName()"
+              (closed)="closeConsentPrintView()" />
+          }
+        </div>
+      }
+
+      <!-- Problems Tab (NOM-024) -->
+      @if (activeTab() === 'problems') {
+        <div class="info-section">
+          <div class="section-header-with-action">
+            <h3>
+              <i class="fa-solid fa-clipboard-list"></i>
+              Lista de Problemas / Diagnósticos
+            </h3>
+            <button class="btn btn-primary btn-sm" (click)="toggleProblemForm()">
+              @if (showProblemForm()) {
+                <i class="fa-solid fa-xmark"></i> Cancelar
+              } @else {
+                <i class="fa-solid fa-plus"></i> Nuevo Problema
+              }
+            </button>
+          </div>
+
+          @if (showProblemForm()) {
+            <div class="allergy-form card">
+              <div class="card-body">
+                <h4 class="form-section-title">Registrar Problema / Diagnóstico</h4>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Descripción *</label>
+                    <input type="text" class="form-control"
+                      placeholder="Ej: Caries dental múltiple"
+                      [ngModel]="problemDescription()"
+                      (ngModelChange)="problemDescription.set($event)">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Código CIE-10</label>
+                    <input type="text" class="form-control"
+                      placeholder="Ej: K02.1"
+                      [ngModel]="problemCie10Code()"
+                      (ngModelChange)="problemCie10Code.set($event)">
+                  </div>
+                </div>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label class="form-label">Fecha de Inicio</label>
+                    <input type="date" class="form-control"
+                      [ngModel]="problemOnsetDate()"
+                      (ngModelChange)="problemOnsetDate.set($event)">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Notas</label>
+                    <input type="text" class="form-control"
+                      placeholder="Observaciones..."
+                      [ngModel]="problemNotes()"
+                      (ngModelChange)="problemNotes.set($event)">
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button class="btn btn-outline" (click)="toggleProblemForm()">Cancelar</button>
+                  <button class="btn btn-primary"
+                    [disabled]="!problemDescription().trim() || savingProblem()"
+                    (click)="saveProblem()">
+                    @if (savingProblem()) {
+                      <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
+                    } @else {
+                      <i class="fa-solid fa-check"></i> Registrar Problema
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (problemsLoading()) {
+            <div class="loading-container">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando problemas...</span>
+            </div>
+          } @else if (problems().length === 0) {
+            <div class="empty-state empty-state-sm">
+              <i class="fa-solid fa-clipboard-list"></i>
+              <h3>Sin Problemas Registrados</h3>
+              <p>No se han registrado problemas o diagnósticos para este paciente</p>
+            </div>
+          } @else {
+            <div class="problems-list">
+              @for (problem of problems(); track problem.id) {
+                <div class="problem-card" [class.problem-resolved]="problem.status !== 'Active'">
+                  <div class="problem-header">
+                    <div class="problem-title">
+                      <span class="problem-name">{{ problem.description }}</span>
+                      <span class="badge" [ngClass]="getProblemStatusClass(problem.status)">
+                        {{ getProblemStatusLabel(problem.status) }}
+                      </span>
+                      @if (problem.cie10Code) {
+                        <span class="badge badge-info">{{ problem.cie10Code }}</span>
+                      }
+                      @if (problem.linkedTreatmentsCount > 0) {
+                        <span class="badge badge-primary">
+                          <i class="fa-solid fa-tooth"></i>
+                          {{ problem.linkedTreatmentsCount }} tratamiento{{ problem.linkedTreatmentsCount > 1 ? 's' : '' }}
+                        </span>
+                      }
+                    </div>
+                    @if (problem.status === 'Active') {
+                      <button class="btn btn-ghost btn-sm btn-success-text" title="Marcar como resuelto"
+                        (click)="resolveProblem(problem)">
+                        <i class="fa-solid fa-check-circle"></i> Resolver
+                      </button>
+                    }
+                  </div>
+                  <div class="problem-details">
+                    @if (problem.onsetDate) {
+                      <span>
+                        <i class="fa-solid fa-calendar"></i> Inicio: {{ formatDateFile(problem.onsetDate) }}
+                      </span>
+                    }
+                    @if (problem.resolvedDate) {
+                      <span>
+                        <i class="fa-solid fa-calendar-check"></i> Resuelto: {{ formatDateFile(problem.resolvedDate) }}
+                      </span>
+                    }
+                    @if (problem.notes) {
+                      <span>
+                        <i class="fa-solid fa-comment"></i> {{ problem.notes }}
+                      </span>
+                    }
+                    <span class="text-muted">
+                      <i class="fa-solid fa-clock"></i> Registrado: {{ formatDateFile(problem.createdAt) }}
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
       <!-- Odontogram Tab -->
       @if (activeTab() === 'odontogram') {
         <div class="info-section">
@@ -374,6 +1076,212 @@
             [patientName]="getFullName()"
           />
         </div>
+      }
+
+      <!-- Radiographs Tab (NOM-024 §5.3) -->
+      @if (activeTab() === 'radiographs') {
+        <div class="info-section">
+          <div class="section-header-with-action">
+            <h3>
+              <i class="fa-solid fa-image"></i>
+              Radiografías
+              <span class="badge badge-info">{{ radioImages().length }}</span>
+            </h3>
+            <div>
+              <button class="btn btn-outline btn-sm" [routerLink]="['/patients', patient()!.id, 'export']">
+                <i class="fa-solid fa-file-export"></i> Exportar Clínico
+              </button>
+              <button class="btn btn-primary btn-sm" (click)="toggleRadioUploadForm()">
+                @if (showRadioUploadForm()) {
+                  <i class="fa-solid fa-xmark"></i> Cancelar
+                } @else {
+                  <i class="fa-solid fa-upload"></i> Subir Radiografía
+                }
+              </button>
+            </div>
+          </div>
+
+          <!-- Upload Form -->
+          @if (showRadioUploadForm()) {
+            <div class="inline-form-card">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Tipo de imagen *</label>
+                  <select class="form-input" [ngModel]="radioImageType()" (ngModelChange)="radioImageType.set($event)">
+                    @for (type of IMAGE_TYPES; track type.value) {
+                      <option [value]="type.value">{{ type.label }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Título *</label>
+                  <input type="text" class="form-input" placeholder="Ej: Periapical pieza 14"
+                    [ngModel]="radioTitle()" (ngModelChange)="radioTitle.set($event)" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Fecha de toma</label>
+                  <input type="date" class="form-input"
+                    [ngModel]="radioTakenAt()" (ngModelChange)="radioTakenAt.set($event)" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Archivo *</label>
+                  <input type="file" class="form-input" accept="image/*,.pdf,.dcm"
+                    (change)="onRadioFileSelected($event)" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Descripción</label>
+                  <input type="text" class="form-input" placeholder="Descripción breve"
+                    [ngModel]="radioDescription()" (ngModelChange)="radioDescription.set($event)" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Notas</label>
+                  <input type="text" class="form-input" placeholder="Notas clínicas"
+                    [ngModel]="radioNotes()" (ngModelChange)="radioNotes.set($event)" />
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary btn-sm"
+                  [disabled]="radioUploading() || !radioSelectedFile() || !radioTitle().trim()"
+                  (click)="uploadRadioImage()">
+                  @if (radioUploading()) {
+                    <i class="fa-solid fa-spinner fa-spin"></i> Subiendo...
+                  } @else {
+                    <i class="fa-solid fa-upload"></i> Subir
+                  }
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Loading -->
+          @if (radioImagesLoading()) {
+            <div class="loading-container">
+              <div class="spinner"></div>
+              <p>Cargando radiografías...</p>
+            </div>
+          }
+
+          <!-- Gallery Grid -->
+          @if (!radioImagesLoading() && radioImages().length > 0) {
+            <div class="radio-gallery">
+              @for (img of radioImages(); track img.id) {
+                <div class="radio-card" (click)="viewRadioImage(img)">
+                  <div class="radio-thumb">
+                    @if (img.contentType.startsWith('image/')) {
+                      <img [src]="getRadioFileUrl(img)" [alt]="img.title" loading="lazy" />
+                    } @else {
+                      <div class="radio-thumb-placeholder">
+                        <i class="fa-solid fa-file-medical fa-3x"></i>
+                        <span>{{ img.fileName }}</span>
+                      </div>
+                    }
+                    <span class="radio-type-badge">{{ getImageTypeLabel(img.imageType) }}</span>
+                  </div>
+                  <div class="radio-info">
+                    <strong>{{ img.title }}</strong>
+                    <span class="radio-meta">
+                      {{ formatRadioDate(img.takenAt || img.createdAt) }} · {{ formatRadioFileSize(img.fileSize) }}
+                    </span>
+                    @if (img.takenByUserName) {
+                      <span class="radio-meta">Dr. {{ img.takenByUserName }}</span>
+                    }
+                  </div>
+                  <div class="radio-actions" (click)="$event.stopPropagation()">
+                    <button class="btn btn-ghost btn-xs" title="Ver" (click)="viewRadioImage(img)">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button class="btn btn-ghost btn-xs text-danger" title="Eliminar" (click)="deleteRadioImage(img)">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Empty state -->
+          @if (!radioImagesLoading() && radioImages().length === 0) {
+            <div class="empty-state">
+              <i class="fa-solid fa-image fa-3x"></i>
+              <p>No hay radiografías registradas</p>
+              <button class="btn btn-outline btn-sm" (click)="toggleRadioUploadForm()">
+                <i class="fa-solid fa-upload"></i> Subir primera radiografía
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Image Viewer Modal -->
+        @if (radioViewingImage()) {
+          <div class="radio-viewer-overlay" (click)="closeRadioViewer()">
+            <div class="radio-viewer" (click)="$event.stopPropagation()">
+              <div class="radio-viewer-header">
+                <div class="radio-viewer-title">
+                  <h3>{{ radioViewingImage()!.title }}</h3>
+                  <span class="badge badge-info">{{ getImageTypeLabel(radioViewingImage()!.imageType) }}</span>
+                </div>
+                <button class="btn btn-ghost" (click)="closeRadioViewer()">
+                  <i class="fa-solid fa-xmark fa-lg"></i>
+                </button>
+              </div>
+              <div class="radio-viewer-body">
+                <div class="radio-viewer-image">
+                  @if (radioViewingImage()!.contentType.startsWith('image/')) {
+                    <img [src]="getRadioFileUrl(radioViewingImage()!)"
+                         [alt]="radioViewingImage()!.title"
+                         [style]="getRadioImageStyle()" />
+                  } @else {
+                    <div class="radio-viewer-placeholder">
+                      <i class="fa-solid fa-file-medical fa-5x"></i>
+                      <p>{{ radioViewingImage()!.fileName }}</p>
+                      <a [href]="getRadioFileUrl(radioViewingImage()!)" target="_blank" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-download"></i> Descargar
+                      </a>
+                    </div>
+                  }
+                </div>
+                <div class="radio-viewer-controls">
+                  <div class="control-group">
+                    <label>Brillo</label>
+                    <input type="range" min="20" max="300" step="5"
+                      [ngModel]="radioBrightness()" (ngModelChange)="radioBrightness.set($event)" />
+                    <span>{{ radioBrightness() }}%</span>
+                  </div>
+                  <div class="control-group">
+                    <label>Contraste</label>
+                    <input type="range" min="20" max="300" step="5"
+                      [ngModel]="radioContrast()" (ngModelChange)="radioContrast.set($event)" />
+                    <span>{{ radioContrast() }}%</span>
+                  </div>
+                  <button class="btn btn-outline btn-xs" (click)="resetRadioFilters()">
+                    <i class="fa-solid fa-rotate-left"></i> Restablecer
+                  </button>
+                </div>
+              </div>
+              <div class="radio-viewer-footer">
+                @if (radioViewingImage()!.description) {
+                  <p><strong>Descripción:</strong> {{ radioViewingImage()!.description }}</p>
+                }
+                @if (radioViewingImage()!.notes) {
+                  <p><strong>Notas:</strong> {{ radioViewingImage()!.notes }}</p>
+                }
+                <p class="radio-viewer-meta">
+                  Subido {{ formatRadioDate(radioViewingImage()!.createdAt) }}
+                  @if (radioViewingImage()!.createdByUserName) {
+                    por {{ radioViewingImage()!.createdByUserName }}
+                  }
+                  @if (radioViewingImage()!.takenAt) {
+                    · Tomada {{ formatRadioDate(radioViewingImage()!.takenAt) }}
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
+        }
       }
 
       <!-- Fiscal Tab -->
@@ -667,6 +1575,80 @@
         </div>
       }
 
+      <!-- Changes Tab (NOM-024 Audit Trail) -->
+      @if (activeTab() === 'changes') {
+        <div class="info-section">
+          <h3>
+            <i class="fa-solid fa-list-check"></i>
+            Historial de Cambios
+          </h3>
+
+          @if (changesLoading()) {
+            <div class="inline-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando historial de cambios...</span>
+            </div>
+          } @else if (changeHistory().length === 0) {
+            <div class="empty-state empty-state-sm">
+              <i class="fa-solid fa-list-check"></i>
+              <h3>Sin Cambios Registrados</h3>
+              <p>No se han registrado cambios auditados para este paciente</p>
+            </div>
+          } @else {
+            <div class="changes-timeline">
+              @for (entry of changeHistory(); track entry.id) {
+                <div class="change-entry">
+                  <div class="change-header">
+                    <span class="change-action">
+                      <i class="fa-solid" [ngClass]="{
+                        'fa-plus-circle': entry.action === 'Create',
+                        'fa-pen': entry.action === 'Update',
+                        'fa-trash': entry.action === 'Delete',
+                        'fa-ban': entry.action === 'Cancel',
+                        'fa-check-circle': entry.action === 'Complete',
+                        'fa-cog': entry.action !== 'Create' && entry.action !== 'Update' && entry.action !== 'Delete' && entry.action !== 'Cancel' && entry.action !== 'Complete'
+                      }"></i>
+                      {{ entry.action }}
+                    </span>
+                    <span class="change-user">
+                      <i class="fa-solid fa-user"></i>
+                      {{ entry.userName }}
+                    </span>
+                    <span class="change-date">
+                      <i class="fa-solid fa-clock"></i>
+                      {{ formatChangeDate(entry.createdAt) }}
+                    </span>
+                    @if (entry.ipAddress) {
+                      <span class="change-ip">
+                        <i class="fa-solid fa-globe"></i>
+                        {{ entry.ipAddress }}
+                      </span>
+                    }
+                  </div>
+
+                  @if (entry.oldValues || entry.newValues) {
+                    <div class="change-diff">
+                      @if (entry.oldValues) {
+                        <details class="diff-details">
+                          <summary>Valores anteriores</summary>
+                          <pre class="diff-json">{{ formatJson(entry.oldValues) }}</pre>
+                        </details>
+                      }
+                      @if (entry.newValues) {
+                        <details class="diff-details">
+                          <summary>Valores nuevos</summary>
+                          <pre class="diff-json">{{ formatJson(entry.newValues) }}</pre>
+                        </details>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
       <!-- Files Tab -->
       @if (activeTab() === 'files') {
         <div class="info-section">
@@ -760,16 +1742,33 @@
             </div>
           }
 
-          <!-- Files List -->
+          <!-- Category Filter -->
           @if (!filesLoading() && files().length > 0) {
+            <div class="filter-bar">
+              <select
+                class="form-control form-control-sm"
+                [ngModel]="filterCategory()"
+                (ngModelChange)="filterCategory.set($event)"
+              >
+                <option value="">Todas las categorías</option>
+                @for (cat of FILE_CATEGORIES; track cat.value) {
+                  <option [value]="cat.value">{{ cat.label }}</option>
+                }
+              </select>
+              <span class="filter-count">{{ filteredFiles().length }} de {{ files().length }} archivos</span>
+            </div>
+          }
+
+          <!-- Files List -->
+          @if (!filesLoading() && filteredFiles().length > 0) {
             <div class="files-grid">
-              @for (file of files(); track file.id) {
+              @for (file of filteredFiles(); track file.id) {
                 <div class="file-card">
                   <div class="file-icon">
                     <i [class]="'fa-solid ' + getFileIcon(file.fileType)"></i>
                   </div>
                   <div class="file-info">
-                    <a [href]="file.fileUrl" target="_blank" class="file-name">
+                    <a class="file-name" (click)="downloadAttachedFile(file)" style="cursor: pointer;">
                       {{ file.fileName }}
                     </a>
                     <div class="file-meta">
@@ -795,7 +1794,20 @@
             </div>
           }
 
-          <!-- Empty -->
+          <!-- Empty (filter active, no matches) -->
+          @if (!filesLoading() && files().length > 0 && filteredFiles().length === 0) {
+            <div class="empty-state empty-state-sm">
+              <i class="fa-solid fa-filter"></i>
+              <h3>Sin resultados</h3>
+              <p>No hay archivos en la categoría seleccionada</p>
+              <button class="btn btn-outline btn-sm" (click)="filterCategory.set('')">
+                <i class="fa-solid fa-xmark"></i>
+                Limpiar filtro
+              </button>
+            </div>
+          }
+
+          <!-- Empty (no files at all) -->
           @if (!filesLoading() && files().length === 0 && !showUploadForm()) {
             <div class="empty-state empty-state-sm">
               <i class="fa-solid fa-folder-open"></i>

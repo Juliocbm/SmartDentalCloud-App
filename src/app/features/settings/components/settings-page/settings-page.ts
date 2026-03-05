@@ -6,6 +6,7 @@ import { WorkScheduleEditorComponent } from '../work-schedule-editor/work-schedu
 import { DentistScheduleManagerComponent } from '../dentist-schedule-manager/dentist-schedule-manager';
 import { ScheduleExceptionsManagerComponent } from '../schedule-exceptions-manager/schedule-exceptions-manager';
 import { LocationListComponent } from '../location-list/location-list';
+import { ConsentTemplateListComponent } from '../consent-template-list/consent-template-list';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -18,12 +19,12 @@ import {
   LANGUAGE_OPTIONS
 } from '../../models/settings.models';
 
-type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'smtp' | 'branding' | 'domain';
+type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'consent-templates' | 'smtp' | 'branding' | 'domain';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent, ConsentTemplateListComponent],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss'
 })
@@ -52,6 +53,7 @@ export class SettingsPageComponent implements OnInit {
   generalWorkingHours = signal('');
   generalTimeZone = signal('');
   generalLanguage = signal('');
+  generalClues = signal('');
 
   // SMTP form
   smtpHost = signal('');
@@ -80,6 +82,7 @@ export class SettingsPageComponent implements OnInit {
     { key: 'schedule', label: 'Horario', icon: 'fa-clock' },
     { key: 'dentist-schedule', label: 'Horarios Dentistas', icon: 'fa-user-doctor' },
     { key: 'exceptions', label: 'Excepciones', icon: 'fa-calendar-xmark' },
+    { key: 'consent-templates', label: 'Consentimientos', icon: 'fa-file-contract' },
     { key: 'smtp', label: 'Correo (SMTP)', icon: 'fa-envelope' },
     { key: 'branding', label: 'Branding', icon: 'fa-palette' },
     { key: 'domain', label: 'Dominio', icon: 'fa-globe' }
@@ -136,6 +139,7 @@ export class SettingsPageComponent implements OnInit {
     this.generalWorkingHours.set(s.workingHours || '');
     this.generalTimeZone.set(s.timeZone);
     this.generalLanguage.set(s.language);
+    this.generalClues.set(s.clues || '');
   }
 
   private populateSmtpForm(c: SmtpConfiguration): void {
@@ -163,7 +167,8 @@ export class SettingsPageComponent implements OnInit {
       email: this.generalEmail().trim() || undefined,
       workingHours: this.generalWorkingHours().trim() || undefined,
       timeZone: this.generalTimeZone() || undefined,
-      language: this.generalLanguage() || undefined
+      language: this.generalLanguage() || undefined,
+      clues: this.generalClues().trim() || undefined
     }).subscribe({
       next: (data) => {
         this.settings.set(data);

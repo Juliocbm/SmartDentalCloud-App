@@ -93,6 +93,11 @@
         </div>
       </div>
 
+      <!-- Allergy Alerts -->
+      @if (allergyAlerts().length > 0) {
+        <app-allergy-alert-banner [alerts]="allergyAlerts()" />
+      }
+
       <!-- Diagnosis -->
       <div class="form-section">
         <h3 class="section-title">

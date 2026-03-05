@@ -11,11 +11,17 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PatientAllergiesService } from '../../../patients/services/patient-allergies.service';
+import { AllergyAlert } from '../../../patients/models/patient-allergy.models';
+import { AllergyAlertBannerComponent } from '../../../../shared/components/allergy-alert-banner/allergy-alert-banner';
+import { PatientClinicalSummaryComponent } from '../../../../shared/components/patient-clinical-summary/patient-clinical-summary';
+import { InformedConsentsService, ConsentCheck } from '../../../patients/services/informed-consents.service';
+import { InformedConsent } from '../../../patients/models/informed-consent.models';
 
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, AllergyAlertBannerComponent, PatientClinicalSummaryComponent],
   templateUrl: './appointment-detail.html',
   styleUrls: ['./appointment-detail.scss']
 })
@@ -30,6 +36,8 @@ export class AppointmentDetailComponent implements OnInit {
   private notesService = inject(ConsultationNotesService);
   private location = inject(Location);
   locationsService = inject(LocationsService);
+  private allergiesService = inject(PatientAllergiesService);
+  private consentsService = inject(InformedConsentsService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -41,6 +49,13 @@ export class AppointmentDetailComponent implements OnInit {
   loading = signal(true);
   error = signal<string | null>(null);
   actionLoading = signal(false);
+
+  // Allergy alerts
+  allergyAlerts = signal<AllergyAlert[]>([]);
+
+  // Consents
+  appointmentConsents = signal<InformedConsent[]>([]);
+  consentsLoading = signal(false);
 
   // Consultation Note state
   consultationNote = signal<ConsultationNote | null>(null);
@@ -76,6 +91,12 @@ export class AppointmentDetailComponent implements OnInit {
       next: (appointment) => {
         this.appointment.set(appointment);
         this.loading.set(false);
+        // Load allergy alerts for the patient
+        this.loadAllergyAlerts(appointment.patientId);
+        // Load consents linked to this appointment
+        if (appointment.status === AppointmentStatus.Confirmed || appointment.status === AppointmentStatus.Completed) {
+          this.loadConsents(appointment.patientId, appointment.id);
+        }
         // Load consultation note if appointment is completed
         if (appointment.status === AppointmentStatus.Completed) {
           this.loadConsultationNote(appointment.id);
@@ -245,6 +266,26 @@ export class AppointmentDetailComponent implements OnInit {
 
   onBack(): void {
     this.location.back();
+  }
+
+  private loadAllergyAlerts(patientId: string): void {
+    this.allergiesService.getAlerts(patientId).subscribe({
+      next: (alerts) => this.allergyAlerts.set(alerts),
+      error: () => {} // Silent fail — alerts are non-blocking
+    });
+  }
+
+  private loadConsents(patientId: string, appointmentId: string): void {
+    this.consentsLoading.set(true);
+    this.consentsService.getByPatient(patientId).subscribe({
+      next: (consents) => {
+        this.appointmentConsents.set(
+          consents.filter(c => c.appointmentId === appointmentId)
+        );
+        this.consentsLoading.set(false);
+      },
+      error: () => this.consentsLoading.set(false)
+    });
   }
 
   private loadConsultationNote(appointmentId: string): void {

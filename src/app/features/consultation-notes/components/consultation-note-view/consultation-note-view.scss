@@ -33,5 +33,35 @@
   }
 }
 
+// ===== Section Header with Action =====
+
+.section-header-with-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+
+  h3 {
+    margin: 0;
+  }
+}
+
+// ===== CIE-10 Tag =====
+
+.cie10-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--spacing-sm);
+  padding: 4px 10px;
+  background: var(--bg-info, #eff6ff);
+  border: 1px solid var(--border-info, #bfdbfe);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-info, #3b82f6);
+  font-weight: var(--font-weight-semibold);
+}
+
 // Responsive: .detail-container, .detail-header, .info-section
 // manejados globalmente en _components.scss

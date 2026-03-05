@@ -13,6 +13,8 @@ import { DentalService } from '../../../invoices/models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PatientProblemsService } from '../../../patients/services/patient-problems.service';
+import { PatientProblem } from '../../../patients/models/patient-problem.models';
 
 @Component({
   selector: 'app-treatment-form',
@@ -35,6 +37,7 @@ export class TreatmentFormComponent implements OnInit {
   private treatmentsService = inject(TreatmentsService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private problemsService = inject(PatientProblemsService);
 
   form!: FormGroup;
   loading = signal(false);
@@ -44,6 +47,7 @@ export class TreatmentFormComponent implements OnInit {
 
   selectedPatient = signal<PatientSearchResult | null>(null);
   selectedService = signal<DentalService | null>(null);
+  activeProblems = signal<PatientProblem[]>([]);
 
   // Constants
   surfaceOptions = SURFACE_OPTIONS;
@@ -73,6 +77,7 @@ export class TreatmentFormComponent implements OnInit {
       isMultipleTooth: [false],
       status: [TreatmentStatus.InProgress],
       duration: [null],
+      patientProblemId: [null],
       notes: ['']
     });
   }
@@ -101,8 +106,11 @@ export class TreatmentFormComponent implements OnInit {
           isMultipleTooth: treatment.isMultipleTooth,
           status: treatment.status,
           duration: treatment.duration || null,
+          patientProblemId: treatment.patientProblemId || null,
           notes: treatment.notes || ''
         });
+
+        this.loadActiveProblems(treatment.patientId);
 
         if (treatment.patientName) {
           this.selectedPatient.set({
@@ -138,7 +146,18 @@ export class TreatmentFormComponent implements OnInit {
 
   onPatientSelected(patient: PatientSearchResult | null): void {
     this.selectedPatient.set(patient);
-    this.form.patchValue({ patientId: patient?.id || '' });
+    this.form.patchValue({ patientId: patient?.id || '', patientProblemId: null });
+    this.activeProblems.set([]);
+    if (patient?.id) {
+      this.loadActiveProblems(patient.id);
+    }
+  }
+
+  private loadActiveProblems(patientId: string): void {
+    this.problemsService.getByPatient(patientId, 'Active').subscribe({
+      next: (problems) => this.activeProblems.set(problems),
+      error: () => {}
+    });
   }
 
   onServiceSelected(service: DentalService | null): void {
