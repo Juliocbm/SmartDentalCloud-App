@@ -24,9 +24,9 @@ export interface Treatment {
   appointmentDate?: Date;
   treatmentPlanItemId?: string;
   treatmentPlanId?: string;
-  patientProblemId?: string;
-  patientProblemDescription?: string;
-  patientProblemCie10Code?: string;
+  patientDiagnosisId?: string;
+  patientDiagnosisDescription?: string;
+  patientDiagnosisCie10Code?: string;
   treatmentType: string; // "Ad-hoc" | "Planned"
   notes?: string;
   // Auditoría
@@ -54,7 +54,7 @@ export interface CreateTreatmentRequest {
   duration?: number;
   appointmentId?: string;
   treatmentPlanItemId?: string;
-  patientProblemId?: string;
+  patientDiagnosisId?: string;
   notes?: string;
 }
 
@@ -71,7 +71,7 @@ export interface UpdateTreatmentRequest {
   status?: string;
   duration?: number;
   appointmentId?: string;
-  patientProblemId?: string;
+  patientDiagnosisId?: string;
   notes?: string;
 }
 

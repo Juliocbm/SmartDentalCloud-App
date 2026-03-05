@@ -102,9 +102,9 @@
           [class.active]="activeTab() === 'problems'"
           (click)="setActiveTab('problems')">
           <i class="fa-solid fa-clipboard-list"></i>
-          <span>Problemas</span>
-          @if (getActiveProblemsCount() > 0) {
-            <span class="nav-count nav-count-danger">{{ getActiveProblemsCount() }}</span>
+          <span>Diagnósticos</span>
+          @if (getActiveDiagnosesCount() > 0) {
+            <span class="nav-count nav-count-danger">{{ getActiveDiagnosesCount() }}</span>
           }
         </button>
         <button
@@ -387,7 +387,7 @@
                 </div>
                 <div class="structured-data-notice">
                   <i class="fa-solid fa-info-circle"></i>
-                  Las alergias y problemas/diagnósticos se gestionan en sus tabs dedicados para mayor trazabilidad clínica.
+                  Las alergias y diagnósticos se gestionan en sus tabs dedicados para mayor trazabilidad clínica.
                 </div>
                 <div class="structured-links-row">
                   <button class="structured-link-card" (click)="setActiveTab('allergies')">
@@ -398,8 +398,8 @@
                   </button>
                   <button class="structured-link-card" (click)="setActiveTab('problems')">
                     <i class="fa-solid fa-clipboard-list"></i>
-                    <span class="card-label">Problemas / Diagnósticos</span>
-                    <span class="card-count">{{ problems().length }}</span>
+                    <span class="card-label">Diagnósticos</span>
+                    <span class="card-count">{{ diagnoses().length }}</span>
                     <i class="fa-solid fa-arrow-right"></i>
                   </button>
                 </div>
@@ -446,10 +446,10 @@
                   <span class="card-count" [class.count-danger]="allergies().length > 0">{{ allergies().length }}</span>
                   <i class="fa-solid fa-arrow-right"></i>
                 </button>
-                <button class="structured-link-card" [class.has-items]="problems().length > 0" (click)="setActiveTab('problems')">
+                <button class="structured-link-card" [class.has-items]="diagnoses().length > 0" (click)="setActiveTab('problems')">
                   <i class="fa-solid fa-clipboard-list"></i>
-                  <span class="card-label">Problemas</span>
-                  <span class="card-count" [class.count-warning]="problems().length > 0">{{ problems().length }}</span>
+                  <span class="card-label">Diagnósticos</span>
+                  <span class="card-count" [class.count-warning]="diagnoses().length > 0">{{ diagnoses().length }}</span>
                   <i class="fa-solid fa-arrow-right"></i>
                 </button>
               </div>
@@ -501,12 +501,8 @@
               <i class="fa-solid fa-shield-virus"></i>
               Alergias Registradas
             </h3>
-            <button class="btn btn-primary btn-sm" (click)="toggleAllergyForm()">
-              @if (showAllergyForm()) {
-                <i class="fa-solid fa-xmark"></i> Cancelar
-              } @else {
-                <i class="fa-solid fa-plus"></i> Nueva Alergia
-              }
+            <button class="btn btn-primary btn-sm" (click)="openAllergyModal()">
+              <i class="fa-solid fa-plus"></i> Nueva Alergia
             </button>
           </div>
 
@@ -514,85 +510,6 @@
             <div class="alert alert-danger">
               <i class="fa-solid fa-triangle-exclamation"></i>
               <strong>Atención:</strong> Este paciente tiene alergias severas registradas.
-            </div>
-          }
-
-          @if (showAllergyForm()) {
-            <div class="allergy-form card">
-              <div class="card-body">
-                <h4 class="form-section-title">Registrar Nueva Alergia</h4>
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label class="form-label">Tipo de Alérgeno *</label>
-                    <select class="form-control"
-                      [ngModel]="allergyAllergenType()"
-                      (ngModelChange)="allergyAllergenType.set($event)">
-                      @for (t of ALLERGEN_TYPES; track t.value) {
-                        <option [value]="t.value">{{ t.label }}</option>
-                      }
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Nombre del Alérgeno *</label>
-                    <input type="text" class="form-control"
-                      placeholder="Ej: Penicilina, Maní, Polen..."
-                      [ngModel]="allergyAllergenName()"
-                      (ngModelChange)="allergyAllergenName.set($event)">
-                  </div>
-                </div>
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label class="form-label">Severidad *</label>
-                    <select class="form-control"
-                      [ngModel]="allergySeverity()"
-                      (ngModelChange)="allergySeverity.set($event)">
-                      @for (s of ALLERGY_SEVERITIES; track s.value) {
-                        <option [value]="s.value">{{ s.label }}</option>
-                      }
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Fecha de Detección</label>
-                    <input type="date" class="form-control"
-                      [ngModel]="allergyDetectedAt()"
-                      (ngModelChange)="allergyDetectedAt.set($event)">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Descripción de la Reacción</label>
-                  <textarea class="form-control" rows="2"
-                    placeholder="Describa la reacción alérgica..."
-                    [ngModel]="allergyReactionDescription()"
-                    (ngModelChange)="allergyReactionDescription.set($event)"></textarea>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Notas</label>
-                  <textarea class="form-control" rows="2"
-                    placeholder="Observaciones adicionales..."
-                    [ngModel]="allergyNotes()"
-                    (ngModelChange)="allergyNotes.set($event)"></textarea>
-                </div>
-                <div class="form-group">
-                  <label class="form-check">
-                    <input type="checkbox"
-                      [ngModel]="allergyVerified()"
-                      (ngModelChange)="allergyVerified.set($event)">
-                    <span>Verificado por profesional de salud</span>
-                  </label>
-                </div>
-                <div class="form-actions">
-                  <button class="btn btn-outline" (click)="toggleAllergyForm()">Cancelar</button>
-                  <button class="btn btn-primary"
-                    [disabled]="!allergyAllergenName().trim() || savingAllergy()"
-                    (click)="saveAllergy()">
-                    @if (savingAllergy()) {
-                      <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                    } @else {
-                      <i class="fa-solid fa-check"></i> Guardar Alergia
-                    }
-                  </button>
-                </div>
-              </div>
             </div>
           }
 
@@ -672,91 +589,11 @@
               <button class="btn btn-outline btn-sm" (click)="showPinSetup.set(true)">
                 <i class="fa-solid fa-key"></i> Configurar PIN
               </button>
-              <button class="btn btn-primary btn-sm" (click)="toggleConsentForm()">
-                @if (showConsentForm()) {
-                  <i class="fa-solid fa-xmark"></i> Cancelar
-                } @else {
-                  <i class="fa-solid fa-plus"></i> Nuevo Consentimiento
-                }
+              <button class="btn btn-primary btn-sm" (click)="openConsentModal()">
+                <i class="fa-solid fa-plus"></i> Nuevo Consentimiento
               </button>
             </div>
           </div>
-
-          @if (showConsentForm()) {
-            <div class="allergy-form card">
-              <div class="card-body">
-                <h4 class="form-section-title">Crear Consentimiento Informado</h4>
-
-                <!-- Template selector -->
-                <div class="form-group">
-                  <label class="form-label">Cargar desde plantilla</label>
-                  <div class="template-selector-row">
-                    <select class="form-control"
-                      [ngModel]="selectedTemplateId()"
-                      (ngModelChange)="selectedTemplateId.set($event)"
-                      (focus)="loadConsentTemplates()">
-                      <option [ngValue]="null">— Escribir manualmente —</option>
-                      @for (tpl of consentTemplates(); track tpl.id) {
-                        <option [value]="tpl.id">{{ tpl.title }} ({{ getConsentTypeLabel(tpl.consentType) }})</option>
-                      }
-                    </select>
-                    <button class="btn btn-outline btn-sm" [disabled]="!selectedTemplateId()"
-                      (click)="onTemplateSelected()">
-                      <i class="fa-solid fa-file-import"></i> Cargar
-                    </button>
-                  </div>
-                </div>
-
-                @if (consentAppointmentId() || consentTreatmentId()) {
-                  <div class="alert alert-info" style="margin-bottom: var(--spacing-md);">
-                    <i class="fa-solid fa-link"></i>
-                    Este consentimiento se vinculará automáticamente
-                    @if (consentAppointmentId()) { a la <strong>cita</strong> }
-                    @if (consentTreatmentId()) { al <strong>tratamiento</strong> }
-                    de origen.
-                  </div>
-                }
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label class="form-label">Tipo *</label>
-                    <select class="form-control"
-                      [ngModel]="consentType()"
-                      (ngModelChange)="consentType.set($event)">
-                      @for (t of CONSENT_TYPES; track t.value) {
-                        <option [value]="t.value">{{ t.label }}</option>
-                      }
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Título *</label>
-                    <input type="text" class="form-control"
-                      placeholder="Ej: Consentimiento para extracción dental"
-                      [ngModel]="consentTitle()"
-                      (ngModelChange)="consentTitle.set($event)">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Contenido del Consentimiento *</label>
-                  <textarea class="form-control" rows="6"
-                    placeholder="Texto completo del consentimiento informado..."
-                    [ngModel]="consentContent()"
-                    (ngModelChange)="consentContent.set($event)"></textarea>
-                </div>
-                <div class="form-actions">
-                  <button class="btn btn-outline" (click)="toggleConsentForm()">Cancelar</button>
-                  <button class="btn btn-primary"
-                    [disabled]="!consentTitle().trim() || !consentContent().trim() || savingConsent()"
-                    (click)="saveConsent()">
-                    @if (savingConsent()) {
-                      <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                    } @else {
-                      <i class="fa-solid fa-check"></i> Crear Consentimiento
-                    }
-                  </button>
-                </div>
-              </div>
-            </div>
-          }
 
           @if (consentsLoading()) {
             <div class="loading-container">
@@ -915,130 +752,86 @@
         </div>
       }
 
-      <!-- Problems Tab (NOM-024) -->
+      <!-- Diagnoses Tab (NOM-024) -->
       @if (activeTab() === 'problems') {
         <div class="info-section">
           <div class="section-header-with-action">
             <h3>
               <i class="fa-solid fa-clipboard-list"></i>
-              Lista de Problemas / Diagnósticos
+              Diagnósticos
             </h3>
-            <button class="btn btn-primary btn-sm" (click)="toggleProblemForm()">
-              @if (showProblemForm()) {
-                <i class="fa-solid fa-xmark"></i> Cancelar
-              } @else {
-                <i class="fa-solid fa-plus"></i> Nuevo Problema
-              }
+            <button class="btn btn-primary btn-sm" (click)="openDiagnosisModal()">
+              <i class="fa-solid fa-plus"></i> Nuevo Diagnóstico
             </button>
           </div>
 
-          @if (showProblemForm()) {
-            <div class="allergy-form card">
-              <div class="card-body">
-                <h4 class="form-section-title">Registrar Problema / Diagnóstico</h4>
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label class="form-label">Descripción *</label>
-                    <input type="text" class="form-control"
-                      placeholder="Ej: Caries dental múltiple"
-                      [ngModel]="problemDescription()"
-                      (ngModelChange)="problemDescription.set($event)">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Código CIE-10</label>
-                    <input type="text" class="form-control"
-                      placeholder="Ej: K02.1"
-                      [ngModel]="problemCie10Code()"
-                      (ngModelChange)="problemCie10Code.set($event)">
-                  </div>
-                </div>
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label class="form-label">Fecha de Inicio</label>
-                    <input type="date" class="form-control"
-                      [ngModel]="problemOnsetDate()"
-                      (ngModelChange)="problemOnsetDate.set($event)">
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Notas</label>
-                    <input type="text" class="form-control"
-                      placeholder="Observaciones..."
-                      [ngModel]="problemNotes()"
-                      (ngModelChange)="problemNotes.set($event)">
-                  </div>
-                </div>
-                <div class="form-actions">
-                  <button class="btn btn-outline" (click)="toggleProblemForm()">Cancelar</button>
-                  <button class="btn btn-primary"
-                    [disabled]="!problemDescription().trim() || savingProblem()"
-                    (click)="saveProblem()">
-                    @if (savingProblem()) {
-                      <i class="fa-solid fa-spinner fa-spin"></i> Guardando...
-                    } @else {
-                      <i class="fa-solid fa-check"></i> Registrar Problema
-                    }
-                  </button>
-                </div>
-              </div>
-            </div>
-          }
-
-          @if (problemsLoading()) {
+          @if (diagnosesLoading()) {
             <div class="loading-container">
               <i class="fa-solid fa-spinner fa-spin"></i>
-              <span>Cargando problemas...</span>
+              <span>Cargando diagnósticos...</span>
             </div>
-          } @else if (problems().length === 0) {
+          } @else if (diagnoses().length === 0) {
             <div class="empty-state empty-state-sm">
               <i class="fa-solid fa-clipboard-list"></i>
-              <h3>Sin Problemas Registrados</h3>
-              <p>No se han registrado problemas o diagnósticos para este paciente</p>
+              <h3>Sin Diagnósticos Registrados</h3>
+              <p>No se han registrado diagnósticos para este paciente</p>
             </div>
           } @else {
             <div class="problems-list">
-              @for (problem of problems(); track problem.id) {
-                <div class="problem-card" [class.problem-resolved]="problem.status !== 'Active'">
+              @for (diagnosis of diagnoses(); track diagnosis.id) {
+                <div class="problem-card" [class.problem-resolved]="diagnosis.status !== 'Active'">
                   <div class="problem-header">
                     <div class="problem-title">
-                      <span class="problem-name">{{ problem.description }}</span>
-                      <span class="badge" [ngClass]="getProblemStatusClass(problem.status)">
-                        {{ getProblemStatusLabel(problem.status) }}
+                      <span class="problem-name">{{ diagnosis.description }}</span>
+                      <span class="badge" [ngClass]="getDiagnosisStatusClass(diagnosis.status)">
+                        {{ getDiagnosisStatusLabel(diagnosis.status) }}
                       </span>
-                      @if (problem.cie10Code) {
-                        <span class="badge badge-info">{{ problem.cie10Code }}</span>
+                      @if (diagnosis.cie10Code) {
+                        <span class="badge badge-info">{{ diagnosis.cie10Code }}</span>
                       }
-                      @if (problem.linkedTreatmentsCount > 0) {
+                      @if (diagnosis.severity) {
+                        <span class="badge" [ngClass]="getDiagnosisSeverityClass(diagnosis.severity)">
+                          {{ getDiagnosisSeverityLabel(diagnosis.severity) }}
+                        </span>
+                      }
+                      @if (diagnosis.linkedTreatmentsCount > 0) {
                         <span class="badge badge-primary">
                           <i class="fa-solid fa-tooth"></i>
-                          {{ problem.linkedTreatmentsCount }} tratamiento{{ problem.linkedTreatmentsCount > 1 ? 's' : '' }}
+                          {{ diagnosis.linkedTreatmentsCount }} tratamiento{{ diagnosis.linkedTreatmentsCount > 1 ? 's' : '' }}
                         </span>
                       }
                     </div>
-                    @if (problem.status === 'Active') {
+                    @if (diagnosis.status === 'Active') {
                       <button class="btn btn-ghost btn-sm btn-success-text" title="Marcar como resuelto"
-                        (click)="resolveProblem(problem)">
+                        (click)="resolveDiagnosis(diagnosis)">
                         <i class="fa-solid fa-check-circle"></i> Resolver
                       </button>
                     }
                   </div>
+                  @if (diagnosis.status === 'Active' && diagnosis.linkedTreatmentsCount > 0 && diagnosis.linkedCompletedTreatmentsCount === diagnosis.linkedTreatmentsCount) {
+                    <div class="alert alert-success" style="margin: var(--spacing-xs) 0; padding: var(--spacing-xs) var(--spacing-sm); font-size: 0.85rem;">
+                      <i class="fa-solid fa-lightbulb"></i>
+                      Todos los tratamientos vinculados están completados. Se sugiere marcar este diagnóstico como resuelto.
+                    </div>
+                  }
                   <div class="problem-details">
-                    @if (problem.onsetDate) {
+                    @if (diagnosis.onsetDate) {
                       <span>
-                        <i class="fa-solid fa-calendar"></i> Inicio: {{ formatDateFile(problem.onsetDate) }}
+                        <i class="fa-solid fa-calendar"></i> Inicio: {{ formatDateFile(diagnosis.onsetDate) }}
                       </span>
                     }
-                    @if (problem.resolvedDate) {
+                    @if (diagnosis.resolvedDate) {
                       <span>
-                        <i class="fa-solid fa-calendar-check"></i> Resuelto: {{ formatDateFile(problem.resolvedDate) }}
+                        <i class="fa-solid fa-calendar-check"></i> Resuelto: {{ formatDateFile(diagnosis.resolvedDate) }}
                       </span>
                     }
-                    @if (problem.notes) {
+                    @if (diagnosis.notes) {
                       <span>
-                        <i class="fa-solid fa-comment"></i> {{ problem.notes }}
+                        <i class="fa-solid fa-comment"></i> {{ diagnosis.notes }}
                       </span>
                     }
                     <span class="text-muted">
-                      <i class="fa-solid fa-clock"></i> Registrado: {{ formatDateFile(problem.createdAt) }}
+                      <i class="fa-solid fa-clock"></i> Registrado: {{ formatDateFile(diagnosis.createdAt) }}
                     </span>
                   </div>
                 </div>
@@ -1091,71 +884,11 @@
               <button class="btn btn-outline btn-sm" [routerLink]="['/patients', patient()!.id, 'export']">
                 <i class="fa-solid fa-file-export"></i> Exportar Clínico
               </button>
-              <button class="btn btn-primary btn-sm" (click)="toggleRadioUploadForm()">
-                @if (showRadioUploadForm()) {
-                  <i class="fa-solid fa-xmark"></i> Cancelar
-                } @else {
-                  <i class="fa-solid fa-upload"></i> Subir Radiografía
-                }
+              <button class="btn btn-primary btn-sm" (click)="openRadioUploadModal()">
+                <i class="fa-solid fa-upload"></i> Subir Radiografía
               </button>
             </div>
           </div>
-
-          <!-- Upload Form -->
-          @if (showRadioUploadForm()) {
-            <div class="inline-form-card">
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Tipo de imagen *</label>
-                  <select class="form-input" [ngModel]="radioImageType()" (ngModelChange)="radioImageType.set($event)">
-                    @for (type of IMAGE_TYPES; track type.value) {
-                      <option [value]="type.value">{{ type.label }}</option>
-                    }
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Título *</label>
-                  <input type="text" class="form-input" placeholder="Ej: Periapical pieza 14"
-                    [ngModel]="radioTitle()" (ngModelChange)="radioTitle.set($event)" />
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Fecha de toma</label>
-                  <input type="date" class="form-input"
-                    [ngModel]="radioTakenAt()" (ngModelChange)="radioTakenAt.set($event)" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Archivo *</label>
-                  <input type="file" class="form-input" accept="image/*,.pdf,.dcm"
-                    (change)="onRadioFileSelected($event)" />
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label">Descripción</label>
-                  <input type="text" class="form-input" placeholder="Descripción breve"
-                    [ngModel]="radioDescription()" (ngModelChange)="radioDescription.set($event)" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Notas</label>
-                  <input type="text" class="form-input" placeholder="Notas clínicas"
-                    [ngModel]="radioNotes()" (ngModelChange)="radioNotes.set($event)" />
-                </div>
-              </div>
-              <div class="form-actions">
-                <button class="btn btn-primary btn-sm"
-                  [disabled]="radioUploading() || !radioSelectedFile() || !radioTitle().trim()"
-                  (click)="uploadRadioImage()">
-                  @if (radioUploading()) {
-                    <i class="fa-solid fa-spinner fa-spin"></i> Subiendo...
-                  } @else {
-                    <i class="fa-solid fa-upload"></i> Subir
-                  }
-                </button>
-              </div>
-            </div>
-          }
 
           <!-- Loading -->
           @if (radioImagesLoading()) {
@@ -1208,7 +941,7 @@
             <div class="empty-state">
               <i class="fa-solid fa-image fa-3x"></i>
               <p>No hay radiografías registradas</p>
-              <button class="btn btn-outline btn-sm" (click)="toggleRadioUploadForm()">
+              <button class="btn btn-outline btn-sm" (click)="openRadioUploadModal()">
                 <i class="fa-solid fa-upload"></i> Subir primera radiografía
               </button>
             </div>
@@ -1578,10 +1311,19 @@
       <!-- Changes Tab (NOM-024 Audit Trail) -->
       @if (activeTab() === 'changes') {
         <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-list-check"></i>
-            Historial de Cambios
-          </h3>
+          <div class="section-header-row">
+            <h3>
+              <i class="fa-solid fa-list-check"></i>
+              Historial de Cambios
+            </h3>
+            <select class="filter-select filter-select-sm"
+              [value]="changesEntityFilter()"
+              (change)="changesEntityFilter.set($any($event.target).value); onChangesFilterChange()">
+              @for (f of ENTITY_TYPE_FILTERS; track f.value) {
+                <option [value]="f.value">{{ f.label }}</option>
+              }
+            </select>
+          </div>
 
           @if (changesLoading()) {
             <div class="inline-loading">
@@ -1599,6 +1341,10 @@
               @for (entry of changeHistory(); track entry.id) {
                 <div class="change-entry">
                   <div class="change-header">
+                    <span class="change-entity-badge">
+                      <i class="fa-solid" [ngClass]="getEntityTypeIcon(entry.entityType)"></i>
+                      {{ getEntityTypeLabel(entry.entityType) }}
+                    </span>
                     <span class="change-action">
                       <i class="fa-solid" [ngClass]="{
                         'fa-plus-circle': entry.action === 'Create',
@@ -1660,79 +1406,12 @@
             <button
               type="button"
               class="btn btn-outline btn-sm"
-              (click)="toggleUploadForm()"
+              (click)="openFileUploadModal()"
             >
-              @if (showUploadForm()) {
-                <i class="fa-solid fa-xmark"></i>
-                Cancelar
-              } @else {
-                <i class="fa-solid fa-upload"></i>
-                Subir Archivo
-              }
+              <i class="fa-solid fa-upload"></i>
+              Subir Archivo
             </button>
           </div>
-
-          <!-- Upload Form -->
-          @if (showUploadForm()) {
-            <div class="upload-form">
-              <div class="form-group">
-                <label class="form-label">Archivo</label>
-                <input
-                  type="file"
-                  class="form-control-file"
-                  (change)="onFileSelected($event)"
-                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
-                />
-                @if (selectedFile()) {
-                  <span class="file-selected">
-                    <i class="fa-solid fa-check"></i>
-                    {{ selectedFile()!.name }} ({{ formatFileSize(selectedFile()!.size) }})
-                  </span>
-                }
-              </div>
-              <div class="form-row-2">
-                <div class="form-group">
-                  <label class="form-label">Categoría</label>
-                  <select
-                    class="form-control"
-                    [ngModel]="uploadCategory()"
-                    (ngModelChange)="uploadCategory.set($event)"
-                  >
-                    <option value="">Sin categoría</option>
-                    @for (cat of FILE_CATEGORIES; track cat.value) {
-                      <option [value]="cat.value">{{ cat.label }}</option>
-                    }
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Descripción</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Descripción del archivo..."
-                    [ngModel]="uploadDescription()"
-                    (ngModelChange)="uploadDescription.set($event)"
-                  />
-                </div>
-              </div>
-              <div class="form-actions-right">
-                <button
-                  type="button"
-                  class="btn btn-outline btn-success btn-sm"
-                  [disabled]="!selectedFile() || uploading()"
-                  (click)="uploadFile()"
-                >
-                  @if (uploading()) {
-                    <i class="fa-solid fa-spinner fa-spin"></i>
-                    Subiendo...
-                  } @else {
-                    <i class="fa-solid fa-upload"></i>
-                    Subir
-                  }
-                </button>
-              </div>
-            </div>
-          }
 
           <!-- Loading -->
           @if (filesLoading()) {
@@ -1808,12 +1487,12 @@
           }
 
           <!-- Empty (no files at all) -->
-          @if (!filesLoading() && files().length === 0 && !showUploadForm()) {
+          @if (!filesLoading() && files().length === 0) {
             <div class="empty-state empty-state-sm">
               <i class="fa-solid fa-folder-open"></i>
               <h3>Sin Archivos</h3>
               <p>Este paciente no tiene archivos adjuntos</p>
-              <button class="btn btn-outline btn-success" (click)="toggleUploadForm()">
+              <button class="btn btn-outline btn-success" (click)="openFileUploadModal()">
                 <i class="fa-solid fa-upload"></i>
                 Subir Primer Archivo
               </button>

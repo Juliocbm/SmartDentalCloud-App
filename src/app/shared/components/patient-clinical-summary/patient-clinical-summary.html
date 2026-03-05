@@ -24,12 +24,12 @@
       }
     </div>
 
-    <!-- Problems -->
+    <!-- Diagnoses -->
     <div class="summary-item">
       <i class="fa-solid fa-clipboard-list"></i>
-      <span class="item-label">Problemas</span>
-      <span class="item-count" [class.count-warning]="activeProblemsCount > 0" [class.count-neutral]="activeProblemsCount === 0">
-        {{ activeProblemsCount }}
+      <span class="item-label">Diagnósticos</span>
+      <span class="item-count" [class.count-warning]="activeDiagnosesCount > 0" [class.count-neutral]="activeDiagnosesCount === 0">
+        {{ activeDiagnosesCount }}
       </span>
     </div>
 
@@ -51,7 +51,7 @@
     @if (!compact()) {
       <a class="summary-link" [routerLink]="['/patients', patientId(), 'export']">
         <i class="fa-solid fa-file-medical"></i>
-        Ver expediente
+        Resumen Clínico
       </a>
     }
   </div>

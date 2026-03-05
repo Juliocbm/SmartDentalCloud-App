@@ -1,0 +1,54 @@
+<app-modal
+  [title]="isEdit() ? 'Editar Plantilla' : 'Nueva Plantilla'"
+  [subtitle]="'Plantilla de consentimiento informado (NOM-024)'"
+  [icon]="'fa-file-contract'"
+  [size]="'lg'"
+  (closed)="onClose()"
+>
+  <form [formGroup]="form">
+    <div class="form-row-2">
+      <div class="form-group">
+        <label class="form-label">Tipo de Consentimiento <span class="required">*</span></label>
+        <select class="form-input" formControlName="consentType">
+          @for (opt of CONSENT_TYPE_OPTIONS; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Título <span class="required">*</span></label>
+        <input type="text" class="form-input" formControlName="title"
+          placeholder="Ej: Consentimiento para tratamiento de conducto" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Contenido <span class="required">*</span></label>
+      <textarea class="form-input" rows="8" formControlName="content"
+        placeholder="Escriba el texto completo del consentimiento informado..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-check">
+        <input type="checkbox" formControlName="isDefault" />
+        <span>Plantilla predeterminada para este tipo</span>
+      </label>
+    </div>
+  </form>
+
+  <div modal-footer>
+    <button type="button" class="btn btn-outline" (click)="onClose()" [disabled]="loading()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading() || form.invalid">
+      @if (loading()) {
+        <span class="btn-spinner"></span>
+        Guardando...
+      } @else {
+        <i class="fa-solid fa-save"></i>
+        {{ isEdit() ? 'Actualizar' : 'Crear Plantilla' }}
+      }
+    </button>
+  </div>
+</app-modal>

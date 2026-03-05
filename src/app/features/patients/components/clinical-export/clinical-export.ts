@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PatientsService } from '../../services/patients.service';
-import { PatientClinicalExportDto } from '../../models/patient.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
@@ -17,6 +17,7 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 export class ClinicalExportComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private patientsService = inject(PatientsService);
+  private notifications = inject(NotificationService);
 
   patientId = '';
   breadcrumbItems: BreadcrumbItem[] = [];
@@ -32,8 +33,6 @@ export class ClinicalExportComponent implements OnInit {
   // State
   loading = signal(false);
   error = signal<string | null>(null);
-  exportData = signal<PatientClinicalExportDto | null>(null);
-  showOptions = signal(true);
 
   ngOnInit(): void {
     this.patientId = this.route.snapshot.paramMap.get('id') || '';
@@ -49,7 +48,7 @@ export class ClinicalExportComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.patientsService.getClinicalExport(this.patientId, {
+    this.patientsService.downloadClinicalExportPdf(this.patientId, {
       includeAllergies: this.includeAllergies(),
       includeProblems: this.includeProblems(),
       includeTreatments: this.includeTreatments(),
@@ -57,68 +56,16 @@ export class ClinicalExportComponent implements OnInit {
       fromDate: this.fromDate() || undefined,
       toDate: this.toDate() || undefined
     }).subscribe({
-      next: (data) => {
-        this.exportData.set(data);
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
         this.loading.set(false);
-        this.showOptions.set(false);
       },
       error: (err) => {
         this.error.set(getApiErrorMessage(err));
+        this.notifications.error('Error al generar el resumen clínico');
         this.loading.set(false);
       }
     });
-  }
-
-  printExport(): void {
-    window.print();
-  }
-
-  resetOptions(): void {
-    this.exportData.set(null);
-    this.showOptions.set(true);
-  }
-
-  formatDate(dateStr: string | null): string {
-    if (!dateStr) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: 'long', year: 'numeric'
-    }).format(new Date(dateStr));
-  }
-
-  formatShortDate(dateStr: string | null): string {
-    if (!dateStr) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: 'short', year: 'numeric'
-    }).format(new Date(dateStr));
-  }
-
-  getPatientAge(dob: string | null): string {
-    if (!dob) return '—';
-    const birth = new Date(dob);
-    const now = new Date();
-    let age = now.getFullYear() - birth.getFullYear();
-    const m = now.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
-    return `${age} años`;
-  }
-
-  getSeverityClass(severity: string): string {
-    switch (severity.toLowerCase()) {
-      case 'severe': case 'severa': return 'badge-danger';
-      case 'moderate': case 'moderada': return 'badge-warning';
-      case 'mild': case 'leve': return 'badge-info';
-      default: return 'badge-secondary';
-    }
-  }
-
-  getStatusClass(status: string): string {
-    switch (status.toLowerCase()) {
-      case 'completed': case 'completado': return 'badge-success';
-      case 'inprogress': case 'in_progress': case 'en progreso': return 'badge-warning';
-      case 'active': case 'activo': return 'badge-info';
-      case 'cancelled': case 'cancelado': return 'badge-danger';
-      case 'resolved': case 'resuelto': return 'badge-success';
-      default: return 'badge-secondary';
-    }
   }
 }

@@ -167,12 +167,8 @@ export class PatientListComponent implements OnInit, OnDestroy {
     });
   }
 
-  hasAllergies(patient: Patient): boolean {
-    return !!patient.allergies && patient.allergies.trim().length > 0;
-  }
-
   hasMedicalHistory(patient: Patient): boolean {
-    return !!(patient.allergies || patient.chronicDiseases || patient.currentMedications);
+    return !!(patient.bloodType || patient.currentMedications);
   }
 
   getPaginationPages(): number[] {

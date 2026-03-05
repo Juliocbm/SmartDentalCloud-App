@@ -1,0 +1,76 @@
+<app-modal
+  [title]="'Nuevo Consentimiento'"
+  [subtitle]="'Crear consentimiento informado'"
+  [icon]="'fa-file-signature'"
+  [size]="'lg'"
+  (closed)="onClose()"
+>
+  <form [formGroup]="form">
+    <!-- Template selector -->
+    <div class="form-group">
+      <label class="form-label">Cargar desde plantilla</label>
+      <div class="template-selector-row">
+        <select class="form-input"
+          [value]="selectedTemplateId()"
+          (change)="selectedTemplateId.set($any($event.target).value)"
+          (focus)="loadTemplates()">
+          <option [ngValue]="null">— Escribir manualmente —</option>
+          @for (tpl of templates(); track tpl.id) {
+            <option [value]="tpl.id">{{ tpl.title }} ({{ getConsentTypeLabel(tpl.consentType) }})</option>
+          }
+        </select>
+        <button type="button" class="btn btn-outline btn-sm" [disabled]="!selectedTemplateId()"
+          (click)="onTemplateSelected()">
+          <i class="fa-solid fa-file-import"></i> Cargar
+        </button>
+      </div>
+    </div>
+
+    @if (modalData?.appointmentId || modalData?.treatmentId) {
+      <div class="alert alert-info">
+        <i class="fa-solid fa-link"></i>
+        Este consentimiento se vinculará automáticamente
+        @if (modalData?.appointmentId) { a la <strong>cita</strong> }
+        @if (modalData?.treatmentId) { al <strong>tratamiento</strong> }
+        de origen.
+      </div>
+    }
+
+    <div class="form-row-2">
+      <div class="form-group">
+        <label class="form-label">Tipo <span class="required">*</span></label>
+        <select class="form-input" formControlName="consentType">
+          @for (t of CONSENT_TYPES; track t.value) {
+            <option [value]="t.value">{{ t.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Título <span class="required">*</span></label>
+        <input type="text" class="form-input" formControlName="title"
+          placeholder="Ej: Consentimiento para extracción dental" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contenido del Consentimiento <span class="required">*</span></label>
+      <textarea class="form-input" rows="8" formControlName="content"
+        placeholder="Texto completo del consentimiento informado..."></textarea>
+    </div>
+  </form>
+
+  <div modal-footer>
+    <button type="button" class="btn btn-outline" (click)="onClose()" [disabled]="loading()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading() || form.invalid">
+      @if (loading()) {
+        <span class="btn-spinner"></span>
+        Guardando...
+      } @else {
+        <i class="fa-solid fa-plus"></i>
+        Crear Consentimiento
+      }
+    </button>
+  </div>
+</app-modal>

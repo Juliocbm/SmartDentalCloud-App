@@ -11,6 +11,8 @@ export interface ConsultationNote {
   clinicalFindings?: string;
   diagnosis?: string;
   diagnosisCie10Code?: string;
+  patientDiagnosisId?: string;
+  patientDiagnosisDescription?: string;
   treatmentPlan?: string;
   notes?: string;
   createdAt: Date;
@@ -24,6 +26,7 @@ export interface CreateConsultationNoteRequest {
   clinicalFindings?: string;
   diagnosis?: string;
   diagnosisCie10Code?: string;
+  patientDiagnosisId?: string;
   treatmentPlan?: string;
   notes?: string;
 }
@@ -34,6 +37,7 @@ export interface UpdateConsultationNoteRequest {
   clinicalFindings?: string;
   diagnosis?: string;
   diagnosisCie10Code?: string;
+  patientDiagnosisId?: string;
   treatmentPlan?: string;
   notes?: string;
 }

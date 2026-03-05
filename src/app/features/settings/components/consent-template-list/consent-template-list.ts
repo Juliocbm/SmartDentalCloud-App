@@ -1,34 +1,25 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ConsentTemplateService, ConsentTemplate, CONSENT_TYPE_OPTIONS } from '../../services/consent-template.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { ModalService } from '../../../../shared/services/modal.service';
+import { ConsentTemplateFormModalComponent, ConsentTemplateFormModalData } from '../consent-template-form-modal/consent-template-form-modal';
 
 @Component({
   selector: 'app-consent-template-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './consent-template-list.html',
   styleUrl: './consent-template-list.scss'
 })
 export class ConsentTemplateListComponent implements OnInit {
   private templateService = inject(ConsentTemplateService);
   private notifications = inject(NotificationService);
+  private modalService = inject(ModalService);
 
   templates = signal<ConsentTemplate[]>([]);
   loading = signal(false);
-  saving = signal(false);
-
-  // Form state
-  showForm = signal(false);
-  editingId = signal<string | null>(null);
-  formConsentType = signal('GeneralTreatment');
-  formTitle = signal('');
-  formContent = signal('');
-  formIsDefault = signal(false);
-
-  CONSENT_TYPE_OPTIONS = CONSENT_TYPE_OPTIONS;
 
   ngOnInit(): void {
     this.loadTemplates();
@@ -52,57 +43,13 @@ export class ConsentTemplateListComponent implements OnInit {
     return CONSENT_TYPE_OPTIONS.find(o => o.value === value)?.label ?? value;
   }
 
-  openNewForm(): void {
-    this.editingId.set(null);
-    this.formConsentType.set('GeneralTreatment');
-    this.formTitle.set('');
-    this.formContent.set('');
-    this.formIsDefault.set(false);
-    this.showForm.set(true);
-  }
-
-  editTemplate(t: ConsentTemplate): void {
-    this.editingId.set(t.id);
-    this.formConsentType.set(t.consentType);
-    this.formTitle.set(t.title);
-    this.formContent.set(t.content);
-    this.formIsDefault.set(t.isDefault);
-    this.showForm.set(true);
-  }
-
-  cancelForm(): void {
-    this.showForm.set(false);
-    this.editingId.set(null);
-  }
-
-  saveTemplate(): void {
-    if (this.saving() || !this.formTitle().trim() || !this.formContent().trim()) return;
-    this.saving.set(true);
-
-    const payload = {
-      consentType: this.formConsentType(),
-      title: this.formTitle().trim(),
-      content: this.formContent().trim(),
-      isDefault: this.formIsDefault()
-    };
-
-    const id = this.editingId();
-    const obs = id
-      ? this.templateService.update(id, payload)
-      : this.templateService.create(payload);
-
-    obs.subscribe({
-      next: () => {
-        this.notifications.success(id ? 'Plantilla actualizada' : 'Plantilla creada');
-        this.saving.set(false);
-        this.showForm.set(false);
-        this.editingId.set(null);
-        this.loadTemplates();
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err));
-        this.saving.set(false);
-      }
+  openTemplateModal(template?: ConsentTemplate): void {
+    const ref = this.modalService.open<ConsentTemplateFormModalData, boolean>(
+      ConsentTemplateFormModalComponent,
+      { data: { template } }
+    );
+    ref.afterClosed().subscribe(result => {
+      if (result) this.loadTemplates();
     });
   }
 

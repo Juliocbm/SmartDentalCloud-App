@@ -2,10 +2,10 @@ import { Component, input, signal, inject, OnInit, OnChanges, SimpleChanges } fr
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PatientAllergiesService } from '../../../features/patients/services/patient-allergies.service';
-import { PatientProblemsService } from '../../../features/patients/services/patient-problems.service';
+import { PatientDiagnosesService } from '../../../features/patients/services/patient-diagnoses.service';
 import { InformedConsentsService } from '../../../features/patients/services/informed-consents.service';
 import { PatientAllergy } from '../../../features/patients/models/patient-allergy.models';
-import { PatientProblem } from '../../../features/patients/models/patient-problem.models';
+import { PatientDiagnosis } from '../../../features/patients/models/patient-diagnosis.models';
 
 @Component({
   selector: 'app-patient-clinical-summary',
@@ -20,11 +20,11 @@ export class PatientClinicalSummaryComponent implements OnChanges {
   compact = input(false);
 
   private allergiesService = inject(PatientAllergiesService);
-  private problemsService = inject(PatientProblemsService);
+  private diagnosesService = inject(PatientDiagnosesService);
   private consentsService = inject(InformedConsentsService);
 
   allergies = signal<PatientAllergy[]>([]);
-  problems = signal<PatientProblem[]>([]);
+  diagnoses = signal<PatientDiagnosis[]>([]);
   pendingConsentsCount = signal(0);
   loading = signal(false);
 
@@ -36,8 +36,8 @@ export class PatientClinicalSummaryComponent implements OnChanges {
     return this.allergies().filter(a => a.isActive && (a.severity === 'Severe' || a.severity === 'LifeThreatening')).length;
   }
 
-  get activeProblemsCount(): number {
-    return this.problems().filter(p => p.status === 'Active').length;
+  get activeDiagnosesCount(): number {
+    return this.diagnoses().filter(p => p.status === 'Active').length;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -57,9 +57,9 @@ export class PatientClinicalSummaryComponent implements OnChanges {
       error: () => {}
     });
 
-    this.problemsService.getByPatient(patientId, 'Active').subscribe({
+    this.diagnosesService.getByPatient(patientId, 'Active').subscribe({
       next: (data) => {
-        this.problems.set(data);
+        this.diagnoses.set(data);
         this.loading.set(false);
       },
       error: () => this.loading.set(false)

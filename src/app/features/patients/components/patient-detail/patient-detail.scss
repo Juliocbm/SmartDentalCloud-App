@@ -994,6 +994,33 @@
   border-radius: var(--radius-sm);
 }
 
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.filter-select-sm {
+  padding: 4px 8px;
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  min-width: 160px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-500);
+  }
+}
+
 // ===== Changes Tab (NOM-024 Audit Trail) =====
 
 .changes-timeline {
@@ -1020,6 +1047,23 @@
   gap: var(--spacing-md);
   align-items: center;
   font-size: var(--font-size-sm);
+}
+
+.change-entity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 9999px);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  background: var(--primary-50);
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+
+  i {
+    font-size: 0.625rem;
+  }
 }
 
 .change-action {

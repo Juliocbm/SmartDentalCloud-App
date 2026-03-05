@@ -181,16 +181,16 @@
                 <span class="info-label">Costo:</span>
                 <span class="info-value price-value">{{ formatCurrency(t.serviceCost) }}</span>
               </div>
-              @if (t.patientProblemId) {
+              @if (t.patientDiagnosisId) {
                 <div class="info-row">
                   <span class="info-label">Diagnóstico:</span>
                   <span class="info-value">
                     <span class="badge badge-info">
                       <i class="fa-solid fa-clipboard-list"></i>
-                      @if (t.patientProblemCie10Code) {
-                        {{ t.patientProblemCie10Code }} —
+                      @if (t.patientDiagnosisCie10Code) {
+                        {{ t.patientDiagnosisCie10Code }} —
                       }
-                      {{ t.patientProblemDescription }}
+                      {{ t.patientDiagnosisDescription }}
                     </span>
                   </span>
                 </div>

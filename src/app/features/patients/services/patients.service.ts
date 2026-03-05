@@ -105,11 +105,13 @@ export class PatientsService {
     return this.api.put<void>(`${this.baseUrl}/${id}/tax-info`, data);
   }
 
-  getChangeHistory(id: string, page = 1, pageSize = 50): Observable<ChangeHistoryEntry[]> {
-    return this.api.get<ChangeHistoryEntry[]>(`${this.baseUrl}/${id}/change-history`, {
+  getChangeHistory(id: string, page = 1, pageSize = 50, entityType?: string): Observable<ChangeHistoryEntry[]> {
+    const params: QueryParams = {
       page: page.toString(),
       pageSize: pageSize.toString()
-    });
+    };
+    if (entityType) params['entityType'] = entityType;
+    return this.api.get<ChangeHistoryEntry[]>(`${this.baseUrl}/${id}/change-history`, params);
   }
 
   mergePatients(data: MergePatientsRequest): Observable<MergeResultDto> {
@@ -128,6 +130,21 @@ export class PatientsService {
       if (options.toDate) params['toDate'] = options.toDate;
     }
     return this.api.get<PatientClinicalExportDto>(`${this.baseUrl}/${id}/clinical-export`, params);
+  }
+
+  downloadClinicalExportPdf(id: string, options?: ClinicalExportRequest): Observable<Blob> {
+    const parts: string[] = [];
+    if (options) {
+      if (options.includeAllergies !== undefined) parts.push(`includeAllergies=${options.includeAllergies}`);
+      if (options.includeProblems !== undefined) parts.push(`includeProblems=${options.includeProblems}`);
+      if (options.includeTreatments !== undefined) parts.push(`includeTreatments=${options.includeTreatments}`);
+      if (options.includePrescriptions !== undefined) parts.push(`includePrescriptions=${options.includePrescriptions}`);
+      if (options.includeConsents !== undefined) parts.push(`includeConsents=${options.includeConsents}`);
+      if (options.fromDate) parts.push(`fromDate=${options.fromDate}`);
+      if (options.toDate) parts.push(`toDate=${options.toDate}`);
+    }
+    const qs = parts.length > 0 ? `?${parts.join('&')}` : '';
+    return this.api.getBlob(`${this.baseUrl}/${id}/clinical-export/pdf${qs}`);
   }
 
   searchSimple(params: { search: string; limit?: number }): Observable<Patient[]> {

@@ -26,8 +26,6 @@ export interface Patient {
   
   // Historia Médica Básica
   bloodType: string | null;
-  allergies: string | null;
-  chronicDiseases: string | null;
   currentMedications: string | null;
   smokingStatus: string | null;
   notes: string | null;
@@ -85,8 +83,6 @@ export interface UpdatePatientRequest {
 export interface UpdateMedicalHistoryRequest {
   patientId: string;
   bloodType: string | null;
-  allergies: string | null;
-  chronicDiseases: string | null;
   currentMedications: string | null;
   smokingStatus: string | null;
   notes: string | null;
@@ -152,6 +148,45 @@ export interface ChangeHistoryEntry {
   createdAt: string;
 }
 
+export const PATIENT_ENTITY_TYPE_LABELS: Record<string, string> = {
+  Patient: 'Paciente',
+  PatientAllergy: 'Alergia',
+  PatientProblem: 'Diagnóstico',
+  InformedConsent: 'Consentimiento',
+  SignInformedConsent: 'Firma Consentimiento',
+  PatientMedicalHistory: 'Historia Médica',
+  PatientTaxInfo: 'Datos Fiscales',
+  Treatment: 'Tratamiento',
+  Prescription: 'Receta',
+  ConsultationNote: 'Nota de Consulta',
+};
+
+export const PATIENT_ENTITY_TYPE_ICONS: Record<string, string> = {
+  Patient: 'fa-user',
+  PatientAllergy: 'fa-shield-virus',
+  PatientDiagnosis: 'fa-clipboard-list',
+  InformedConsent: 'fa-file-signature',
+  SignInformedConsent: 'fa-signature',
+  PatientMedicalHistory: 'fa-notes-medical',
+  PatientTaxInfo: 'fa-file-invoice',
+  Treatment: 'fa-tooth',
+  Prescription: 'fa-prescription',
+  ConsultationNote: 'fa-stethoscope',
+};
+
+export const PATIENT_ENTITY_TYPE_FILTERS: { value: string; label: string }[] = [
+  { value: '', label: 'Todos los cambios' },
+  { value: 'Patient', label: 'Paciente' },
+  { value: 'PatientAllergy', label: 'Alergias' },
+  { value: 'PatientDiagnosis', label: 'Diagnósticos' },
+  { value: 'InformedConsent', label: 'Consentimientos' },
+  { value: 'Treatment', label: 'Tratamientos' },
+  { value: 'Prescription', label: 'Recetas' },
+  { value: 'ConsultationNote', label: 'Notas de Consulta' },
+  { value: 'PatientMedicalHistory', label: 'Historia Médica' },
+  { value: 'PatientTaxInfo', label: 'Datos Fiscales' },
+];
+
 export interface MergePatientsRequest {
   primaryPatientId: string;
   duplicatePatientId: string;
@@ -208,7 +243,6 @@ export interface ClinicalExportPatientDto {
   email: string | null;
   address: string | null;
   bloodType: string | null;
-  chronicDiseases: string | null;
   currentMedications: string | null;
   smokingStatus: string | null;
 }

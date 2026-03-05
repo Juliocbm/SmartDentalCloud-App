@@ -9,7 +9,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { AppointmentsService } from '../../../appointments/services/appointments.service';
-import { PatientProblemsService } from '../../../patients/services/patient-problems.service';
+import { PatientDiagnosesService } from '../../../patients/services/patient-diagnoses.service';
 import { Cie10AutocompleteComponent } from '../../../../shared/components/cie10-autocomplete/cie10-autocomplete';
 import { Cie10Code } from '../../../../core/services/cie10.service';
 
@@ -31,7 +31,7 @@ export class ConsultationNoteViewComponent implements OnInit {
   private logger = inject(LoggingService);
   private location = inject(Location);
   private appointmentsService = inject(AppointmentsService);
-  private problemsService = inject(PatientProblemsService);
+  private diagnosesService = inject(PatientDiagnosesService);
 
   // State
   mode = signal<ViewMode>('loading');
@@ -40,8 +40,8 @@ export class ConsultationNoteViewComponent implements OnInit {
   error = signal<string | null>(null);
   appointmentId = signal('');
   patientId = signal<string | null>(null);
-  problemRegistered = signal(false);
-  registeringProblem = signal(false);
+  diagnosisRegistered = signal(false);
+  registeringDiagnosis = signal(false);
   noteCie10Code = signal<string | null>(null);
 
   // Form
@@ -85,6 +85,9 @@ export class ConsultationNoteViewComponent implements OnInit {
       next: (data) => {
         this.note.set(data);
         this.populateForm(data);
+        if (data.patientDiagnosisId) {
+          this.diagnosisRegistered.set(true);
+        }
         this.mode.set('view');
       },
       error: (err) => {
@@ -194,25 +197,45 @@ export class ConsultationNoteViewComponent implements OnInit {
     });
   }
 
-  registerAsProblem(): void {
+  registerAsDiagnosis(): void {
     const currentNote = this.note();
     const pid = this.patientId();
     if (!currentNote?.diagnosis || !pid) return;
 
-    this.registeringProblem.set(true);
-    this.problemsService.create(pid, {
+    this.registeringDiagnosis.set(true);
+    this.diagnosesService.create(pid, {
       description: currentNote.diagnosis,
       cie10Code: currentNote.diagnosisCie10Code || undefined,
       notes: `Registrado desde nota clínica de cita ${this.appointmentId()}`,
       appointmentId: this.appointmentId() || undefined
     }).subscribe({
-      next: () => {
-        this.problemRegistered.set(true);
-        this.registeringProblem.set(false);
-        this.notifications.success('Diagnóstico registrado como problema del paciente.');
+      next: (created) => {
+        // Link the created diagnosis back to the consultation note
+        this.notesService.update(currentNote.id, {
+          id: currentNote.id,
+          chiefComplaint: currentNote.chiefComplaint || undefined,
+          clinicalFindings: currentNote.clinicalFindings || undefined,
+          diagnosis: currentNote.diagnosis || undefined,
+          diagnosisCie10Code: currentNote.diagnosisCie10Code || undefined,
+          patientDiagnosisId: created.id,
+          treatmentPlan: currentNote.treatmentPlan || undefined,
+          notes: currentNote.notes || undefined
+        }).subscribe({
+          next: () => {
+            this.diagnosisRegistered.set(true);
+            this.registeringDiagnosis.set(false);
+            this.notifications.success('Diagnóstico registrado y vinculado a la nota clínica.');
+            this.loadNote(this.appointmentId());
+          },
+          error: () => {
+            this.diagnosisRegistered.set(true);
+            this.registeringDiagnosis.set(false);
+            this.notifications.success('Diagnóstico registrado en la lista de diagnósticos del paciente.');
+          }
+        });
       },
       error: (err) => {
-        this.registeringProblem.set(false);
+        this.registeringDiagnosis.set(false);
         this.notifications.error(getApiErrorMessage(err));
       }
     });

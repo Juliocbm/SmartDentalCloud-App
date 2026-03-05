@@ -92,6 +92,8 @@ export interface TreatmentPlan {
   title: string;
   description?: string;
   diagnosis?: string;
+  patientDiagnosisId?: string;
+  patientDiagnosisDescription?: string;
   status: string;
   totalEstimatedCost: number;
   totalActualCost: number;
@@ -132,6 +134,7 @@ export interface CreateTreatmentPlanRequest {
   title: string;
   description?: string;
   diagnosis?: string;
+  patientDiagnosisId?: string;
   estimatedStartDate?: string;
   estimatedEndDate?: string;
   items: CreateTreatmentPlanItemRequest[];
@@ -141,6 +144,7 @@ export interface UpdateTreatmentPlanRequest {
   title: string;
   description?: string;
   diagnosis?: string;
+  patientDiagnosisId?: string;
   estimatedStartDate?: string;
   estimatedEndDate?: string;
 }

@@ -3,7 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PatientsService } from '../../services/patients.service';
-import { Patient, UpdateTaxInfoRequest, UpdateMedicalHistoryRequest, BloodType, SmokingStatus, ChangeHistoryEntry } from '../../models/patient.models';
+import { Patient, UpdateTaxInfoRequest, UpdateMedicalHistoryRequest, BloodType, SmokingStatus, ChangeHistoryEntry, PATIENT_ENTITY_TYPE_LABELS, PATIENT_ENTITY_TYPE_ICONS, PATIENT_ENTITY_TYPE_FILTERS } from '../../models/patient.models';
 import { AttachedFile, FILE_CATEGORIES, getFileIcon, formatFileSize } from '../../models/attached-file.models';
 import { PatientFinancialSummary, PatientHistory } from '../../models/patient-dashboard.models';
 import { AttachedFilesService } from '../../services/attached-files.service';
@@ -16,12 +16,10 @@ import { CephHistoryListComponent } from '../../../cephalometry/components/ceph-
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { PatientClinicalSummaryComponent } from '../../../../shared/components/patient-clinical-summary/patient-clinical-summary';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { ModalService } from '../../../../shared/services/modal.service';
 import { PatientAllergiesService } from '../../services/patient-allergies.service';
 import {
   PatientAllergy,
-  CreatePatientAllergyRequest,
-  ALLERGEN_TYPES,
-  ALLERGY_SEVERITIES,
   getAllergenTypeLabel,
   getSeverityLabel,
   getSeverityClass
@@ -29,13 +27,11 @@ import {
 import { InformedConsentsService } from '../../services/informed-consents.service';
 import {
   InformedConsent,
-  CreateInformedConsentRequest,
-  CONSENT_TYPES,
   getConsentTypeLabel,
   getConsentStatusLabel,
   getConsentStatusClass
 } from '../../models/informed-consent.models';
-import { PatientProblemsService } from '../../services/patient-problems.service';
+import { PatientDiagnosesService } from '../../services/patient-diagnoses.service';
 import { ElectronicSignatureService, SignatureResult } from '../../../../core/services/electronic-signature.service';
 import { SignaturePadComponent } from '../../../../shared/components/signature-pad/signature-pad';
 import { SignatureModalComponent } from '../../../../shared/components/signature-modal/signature-modal';
@@ -43,11 +39,12 @@ import { SignaturePinSetupComponent } from '../../../../shared/components/signat
 import { ConsentTemplateService, ConsentTemplate as ConsentTemplateModel } from '../../../settings/services/consent-template.service';
 import { ConsentPrintViewComponent } from '../../../../shared/components/consent-print-view/consent-print-view';
 import {
-  PatientProblem,
-  CreatePatientProblemRequest,
-  getProblemStatusLabel,
-  getProblemStatusClass
-} from '../../models/patient-problem.models';
+  PatientDiagnosis,
+  getDiagnosisStatusLabel,
+  getDiagnosisStatusClass,
+  getDiagnosisSeverityLabel,
+  getDiagnosisSeverityClass
+} from '../../models/patient-diagnosis.models';
 import { RadiologicImagesService } from '../../services/radiologic-images.service';
 import { triggerBlobDownload } from '../../../../shared/utils/file.utils';
 import {
@@ -56,6 +53,11 @@ import {
   getImageTypeLabel,
   formatFileSize as formatRadioFileSize
 } from '../../models/radiologic-image.models';
+import { AllergyFormModalComponent, AllergyFormModalData } from '../allergy-form-modal/allergy-form-modal';
+import { ConsentFormModalComponent, ConsentFormModalData } from '../consent-form-modal/consent-form-modal';
+import { DiagnosisFormModalComponent, DiagnosisFormModalData } from '../diagnosis-form-modal/diagnosis-form-modal';
+import { RadioUploadModalComponent, RadioUploadModalData } from '../radio-upload-modal/radio-upload-modal';
+import { FileUploadModalComponent, FileUploadModalData } from '../file-upload-modal/file-upload-modal';
 
 @Component({
   selector: 'app-patient-detail',
@@ -75,11 +77,12 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   private attachedFilesService = inject(AttachedFilesService);
   private allergiesService = inject(PatientAllergiesService);
   private consentsService = inject(InformedConsentsService);
-  private problemsService = inject(PatientProblemsService);
+  private diagnosesService = inject(PatientDiagnosesService);
   private signatureService = inject(ElectronicSignatureService);
   private consentTemplateService = inject(ConsentTemplateService);
   private location = inject(Location);
   private radiologicImagesService = inject(RadiologicImagesService);
+  private modalService = inject(ModalService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -95,17 +98,6 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   // Allergies state (NOM-024)
   allergies = signal<PatientAllergy[]>([]);
   allergiesLoading = signal(false);
-  showAllergyForm = signal(false);
-  savingAllergy = signal(false);
-  allergyAllergenType = signal('Medication');
-  allergyAllergenName = signal('');
-  allergyReactionDescription = signal('');
-  allergySeverity = signal('Mild');
-  allergyDetectedAt = signal('');
-  allergyVerified = signal(false);
-  allergyNotes = signal('');
-  ALLERGEN_TYPES = ALLERGEN_TYPES;
-  ALLERGY_SEVERITIES = ALLERGY_SEVERITIES;
   getAllergenTypeLabel = getAllergenTypeLabel;
   getSeverityLabel = getSeverityLabel;
   getSeverityClass = getSeverityClass;
@@ -113,14 +105,8 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   // Consents state (NOM-024)
   consents = signal<InformedConsent[]>([]);
   consentsLoading = signal(false);
-  showConsentForm = signal(false);
-  savingConsent = signal(false);
-  consentType = signal('GeneralTreatment');
-  consentTitle = signal('');
-  consentContent = signal('');
   consentAppointmentId = signal<string | null>(null);
   consentTreatmentId = signal<string | null>(null);
-  CONSENT_TYPES = CONSENT_TYPES;
   getConsentTypeLabel = getConsentTypeLabel;
   getConsentStatusLabel = getConsentStatusLabel;
   getConsentStatusClass = getConsentStatusClass;
@@ -134,40 +120,26 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   showPinSetup = signal(false);
   consentSignatures = signal<SignatureResult[]>([]);
 
-  // Consent templates
-  consentTemplates = signal<ConsentTemplateModel[]>([]);
-  selectedTemplateId = signal<string | null>(null);
-
   // Consent print view
   printingConsent = signal<InformedConsent | null>(null);
 
   // Change history (NOM-024 Audit Trail)
   changeHistory = signal<ChangeHistoryEntry[]>([]);
   changesLoading = signal(false);
+  changesEntityFilter = signal('');
+  ENTITY_TYPE_FILTERS = PATIENT_ENTITY_TYPE_FILTERS;
 
-  // Problems state (NOM-024)
-  problems = signal<PatientProblem[]>([]);
-  problemsLoading = signal(false);
-  showProblemForm = signal(false);
-  savingProblem = signal(false);
-  problemDescription = signal('');
-  problemCie10Code = signal('');
-  problemOnsetDate = signal('');
-  problemNotes = signal('');
-  getProblemStatusLabel = getProblemStatusLabel;
-  getProblemStatusClass = getProblemStatusClass;
+  // Diagnoses state (NOM-024)
+  diagnoses = signal<PatientDiagnosis[]>([]);
+  diagnosesLoading = signal(false);
+  getDiagnosisStatusLabel = getDiagnosisStatusLabel;
+  getDiagnosisStatusClass = getDiagnosisStatusClass;
+  getDiagnosisSeverityLabel = getDiagnosisSeverityLabel;
+  getDiagnosisSeverityClass = getDiagnosisSeverityClass;
 
   // Radiologic images state (NOM-024 §5.3)
   radioImages = signal<RadiologicImageDto[]>([]);
   radioImagesLoading = signal(false);
-  showRadioUploadForm = signal(false);
-  radioUploading = signal(false);
-  radioImageType = signal('Periapical');
-  radioTitle = signal('');
-  radioDescription = signal('');
-  radioNotes = signal('');
-  radioTakenAt = signal('');
-  radioSelectedFile = signal<File | null>(null);
   radioViewingImage = signal<RadiologicImageDto | null>(null);
   radioBrightness = signal(100);
   radioContrast = signal(100);
@@ -180,8 +152,6 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   editingMedical = signal(false);
   savingMedical = signal(false);
   medBloodType = signal('');
-  medAllergies = signal('');
-  medChronicDiseases = signal('');
   medCurrentMedications = signal('');
   medSmokingStatus = signal('');
   medNotes = signal('');
@@ -206,11 +176,6 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   // Attached files state
   files = signal<AttachedFile[]>([]);
   filesLoading = signal(false);
-  showUploadForm = signal(false);
-  uploading = signal(false);
-  uploadCategory = signal('');
-  uploadDescription = signal('');
-  selectedFile = signal<File | null>(null);
   FILE_CATEGORIES = FILE_CATEGORIES;
   filterCategory = signal('');
   filteredFiles = computed(() => {
@@ -241,9 +206,9 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     if (treatmentId) {
       this.consentTreatmentId.set(treatmentId);
     }
-    // Auto-open consent form when arriving with context
+    // Auto-open consent modal when arriving with context
     if (tab === 'consents' && (appointmentId || treatmentId)) {
-      this.showConsentForm.set(true);
+      setTimeout(() => this.openConsentModal(), 500);
     }
   }
 
@@ -277,8 +242,8 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     if (tab === 'consents' && this.consents().length === 0 && !this.consentsLoading()) {
       this.loadConsents();
     }
-    if (tab === 'problems' && this.problems().length === 0 && !this.problemsLoading()) {
-      this.loadProblems();
+    if (tab === 'problems' && this.diagnoses().length === 0 && !this.diagnosesLoading()) {
+      this.loadDiagnoses();
     }
     if (tab === 'radiographs' && this.radioImages().length === 0 && !this.radioImagesLoading()) {
       this.loadRadioImages();
@@ -319,49 +284,16 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleAllergyForm(): void {
-    this.showAllergyForm.update(v => !v);
-    if (this.showAllergyForm()) {
-      this.resetAllergyForm();
-    }
-  }
-
-  private resetAllergyForm(): void {
-    this.allergyAllergenType.set('Medication');
-    this.allergyAllergenName.set('');
-    this.allergyReactionDescription.set('');
-    this.allergySeverity.set('Mild');
-    this.allergyDetectedAt.set('');
-    this.allergyVerified.set(false);
-    this.allergyNotes.set('');
-  }
-
-  saveAllergy(): void {
+  openAllergyModal(): void {
     const pat = this.patient();
-    if (!pat || this.savingAllergy()) return;
+    if (!pat) return;
 
-    this.savingAllergy.set(true);
-    const data: CreatePatientAllergyRequest = {
-      allergenType: this.allergyAllergenType(),
-      allergenName: this.allergyAllergenName().trim(),
-      severity: this.allergySeverity(),
-      reactionDescription: this.allergyReactionDescription().trim() || undefined,
-      detectedAt: this.allergyDetectedAt() || undefined,
-      verifiedByProfessional: this.allergyVerified(),
-      notes: this.allergyNotes().trim() || undefined
-    };
-
-    this.allergiesService.create(pat.id, data).subscribe({
-      next: () => {
-        this.notifications.success('Alergia registrada');
-        this.showAllergyForm.set(false);
-        this.savingAllergy.set(false);
-        this.loadAllergies();
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err));
-        this.savingAllergy.set(false);
-      }
+    const ref = this.modalService.open<AllergyFormModalData, boolean>(
+      AllergyFormModalComponent,
+      { data: { patientId: pat.id } }
+    );
+    ref.afterClosed().subscribe(result => {
+      if (result) this.loadAllergies();
     });
   }
 
@@ -412,39 +344,22 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleConsentForm(): void {
-    this.showConsentForm.update(v => !v);
-    if (this.showConsentForm()) {
-      this.consentType.set('GeneralTreatment');
-      this.consentTitle.set('');
-      this.consentContent.set('');
-    }
-  }
-
-  saveConsent(): void {
+  openConsentModal(): void {
     const pat = this.patient();
-    if (!pat || this.savingConsent()) return;
+    if (!pat) return;
 
-    this.savingConsent.set(true);
-    const data: CreateInformedConsentRequest = {
-      consentType: this.consentType(),
-      title: this.consentTitle().trim(),
-      content: this.consentContent().trim(),
-      appointmentId: this.consentAppointmentId() || undefined,
-      treatmentId: this.consentTreatmentId() || undefined
-    };
-
-    this.consentsService.create(pat.id, data).subscribe({
-      next: () => {
-        this.notifications.success('Consentimiento creado');
-        this.showConsentForm.set(false);
-        this.savingConsent.set(false);
-        this.loadConsents();
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err));
-        this.savingConsent.set(false);
+    const ref = this.modalService.open<ConsentFormModalData, boolean>(
+      ConsentFormModalComponent,
+      {
+        data: {
+          patientId: pat.id,
+          appointmentId: this.consentAppointmentId() || undefined,
+          treatmentId: this.consentTreatmentId() || undefined
+        }
       }
+    );
+    ref.afterClosed().subscribe(result => {
+      if (result) this.loadConsents();
     });
   }
 
@@ -533,25 +448,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Template loading for consent form
-
-  loadConsentTemplates(): void {
-    this.consentTemplateService.getAll().subscribe({
-      next: (data) => this.consentTemplates.set(data),
-      error: () => this.consentTemplates.set([])
-    });
-  }
-
-  onTemplateSelected(): void {
-    const id = this.selectedTemplateId();
-    if (!id) return;
-    const tpl = this.consentTemplates().find(t => t.id === id);
-    if (tpl) {
-      this.consentType.set(tpl.consentType);
-      this.consentTitle.set(tpl.title);
-      this.consentContent.set(tpl.content);
-    }
-  }
+  // Template loading removed — now handled by ConsentFormModalComponent
 
   // Print view
 
@@ -570,7 +467,8 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     if (!pat) return;
 
     this.changesLoading.set(true);
-    this.patientsService.getChangeHistory(pat.id).subscribe({
+    const entityFilter = this.changesEntityFilter() || undefined;
+    this.patientsService.getChangeHistory(pat.id, 1, 100, entityFilter).subscribe({
       next: (data) => {
         this.changeHistory.set(data);
         this.changesLoading.set(false);
@@ -579,6 +477,19 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
         this.changesLoading.set(false);
       }
     });
+  }
+
+  onChangesFilterChange(): void {
+    this.changeHistory.set([]);
+    this.loadChangeHistory();
+  }
+
+  getEntityTypeLabel(entityType: string): string {
+    return PATIENT_ENTITY_TYPE_LABELS[entityType] || entityType;
+  }
+
+  getEntityTypeIcon(entityType: string): string {
+    return PATIENT_ENTITY_TYPE_ICONS[entityType] || 'fa-circle';
   }
 
   formatChangeDate(date: string): string {
@@ -600,74 +511,51 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  // === Patient Problems (NOM-024) ===
+  // === Patient Diagnoses (NOM-024) ===
 
-  private loadProblems(): void {
+  private loadDiagnoses(): void {
     const pat = this.patient();
     if (!pat) return;
 
-    this.problemsLoading.set(true);
-    this.problemsService.getByPatient(pat.id).subscribe({
+    this.diagnosesLoading.set(true);
+    this.diagnosesService.getByPatient(pat.id).subscribe({
       next: (data) => {
-        this.problems.set(data);
-        this.problemsLoading.set(false);
+        this.diagnoses.set(data);
+        this.diagnosesLoading.set(false);
       },
       error: (err) => {
-        this.notifications.error(getApiErrorMessage(err, 'Error al cargar problemas'));
-        this.problemsLoading.set(false);
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar diagnósticos'));
+        this.diagnosesLoading.set(false);
       }
     });
   }
 
-  toggleProblemForm(): void {
-    this.showProblemForm.update(v => !v);
-    if (this.showProblemForm()) {
-      this.problemDescription.set('');
-      this.problemCie10Code.set('');
-      this.problemOnsetDate.set('');
-      this.problemNotes.set('');
-    }
-  }
-
-  saveProblem(): void {
+  openDiagnosisModal(): void {
     const pat = this.patient();
-    if (!pat || this.savingProblem()) return;
+    if (!pat) return;
 
-    this.savingProblem.set(true);
-    const data: CreatePatientProblemRequest = {
-      description: this.problemDescription().trim(),
-      cie10Code: this.problemCie10Code().trim() || undefined,
-      onsetDate: this.problemOnsetDate() || undefined,
-      notes: this.problemNotes().trim() || undefined
-    };
-
-    this.problemsService.create(pat.id, data).subscribe({
-      next: () => {
-        this.notifications.success('Problema registrado');
-        this.showProblemForm.set(false);
-        this.savingProblem.set(false);
-        this.loadProblems();
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err));
-        this.savingProblem.set(false);
-      }
+    const ref = this.modalService.open<DiagnosisFormModalData, boolean>(
+      DiagnosisFormModalComponent,
+      { data: { patientId: pat.id } }
+    );
+    ref.afterClosed().subscribe(result => {
+      if (result) this.loadDiagnoses();
     });
   }
 
-  async resolveProblem(problem: PatientProblem): Promise<void> {
+  async resolveDiagnosis(diagnosis: PatientDiagnosis): Promise<void> {
     const pat = this.patient();
     if (!pat) return;
 
     const confirmed = await this.notifications.confirm(
-      `¿Marcar como resuelto "${problem.description}"?`
+      `¿Marcar como resuelto "${diagnosis.description}"?`
     );
     if (!confirmed) return;
 
-    this.problemsService.resolve(pat.id, problem.id, {}).subscribe({
+    this.diagnosesService.resolve(pat.id, diagnosis.id, {}).subscribe({
       next: () => {
-        this.notifications.success('Problema marcado como resuelto');
-        this.loadProblems();
+        this.notifications.success('Diagnóstico marcado como resuelto');
+        this.loadDiagnoses();
       },
       error: (err) => {
         this.notifications.error(getApiErrorMessage(err));
@@ -675,8 +563,8 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  getActiveProblemsCount(): number {
-    return this.problems().filter(p => p.status === 'Active').length;
+  getActiveDiagnosesCount(): number {
+    return this.diagnoses().filter(p => p.status === 'Active').length;
   }
 
   // === Radiologic Images (NOM-024 §5.3) ===
@@ -717,51 +605,16 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleRadioUploadForm(): void {
-    this.showRadioUploadForm.update(v => !v);
-    if (this.showRadioUploadForm()) {
-      this.radioImageType.set('Periapical');
-      this.radioTitle.set('');
-      this.radioDescription.set('');
-      this.radioNotes.set('');
-      this.radioTakenAt.set('');
-      this.radioSelectedFile.set(null);
-    }
-  }
-
-  onRadioFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.radioSelectedFile.set(input.files[0]);
-    }
-  }
-
-  uploadRadioImage(): void {
+  openRadioUploadModal(): void {
     const pat = this.patient();
-    const file = this.radioSelectedFile();
-    if (!pat || !file || this.radioUploading() || !this.radioTitle().trim()) return;
+    if (!pat) return;
 
-    this.radioUploading.set(true);
-    this.radiologicImagesService.upload(
-      pat.id,
-      file,
-      this.radioImageType(),
-      this.radioTitle().trim(),
-      this.radioDescription().trim() || undefined,
-      this.radioTakenAt() || undefined,
-      undefined,
-      this.radioNotes().trim() || undefined
-    ).subscribe({
-      next: () => {
-        this.notifications.success('Radiografía subida exitosamente');
-        this.showRadioUploadForm.set(false);
-        this.radioUploading.set(false);
-        this.loadRadioImages();
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err));
-        this.radioUploading.set(false);
-      }
+    const ref = this.modalService.open<RadioUploadModalData, boolean>(
+      RadioUploadModalComponent,
+      { data: { patientId: pat.id } }
+    );
+    ref.afterClosed().subscribe(result => {
+      if (result) this.loadRadioImages();
     });
   }
 
@@ -844,44 +697,16 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile.set(input.files[0]);
-    }
-  }
+  openFileUploadModal(): void {
+    const pat = this.patient();
+    if (!pat) return;
 
-  toggleUploadForm(): void {
-    this.showUploadForm.update(v => !v);
-    if (this.showUploadForm()) {
-      this.selectedFile.set(null);
-      this.uploadCategory.set('');
-      this.uploadDescription.set('');
-    }
-  }
-
-  uploadFile(): void {
-    const patient = this.patient();
-    const file = this.selectedFile();
-    if (!patient || !file || this.uploading()) return;
-
-    this.uploading.set(true);
-    this.attachedFilesService.upload(
-      patient.id,
-      file,
-      this.uploadCategory() || undefined,
-      this.uploadDescription().trim() || undefined
-    ).subscribe({
-      next: () => {
-        this.notifications.success('Archivo subido exitosamente');
-        this.showUploadForm.set(false);
-        this.uploading.set(false);
-        this.loadFiles();
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err));
-        this.uploading.set(false);
-      }
+    const ref = this.modalService.open<FileUploadModalData, boolean>(
+      FileUploadModalComponent,
+      { data: { patientId: pat.id } }
+    );
+    ref.afterClosed().subscribe(result => {
+      if (result) this.loadFiles();
     });
   }
 
@@ -967,14 +792,9 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  hasAllergies(): boolean {
-    const patient = this.patient();
-    return !!(patient && patient.allergies && patient.allergies.trim().length > 0);
-  }
-
   hasMedicalHistory(): boolean {
     const patient = this.patient();
-    return !!(patient && (patient.allergies || patient.chronicDiseases || patient.currentMedications));
+    return !!(patient && (patient.bloodType || patient.currentMedications));
   }
 
   goBack(): void {
@@ -987,8 +807,6 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     const pat = this.patient();
     if (!pat) return;
     this.medBloodType.set(pat.bloodType || '');
-    this.medAllergies.set(pat.allergies || '');
-    this.medChronicDiseases.set(pat.chronicDiseases || '');
     this.medCurrentMedications.set(pat.currentMedications || '');
     this.medSmokingStatus.set(pat.smokingStatus || '');
     this.medNotes.set(pat.notes || '');
@@ -1007,8 +825,6 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     const data: UpdateMedicalHistoryRequest = {
       patientId: pat.id,
       bloodType: this.medBloodType().trim() || null,
-      allergies: this.medAllergies().trim() || null,
-      chronicDiseases: this.medChronicDiseases().trim() || null,
       currentMedications: this.medCurrentMedications().trim() || null,
       smokingStatus: this.medSmokingStatus().trim() || null,
       notes: this.medNotes().trim() || null

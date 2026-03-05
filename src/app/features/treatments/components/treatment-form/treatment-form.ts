@@ -13,8 +13,8 @@ import { DentalService } from '../../../invoices/models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
-import { PatientProblemsService } from '../../../patients/services/patient-problems.service';
-import { PatientProblem } from '../../../patients/models/patient-problem.models';
+import { PatientDiagnosesService } from '../../../patients/services/patient-diagnoses.service';
+import { PatientDiagnosis } from '../../../patients/models/patient-diagnosis.models';
 
 @Component({
   selector: 'app-treatment-form',
@@ -37,7 +37,7 @@ export class TreatmentFormComponent implements OnInit {
   private treatmentsService = inject(TreatmentsService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
-  private problemsService = inject(PatientProblemsService);
+  private diagnosesService = inject(PatientDiagnosesService);
 
   form!: FormGroup;
   loading = signal(false);
@@ -47,7 +47,7 @@ export class TreatmentFormComponent implements OnInit {
 
   selectedPatient = signal<PatientSearchResult | null>(null);
   selectedService = signal<DentalService | null>(null);
-  activeProblems = signal<PatientProblem[]>([]);
+  activeDiagnoses = signal<PatientDiagnosis[]>([]);
 
   // Constants
   surfaceOptions = SURFACE_OPTIONS;
@@ -77,7 +77,7 @@ export class TreatmentFormComponent implements OnInit {
       isMultipleTooth: [false],
       status: [TreatmentStatus.InProgress],
       duration: [null],
-      patientProblemId: [null],
+      patientDiagnosisId: [null],
       notes: ['']
     });
   }
@@ -106,11 +106,11 @@ export class TreatmentFormComponent implements OnInit {
           isMultipleTooth: treatment.isMultipleTooth,
           status: treatment.status,
           duration: treatment.duration || null,
-          patientProblemId: treatment.patientProblemId || null,
+          patientDiagnosisId: treatment.patientDiagnosisId || null,
           notes: treatment.notes || ''
         });
 
-        this.loadActiveProblems(treatment.patientId);
+        this.loadActiveDiagnoses(treatment.patientId);
 
         if (treatment.patientName) {
           this.selectedPatient.set({
@@ -146,16 +146,16 @@ export class TreatmentFormComponent implements OnInit {
 
   onPatientSelected(patient: PatientSearchResult | null): void {
     this.selectedPatient.set(patient);
-    this.form.patchValue({ patientId: patient?.id || '', patientProblemId: null });
-    this.activeProblems.set([]);
+    this.form.patchValue({ patientId: patient?.id || '', patientDiagnosisId: null });
+    this.activeDiagnoses.set([]);
     if (patient?.id) {
-      this.loadActiveProblems(patient.id);
+      this.loadActiveDiagnoses(patient.id);
     }
   }
 
-  private loadActiveProblems(patientId: string): void {
-    this.problemsService.getByPatient(patientId, 'Active').subscribe({
-      next: (problems) => this.activeProblems.set(problems),
+  private loadActiveDiagnoses(patientId: string): void {
+    this.diagnosesService.getByPatient(patientId, 'Active').subscribe({
+      next: (diagnoses) => this.activeDiagnoses.set(diagnoses),
       error: () => {}
     });
   }

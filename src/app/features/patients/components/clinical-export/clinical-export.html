@@ -1,367 +1,73 @@
-<!-- Options panel (visible before generating) -->
-<div class="page-container container-medium no-print">
+<!-- Options panel -->
+<div class="page-container container-medium">
   <app-page-header
     [title]="'Resumen Clínico'"
-    [subtitle]="'Exportar resumen clínico del paciente para referencia'"
+    [subtitle]="'Generar PDF del resumen clínico del paciente'"
     [icon]="'fa-file-medical'"
     [showBackButton]="true"
     [backRoute]="'/patients/' + patientId"
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
-  @if (showOptions()) {
-    <div class="content-card">
-      <h3 class="section-title">
-        <i class="fa-solid fa-sliders section-icon"></i>
-        Opciones de Exportación
-      </h3>
+  <div class="content-card">
+    <h3 class="section-title">
+      <i class="fa-solid fa-sliders section-icon"></i>
+      Opciones de Exportación
+    </h3>
 
-      <div class="options-grid">
-        <label class="checkbox-label">
-          <input type="checkbox" [ngModel]="includeAllergies()"
-            (ngModelChange)="includeAllergies.set($event)" />
-          <span>Incluir Alergias</span>
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" [ngModel]="includeProblems()"
-            (ngModelChange)="includeProblems.set($event)" />
-          <span>Incluir Lista de Problemas</span>
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" [ngModel]="includeTreatments()"
-            (ngModelChange)="includeTreatments.set($event)" />
-          <span>Incluir Tratamientos</span>
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" [ngModel]="includePrescriptions()"
-            (ngModelChange)="includePrescriptions.set($event)" />
-          <span>Incluir Recetas</span>
-        </label>
+    <div class="options-grid">
+      <label class="checkbox-label">
+        <input type="checkbox" [ngModel]="includeAllergies()"
+          (ngModelChange)="includeAllergies.set($event)" />
+        <span>Incluir Alergias</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" [ngModel]="includeProblems()"
+          (ngModelChange)="includeProblems.set($event)" />
+        <span>Incluir Lista de Problemas</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" [ngModel]="includeTreatments()"
+          (ngModelChange)="includeTreatments.set($event)" />
+        <span>Incluir Tratamientos</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" [ngModel]="includePrescriptions()"
+          (ngModelChange)="includePrescriptions.set($event)" />
+        <span>Incluir Recetas</span>
+      </label>
+    </div>
+
+    <div class="date-range">
+      <div class="form-group">
+        <label class="form-label">Desde (opcional)</label>
+        <input type="date" class="form-input"
+          [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
       </div>
-
-      <div class="date-range">
-        <div class="form-group">
-          <label class="form-label">Desde (opcional)</label>
-          <input type="date" class="form-input"
-            [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Hasta (opcional)</label>
-          <input type="date" class="form-input"
-            [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
-        </div>
-      </div>
-
-      @if (error()) {
-        <div class="alert alert-error">
-          <i class="fa-solid fa-exclamation-circle"></i>
-          {{ error() }}
-        </div>
-      }
-
-      <div class="form-actions">
-        <button class="btn btn-primary" (click)="generateExport()" [disabled]="loading()">
-          @if (loading()) {
-            <span class="btn-spinner"></span>
-            Generando...
-          } @else {
-            <i class="fa-solid fa-file-medical"></i>
-            Generar Resumen
-          }
-        </button>
+      <div class="form-group">
+        <label class="form-label">Hasta (opcional)</label>
+        <input type="date" class="form-input"
+          [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
       </div>
     </div>
-  }
 
-  <!-- Action bar when export is ready -->
-  @if (exportData()) {
-    <div class="export-actions-bar">
-      <button class="btn btn-outline" (click)="resetOptions()">
-        <i class="fa-solid fa-arrow-left"></i>
-        Cambiar Opciones
-      </button>
-      <button class="btn btn-primary" (click)="printExport()">
-        <i class="fa-solid fa-print"></i>
-        Imprimir / PDF
+    @if (error()) {
+      <div class="alert alert-error">
+        <i class="fa-solid fa-exclamation-circle"></i>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="form-actions">
+      <button class="btn btn-primary" (click)="generateExport()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="btn-spinner"></span>
+          Generando...
+        } @else {
+          <i class="fa-solid fa-print"></i>
+          Generar PDF
+        }
       </button>
     </div>
-  }
-</div>
-
-<!-- Printable clinical export document -->
-@if (exportData(); as data) {
-  <div class="clinical-export-document" id="clinical-export">
-    <!-- Header -->
-    <header class="export-header">
-      <div class="clinic-info">
-        @if (data.clinicLogoUrl) {
-          <img [src]="data.clinicLogoUrl" alt="Logo" class="clinic-logo" />
-        }
-        <div class="clinic-details">
-          <h1 class="clinic-name">{{ data.clinicName }}</h1>
-          @if (data.clinicAddress) {
-            <p>{{ data.clinicAddress }}</p>
-          }
-          @if (data.clinicPhone) {
-            <p>Tel: {{ data.clinicPhone }}</p>
-          }
-          @if (data.clues) {
-            <p class="clues-badge">CLUES: {{ data.clues }}</p>
-          }
-        </div>
-      </div>
-      <div class="document-title">
-        <h2>Resumen Clínico</h2>
-        <p class="export-date">Generado: {{ formatDate(data.generatedAt) }}</p>
-      </div>
-    </header>
-
-    <!-- Patient Data -->
-    <section class="export-section">
-      <h3 class="export-section-title">
-        <i class="fa-solid fa-user"></i>
-        Datos del Paciente
-      </h3>
-      <div class="patient-data-grid">
-        <div class="data-field">
-          <span class="field-label">Nombre</span>
-          <span class="field-value">{{ data.patient.firstName }} {{ data.patient.lastName }}</span>
-        </div>
-        <div class="data-field">
-          <span class="field-label">Fecha de Nacimiento</span>
-          <span class="field-value">
-            {{ formatDate(data.patient.dateOfBirth) }}
-            @if (data.patient.dateOfBirth) {
-              <span class="age-badge">({{ getPatientAge(data.patient.dateOfBirth) }})</span>
-            }
-          </span>
-        </div>
-        <div class="data-field">
-          <span class="field-label">Sexo</span>
-          <span class="field-value">{{ data.patient.gender || '—' }}</span>
-        </div>
-        @if (data.patient.curp) {
-          <div class="data-field">
-            <span class="field-label">CURP</span>
-            <span class="field-value">{{ data.patient.curp }}</span>
-          </div>
-        }
-        <div class="data-field">
-          <span class="field-label">Teléfono</span>
-          <span class="field-value">{{ data.patient.phoneNumber || '—' }}</span>
-        </div>
-        <div class="data-field">
-          <span class="field-label">Email</span>
-          <span class="field-value">{{ data.patient.email || '—' }}</span>
-        </div>
-        @if (data.patient.bloodType) {
-          <div class="data-field">
-            <span class="field-label">Tipo de Sangre</span>
-            <span class="field-value blood-type">{{ data.patient.bloodType }}</span>
-          </div>
-        }
-        @if (data.patient.chronicDiseases) {
-          <div class="data-field full-width">
-            <span class="field-label">Enfermedades Crónicas</span>
-            <span class="field-value">{{ data.patient.chronicDiseases }}</span>
-          </div>
-        }
-        @if (data.patient.currentMedications) {
-          <div class="data-field full-width">
-            <span class="field-label">Medicamentos Actuales</span>
-            <span class="field-value">{{ data.patient.currentMedications }}</span>
-          </div>
-        }
-      </div>
-    </section>
-
-    <!-- Allergies -->
-    @if (data.allergies.length > 0) {
-      <section class="export-section">
-        <h3 class="export-section-title">
-          <i class="fa-solid fa-shield-virus"></i>
-          Alergias
-        </h3>
-        <table class="export-table">
-          <thead>
-            <tr>
-              <th>Alérgeno</th>
-              <th>Tipo</th>
-              <th>Severidad</th>
-              <th>Reacción</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (a of data.allergies; track a.allergenName) {
-              <tr>
-                <td><strong>{{ a.allergenName }}</strong></td>
-                <td>{{ a.allergenType }}</td>
-                <td><span class="badge" [ngClass]="getSeverityClass(a.severity)">{{ a.severity }}</span></td>
-                <td>{{ a.reactionDescription || '—' }}</td>
-                <td>{{ a.isActive ? 'Activa' : 'Inactiva' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </section>
-    }
-
-    <!-- Active Problems -->
-    @if (data.activeProblems.length > 0) {
-      <section class="export-section">
-        <h3 class="export-section-title">
-          <i class="fa-solid fa-clipboard-list"></i>
-          Lista de Problemas
-        </h3>
-        <table class="export-table">
-          <thead>
-            <tr>
-              <th>Descripción</th>
-              <th>CIE-10</th>
-              <th>Estado</th>
-              <th>Inicio</th>
-              <th>Resolución</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (p of data.activeProblems; track p.description) {
-              <tr>
-                <td>{{ p.description }}</td>
-                <td>{{ p.cie10Code || '—' }}</td>
-                <td><span class="badge" [ngClass]="getStatusClass(p.status)">{{ p.status }}</span></td>
-                <td>{{ formatShortDate(p.onsetDate) }}</td>
-                <td>{{ formatShortDate(p.resolvedDate) }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </section>
-    }
-
-    <!-- Recent Notes -->
-    @if (data.recentNotes.length > 0) {
-      <section class="export-section">
-        <h3 class="export-section-title">
-          <i class="fa-solid fa-notes-medical"></i>
-          Notas de Consulta Recientes
-        </h3>
-        @for (n of data.recentNotes; track n.createdAt) {
-          <div class="note-card">
-            <div class="note-header">
-              <span class="note-date">{{ formatShortDate(n.createdAt) }}</span>
-              @if (n.createdByName) {
-                <span class="note-doctor">Dr(a). {{ n.createdByName }}</span>
-              }
-            </div>
-            @if (n.chiefComplaint) {
-              <p><strong>Motivo:</strong> {{ n.chiefComplaint }}</p>
-            }
-            @if (n.diagnosis) {
-              <p>
-                <strong>Diagnóstico:</strong> {{ n.diagnosis }}
-                @if (n.diagnosisCie10Code) {
-                  <span class="cie10-tag">{{ n.diagnosisCie10Code }}</span>
-                }
-              </p>
-            }
-            @if (n.treatmentPlan) {
-              <p><strong>Plan:</strong> {{ n.treatmentPlan }}</p>
-            }
-          </div>
-        }
-      </section>
-    }
-
-    <!-- Treatments -->
-    @if (data.recentTreatments.length > 0) {
-      <section class="export-section">
-        <h3 class="export-section-title">
-          <i class="fa-solid fa-tooth"></i>
-          Tratamientos
-        </h3>
-        <table class="export-table">
-          <thead>
-            <tr>
-              <th>Servicio</th>
-              <th>Pieza</th>
-              <th>Estado</th>
-              <th>Fecha</th>
-              <th>Doctor</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (t of data.recentTreatments; track t.createdAt) {
-              <tr>
-                <td>{{ t.serviceName }}</td>
-                <td>{{ t.toothNumber || '—' }}</td>
-                <td><span class="badge" [ngClass]="getStatusClass(t.status)">{{ t.status }}</span></td>
-                <td>{{ formatShortDate(t.createdAt) }}</td>
-                <td>{{ t.doctorName || '—' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </section>
-    }
-
-    <!-- Prescriptions -->
-    @if (data.recentPrescriptions.length > 0) {
-      <section class="export-section">
-        <h3 class="export-section-title">
-          <i class="fa-solid fa-prescription"></i>
-          Recetas
-        </h3>
-        @for (rx of data.recentPrescriptions; track rx.prescriptionDate) {
-          <div class="prescription-card">
-            <div class="prescription-header">
-              <span>{{ formatShortDate(rx.prescriptionDate) }}</span>
-              @if (rx.doctorName) {
-                <span>Dr(a). {{ rx.doctorName }}</span>
-              }
-            </div>
-            <table class="export-table compact">
-              <thead>
-                <tr>
-                  <th>Medicamento</th>
-                  <th>Dosis</th>
-                  <th>Frecuencia</th>
-                  <th>Duración</th>
-                  <th>Indicaciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (item of rx.items; track item.medicationName) {
-                  <tr>
-                    <td><strong>{{ item.medicationName }}</strong></td>
-                    <td>{{ item.dosage || '—' }}</td>
-                    <td>{{ item.frequency || '—' }}</td>
-                    <td>{{ item.duration || '—' }}</td>
-                    <td>{{ item.instructions || '—' }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
-      </section>
-    }
-
-    <!-- Footer -->
-    <footer class="export-footer">
-      <div class="footer-line"></div>
-      <div class="footer-content">
-        <div class="footer-left">
-          <p><strong>Generado por:</strong> {{ data.generatedBy }}</p>
-          @if (data.professionalLicense) {
-            <p><strong>Cédula Profesional:</strong> {{ data.professionalLicense }}</p>
-          }
-        </div>
-        <div class="footer-right">
-          <p>{{ formatDate(data.generatedAt) }}</p>
-          <p class="disclaimer">Este documento es un resumen informativo y no sustituye al expediente clínico completo.</p>
-        </div>
-      </div>
-    </footer>
   </div>
-}
+</div>

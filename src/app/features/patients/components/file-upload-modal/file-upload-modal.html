@@ -1,0 +1,55 @@
+<app-modal
+  [title]="'Subir Archivo'"
+  [subtitle]="'Adjuntar documento al expediente'"
+  [icon]="'fa-paperclip'"
+  [size]="'md'"
+  (closed)="onClose()"
+>
+  <form [formGroup]="form">
+    <div class="form-group">
+      <label class="form-label">Archivo <span class="required">*</span></label>
+      <input type="file" class="form-input"
+        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+        (change)="onFileSelected($event)" />
+      @if (selectedFile(); as file) {
+        <span class="file-selected">
+          <i class="fa-solid fa-check"></i>
+          {{ file.name }} ({{ formatFileSize(file.size) }})
+        </span>
+      }
+    </div>
+    <div class="form-row-2">
+      <div class="form-group">
+        <label class="form-label">Categoría</label>
+        <select class="form-input" formControlName="category">
+          <option value="">Sin categoría</option>
+          @for (cat of FILE_CATEGORIES; track cat.value) {
+            <option [value]="cat.value">{{ cat.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción</label>
+        <input type="text" class="form-input" formControlName="description"
+          placeholder="Descripción del archivo..." />
+      </div>
+    </div>
+  </form>
+
+  <div modal-footer>
+    <button type="button" class="btn btn-outline" (click)="onClose()" [disabled]="loading()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()"
+      [disabled]="loading() || !selectedFile()">
+      @if (loading()) {
+        <span class="btn-spinner"></span>
+        Subiendo...
+      } @else {
+        <i class="fa-solid fa-upload"></i>
+        Subir Archivo
+      }
+    </button>
+  </div>
+</app-modal>

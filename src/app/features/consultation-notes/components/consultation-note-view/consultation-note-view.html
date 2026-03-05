@@ -92,24 +92,24 @@
               <i class="fa-solid fa-diagnoses"></i>
               Diagnóstico
             </h3>
-            @if (!problemRegistered()) {
+            @if (!diagnosisRegistered()) {
               <button
                 class="btn btn-outline btn-sm"
-                [disabled]="registeringProblem() || !patientId()"
-                (click)="registerAsProblem()"
-                title="Registrar este diagnóstico en la lista de problemas del paciente"
+                [disabled]="registeringDiagnosis() || !patientId()"
+                (click)="registerAsDiagnosis()"
+                title="Registrar este diagnóstico en la lista de diagnósticos del paciente"
               >
-                @if (registeringProblem()) {
+                @if (registeringDiagnosis()) {
                   <i class="fa-solid fa-spinner fa-spin"></i>
                 } @else {
                   <i class="fa-solid fa-clipboard-list"></i>
                 }
-                Registrar como Problema
+                Registrar Diagnóstico
               </button>
             } @else {
               <span class="badge badge-success">
                 <i class="fa-solid fa-check"></i>
-                Registrado como problema
+                Diagnóstico registrado
               </span>
             }
           </div>
@@ -118,6 +118,12 @@
             <div class="cie10-tag">
               <i class="fa-solid fa-tag"></i>
               CIE-10: {{ n.diagnosisCie10Code }}
+            </div>
+          }
+          @if (n.patientDiagnosisId && n.patientDiagnosisDescription) {
+            <div class="cie10-tag" style="margin-top: var(--spacing-xs);">
+              <i class="fa-solid fa-link"></i>
+              Vinculado a: {{ n.patientDiagnosisDescription }}
             </div>
           }
         </div>

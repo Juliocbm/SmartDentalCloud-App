@@ -149,11 +149,6 @@
           <!-- Indicadores -->
           <td class="indicators">
             <div class="indicator-badges">
-              @if (hasAllergies(patient)) {
-                <span class="badge badge-icon badge-warning" title="Tiene alergias registradas">
-                  <i class="fa-solid fa-exclamation-triangle"></i>
-                </span>
-              }
               @if (hasMedicalHistory(patient)) {
                 <span class="badge badge-icon badge-info" title="Tiene historia médica">
                   <i class="fa-solid fa-heartbeat"></i>
