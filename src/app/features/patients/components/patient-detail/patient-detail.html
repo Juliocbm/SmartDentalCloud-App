@@ -527,52 +527,53 @@
           } @else {
             <div class="allergies-list">
               @for (allergy of allergies(); track allergy.id) {
-                <div class="allergy-card" [class.allergy-inactive]="!allergy.isActive">
-                  <div class="allergy-header">
-                    <div class="allergy-title">
+                <div class="allergy-card-compact" [class.allergy-inactive]="!allergy.isActive">
+                  <div class="allergy-main-row">
+                    <div class="allergy-info">
                       <span class="allergy-name">{{ allergy.allergenName }}</span>
-                      <span class="badge" [ngClass]="getSeverityClass(allergy.severity)">
-                        {{ getSeverityLabel(allergy.severity) }}
-                      </span>
+                      <span class="badge badge-sm" [ngClass]="getSeverityClass(allergy.severity)">{{ getSeverityLabel(allergy.severity) }}</span>
+                      <span class="badge badge-sm badge-secondary">{{ getAllergenTypeLabel(allergy.allergenType) }}</span>
                       @if (!allergy.isActive) {
-                        <span class="badge badge-secondary">Inactiva</span>
+                        <span class="badge badge-sm badge-secondary">Inactiva</span>
                       }
                       @if (allergy.verifiedByProfessional) {
-                        <span class="badge badge-success" title="Verificado por profesional">
-                          <i class="fa-solid fa-check-circle"></i> Verificado
-                        </span>
+                        <span class="badge badge-sm badge-success" title="Verificado"><i class="fa-solid fa-check-circle"></i></span>
                       }
                     </div>
                     @if (allergy.isActive) {
-                      <button class="btn btn-ghost btn-sm btn-danger-text" title="Desactivar"
-                        (click)="deactivateAllergy(allergy)">
+                      <button class="btn btn-ghost btn-xs btn-danger-text" title="Desactivar" (click)="deactivateAllergy(allergy)">
                         <i class="fa-solid fa-ban"></i>
                       </button>
                     }
                   </div>
-                  <div class="allergy-details">
-                    <span class="allergy-type">
-                      <i class="fa-solid fa-tag"></i> {{ getAllergenTypeLabel(allergy.allergenType) }}
-                    </span>
-                    @if (allergy.reactionDescription) {
-                      <span class="allergy-reaction">
-                        <i class="fa-solid fa-notes-medical"></i> {{ allergy.reactionDescription }}
-                      </span>
-                    }
-                    @if (allergy.detectedAt) {
-                      <span class="allergy-date">
-                        <i class="fa-solid fa-calendar"></i> Detectada: {{ formatDateFile(allergy.detectedAt) }}
-                      </span>
-                    }
-                    @if (allergy.notes) {
-                      <span class="allergy-notes">
-                        <i class="fa-solid fa-comment"></i> {{ allergy.notes }}
-                      </span>
-                    }
-                  </div>
+                  @if (allergy.reactionDescription || allergy.detectedAt || allergy.notes) {
+                    <div class="allergy-meta">
+                      @if (allergy.reactionDescription) {
+                        <span class="text-sm"><i class="fa-solid fa-notes-medical"></i> {{ allergy.reactionDescription }}</span>
+                      }
+                      @if (allergy.detectedAt) {
+                        <span class="text-sm text-muted"><i class="fa-solid fa-calendar"></i> {{ formatDateFile(allergy.detectedAt) }}</span>
+                      }
+                      @if (allergy.notes) {
+                        <span class="text-sm text-muted">{{ allergy.notes }}</span>
+                      }
+                    </div>
+                  }
                 </div>
               }
             </div>
+            @if (allergiesTotalCount() > 0) {
+              <div class="pagination-mini">
+                <button class="btn-page" [disabled]="allergiesPage() === 1" (click)="onAllergiesPageChange(allergiesPage() - 1)">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <span class="pagination-info-mini">{{ allergiesPage() }} / {{ allergiesTotalPages() }}</span>
+                <button class="btn-page" [disabled]="allergiesPage() === allergiesTotalPages()" (click)="onAllergiesPageChange(allergiesPage() + 1)">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <span class="pagination-total">{{ allergiesTotalCount() }} registro(s)</span>
+              </div>
+            }
           }
         </div>
       }
@@ -609,65 +610,60 @@
           } @else {
             <div class="consents-list">
               @for (consent of consents(); track consent.id) {
-                <div class="consent-card">
-                  <div class="consent-header">
-                    <div class="consent-title">
+                <div class="consent-card-compact">
+                  <div class="consent-main-row">
+                    <div class="consent-info">
                       <span class="consent-name">{{ consent.title }}</span>
-                      <span class="badge" [ngClass]="getConsentStatusClass(consent.status)">
-                        {{ getConsentStatusLabel(consent.status) }}
-                      </span>
+                      <span class="badge badge-sm" [ngClass]="getConsentStatusClass(consent.status)">{{ getConsentStatusLabel(consent.status) }}</span>
+                      <span class="badge badge-sm badge-secondary">{{ getConsentTypeLabel(consent.consentType) }}</span>
+                      @if (consent.signedAt) {
+                        <span class="text-sm text-muted"><i class="fa-solid fa-pen-nib"></i> {{ formatDateFile(consent.signedAt) }}</span>
+                      }
                     </div>
-                    <div class="consent-card-actions">
+                    <div class="consent-actions-compact">
                       @if (consent.status === 'Pending') {
-                        <button class="btn btn-primary btn-sm" (click)="startSignConsent(consent)">
+                        <button class="btn btn-primary btn-xs" (click)="startSignConsent(consent)">
                           <i class="fa-solid fa-file-signature"></i> Firmar
                         </button>
                       }
                       @if (consent.status === 'Signed') {
-                        <button class="btn btn-ghost btn-sm" title="Imprimir"
-                          (click)="openConsentPrintView(consent)">
+                        <button class="btn btn-ghost btn-xs" title="Imprimir" (click)="openConsentPrintView(consent)">
                           <i class="fa-solid fa-print"></i>
                         </button>
-                        <button class="btn btn-ghost btn-sm" title="Ver firmas"
-                          (click)="loadConsentSignatures(consent)">
+                        <button class="btn btn-ghost btn-xs" title="Ver firmas" (click)="loadConsentSignatures(consent)">
                           <i class="fa-solid fa-eye"></i>
                         </button>
-                        <button class="btn btn-ghost btn-sm btn-danger-text" title="Revocar"
-                          (click)="revokeConsent(consent)">
-                          <i class="fa-solid fa-ban"></i> Revocar
+                        <button class="btn btn-ghost btn-xs btn-danger-text" title="Revocar" (click)="revokeConsent(consent)">
+                          <i class="fa-solid fa-ban"></i>
                         </button>
                       }
                     </div>
                   </div>
-                  <div class="consent-details">
-                    <span>
-                      <i class="fa-solid fa-tag"></i> {{ getConsentTypeLabel(consent.consentType) }}
-                    </span>
-                    @if (consent.signedAt) {
-                      <span>
-                        <i class="fa-solid fa-pen-nib"></i> Firmado: {{ formatDateFile(consent.signedAt) }}
-                      </span>
-                    }
-                    @if (consent.witnessName) {
-                      <span>
-                        <i class="fa-solid fa-user"></i> Testigo: {{ consent.witnessName }}
-                      </span>
-                    }
-                    @if (consent.revokedAt) {
-                      <span class="text-danger">
-                        <i class="fa-solid fa-ban"></i> Revocado: {{ formatDateFile(consent.revokedAt) }}
-                        @if (consent.revocationReason) {
-                          — {{ consent.revocationReason }}
-                        }
-                      </span>
-                    }
-                    <span class="text-muted">
-                      <i class="fa-solid fa-clock"></i> Creado: {{ formatDateFile(consent.createdAt) }}
-                    </span>
-                  </div>
+                  @if (consent.witnessName || consent.revokedAt) {
+                    <div class="consent-meta">
+                      @if (consent.witnessName) {
+                        <span class="text-sm"><i class="fa-solid fa-user"></i> Testigo: {{ consent.witnessName }}</span>
+                      }
+                      @if (consent.revokedAt) {
+                        <span class="text-sm text-danger"><i class="fa-solid fa-ban"></i> Revocado {{ formatDateFile(consent.revokedAt) }}@if (consent.revocationReason) { — {{ consent.revocationReason }}}</span>
+                      }
+                    </div>
+                  }
                 </div>
               }
             </div>
+            @if (consentsTotalCount() > 0) {
+              <div class="pagination-mini">
+                <button class="btn-page" [disabled]="consentsPage() === 1" (click)="onConsentsPageChange(consentsPage() - 1)">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <span class="pagination-info-mini">{{ consentsPage() }} / {{ consentsTotalPages() }}</span>
+                <button class="btn-page" [disabled]="consentsPage() === consentsTotalPages()" (click)="onConsentsPageChange(consentsPage() + 1)">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <span class="pagination-total">{{ consentsTotalCount() }} registro(s)</span>
+              </div>
+            }
           }
 
           <!-- Consent Signatures Viewer -->
@@ -779,64 +775,55 @@
           } @else {
             <div class="problems-list">
               @for (diagnosis of diagnoses(); track diagnosis.id) {
-                <div class="problem-card" [class.problem-resolved]="diagnosis.status !== 'Active'">
-                  <div class="problem-header">
-                    <div class="problem-title">
+                <div class="problem-card-compact" [class.problem-resolved]="diagnosis.status !== 'Active'">
+                  <div class="problem-main-row">
+                    <div class="problem-info">
                       <span class="problem-name">{{ diagnosis.description }}</span>
-                      <span class="badge" [ngClass]="getDiagnosisStatusClass(diagnosis.status)">
-                        {{ getDiagnosisStatusLabel(diagnosis.status) }}
-                      </span>
+                      <span class="badge badge-sm" [ngClass]="getDiagnosisStatusClass(diagnosis.status)">{{ getDiagnosisStatusLabel(diagnosis.status) }}</span>
                       @if (diagnosis.cie10Code) {
-                        <span class="badge badge-info">{{ diagnosis.cie10Code }}</span>
+                        <span class="badge badge-sm badge-info">{{ diagnosis.cie10Code }}</span>
                       }
                       @if (diagnosis.severity) {
-                        <span class="badge" [ngClass]="getDiagnosisSeverityClass(diagnosis.severity)">
-                          {{ getDiagnosisSeverityLabel(diagnosis.severity) }}
-                        </span>
+                        <span class="badge badge-sm" [ngClass]="getDiagnosisSeverityClass(diagnosis.severity)">{{ getDiagnosisSeverityLabel(diagnosis.severity) }}</span>
                       }
                       @if (diagnosis.linkedTreatmentsCount > 0) {
-                        <span class="badge badge-primary">
-                          <i class="fa-solid fa-tooth"></i>
-                          {{ diagnosis.linkedTreatmentsCount }} tratamiento{{ diagnosis.linkedTreatmentsCount > 1 ? 's' : '' }}
-                        </span>
+                        <span class="badge badge-sm badge-primary"><i class="fa-solid fa-tooth"></i> {{ diagnosis.linkedTreatmentsCount }}</span>
+                      }
+                      @if (diagnosis.onsetDate) {
+                        <span class="text-sm text-muted"><i class="fa-solid fa-calendar"></i> {{ formatDateFile(diagnosis.onsetDate) }}</span>
                       }
                     </div>
                     @if (diagnosis.status === 'Active') {
-                      <button class="btn btn-ghost btn-sm btn-success-text" title="Marcar como resuelto"
-                        (click)="resolveDiagnosis(diagnosis)">
-                        <i class="fa-solid fa-check-circle"></i> Resolver
+                      <button class="btn btn-ghost btn-xs btn-success-text" title="Marcar como resuelto" (click)="resolveDiagnosis(diagnosis)">
+                        <i class="fa-solid fa-check-circle"></i>
                       </button>
                     }
                   </div>
-                  @if (diagnosis.status === 'Active' && diagnosis.linkedTreatmentsCount > 0 && diagnosis.linkedCompletedTreatmentsCount === diagnosis.linkedTreatmentsCount) {
-                    <div class="alert alert-success alert-compact">
-                      <i class="fa-solid fa-lightbulb"></i>
-                      Todos los tratamientos vinculados están completados. Se sugiere marcar este diagnóstico como resuelto.
+                  @if (diagnosis.notes || (diagnosis.status === 'Active' && diagnosis.linkedTreatmentsCount > 0 && diagnosis.linkedCompletedTreatmentsCount === diagnosis.linkedTreatmentsCount)) {
+                    <div class="problem-meta">
+                      @if (diagnosis.status === 'Active' && diagnosis.linkedTreatmentsCount > 0 && diagnosis.linkedCompletedTreatmentsCount === diagnosis.linkedTreatmentsCount) {
+                        <span class="text-sm text-success"><i class="fa-solid fa-lightbulb"></i> Tratamientos completados - sugerir resolver</span>
+                      }
+                      @if (diagnosis.notes) {
+                        <span class="text-sm text-muted">{{ diagnosis.notes }}</span>
+                      }
                     </div>
                   }
-                  <div class="problem-details">
-                    @if (diagnosis.onsetDate) {
-                      <span>
-                        <i class="fa-solid fa-calendar"></i> Inicio: {{ formatDateFile(diagnosis.onsetDate) }}
-                      </span>
-                    }
-                    @if (diagnosis.resolvedDate) {
-                      <span>
-                        <i class="fa-solid fa-calendar-check"></i> Resuelto: {{ formatDateFile(diagnosis.resolvedDate) }}
-                      </span>
-                    }
-                    @if (diagnosis.notes) {
-                      <span>
-                        <i class="fa-solid fa-comment"></i> {{ diagnosis.notes }}
-                      </span>
-                    }
-                    <span class="text-muted">
-                      <i class="fa-solid fa-clock"></i> Registrado: {{ formatDateFile(diagnosis.createdAt) }}
-                    </span>
-                  </div>
                 </div>
               }
             </div>
+            @if (diagnosesTotalCount() > 0) {
+              <div class="pagination-mini">
+                <button class="btn-page" [disabled]="diagnosesPage() === 1" (click)="onDiagnosesPageChange(diagnosesPage() - 1)">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <span class="pagination-info-mini">{{ diagnosesPage() }} / {{ diagnosesTotalPages() }}</span>
+                <button class="btn-page" [disabled]="diagnosesPage() === diagnosesTotalPages()" (click)="onDiagnosesPageChange(diagnosesPage() + 1)">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <span class="pagination-total">{{ diagnosesTotalCount() }} registro(s)</span>
+              </div>
+            }
           }
         </div>
       }
@@ -934,6 +921,18 @@
                 </div>
               }
             </div>
+            @if (radioTotalPages() > 1) {
+              <div class="pagination-mini">
+                <button class="btn-page" [disabled]="radioPage() === 1" (click)="onRadioPageChange(radioPage() - 1)">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <span class="pagination-info-mini">{{ radioPage() }} / {{ radioTotalPages() }}</span>
+                <button class="btn-page" [disabled]="radioPage() === radioTotalPages()" (click)="onRadioPageChange(radioPage() + 1)">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <span class="pagination-total">{{ radioTotalCount() }} imagen(es)</span>
+              </div>
+            }
           }
 
           <!-- Empty state -->
@@ -1143,7 +1142,12 @@
 
             @if (fin.pendingInvoices && fin.pendingInvoices.length > 0) {
               <div class="financial-section">
-                <h4><i class="fa-solid fa-file-invoice-dollar"></i> Facturas Pendientes</h4>
+                <h4>
+                  <i class="fa-solid fa-file-invoice-dollar"></i> Facturas Pendientes
+                  @if (fin.totalPendingInvoicesCount > fin.pendingInvoices.length) {
+                    <span class="badge badge-sm badge-warning">{{ fin.pendingInvoices.length }} de {{ fin.totalPendingInvoicesCount }}</span>
+                  }
+                </h4>
                 <table class="mini-table">
                   <thead>
                     <tr>
@@ -1171,7 +1175,12 @@
 
             @if (fin.recentPayments && fin.recentPayments.length > 0) {
               <div class="financial-section">
-                <h4><i class="fa-solid fa-money-bill-wave"></i> Pagos Recientes</h4>
+                <h4>
+                  <i class="fa-solid fa-money-bill-wave"></i> Pagos Recientes
+                  @if (fin.totalRecentPaymentsCount > fin.recentPayments.length) {
+                    <span class="badge badge-sm badge-info">{{ fin.recentPayments.length }} de {{ fin.totalRecentPaymentsCount }}</span>
+                  }
+                </h4>
                 <table class="mini-table">
                   <thead>
                     <tr>
@@ -1391,6 +1400,17 @@
                 </div>
               }
             </div>
+            @if (changesTotalPages() > 1) {
+              <div class="pagination-mini">
+                <button class="btn-page" [disabled]="changesPage() === 1" (click)="onChangesPageChange(changesPage() - 1)">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <span class="pagination-info-mini">{{ changesPage() }} / {{ changesTotalPages() }}</span>
+                <button class="btn-page" [disabled]="changesPage() === changesTotalPages()" (click)="onChangesPageChange(changesPage() + 1)">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            }
           }
         </div>
       }
@@ -1471,6 +1491,18 @@
                 </div>
               }
             </div>
+            @if (filesTotalPages() > 1) {
+              <div class="pagination-mini">
+                <button class="btn-page" [disabled]="filesPage() === 1" (click)="onFilesPageChange(filesPage() - 1)">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <span class="pagination-info-mini">{{ filesPage() }} / {{ filesTotalPages() }}</span>
+                <button class="btn-page" [disabled]="filesPage() === filesTotalPages()" (click)="onFilesPageChange(filesPage() + 1)">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+                <span class="pagination-total">{{ filesTotalCount() }} archivo(s)</span>
+              </div>
+            }
           }
 
           <!-- Empty (filter active, no matches) -->

@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiService } from '../../../core/services/api.service';
+import { PaginatedList } from '../../../core/models/pagination.models';
 import { AttachedFile } from '../models/attached-file.models';
 
 @Injectable({ providedIn: 'root' })
@@ -11,12 +12,14 @@ export class AttachedFilesService {
   private api = inject(ApiService);
   private apiUrl = environment.apiUrl;
 
-  getByPatient(patientId: string, category?: string): Observable<AttachedFile[]> {
-    let params = new HttpParams();
+  getByPatient(patientId: string, pageNumber: number = 1, pageSize: number = 12, category?: string): Observable<PaginatedList<AttachedFile>> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
     if (category) {
       params = params.set('category', category);
     }
-    return this.http.get<AttachedFile[]>(`${this.apiUrl}/patients/${patientId}/files`, { params });
+    return this.http.get<PaginatedList<AttachedFile>>(`${this.apiUrl}/patients/${patientId}/files`, { params });
   }
 
   getById(fileId: string): Observable<AttachedFile> {

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
+import { PaginatedList } from '../../../core/models/pagination.models';
 import {
   InformedConsent,
   CreateInformedConsentRequest,
@@ -20,10 +21,10 @@ export interface ConsentCheck {
 export class InformedConsentsService {
   private api = inject(ApiService);
 
-  getByPatient(patientId: string, status?: string): Observable<InformedConsent[]> {
-    const params: any = {};
+  getByPatient(patientId: string, pageNumber: number = 1, pageSize: number = 10, status?: string): Observable<PaginatedList<InformedConsent>> {
+    const params: any = { pageNumber, pageSize };
     if (status) params.status = status;
-    return this.api.get<InformedConsent[]>(`/patients/${patientId}/consents`, params);
+    return this.api.get<PaginatedList<InformedConsent>>(`/patients/${patientId}/consents`, params);
   }
 
   checkConsent(patientId: string, options?: { consentType?: string; appointmentId?: string; treatmentId?: string }): Observable<ConsentCheck> {

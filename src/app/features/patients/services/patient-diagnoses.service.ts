@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
+import { PaginatedList } from '../../../core/models/pagination.models';
 import {
   PatientDiagnosis,
   CreatePatientDiagnosisRequest,
@@ -11,10 +12,10 @@ import {
 export class PatientDiagnosesService {
   private api = inject(ApiService);
 
-  getByPatient(patientId: string, status?: string): Observable<PatientDiagnosis[]> {
-    const params: any = {};
+  getByPatient(patientId: string, pageNumber: number = 1, pageSize: number = 10, status?: string): Observable<PaginatedList<PatientDiagnosis>> {
+    const params: any = { pageNumber, pageSize };
     if (status) params.status = status;
-    return this.api.get<PatientDiagnosis[]>(`/patients/${patientId}/diagnoses`, params);
+    return this.api.get<PaginatedList<PatientDiagnosis>>(`/patients/${patientId}/diagnoses`, params);
   }
 
   create(patientId: string, data: CreatePatientDiagnosisRequest): Observable<PatientDiagnosis> {

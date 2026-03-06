@@ -29,11 +29,17 @@ export class DashboardService {
         limit: 8
       }).pipe(catchError(() => of([] as DashboardAppointment[]))),
 
-      treatments: this.api.get<DashboardTreatment[]>('/treatments').pipe(
+      treatments: this.api.get<DashboardTreatment[]>('/treatments', {
+        status: 'InProgress',
+        limit: 50
+      }).pipe(
         catchError(() => of([] as DashboardTreatment[]))
       ),
 
-      treatmentPlans: this.api.get<DashboardTreatmentPlan[]>('/treatment-plans').pipe(
+      treatmentPlans: this.api.get<DashboardTreatmentPlan[]>('/treatment-plans', {
+        status: 'Draft,PendingApproval',
+        limit: 20
+      }).pipe(
         catchError(() => of([] as DashboardTreatmentPlan[]))
       ),
 

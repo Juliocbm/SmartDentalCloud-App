@@ -277,10 +277,10 @@ export class AppointmentDetailComponent implements OnInit {
 
   private loadConsents(patientId: string, appointmentId: string): void {
     this.consentsLoading.set(true);
-    this.consentsService.getByPatient(patientId).subscribe({
-      next: (consents) => {
+    this.consentsService.getByPatient(patientId, 1, 50).subscribe({
+      next: (res) => {
         this.appointmentConsents.set(
-          consents.filter(c => c.appointmentId === appointmentId)
+          res.items.filter(c => c.appointmentId === appointmentId)
         );
         this.consentsLoading.set(false);
       },

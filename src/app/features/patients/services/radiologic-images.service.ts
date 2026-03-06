@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiService } from '../../../core/services/api.service';
+import { PaginatedList } from '../../../core/models/pagination.models';
 import { RadiologicImageDto } from '../models/radiologic-image.models';
 
 @Injectable({ providedIn: 'root' })
@@ -11,10 +12,12 @@ export class RadiologicImagesService {
   private api = inject(ApiService);
   private apiUrl = environment.apiUrl;
 
-  getByPatient(patientId: string, imageType?: string): Observable<RadiologicImageDto[]> {
-    let params = new HttpParams();
+  getByPatient(patientId: string, pageNumber: number = 1, pageSize: number = 12, imageType?: string): Observable<PaginatedList<RadiologicImageDto>> {
+    let params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
     if (imageType) params = params.set('imageType', imageType);
-    return this.http.get<RadiologicImageDto[]>(
+    return this.http.get<PaginatedList<RadiologicImageDto>>(
       `${this.apiUrl}/patients/${patientId}/radiologic-images`, { params }
     );
   }

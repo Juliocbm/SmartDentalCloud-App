@@ -95,9 +95,20 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   error = signal<string | null>(null);
   activeTab = signal<'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'>('info');
 
+  // Pagination loaded flags
+  private allergiesLoaded = false;
+  private consentsLoaded = false;
+  private diagnosesLoaded = false;
+  private radioLoaded = false;
+  private filesLoaded = false;
+  private changesLoaded = false;
+
   // Allergies state (NOM-024)
   allergies = signal<PatientAllergy[]>([]);
   allergiesLoading = signal(false);
+  allergiesPage = signal(1);
+  allergiesTotalPages = signal(0);
+  allergiesTotalCount = signal(0);
   getAllergenTypeLabel = getAllergenTypeLabel;
   getSeverityLabel = getSeverityLabel;
   getSeverityClass = getSeverityClass;
@@ -105,6 +116,9 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   // Consents state (NOM-024)
   consents = signal<InformedConsent[]>([]);
   consentsLoading = signal(false);
+  consentsPage = signal(1);
+  consentsTotalPages = signal(0);
+  consentsTotalCount = signal(0);
   consentAppointmentId = signal<string | null>(null);
   consentTreatmentId = signal<string | null>(null);
   getConsentTypeLabel = getConsentTypeLabel;
@@ -127,11 +141,18 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   changeHistory = signal<ChangeHistoryEntry[]>([]);
   changesLoading = signal(false);
   changesEntityFilter = signal('');
+  changesPage = signal(1);
+  changesTotalPages = signal(0);
+  changesTotalCount = signal(0);
+  readonly CHANGES_PAGE_SIZE = 5;
   ENTITY_TYPE_FILTERS = PATIENT_ENTITY_TYPE_FILTERS;
 
   // Diagnoses state (NOM-024)
   diagnoses = signal<PatientDiagnosis[]>([]);
   diagnosesLoading = signal(false);
+  diagnosesPage = signal(1);
+  diagnosesTotalPages = signal(0);
+  diagnosesTotalCount = signal(0);
   getDiagnosisStatusLabel = getDiagnosisStatusLabel;
   getDiagnosisStatusClass = getDiagnosisStatusClass;
   getDiagnosisSeverityLabel = getDiagnosisSeverityLabel;
@@ -140,6 +161,9 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   // Radiologic images state (NOM-024 §5.3)
   radioImages = signal<RadiologicImageDto[]>([]);
   radioImagesLoading = signal(false);
+  radioPage = signal(1);
+  radioTotalPages = signal(0);
+  radioTotalCount = signal(0);
   radioViewingImage = signal<RadiologicImageDto | null>(null);
   radioBrightness = signal(100);
   radioContrast = signal(100);
@@ -176,6 +200,9 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   // Attached files state
   files = signal<AttachedFile[]>([]);
   filesLoading = signal(false);
+  filesPage = signal(1);
+  filesTotalPages = signal(0);
+  filesTotalCount = signal(0);
   FILE_CATEGORIES = FILE_CATEGORIES;
   filterCategory = signal('');
   filteredFiles = computed(() => {
@@ -236,19 +263,19 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
 
   setActiveTab(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'): void {
     this.activeTab.set(tab);
-    if (tab === 'allergies' && this.allergies().length === 0 && !this.allergiesLoading()) {
+    if (tab === 'allergies' && !this.allergiesLoaded && !this.allergiesLoading()) {
       this.loadAllergies();
     }
-    if (tab === 'consents' && this.consents().length === 0 && !this.consentsLoading()) {
+    if (tab === 'consents' && !this.consentsLoaded && !this.consentsLoading()) {
       this.loadConsents();
     }
-    if (tab === 'problems' && this.diagnoses().length === 0 && !this.diagnosesLoading()) {
+    if (tab === 'problems' && !this.diagnosesLoaded && !this.diagnosesLoading()) {
       this.loadDiagnoses();
     }
-    if (tab === 'radiographs' && this.radioImages().length === 0 && !this.radioImagesLoading()) {
+    if (tab === 'radiographs' && !this.radioLoaded && !this.radioImagesLoading()) {
       this.loadRadioImages();
     }
-    if (tab === 'files' && this.files().length === 0 && !this.filesLoading()) {
+    if (tab === 'files' && !this.filesLoaded && !this.filesLoading()) {
       this.loadFiles();
     }
     if (tab === 'fiscal') {
@@ -260,7 +287,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     if (tab === 'history' && !this.patientHistory() && !this.historyLoading()) {
       this.loadHistory();
     }
-    if (tab === 'changes' && this.changeHistory().length === 0 && !this.changesLoading()) {
+    if (tab === 'changes' && !this.changesLoaded && !this.changesLoading()) {
       this.loadChangeHistory();
     }
   }
@@ -272,9 +299,12 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     if (!pat) return;
 
     this.allergiesLoading.set(true);
-    this.allergiesService.getByPatient(pat.id, false).subscribe({
-      next: (data) => {
-        this.allergies.set(data);
+    this.allergiesService.getByPatient(pat.id, this.allergiesPage(), 5, false).subscribe({
+      next: (res) => {
+        this.allergies.set(res.items);
+        this.allergiesTotalPages.set(res.totalPages);
+        this.allergiesTotalCount.set(res.totalCount);
+        this.allergiesLoaded = true;
         this.allergiesLoading.set(false);
       },
       error: (err) => {
@@ -282,6 +312,11 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
         this.allergiesLoading.set(false);
       }
     });
+  }
+
+  onAllergiesPageChange(page: number): void {
+    this.allergiesPage.set(page);
+    this.loadAllergies();
   }
 
   openAllergyModal(): void {
@@ -332,9 +367,12 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     if (!pat) return;
 
     this.consentsLoading.set(true);
-    this.consentsService.getByPatient(pat.id).subscribe({
-      next: (data) => {
-        this.consents.set(data);
+    this.consentsService.getByPatient(pat.id, this.consentsPage(), 5).subscribe({
+      next: (res) => {
+        this.consents.set(res.items);
+        this.consentsTotalPages.set(res.totalPages);
+        this.consentsTotalCount.set(res.totalCount);
+        this.consentsLoaded = true;
         this.consentsLoading.set(false);
       },
       error: (err) => {
@@ -342,6 +380,11 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
         this.consentsLoading.set(false);
       }
     });
+  }
+
+  onConsentsPageChange(page: number): void {
+    this.consentsPage.set(page);
+    this.loadConsents();
   }
 
   openConsentModal(): void {
@@ -468,9 +511,13 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
 
     this.changesLoading.set(true);
     const entityFilter = this.changesEntityFilter() || undefined;
-    this.patientsService.getChangeHistory(pat.id, 1, 100, entityFilter).subscribe({
+    this.patientsService.getChangeHistory(pat.id, this.changesPage(), this.CHANGES_PAGE_SIZE, entityFilter).subscribe({
       next: (data) => {
         this.changeHistory.set(data);
+        // Change history endpoint returns List<AuditLogDto>, not PaginatedListDto yet
+        // If items < pageSize, we're on the last page
+        this.changesTotalPages.set(data.length < this.CHANGES_PAGE_SIZE ? this.changesPage() : this.changesPage() + 1);
+        this.changesLoaded = true;
         this.changesLoading.set(false);
       },
       error: () => {
@@ -480,7 +527,13 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   }
 
   onChangesFilterChange(): void {
+    this.changesPage.set(1);
     this.changeHistory.set([]);
+    this.loadChangeHistory();
+  }
+
+  onChangesPageChange(page: number): void {
+    this.changesPage.set(page);
     this.loadChangeHistory();
   }
 
@@ -518,9 +571,12 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     if (!pat) return;
 
     this.diagnosesLoading.set(true);
-    this.diagnosesService.getByPatient(pat.id).subscribe({
-      next: (data) => {
-        this.diagnoses.set(data);
+    this.diagnosesService.getByPatient(pat.id, this.diagnosesPage(), 5).subscribe({
+      next: (res) => {
+        this.diagnoses.set(res.items);
+        this.diagnosesTotalPages.set(res.totalPages);
+        this.diagnosesTotalCount.set(res.totalCount);
+        this.diagnosesLoaded = true;
         this.diagnosesLoading.set(false);
       },
       error: (err) => {
@@ -528,6 +584,11 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
         this.diagnosesLoading.set(false);
       }
     });
+  }
+
+  onDiagnosesPageChange(page: number): void {
+    this.diagnosesPage.set(page);
+    this.loadDiagnoses();
   }
 
   openDiagnosisModal(): void {
@@ -574,17 +635,25 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     if (!pat) return;
 
     this.radioImagesLoading.set(true);
-    this.radiologicImagesService.getByPatient(pat.id).subscribe({
-      next: (data) => {
-        this.radioImages.set(data);
+    this.radiologicImagesService.getByPatient(pat.id, this.radioPage(), 12).subscribe({
+      next: (res) => {
+        this.radioImages.set(res.items);
+        this.radioTotalPages.set(res.totalPages);
+        this.radioTotalCount.set(res.totalCount);
+        this.radioLoaded = true;
         this.radioImagesLoading.set(false);
-        this.loadRadioBlobUrls(pat.id, data);
+        this.loadRadioBlobUrls(pat.id, res.items);
       },
       error: (err) => {
         this.notifications.error(getApiErrorMessage(err, 'Error al cargar radiografías'));
         this.radioImagesLoading.set(false);
       }
     });
+  }
+
+  onRadioPageChange(page: number): void {
+    this.radioPage.set(page);
+    this.loadRadioImages();
   }
 
   private loadRadioBlobUrls(patientId: string, images: RadiologicImageDto[]): void {
@@ -680,14 +749,12 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     if (!patient) return;
 
     this.filesLoading.set(true);
-    this.attachedFilesService.getByPatient(patient.id).subscribe({
-      next: (data) => {
-        const parsed = data.map(f => ({
-          ...f,
-          createdAt: new Date(f.createdAt)
-        }));
-        parsed.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-        this.files.set(parsed);
+    this.attachedFilesService.getByPatient(patient.id, this.filesPage(), 5).subscribe({
+      next: (res) => {
+        this.files.set(res.items);
+        this.filesTotalPages.set(res.totalPages);
+        this.filesTotalCount.set(res.totalCount);
+        this.filesLoaded = true;
         this.filesLoading.set(false);
       },
       error: (err) => {
@@ -695,6 +762,11 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
         this.filesLoading.set(false);
       }
     });
+  }
+
+  onFilesPageChange(page: number): void {
+    this.filesPage.set(page);
+    this.loadFiles();
   }
 
   openFileUploadModal(): void {

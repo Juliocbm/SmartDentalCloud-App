@@ -33,7 +33,9 @@ export interface PatientFinancialSummary {
   pendingBalance: number;
   lastPaymentDate: Date | null;
   recentPayments: PaymentDetail[];
+  totalRecentPaymentsCount: number;
   pendingInvoices: InvoiceDetail[];
+  totalPendingInvoicesCount: number;
 }
 
 // Interfaces auxiliares para resúmenes

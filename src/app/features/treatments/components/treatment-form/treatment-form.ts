@@ -154,8 +154,8 @@ export class TreatmentFormComponent implements OnInit {
   }
 
   private loadActiveDiagnoses(patientId: string): void {
-    this.diagnosesService.getByPatient(patientId, 'Active').subscribe({
-      next: (diagnoses) => this.activeDiagnoses.set(diagnoses),
+    this.diagnosesService.getByPatient(patientId, 1, 50, 'Active').subscribe({
+      next: (res) => this.activeDiagnoses.set(res.items),
       error: () => {}
     });
   }

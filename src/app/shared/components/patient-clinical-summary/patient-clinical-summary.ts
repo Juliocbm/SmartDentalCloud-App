@@ -52,21 +52,21 @@ export class PatientClinicalSummaryComponent implements OnChanges {
   private loadData(patientId: string): void {
     this.loading.set(true);
 
-    this.allergiesService.getByPatient(patientId, true).subscribe({
-      next: (data) => this.allergies.set(data),
+    this.allergiesService.getByPatient(patientId, 1, 50, true).subscribe({
+      next: (res) => this.allergies.set(res.items),
       error: () => {}
     });
 
-    this.diagnosesService.getByPatient(patientId, 'Active').subscribe({
-      next: (data) => {
-        this.diagnoses.set(data);
+    this.diagnosesService.getByPatient(patientId, 1, 50, 'Active').subscribe({
+      next: (res) => {
+        this.diagnoses.set(res.items);
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
     });
 
-    this.consentsService.getByPatient(patientId, 'Pending').subscribe({
-      next: (consents) => this.pendingConsentsCount.set(consents.length),
+    this.consentsService.getByPatient(patientId, 1, 1, 'Pending').subscribe({
+      next: (res) => this.pendingConsentsCount.set(res.totalCount),
       error: () => {}
     });
   }
