@@ -1,18 +1,18 @@
 <div class="location-list-container">
   <div class="section-header">
-    <h2>
-      <i class="fa-solid fa-location-dot"></i>
-      Sucursales
-    </h2>
-    <p class="section-description">Administra las ubicaciones físicas del consultorio</p>
-  </div>
-
-  <div class="section-actions">
-    <button class="btn btn-outline btn-success" (click)="openCreateModal()">
+    <div class="section-header__info">
+      <h3 class="section-header__title">
+        <i class="fa-solid fa-location-dot"></i>
+        Sucursales
+      </h3>
+      <p class="section-header__description">Administra las ubicaciones físicas del consultorio</p>
+    </div>
+    <button class="btn btn-outline btn-sm" (click)="openCreateModal()">
       <i class="fa-solid fa-plus"></i>
       Nueva Sucursal
     </button>
   </div>
+  <hr>
 
   <!-- Loading State -->
   @if (loading()) {

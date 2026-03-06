@@ -1,13 +1,20 @@
 <div class="exceptions-container">
   <div class="section-header">
-    <h3 class="section-title">
-      <i class="fa-solid fa-calendar-xmark"></i>
-      Excepciones de Horario
-    </h3>
-    <p class="section-description">
-      Configura días festivos, vacaciones y bloqueos puntuales
-    </p>
+    <div class="section-header__info">
+      <h3 class="section-header__title">
+        <i class="fa-solid fa-calendar-xmark"></i>
+        Excepciones de Horario
+      </h3>
+      <p class="section-header__description">
+        Configura días festivos, vacaciones y bloqueos puntuales
+      </p>
+    </div>
+    <button class="btn btn-outline btn-sm" (click)="openCreateModal()">
+      <i class="fa-solid fa-plus"></i>
+      Nueva Excepción
+    </button>
   </div>
+  <hr>
 
   <!-- Loading -->
   @if (loading()) {

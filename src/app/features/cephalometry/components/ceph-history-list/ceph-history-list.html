@@ -1,16 +1,15 @@
 <div class="ceph-history">
-  <div class="section-header-with-action">
-    <h3>
-      <i class="fa-solid fa-head-side"></i>
+  <div class="section-header">
+    <h3 class="section-header__title">
+      <i class="fa-solid fa-x-ray"></i>
       Análisis Cefalométricos
     </h3>
-    <div class="header-actions">
-      <button class="btn btn-outline btn-sm" (click)="createNew()">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Análisis
-      </button>
-    </div>
+    <button class="btn btn-outline btn-sm" (click)="createNew()">
+      <i class="fa-solid fa-plus"></i>
+      Nuevo Análisis
+    </button>
   </div>
+  <hr>
 
   @if (loading()) {
     <div class="inline-loading">

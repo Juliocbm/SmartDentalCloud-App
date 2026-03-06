@@ -115,35 +115,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-xl);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 2px solid var(--border-primary);
-
-  h3 {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-  }
-}
-
-.section-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 var(--spacing-sm);
-  background: var(--primary-100);
-  color: var(--primary-700);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-}
-
 // ===== Timeline (follow-ups) =====
 
 .followups-timeline {

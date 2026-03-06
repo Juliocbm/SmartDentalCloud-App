@@ -1,19 +1,20 @@
 <div class="consent-templates">
   <div class="section-header">
-    <div>
-      <h3>
+    <div class="section-header__info">
+      <h3 class="section-header__title">
         <i class="fa-solid fa-file-contract"></i>
         Plantillas de Consentimiento Informado
       </h3>
-      <p class="section-description">
+      <p class="section-header__description">
         Gestione las plantillas reutilizables para consentimientos informados (NOM-024).
       </p>
     </div>
-    <button class="btn btn-primary btn-sm" (click)="openTemplateModal()">
+    <button class="btn btn-outline btn-sm" (click)="openTemplateModal()">
       <i class="fa-solid fa-plus"></i>
       Nueva Plantilla
     </button>
   </div>
+  <hr>
 
   <!-- List -->
   @if (loading()) {

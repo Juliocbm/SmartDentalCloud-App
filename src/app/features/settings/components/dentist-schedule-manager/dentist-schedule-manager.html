@@ -1,11 +1,25 @@
 <div class="dentist-schedule-manager">
   <div class="section-header">
-    <h3 class="section-title">
-      <i class="fa-solid fa-user-doctor"></i>
-      Horarios por Dentista
-    </h3>
-    <p class="section-description">Configura horarios individuales para cada dentista. Si un dentista no tiene horario propio, se usa el horario del consultorio.</p>
+    <div class="section-header__info">
+      <h3 class="section-header__title">
+        <i class="fa-solid fa-user-doctor"></i>
+        Horarios por Dentista
+      </h3>
+      <p class="section-header__description">Configura horarios individuales para cada dentista. Si un dentista no tiene horario propio, se usa el horario del consultorio.</p>
+    </div>
+    @if (selectedDentistId()) {
+      <button class="btn btn-outline btn-sm" [disabled]="editorRef()?.saving() || !editorRef()?.isFormValid()" (click)="editorRef()?.save()">
+        @if (editorRef()?.saving()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-floppy-disk"></i>
+          Guardar Horario
+        }
+      </button>
+    }
   </div>
+  <hr>
 
   <div class="dentist-selector-row">
     <div class="dentist-selector">

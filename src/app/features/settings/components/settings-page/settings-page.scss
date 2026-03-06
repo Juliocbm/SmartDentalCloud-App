@@ -72,31 +72,6 @@
   padding: var(--spacing-2xl);
 }
 
-.section-header {
-  margin-bottom: var(--spacing-2xl);
-  padding-bottom: var(--spacing-xl);
-  border-bottom: 1px solid var(--border-primary);
-
-  h2 {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin: 0 0 var(--spacing-sm) 0;
-    font-size: var(--font-size-xl);
-    color: var(--text-primary);
-
-    i {
-      color: var(--primary-500);
-    }
-  }
-
-  .section-description {
-    margin: 0;
-    color: var(--text-tertiary);
-    font-size: var(--font-size-sm);
-  }
-}
-
 // ===== Forms (overrides for settings context) =====
 
 .toggle-label {

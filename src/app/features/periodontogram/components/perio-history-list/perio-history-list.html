@@ -1,10 +1,10 @@
 <div class="perio-history">
-  <div class="section-header-with-action">
-    <h3>
+  <div class="section-header">
+    <h3 class="section-header__title">
       <i class="fa-solid fa-chart-line"></i>
       Periodontogramas
     </h3>
-    <div class="header-actions">
+    <div class="section-header__actions">
       @if (items().length >= 2) {
         <button class="btn btn-outline btn-sm" (click)="openComparison()">
           <i class="fa-solid fa-code-compare"></i>
@@ -17,6 +17,7 @@
       </button>
     </div>
   </div>
+  <hr>
 
   @if (loading()) {
     <div class="inline-loading">

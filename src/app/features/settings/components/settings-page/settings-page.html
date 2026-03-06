@@ -4,101 +4,7 @@
     icon="fa-solid fa-gear"
     [showBackButton]="true"
     [breadcrumbs]="[{ label: 'Configuración' }]"
-  >
-    <div actions class="header-form-actions">
-      @switch (activeTab()) {
-        @case ('general') {
-          <button class="btn btn-outline btn-success" [disabled]="saving() || !generalName().trim()" (click)="saveGeneral()">
-            @if (saving()) {
-              <span class="btn-spinner"></span>
-              Guardando...
-            } @else {
-              <i class="fa-solid fa-floppy-disk"></i>
-              Guardar Cambios
-            }
-          </button>
-        }
-        @case ('schedule') {
-          <button class="btn btn-outline btn-success" [disabled]="scheduleEditor()?.saving() || !scheduleEditor()?.isFormValid()" (click)="scheduleEditor()?.save()">
-            @if (scheduleEditor()?.saving()) {
-              <span class="btn-spinner"></span>
-              Guardando...
-            } @else {
-              <i class="fa-solid fa-floppy-disk"></i>
-              Guardar Horario
-            }
-          </button>
-        }
-        @case ('dentist-schedule') {
-          @if (dentistScheduleManager()?.selectedDentistId()) {
-            <button class="btn btn-outline btn-success" [disabled]="dentistScheduleManager()?.editorRef()?.saving() || !dentistScheduleManager()?.editorRef()?.isFormValid()" (click)="dentistScheduleManager()?.editorRef()?.save()">
-              @if (dentistScheduleManager()?.editorRef()?.saving()) {
-                <span class="btn-spinner"></span>
-                Guardando...
-              } @else {
-                <i class="fa-solid fa-floppy-disk"></i>
-                Guardar Horario
-              }
-            </button>
-          }
-        }
-        @case ('exceptions') {
-          <button class="btn btn-outline btn-success" (click)="exceptionsManager()?.openCreateModal()">
-            <i class="fa-solid fa-plus"></i>
-            Nueva Excepción
-          </button>
-        }
-        @case ('smtp') {
-          <button class="btn btn-outline" [disabled]="smtpTesting() || !smtpHost().trim()" (click)="testSmtp()">
-            @if (smtpTesting()) {
-              <span class="btn-spinner"></span>
-              Probando...
-            } @else {
-              <i class="fa-solid fa-plug"></i>
-              Probar Conexión
-            }
-          </button>
-          @if (smtpConfig()) {
-            <button class="btn btn-outline btn-danger" [disabled]="saving()" (click)="deleteSmtp()">
-              <i class="fa-solid fa-trash"></i>
-              Eliminar Config
-            </button>
-          }
-          <button class="btn btn-outline btn-success" [disabled]="saving() || !smtpHost().trim() || !smtpFromEmail().trim()" (click)="saveSmtp()">
-            @if (saving()) {
-              <span class="btn-spinner"></span>
-              Guardando...
-            } @else {
-              <i class="fa-solid fa-floppy-disk"></i>
-              Guardar SMTP
-            }
-          </button>
-        }
-        @case ('branding') {
-          <button class="btn btn-outline btn-success" [disabled]="saving()" (click)="saveBranding()">
-            @if (saving()) {
-              <span class="btn-spinner"></span>
-              Guardando...
-            } @else {
-              <i class="fa-solid fa-floppy-disk"></i>
-              Guardar Branding
-            }
-          </button>
-        }
-        @case ('domain') {
-          <button class="btn btn-outline btn-success" [disabled]="saving() || !domainCustom().trim()" (click)="saveDomain()">
-            @if (saving()) {
-              <span class="btn-spinner"></span>
-              Guardando...
-            } @else {
-              <i class="fa-solid fa-floppy-disk"></i>
-              Guardar Dominio
-            }
-          </button>
-        }
-      }
-    </div>
-  </app-page-header>
+  />
 
   @if (loading()) {
     <div class="loading-container">
@@ -128,12 +34,24 @@
         @if (activeTab() === 'general') {
           <div class="settings-section">
             <div class="section-header">
-              <h2>
-                <i class="fa-solid fa-gear"></i>
-                General
-              </h2>
-              <p class="section-description">Información básica del consultorio</p>
+              <div class="section-header__info">
+                <h3 class="section-header__title">
+                  <i class="fa-solid fa-gear"></i>
+                  General
+                </h3>
+                <p class="section-header__description">Información básica del consultorio</p>
+              </div>
+              <button class="btn btn-outline btn-sm" [disabled]="saving() || !generalName().trim()" (click)="saveGeneral()">
+                @if (saving()) {
+                  <span class="btn-spinner"></span>
+                  Guardando...
+                } @else {
+                  <i class="fa-solid fa-floppy-disk"></i>
+                  Guardar Cambios
+                }
+              </button>
             </div>
+            <hr>
 
             <div class="form-row">
               <div class="form-group">
@@ -287,12 +205,41 @@
         @if (activeTab() === 'smtp') {
           <div class="settings-section">
             <div class="section-header">
-              <h3 class="section-title">
-                <i class="fa-solid fa-envelope"></i>
-                Configuración de Correo (SMTP)
-              </h3>
-              <p class="section-description">Configura el servidor de correo para envío de notificaciones, recordatorios y facturas</p>
+              <div class="section-header__info">
+                <h3 class="section-header__title">
+                  <i class="fa-solid fa-envelope"></i>
+                  Configuración de Correo (SMTP)
+                </h3>
+                <p class="section-header__description">Configura el servidor de correo para envío de notificaciones, recordatorios y facturas</p>
+              </div>
+              <div class="section-header__actions">
+                <button class="btn btn-outline btn-sm" [disabled]="smtpTesting() || !smtpHost().trim()" (click)="testSmtp()">
+                  @if (smtpTesting()) {
+                    <span class="btn-spinner"></span>
+                    Probando...
+                  } @else {
+                    <i class="fa-solid fa-plug"></i>
+                    Probar Conexión
+                  }
+                </button>
+                @if (smtpConfig()) {
+                  <button class="btn btn-outline btn-sm btn-danger" [disabled]="saving()" (click)="deleteSmtp()">
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                }
+                <button class="btn btn-outline btn-sm" [disabled]="saving() || !smtpHost().trim() || !smtpFromEmail().trim()" (click)="saveSmtp()">
+                  @if (saving()) {
+                    <span class="btn-spinner"></span>
+                    Guardando...
+                  } @else {
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Guardar SMTP
+                  }
+                </button>
+              </div>
             </div>
+            <hr>
 
             @if (smtpConfig(); as smtp) {
               <div class="smtp-status-card">
@@ -429,12 +376,24 @@
         @if (activeTab() === 'branding') {
           <div class="settings-section">
             <div class="section-header">
-              <h3 class="section-title">
-                <i class="fa-solid fa-palette"></i>
-                Branding
-              </h3>
-              <p class="section-description">Personaliza la imagen de tu consultorio</p>
+              <div class="section-header__info">
+                <h3 class="section-header__title">
+                  <i class="fa-solid fa-palette"></i>
+                  Branding
+                </h3>
+                <p class="section-header__description">Personaliza la imagen de tu consultorio</p>
+              </div>
+              <button class="btn btn-outline btn-sm" [disabled]="saving()" (click)="saveBranding()">
+                @if (saving()) {
+                  <span class="btn-spinner"></span>
+                  Guardando...
+                } @else {
+                  <i class="fa-solid fa-floppy-disk"></i>
+                  Guardar Branding
+                }
+              </button>
             </div>
+            <hr>
 
             <div class="branding-card">
               <div class="branding-preview-area">
@@ -480,12 +439,24 @@
         @if (activeTab() === 'domain') {
           <div class="settings-section">
             <div class="section-header">
-              <h2>
-                <i class="fa-solid fa-globe"></i>
-                Dominio Personalizado
-              </h2>
-              <p class="section-description">Configura un dominio propio para acceder al sistema</p>
+              <div class="section-header__info">
+                <h3 class="section-header__title">
+                  <i class="fa-solid fa-globe"></i>
+                  Dominio Personalizado
+                </h3>
+                <p class="section-header__description">Configura un dominio propio para acceder al sistema</p>
+              </div>
+              <button class="btn btn-outline btn-sm" [disabled]="saving() || !domainCustom().trim()" (click)="saveDomain()">
+                @if (saving()) {
+                  <span class="btn-spinner"></span>
+                  Guardando...
+                } @else {
+                  <i class="fa-solid fa-floppy-disk"></i>
+                  Guardar Dominio
+                }
+              </button>
             </div>
+            <hr>
 
             @if (settings(); as s) {
               <div class="domain-info">

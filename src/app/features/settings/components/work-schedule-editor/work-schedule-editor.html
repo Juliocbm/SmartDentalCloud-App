@@ -1,12 +1,24 @@
 <div class="work-schedule-editor">
   @if (showHeader()) {
     <div class="section-header">
-      <h3 class="section-title">
-        <i class="fa-solid fa-clock"></i>
-        {{ title() }}
-      </h3>
-      <p class="section-description">{{ description() }}</p>
+      <div class="section-header__info">
+        <h3 class="section-header__title">
+          <i class="fa-solid fa-clock"></i>
+          {{ title() }}
+        </h3>
+        <p class="section-header__description">{{ description() }}</p>
+      </div>
+      <button class="btn btn-outline btn-sm" [disabled]="saving() || !isFormValid()" (click)="save()">
+        @if (saving()) {
+          <span class="btn-spinner"></span>
+          Guardando...
+        } @else {
+          <i class="fa-solid fa-floppy-disk"></i>
+          Guardar Horario
+        }
+      </button>
     </div>
+    <hr>
   }
 
   @if (showLocationSelector()) {

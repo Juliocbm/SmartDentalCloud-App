@@ -89,6 +89,10 @@
     box-shadow: none;
     padding: 0;
     border-radius: 0;
+
+    h3:not(.section-header__title) {
+      border-bottom: none;
+    }
   }
 
   .info-card {
@@ -193,100 +197,7 @@
   }
 }
 
-.files-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.file-card {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-lg);
-  background: var(--surface-secondary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  transition: var(--transition-base);
-
-  &:hover {
-    border-color: var(--primary-200);
-    background: var(--surface-tertiary);
-  }
-
-  .file-icon {
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--primary-100);
-    color: var(--primary-600);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-xl);
-    flex-shrink: 0;
-  }
-
-  .file-info {
-    flex: 1;
-    min-width: 0;
-
-    .file-name {
-      display: block;
-      font-weight: var(--font-weight-semibold);
-      color: var(--primary-600);
-      text-decoration: none;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      cursor: pointer;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    .file-meta {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-md);
-      margin-top: var(--spacing-xs);
-      font-size: var(--font-size-xs);
-      color: var(--text-tertiary);
-
-      .file-category {
-        background: var(--info-100);
-        color: var(--info-700);
-        padding: 2px 8px;
-        border-radius: var(--radius-full);
-        font-weight: var(--font-weight-semibold);
-        text-transform: capitalize;
-      }
-    }
-
-    .file-description {
-      margin: var(--spacing-xs) 0 0;
-      font-size: var(--font-size-sm);
-      color: var(--text-secondary);
-    }
-  }
-
-  .btn-icon-sm {
-    background: transparent;
-    border: none;
-    color: var(--text-tertiary);
-    cursor: pointer;
-    padding: var(--spacing-xs);
-    border-radius: var(--radius-sm);
-    transition: all var(--transition-base);
-    flex-shrink: 0;
-
-    &:hover {
-      color: var(--error-500);
-      background: var(--error-50);
-    }
-  }
-}
+// Files ahora usa .medical-list y .medical-list-item del sistema global
 
 .inline-loading {
   display: flex;
@@ -685,69 +596,7 @@
   }
 }
 
-.allergies-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.allergy-card-compact {
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--surface-primary);
-  transition: var(--transition-base);
-
-  &:hover {
-    border-color: var(--primary-200);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  }
-
-  &.allergy-inactive {
-    opacity: 0.6;
-    background: var(--surface-secondary);
-  }
-
-  .allergy-main-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-md);
-  }
-
-  .allergy-info {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    flex-wrap: wrap;
-    flex: 1;
-  }
-
-  .allergy-name {
-    font-weight: var(--font-weight-semibold);
-    font-size: var(--font-size-base);
-    color: var(--text-primary);
-  }
-
-  .allergy-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-xs);
-    padding-left: 0;
-    font-size: var(--font-size-sm);
-
-    > span {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-
-      i {
-        opacity: 0.7;
-      }
-    }
-  }
-}
+// Allergies ahora usa .medical-list y .medical-list-item del sistema global
 
 .badge-info {
   background: var(--info-100);
@@ -825,71 +674,7 @@
 }
 
 // ===== Consents Tab (NOM-024) =====
-
-.consents-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.consent-card-compact {
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--surface-primary);
-  transition: var(--transition-base);
-
-  &:hover {
-    border-color: var(--primary-200);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  }
-
-  .consent-main-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-md);
-  }
-
-  .consent-info {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    flex-wrap: wrap;
-    flex: 1;
-  }
-
-  .consent-name {
-    font-weight: var(--font-weight-semibold);
-    font-size: var(--font-size-base);
-    color: var(--text-primary);
-  }
-
-  .consent-actions-compact {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  .consent-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-xs);
-    font-size: var(--font-size-sm);
-
-    > span {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-
-      i {
-        opacity: 0.7;
-      }
-    }
-  }
-}
+// Consents ahora usa .medical-list y .medical-list-item del sistema global
 
 // ===== Consent Signing Flow =====
 
@@ -1116,69 +901,7 @@
 }
 
 // ===== Problems Tab (NOM-024) =====
-
-.problems-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.problem-card-compact {
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--surface-primary);
-  transition: var(--transition-base);
-
-  &:hover {
-    border-color: var(--primary-200);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  }
-
-  &.problem-resolved {
-    opacity: 0.6;
-    background: var(--surface-secondary);
-  }
-
-  .problem-main-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-md);
-  }
-
-  .problem-info {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    flex-wrap: wrap;
-    flex: 1;
-  }
-
-  .problem-name {
-    font-weight: var(--font-weight-semibold);
-    font-size: var(--font-size-base);
-    color: var(--text-primary);
-  }
-
-  .problem-meta {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-xs);
-    font-size: var(--font-size-sm);
-
-    > span {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-
-      i {
-        opacity: 0.7;
-      }
-    }
-  }
-}
+// Diagnoses ahora usa .medical-list y .medical-list-item del sistema global
 
 .btn-success-text {
   color: var(--success-600) !important;
