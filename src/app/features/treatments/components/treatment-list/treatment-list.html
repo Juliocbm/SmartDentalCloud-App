@@ -10,10 +10,12 @@
         <i class="fa-solid fa-file-csv"></i>
         Exportar CSV
       </button>
-      <a class="btn btn-outline btn-success" routerLink="/treatments/new">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Tratamiento
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.TreatmentsCreate)) {
+        <a class="btn btn-outline btn-success" routerLink="/treatments/new">
+          <i class="fa-solid fa-plus"></i>
+          Nuevo Tratamiento
+        </a>
+      }
     </div>
   </app-page-header>
 
@@ -177,9 +179,11 @@
                 <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/treatments', treatment.id]">
                   <i class="fa-solid fa-eye"></i>
                 </button>
-                <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/treatments', treatment.id, 'edit']">
-                  <i class="fa-solid fa-pen"></i>
-                </button>
+                @if (permissionService.hasPermission(PERMISSIONS.TreatmentsEdit)) {
+                  <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/treatments', treatment.id, 'edit']">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                }
               </td>
             </tr>
           }

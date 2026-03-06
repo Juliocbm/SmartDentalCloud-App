@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { permissionGuard } from '../../core/guards/auth.guard';
+import { PERMISSIONS } from '../../core/services/permission.service';
 import { AppointmentsAnalyticsService } from './services/appointments-analytics.service';
 import { ConsultationNotesService } from '../consultation-notes/services/consultation-notes.service';
 
@@ -24,6 +26,7 @@ export const APPOINTMENTS_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.AppointmentsCreate)],
         loadComponent: () => import('./components/appointment-form/appointment-form')
           .then(m => m.AppointmentFormComponent)
       },
@@ -34,6 +37,7 @@ export const APPOINTMENTS_ROUTES: Routes = [
       },
       {
         path: ':id/edit',
+        canActivate: [permissionGuard(PERMISSIONS.AppointmentsEdit)],
         loadComponent: () => import('./components/appointment-form/appointment-form')
           .then(m => m.AppointmentFormComponent)
       },

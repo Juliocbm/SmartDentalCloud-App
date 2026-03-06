@@ -10,10 +10,12 @@
         <i class="fa-solid fa-file-csv"></i>
         Exportar CSV
       </button>
-      <a class="btn btn-outline btn-success" routerLink="/invoices/new">
-        <i class="fa-solid fa-plus"></i>
-        Nueva Factura
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.InvoicesCreate)) {
+        <a class="btn btn-outline btn-success" routerLink="/invoices/new">
+          <i class="fa-solid fa-plus"></i>
+          Nueva Factura
+        </a>
+      }
     </div>
   </app-page-header>
 

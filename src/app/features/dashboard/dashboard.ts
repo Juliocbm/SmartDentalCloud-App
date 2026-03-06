@@ -5,6 +5,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 import { DashboardService } from './services/dashboard.service';
 import { DashboardData, QuickAction } from './models/dashboard.models';
 import { LoggingService } from '../../core/services/logging.service';
+import { PermissionService, PERMISSIONS } from '../../core/services/permission.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,18 +17,24 @@ import { LoggingService } from '../../core/services/logging.service';
 export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
   private logger = inject(LoggingService);
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
 
   loading = signal(true);
   data = signal<DashboardData | null>(null);
 
-  quickActions: QuickAction[] = [
-    { label: 'Nueva Cita', description: 'Agendar paciente', icon: 'fa-calendar-plus', route: '/appointments/new', color: 'primary' },
-    { label: 'Nuevo Paciente', description: 'Registrar paciente', icon: 'fa-user-plus', route: '/patients/new', color: 'success' },
-    { label: 'Nueva Factura', description: 'Generar factura', icon: 'fa-file-invoice', route: '/invoices/new', color: 'info' },
-    { label: 'Nuevo Tratamiento', description: 'Iniciar tratamiento', icon: 'fa-tooth', route: '/treatments/new', color: 'primary' },
-    { label: 'Calendario', description: 'Ver agenda de citas', icon: 'fa-calendar-days', route: '/appointments', color: 'warning' },
-    { label: 'Reportes', description: 'Ver estadísticas', icon: 'fa-chart-line', route: '/reports', color: 'success' }
+  private allQuickActions: QuickAction[] = [
+    { label: 'Nueva Cita', description: 'Agendar paciente', icon: 'fa-calendar-plus', route: '/appointments/new', color: 'primary', requiredPermission: PERMISSIONS.AppointmentsCreate },
+    { label: 'Nuevo Paciente', description: 'Registrar paciente', icon: 'fa-user-plus', route: '/patients/new', color: 'success', requiredPermission: PERMISSIONS.PatientsCreate },
+    { label: 'Nueva Factura', description: 'Generar factura', icon: 'fa-file-invoice', route: '/invoices/new', color: 'info', requiredPermission: PERMISSIONS.InvoicesCreate },
+    { label: 'Nuevo Tratamiento', description: 'Iniciar tratamiento', icon: 'fa-tooth', route: '/treatments/new', color: 'primary', requiredPermission: PERMISSIONS.TreatmentsCreate },
+    { label: 'Calendario', description: 'Ver agenda de citas', icon: 'fa-calendar-days', route: '/appointments', color: 'warning', requiredPermission: PERMISSIONS.AppointmentsView },
+    { label: 'Reportes', description: 'Ver estadísticas', icon: 'fa-chart-line', route: '/reports', color: 'success', requiredPermission: PERMISSIONS.ReportsView }
   ];
+
+  quickActions = computed(() =>
+    this.allQuickActions.filter(a => !a.requiredPermission || this.permissionService.hasPermission(a.requiredPermission))
+  );
 
   todayAppointmentsCount = computed(() => this.data()?.todayAppointments.length ?? 0);
   monthlyIncome = computed(() => this.data()?.income.totalIncome ?? 0);

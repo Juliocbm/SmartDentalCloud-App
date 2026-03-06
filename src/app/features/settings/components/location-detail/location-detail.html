@@ -21,10 +21,12 @@
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
-        <button class="btn btn-outline" (click)="openEditModal()">
-          <i class="fa-solid fa-pen"></i>
-          Editar
-        </button>
+        @if (permissionService.hasPermission('settings.edit')) {
+          <button class="btn btn-outline" (click)="openEditModal()">
+            <i class="fa-solid fa-pen"></i>
+            Editar
+          </button>
+        }
       }
     </div>
   </app-page-header>

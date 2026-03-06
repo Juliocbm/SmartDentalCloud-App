@@ -15,6 +15,7 @@ import { DENTIST_APPOINTMENT_CONTEXT } from '../../../appointments/models/appoin
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-dentist-list',
@@ -24,6 +25,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   styleUrls: ['./dentist-list.scss']
 })
 export class DentistListComponent implements OnInit, OnDestroy {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private router = inject(Router);
   private usersService = inject(UsersService);
   private rolesService = inject(RolesService);

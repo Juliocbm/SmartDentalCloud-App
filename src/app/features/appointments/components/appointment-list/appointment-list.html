@@ -13,10 +13,12 @@
         <i class="fa-solid fa-calendar"></i>
         Calendario
       </a>
-      <a routerLink="/appointments/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nueva Cita
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.AppointmentsCreate)) {
+        <a routerLink="/appointments/new" class="btn btn-outline btn-success">
+          <i class="fa-solid fa-plus"></i>
+          Nueva Cita
+        </a>
+      }
     </div>
   </app-page-header>
 

@@ -20,6 +20,7 @@ import { AllergyAlert } from '../../../patients/models/patient-allergy.models';
 import { AllergyAlertBannerComponent } from '../../../../shared/components/allergy-alert-banner/allergy-alert-banner';
 import { PatientClinicalSummaryComponent } from '../../../../shared/components/patient-clinical-summary/patient-clinical-summary';
 import { InformedConsentsService, ConsentCheck } from '../../../patients/services/informed-consents.service';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-treatment-detail',
@@ -40,6 +41,7 @@ export class TreatmentDetailComponent implements OnInit {
   private modalService = inject(ModalService);
   private allergiesService = inject(PatientAllergiesService);
   private consentsService = inject(InformedConsentsService);
+  permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ConsentTemplateService, ConsentTemplate, CONSENT_TYPE_OPTIONS } from '../../services/consent-template.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { ConsentTemplateFormModalComponent, ConsentTemplateFormModalData } from '../consent-template-form-modal/consent-template-form-modal';
 
@@ -14,6 +15,8 @@ import { ConsentTemplateFormModalComponent, ConsentTemplateFormModalData } from 
   styleUrl: './consent-template-list.scss'
 })
 export class ConsentTemplateListComponent implements OnInit {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private templateService = inject(ConsentTemplateService);
   private notifications = inject(NotificationService);
   private modalService = inject(ModalService);

@@ -8,10 +8,12 @@
     [backRoute]="'/users'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
-      <a routerLink="/users/roles/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Rol
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.RolesCreate)) {
+        <a routerLink="/users/roles/new" class="btn btn-outline btn-success">
+          <i class="fa-solid fa-plus"></i>
+          Nuevo Rol
+        </a>
+      }
     </div>
   </app-page-header>
 

@@ -72,4 +72,5 @@ export interface QuickAction {
   icon: string;
   route: string;
   color: string;
+  requiredPermission?: string;
 }

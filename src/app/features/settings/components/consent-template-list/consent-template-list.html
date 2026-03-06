@@ -9,10 +9,12 @@
         Gestione las plantillas reutilizables para consentimientos informados (NOM-024).
       </p>
     </div>
-    <button class="btn btn-outline btn-sm" (click)="openTemplateModal()">
-      <i class="fa-solid fa-plus"></i>
-      Nueva Plantilla
-    </button>
+    @if (permissionService.hasPermission(PERMISSIONS.ConsentTemplatesCreate)) {
+      <button class="btn btn-outline btn-sm" (click)="openTemplateModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Plantilla
+      </button>
+    }
   </div>
   <hr>
 
@@ -42,12 +44,16 @@
               }
             </div>
             <div class="template-actions">
-              <button class="btn btn-icon btn-sm" title="Editar" (click)="openTemplateModal(t)">
-                <i class="fa-solid fa-pen"></i>
-              </button>
-              <button class="btn btn-icon btn-sm btn-danger" title="Desactivar" (click)="deactivateTemplate(t)">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+              @if (permissionService.hasPermission(PERMISSIONS.ConsentTemplatesEdit)) {
+                <button class="btn btn-icon btn-sm" title="Editar" (click)="openTemplateModal(t)">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+              }
+              @if (permissionService.hasPermission(PERMISSIONS.ConsentTemplatesDelete)) {
+                <button class="btn btn-icon btn-sm btn-danger" title="Desactivar" (click)="deactivateTemplate(t)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              }
             </div>
           </div>
           <h4 class="template-title">{{ t.title }}</h4>

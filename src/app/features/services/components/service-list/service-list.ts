@@ -10,6 +10,7 @@ import { DentalServiceItem } from '../../models/service.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-service-list',
@@ -23,6 +24,8 @@ export class ServiceListComponent implements OnInit, OnDestroy {
   private logger = inject(LoggingService);
   private notifications = inject(NotificationService);
   private searchSubject = new Subject<string>();
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
 
   // State
   allServices = signal<DentalServiceItem[]>([]);

@@ -17,6 +17,7 @@ import { AllergyAlertBannerComponent } from '../../../../shared/components/aller
 import { PatientClinicalSummaryComponent } from '../../../../shared/components/patient-clinical-summary/patient-clinical-summary';
 import { InformedConsentsService, ConsentCheck } from '../../../patients/services/informed-consents.service';
 import { InformedConsent } from '../../../patients/models/informed-consent.models';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -38,6 +39,7 @@ export class AppointmentDetailComponent implements OnInit {
   locationsService = inject(LocationsService);
   private allergiesService = inject(PatientAllergiesService);
   private consentsService = inject(InformedConsentsService);
+  permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

@@ -16,14 +16,16 @@
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
-        <button class="btn btn-outline" (click)="openAdjustmentModal()">
-          <i class="fa-solid fa-boxes-stacked"></i>
-          Ajustar Stock
-        </button>
-        <button class="btn btn-outline" (click)="editProduct()">
-          <i class="fa-solid fa-pen"></i>
-          Editar
-        </button>
+        @if (permissionService.hasPermission('inventory.edit')) {
+          <button class="btn btn-outline" (click)="openAdjustmentModal()">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            Ajustar Stock
+          </button>
+          <button class="btn btn-outline" (click)="editProduct()">
+            <i class="fa-solid fa-pen"></i>
+            Editar
+          </button>
+        }
       }
     </div>
   </app-page-header>

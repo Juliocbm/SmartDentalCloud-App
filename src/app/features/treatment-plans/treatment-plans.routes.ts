@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { permissionGuard } from '../../core/guards/auth.guard';
+import { PERMISSIONS } from '../../core/services/permission.service';
 import { TreatmentPlansService } from './services/treatment-plans.service';
 import { PatientsService } from '../patients/services/patients.service';
 
@@ -20,11 +22,13 @@ export const TREATMENT_PLANS_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentPlansCreate)],
         loadComponent: () =>
           import('./components/treatment-plan-form/treatment-plan-form').then(m => m.TreatmentPlanFormComponent)
       },
       {
         path: ':id/edit',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentPlansEdit)],
         loadComponent: () =>
           import('./components/treatment-plan-form/treatment-plan-form').then(m => m.TreatmentPlanFormComponent),
         title: 'Editar Plan de Tratamiento'

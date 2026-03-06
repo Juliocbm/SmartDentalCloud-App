@@ -1,4 +1,4 @@
-import { Component, input, signal, inject, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, input, signal, inject, OnInit, OnChanges, SimpleChanges, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PatientAllergiesService } from '../../../features/patients/services/patient-allergies.service';
@@ -6,6 +6,7 @@ import { PatientDiagnosesService } from '../../../features/patients/services/pat
 import { InformedConsentsService } from '../../../features/patients/services/informed-consents.service';
 import { PatientAllergy } from '../../../features/patients/models/patient-allergy.models';
 import { PatientDiagnosis } from '../../../features/patients/models/patient-diagnosis.models';
+import { PermissionService, PERMISSIONS } from '../../../core/services/permission.service';
 
 @Component({
   selector: 'app-patient-clinical-summary',
@@ -22,6 +23,12 @@ export class PatientClinicalSummaryComponent implements OnChanges {
   private allergiesService = inject(PatientAllergiesService);
   private diagnosesService = inject(PatientDiagnosesService);
   private consentsService = inject(InformedConsentsService);
+  private permissionService = inject(PermissionService);
+
+  canViewAllergies = this.permissionService.hasPermission(PERMISSIONS.AllergiesView);
+  canViewDiagnoses = this.permissionService.hasPermission(PERMISSIONS.DiagnosesView);
+  canViewConsents = this.permissionService.hasPermission(PERMISSIONS.ConsentsView);
+  hasAnyClinicalPermission = this.canViewAllergies || this.canViewDiagnoses || this.canViewConsents;
 
   allergies = signal<PatientAllergy[]>([]);
   diagnoses = signal<PatientDiagnosis[]>([]);
@@ -52,22 +59,30 @@ export class PatientClinicalSummaryComponent implements OnChanges {
   private loadData(patientId: string): void {
     this.loading.set(true);
 
-    this.allergiesService.getByPatient(patientId, 1, 50, true).subscribe({
-      next: (res) => this.allergies.set(res.items),
-      error: () => {}
-    });
+    if (this.canViewAllergies) {
+      this.allergiesService.getByPatient(patientId, 1, 50, true).subscribe({
+        next: (res) => this.allergies.set(res.items),
+        error: () => {}
+      });
+    }
 
-    this.diagnosesService.getByPatient(patientId, 1, 50, 'Active').subscribe({
-      next: (res) => {
-        this.diagnoses.set(res.items);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false)
-    });
+    if (this.canViewDiagnoses) {
+      this.diagnosesService.getByPatient(patientId, 1, 50, 'Active').subscribe({
+        next: (res) => {
+          this.diagnoses.set(res.items);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false)
+      });
+    } else {
+      this.loading.set(false);
+    }
 
-    this.consentsService.getByPatient(patientId, 1, 1, 'Pending').subscribe({
-      next: (res) => this.pendingConsentsCount.set(res.totalCount),
-      error: () => {}
-    });
+    if (this.canViewConsents) {
+      this.consentsService.getByPatient(patientId, 1, 1, 'Pending').subscribe({
+        next: (res) => this.pendingConsentsCount.set(res.totalCount),
+        error: () => {}
+      });
+    }
   }
 }

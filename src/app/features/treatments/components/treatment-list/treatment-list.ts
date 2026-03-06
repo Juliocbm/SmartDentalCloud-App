@@ -11,6 +11,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-treatment-list',
@@ -25,6 +26,8 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
   private notifications = inject(NotificationService);
   private csvExport = inject(CsvExportService);
   private searchSubject = new Subject<string>();
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
 
   // State
   treatments = signal<Treatment[]>([]);

@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { permissionGuard } from '../../core/guards/auth.guard';
+import { PERMISSIONS } from '../../core/services/permission.service';
 import { InvoicesService } from './services/invoices.service';
 
 export const INVOICES_ROUTES: Routes = [
@@ -26,6 +28,7 @@ export const INVOICES_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.InvoicesCreate)],
         loadComponent: () =>
           import('./components/invoice-form/invoice-form').then(m => m.InvoiceFormComponent),
         title: 'Nueva Factura'

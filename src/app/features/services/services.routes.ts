@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { permissionGuard } from '../../core/guards/auth.guard';
+import { PERMISSIONS } from '../../core/services/permission.service';
 import { ServicesService } from './services/services.service';
 
 export const SERVICES_ROUTES: Routes = [
@@ -14,6 +16,7 @@ export const SERVICES_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentsCreate)],
         loadComponent: () =>
           import('./components/service-form/service-form').then(m => m.ServiceFormComponent),
         title: 'Nuevo Servicio'
@@ -26,6 +29,7 @@ export const SERVICES_ROUTES: Routes = [
       },
       {
         path: ':id/edit',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentsEdit)],
         loadComponent: () =>
           import('./components/service-form/service-form').then(m => m.ServiceFormComponent),
         title: 'Editar Servicio'

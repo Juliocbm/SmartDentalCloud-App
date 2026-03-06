@@ -6,10 +6,12 @@
     [icon]="'fa-clipboard-list'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
-      <a class="btn btn-outline btn-success" routerLink="/treatment-plans/new">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Plan
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.TreatmentPlansCreate)) {
+        <a class="btn btn-outline btn-success" routerLink="/treatment-plans/new">
+          <i class="fa-solid fa-plus"></i>
+          Nuevo Plan
+        </a>
+      }
     </div>
   </app-page-header>
 

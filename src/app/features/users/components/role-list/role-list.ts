@@ -8,6 +8,7 @@ import { Role } from '../../models/role.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-role-list',
@@ -17,6 +18,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   styleUrls: ['./role-list.scss']
 })
 export class RoleListComponent implements OnInit {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private rolesService = inject(RolesService);
   private usersService = inject(UsersService);
   private notifications = inject(NotificationService);

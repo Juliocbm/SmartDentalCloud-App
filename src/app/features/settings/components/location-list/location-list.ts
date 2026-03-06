@@ -6,6 +6,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 import { Location } from '../../models/location.models';
 import { LocationFormModalComponent, LocationFormModalData } from '../location-form-modal/location-form-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-location-list',
@@ -15,6 +16,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   styleUrl: './location-list.scss'
 })
 export class LocationListComponent implements OnInit {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private locationsService = inject(LocationsService);
   private notifications = inject(NotificationService);
   private modalService = inject(ModalService);

@@ -6,10 +6,12 @@
     [icon]="'fa-user-doctor'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
-      <button type="button" class="btn btn-outline btn-success" (click)="navigateToNewDentist()">
-        <i class="fa-solid fa-user-plus"></i>
-        Nuevo Dentista
-      </button>
+      @if (permissionService.hasPermission(PERMISSIONS.UsersCreate)) {
+        <button type="button" class="btn btn-outline btn-success" (click)="navigateToNewDentist()">
+          <i class="fa-solid fa-user-plus"></i>
+          Nuevo Dentista
+        </button>
+      }
     </div>
   </app-page-header>
 

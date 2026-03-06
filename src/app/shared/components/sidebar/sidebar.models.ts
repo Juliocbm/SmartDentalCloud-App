@@ -11,6 +11,7 @@ export interface MenuItem {
   readonly route: string;
   readonly badge?: number;
   readonly hasDashboard?: boolean;
+  readonly requiredPermission?: string;
   readonly children?: readonly MenuItem[];
 }
 

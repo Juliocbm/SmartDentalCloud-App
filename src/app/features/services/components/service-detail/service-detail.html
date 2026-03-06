@@ -17,14 +17,18 @@
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
-        <a [routerLink]="['/services', svc.id, 'edit']" class="btn btn-outline">
-          <i class="fa-solid fa-pen"></i>
-          Editar
-        </a>
-        <button class="btn btn-outline btn-danger" (click)="confirmDelete()">
-          <i class="fa-solid fa-trash"></i>
-          Eliminar
-        </button>
+        @if (permissionService.hasPermission('treatments.edit')) {
+          <a [routerLink]="['/services', svc.id, 'edit']" class="btn btn-outline">
+            <i class="fa-solid fa-pen"></i>
+            Editar
+          </a>
+        }
+        @if (permissionService.hasPermission('treatments.delete')) {
+          <button class="btn btn-outline btn-danger" (click)="confirmDelete()">
+            <i class="fa-solid fa-trash"></i>
+            Eliminar
+          </button>
+        }
       }
     </div>
   </app-page-header>

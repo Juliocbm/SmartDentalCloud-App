@@ -7,10 +7,12 @@
       </h3>
       <p class="section-header__description">Administra las ubicaciones físicas del consultorio</p>
     </div>
-    <button class="btn btn-outline btn-sm" (click)="openCreateModal()">
-      <i class="fa-solid fa-plus"></i>
-      Nueva Sucursal
-    </button>
+    @if (permissionService.hasPermission(PERMISSIONS.LocationsCreate)) {
+      <button class="btn btn-outline btn-sm" (click)="openCreateModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Sucursal
+      </button>
+    }
   </div>
   <hr>
 

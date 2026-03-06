@@ -16,6 +16,7 @@ import { PatientsService } from '../../../patients/services/patients.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-treatment-plan-list',
@@ -25,6 +26,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   styleUrl: './treatment-plan-list.scss'
 })
 export class TreatmentPlanListComponent implements OnInit, OnDestroy {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private plansService = inject(TreatmentPlansService);
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);

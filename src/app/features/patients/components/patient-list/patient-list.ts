@@ -14,6 +14,7 @@ import { AppointmentFormContextService } from '../../../appointments/services/ap
 import { PATIENT_APPOINTMENT_CONTEXT } from '../../../appointments/models/appointment-form-context.model';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-patient-list',
@@ -28,6 +29,8 @@ export class PatientListComponent implements OnInit, OnDestroy {
   private logger = inject(LoggingService);
   private csvExport = inject(CsvExportService);
   private router = inject(Router);
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private appointmentContextService = inject(AppointmentFormContextService);
   private searchSubject = new Subject<string>();
 

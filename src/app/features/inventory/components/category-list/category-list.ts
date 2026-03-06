@@ -12,6 +12,7 @@ import { ROUTES } from '../../../../core/constants/routes.constants';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-category-list',
@@ -21,6 +22,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   styleUrls: ['./category-list.scss']
 })
 export class CategoryListComponent implements OnInit, OnDestroy {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private categoriesService = inject(CategoriesService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);

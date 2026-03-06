@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, permissionGuard } from './core/guards/auth.guard';
+import { PERMISSIONS } from './core/services/permission.service';
 
 export const routes: Routes = [
   {
@@ -35,6 +36,11 @@ export const routes: Routes = [
     title: 'Límite de Plan Excedido'
   },
   {
+    path: 'unauthorized',
+    loadComponent: () => import('./features/auth/unauthorized/unauthorized').then(m => m.UnauthorizedComponent),
+    title: 'Acceso Denegado'
+  },
+  {
     path: '',
     loadComponent: () => import('./shared/components/layout/layout').then(m => m.LayoutComponent),
     canActivate: [authGuard],
@@ -50,54 +56,67 @@ export const routes: Routes = [
       },
       {
         path: 'patients',
+        canActivate: [permissionGuard(PERMISSIONS.PatientsView)],
         loadChildren: () => import('./features/patients/patients.routes').then(m => m.PATIENTS_ROUTES)
       },
       {
         path: 'appointments',
+        canActivate: [permissionGuard(PERMISSIONS.AppointmentsView)],
         loadChildren: () => import('./features/appointments/appointments.routes').then(m => m.APPOINTMENTS_ROUTES)
       },
       {
         path: 'treatments',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentsView)],
         loadChildren: () => import('./features/treatments/treatments.routes').then(m => m.TREATMENTS_ROUTES)
       },
       {
         path: 'services',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentsView)],
         loadChildren: () => import('./features/services/services.routes').then(m => m.SERVICES_ROUTES)
       },
       {
         path: 'treatment-plans',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentPlansView)],
         loadChildren: () => import('./features/treatment-plans/treatment-plans.routes').then(m => m.TREATMENT_PLANS_ROUTES)
       },
       {
         path: 'invoices',
+        canActivate: [permissionGuard(PERMISSIONS.InvoicesView)],
         loadChildren: () => import('./features/invoices/invoices.routes').then(m => m.INVOICES_ROUTES)
       },
       {
         path: 'payments',
+        canActivate: [permissionGuard(PERMISSIONS.PaymentsView)],
         loadChildren: () => import('./features/payments/payments.routes').then(m => m.PAYMENTS_ROUTES)
       },
       {
         path: 'prescriptions',
+        canActivate: [permissionGuard(PERMISSIONS.PrescriptionsView)],
         loadChildren: () => import('./features/prescriptions/prescriptions.routes').then(m => m.PRESCRIPTIONS_ROUTES)
       },
       {
         path: 'dentists',
+        canActivate: [permissionGuard(PERMISSIONS.UsersView)],
         loadChildren: () => import('./features/users/dentists.routes').then(m => m.DENTISTS_ROUTES)
       },
       {
         path: 'reports',
+        canActivate: [permissionGuard(PERMISSIONS.ReportsView)],
         loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORTS_ROUTES)
       },
       {
         path: 'users',
+        canActivate: [permissionGuard(PERMISSIONS.UsersView)],
         loadChildren: () => import('./features/users/users.routes').then(m => m.USERS_ROUTES)
       },
       {
         path: 'inventory',
+        canActivate: [permissionGuard(PERMISSIONS.InventoryView)],
         loadChildren: () => import('./features/inventory/inventory.routes').then(m => m.INVENTORY_ROUTES)
       },
       {
         path: 'settings',
+        canActivate: [permissionGuard(PERMISSIONS.SettingsView)],
         loadChildren: () => import('./features/settings/settings.routes').then(m => m.SETTINGS_ROUTES)
       },
       {

@@ -8,6 +8,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-user-detail',
@@ -25,6 +26,7 @@ export class UserDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private location = inject(Location);
+  permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

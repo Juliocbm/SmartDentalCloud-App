@@ -16,6 +16,7 @@ import { AuditInfoComponent } from '../../../../shared/components/audit-info/aud
 import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { PatientsService } from '../../../patients/services/patients.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-invoice-detail',
@@ -37,6 +38,7 @@ export class InvoiceDetailComponent implements OnInit {
   private cfdiService = inject(CfdiService);
   private location = inject(Location);
   private patientsService = inject(PatientsService);
+  permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

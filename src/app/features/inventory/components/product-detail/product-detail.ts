@@ -13,6 +13,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -33,6 +34,7 @@ export class ProductDetailComponent implements OnInit {
   private location = inject(Location);
   private modalService = inject(ModalService);
   locationsService = inject(LocationsService);
+  permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

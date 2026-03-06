@@ -30,31 +30,31 @@
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
-        @if (t.status !== TreatmentStatus.Cancelled && t.status !== TreatmentStatus.Completed) {
+        @if (t.status !== TreatmentStatus.Cancelled && t.status !== TreatmentStatus.Completed && permissionService.hasPermission('treatments.edit')) {
           <a class="btn btn-outline" [routerLink]="['/treatments', t.id, 'edit']">
             <i class="fa-solid fa-pen"></i>
             Editar
           </a>
         }
-        @if (canPutOnHold()) {
+        @if (canPutOnHold() && permissionService.hasPermission('treatments.edit')) {
           <button class="btn btn-outline btn-warning" (click)="onPutOnHold()" [disabled]="actionLoading()">
             <i class="fa-solid fa-pause"></i>
             En Espera
           </button>
         }
-        @if (canResume()) {
+        @if (canResume() && permissionService.hasPermission('treatments.edit')) {
           <button class="btn btn-outline" (click)="onResumeTreatment()" [disabled]="actionLoading()">
             <i class="fa-solid fa-play"></i>
             Reanudar
           </button>
         }
-        @if (canCancel()) {
+        @if (canCancel() && permissionService.hasPermission('treatments.delete')) {
           <button class="btn btn-outline btn-danger" (click)="onCancelTreatment()" [disabled]="actionLoading()">
             <i class="fa-solid fa-ban"></i>
             Cancelar
           </button>
         }
-        @if (canComplete()) {
+        @if (canComplete() && permissionService.hasPermission('treatments.edit')) {
           <button class="btn btn-outline btn-success" (click)="onCompleteTreatment()" [disabled]="actionLoading()">
             @if (actionLoading()) {
               <span class="btn-spinner"></span>

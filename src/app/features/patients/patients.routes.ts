@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { permissionGuard } from '../../core/guards/auth.guard';
+import { PERMISSIONS } from '../../core/services/permission.service';
 import { PatientsAnalyticsService } from './services/patients-analytics.service';
 
 export const PATIENTS_ROUTES: Routes = [
@@ -18,11 +20,13 @@ export const PATIENTS_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.PatientsCreate)],
         loadComponent: () => import('./components/patient-form/patient-form')
           .then(m => m.PatientFormComponent)
       },
       {
         path: 'merge',
+        canActivate: [permissionGuard(PERMISSIONS.PatientsEdit)],
         loadComponent: () => import('./components/patient-merge/patient-merge')
           .then(m => m.PatientMergeComponent)
       },
@@ -33,6 +37,7 @@ export const PATIENTS_ROUTES: Routes = [
       },
       {
         path: ':id/edit',
+        canActivate: [permissionGuard(PERMISSIONS.PatientsEdit)],
         loadComponent: () => import('./components/patient-form/patient-form')
           .then(m => m.PatientFormComponent)
       },

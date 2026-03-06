@@ -13,6 +13,7 @@ import { ROUTES } from '../../../../core/constants/routes.constants';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 /**
  * Componente para listar productos de inventario
@@ -25,6 +26,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   styleUrls: ['./product-list.scss']
 })
 export class ProductListComponent implements OnInit, OnDestroy {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private productsService = inject(ProductsService);
   private categoriesService = inject(CategoriesService);
   private notifications = inject(NotificationService);

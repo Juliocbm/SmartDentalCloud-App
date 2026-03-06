@@ -8,6 +8,7 @@ import { PurchaseOrder, PURCHASE_ORDER_STATUS_LABELS, PurchaseOrderStatus } from
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-purchase-order-detail',
@@ -25,6 +26,7 @@ export class PurchaseOrderDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private location = inject(Location);
+  permissionService = inject(PermissionService);
 
   order = signal<PurchaseOrder | null>(null);
   loading = signal(false);

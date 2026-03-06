@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { permissionGuard } from '../../core/guards/auth.guard';
+import { PERMISSIONS } from '../../core/services/permission.service';
 
 export const USERS_ROUTES: Routes = [
   {
@@ -7,6 +9,7 @@ export const USERS_ROUTES: Routes = [
   },
   {
     path: 'new',
+    canActivate: [permissionGuard(PERMISSIONS.UsersCreate)],
     loadComponent: () => import('./components/user-form/user-form').then(m => m.UserFormComponent)
   },
   {
@@ -18,10 +21,12 @@ export const USERS_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.RolesCreate)],
         loadComponent: () => import('./components/role-form/role-form').then(m => m.RoleFormComponent)
       },
       {
         path: ':id/edit',
+        canActivate: [permissionGuard(PERMISSIONS.RolesEdit)],
         loadComponent: () => import('./components/role-form/role-form').then(m => m.RoleFormComponent)
       }
     ]
@@ -32,6 +37,7 @@ export const USERS_ROUTES: Routes = [
   },
   {
     path: ':id/edit',
+    canActivate: [permissionGuard(PERMISSIONS.UsersEdit)],
     loadComponent: () => import('./components/user-form/user-form').then(m => m.UserFormComponent)
   }
 ];

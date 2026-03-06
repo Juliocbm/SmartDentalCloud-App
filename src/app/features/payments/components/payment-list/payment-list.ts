@@ -10,6 +10,7 @@ import { Payment, PaymentMethod, PAYMENT_METHOD_CONFIG, PaymentFilters } from '.
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-payment-list',
@@ -19,6 +20,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   styleUrl: './payment-list.scss'
 })
 export class PaymentListComponent implements OnInit, OnDestroy {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private paymentsService = inject(PaymentsService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);

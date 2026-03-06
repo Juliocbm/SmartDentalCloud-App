@@ -9,7 +9,7 @@
       <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
         <i class="fa-solid fa-clock-rotate-left"></i>
       </button>
-      @if (canReschedule()) {
+      @if (canReschedule() && permissionService.hasPermission('appointments.edit')) {
         <button (click)="onEdit()" class="btn btn-outline" [disabled]="actionLoading()">
           <i class="fa-solid fa-calendar-pen"></i>
           Reagendar

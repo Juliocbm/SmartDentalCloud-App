@@ -8,10 +8,12 @@
         <i class="fa-solid fa-sync-alt" [class.fa-spin]="loading()"></i>
         Actualizar
       </button>
-      <a routerLink="/appointments/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nueva Cita
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.AppointmentsCreate)) {
+        <a routerLink="/appointments/new" class="btn btn-outline btn-success">
+          <i class="fa-solid fa-plus"></i>
+          Nueva Cita
+        </a>
+      }
     </div>
   </app-page-header>
 
@@ -34,71 +36,83 @@
 
     <!-- KPI Metrics -->
     <div class="metrics-grid">
-      <a class="metric-card primary" routerLink="/appointments">
-        <div class="metric-icon">
-          <i class="fa-solid fa-calendar-check"></i>
-        </div>
-        <div class="metric-content">
-          <span class="metric-label">Citas de Hoy</span>
-          <span class="metric-value">{{ todayAppointmentsCount() }}</span>
-        </div>
-        <i class="fa-solid fa-chevron-right metric-arrow"></i>
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.AppointmentsView)) {
+        <a class="metric-card primary" routerLink="/appointments">
+          <div class="metric-icon">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Citas de Hoy</span>
+            <span class="metric-value">{{ todayAppointmentsCount() }}</span>
+          </div>
+          <i class="fa-solid fa-chevron-right metric-arrow"></i>
+        </a>
+      }
 
-      <a class="metric-card success" routerLink="/reports/income">
-        <div class="metric-icon">
-          <i class="fa-solid fa-dollar-sign"></i>
-        </div>
-        <div class="metric-content">
-          <span class="metric-label">Ingresos del Mes</span>
-          <span class="metric-value">{{ formatCurrency(monthlyIncome()) }}</span>
-        </div>
-        <i class="fa-solid fa-chevron-right metric-arrow"></i>
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.ReportsView)) {
+        <a class="metric-card success" routerLink="/reports/income">
+          <div class="metric-icon">
+            <i class="fa-solid fa-dollar-sign"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Ingresos del Mes</span>
+            <span class="metric-value">{{ formatCurrency(monthlyIncome()) }}</span>
+          </div>
+          <i class="fa-solid fa-chevron-right metric-arrow"></i>
+        </a>
+      }
 
-      <a class="metric-card info" routerLink="/treatments">
-        <div class="metric-icon">
-          <i class="fa-solid fa-tooth"></i>
-        </div>
-        <div class="metric-content">
-          <span class="metric-label">Tratamientos Activos</span>
-          <span class="metric-value">{{ activeTreatmentsCount() }}</span>
-        </div>
-        <i class="fa-solid fa-chevron-right metric-arrow"></i>
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.TreatmentsView)) {
+        <a class="metric-card info" routerLink="/treatments">
+          <div class="metric-icon">
+            <i class="fa-solid fa-tooth"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Tratamientos Activos</span>
+            <span class="metric-value">{{ activeTreatmentsCount() }}</span>
+          </div>
+          <i class="fa-solid fa-chevron-right metric-arrow"></i>
+        </a>
+      }
 
-      <a class="metric-card warning" routerLink="/treatment-plans">
-        <div class="metric-icon">
-          <i class="fa-solid fa-clipboard-list"></i>
-        </div>
-        <div class="metric-content">
-          <span class="metric-label">Planes por Aprobar</span>
-          <span class="metric-value">{{ pendingApprovalCount() }}</span>
-        </div>
-        <i class="fa-solid fa-chevron-right metric-arrow"></i>
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.TreatmentPlansView)) {
+        <a class="metric-card warning" routerLink="/treatment-plans">
+          <div class="metric-icon">
+            <i class="fa-solid fa-clipboard-list"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Planes por Aprobar</span>
+            <span class="metric-value">{{ pendingApprovalCount() }}</span>
+          </div>
+          <i class="fa-solid fa-chevron-right metric-arrow"></i>
+        </a>
+      }
 
-      <a class="metric-card critical" routerLink="/inventory/alerts">
-        <div class="metric-icon">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-        </div>
-        <div class="metric-content">
-          <span class="metric-label">Productos Stock Bajo</span>
-          <span class="metric-value">{{ lowStockCount() }}</span>
-        </div>
-        <i class="fa-solid fa-chevron-right metric-arrow"></i>
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.InventoryView)) {
+        <a class="metric-card critical" routerLink="/inventory/alerts">
+          <div class="metric-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Productos Stock Bajo</span>
+            <span class="metric-value">{{ lowStockCount() }}</span>
+          </div>
+          <i class="fa-solid fa-chevron-right metric-arrow"></i>
+        </a>
+      }
 
-      <a class="metric-card warning" routerLink="/reports/accounts-receivable">
-        <div class="metric-icon">
-          <i class="fa-solid fa-hand-holding-dollar"></i>
-        </div>
-        <div class="metric-content">
-          <span class="metric-label">Pendiente de Cobro</span>
-          <span class="metric-value">{{ formatCurrency(pendingBalance()) }}</span>
-        </div>
-        <i class="fa-solid fa-chevron-right metric-arrow"></i>
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.ReportsView)) {
+        <a class="metric-card warning" routerLink="/reports/accounts-receivable">
+          <div class="metric-icon">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Pendiente de Cobro</span>
+            <span class="metric-value">{{ formatCurrency(pendingBalance()) }}</span>
+          </div>
+          <i class="fa-solid fa-chevron-right metric-arrow"></i>
+        </a>
+      }
     </div>
 
     <!-- Acciones Rápidas -->
@@ -108,7 +122,7 @@
         Acciones Rápidas
       </h2>
       <div class="quick-actions-grid cols-3">
-        @for (action of quickActions; track action.route) {
+        @for (action of quickActions(); track action.route) {
           <a [routerLink]="action.route" class="quick-action-card">
             <div class="action-icon" [ngClass]="action.color">
               <i class="fa-solid" [ngClass]="action.icon"></i>
@@ -126,6 +140,7 @@
     <!-- Content Grid: Citas + Planes -->
     <div class="analytics-grid">
       <!-- Próximas Citas -->
+      @if (permissionService.hasPermission(PERMISSIONS.AppointmentsView)) {
       <div class="section-card">
         <div class="section-header">
           <h2 class="section-title">
@@ -164,8 +179,10 @@
           </div>
         }
       </div>
+      }
 
       <!-- Planes Pendientes de Aprobación -->
+      @if (permissionService.hasPermission(PERMISSIONS.TreatmentPlansView)) {
       <div class="section-card">
         <div class="section-header">
           <h2 class="section-title">
@@ -200,10 +217,11 @@
           </div>
         }
       </div>
+      }
     </div>
 
     <!-- Alertas de Inventario -->
-    @if (lowStockItems().length > 0) {
+    @if (permissionService.hasPermission(PERMISSIONS.InventoryView) && lowStockItems().length > 0) {
       <div class="section-card">
         <div class="section-header">
           <h2 class="section-title">

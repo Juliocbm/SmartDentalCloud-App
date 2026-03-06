@@ -38,6 +38,7 @@ import { SignatureModalComponent } from '../../../../shared/components/signature
 import { SignaturePinSetupComponent } from '../../../../shared/components/signature-pin-setup/signature-pin-setup';
 import { ConsentTemplateService, ConsentTemplate as ConsentTemplateModel } from '../../../settings/services/consent-template.service';
 import { ConsentPrintViewComponent } from '../../../../shared/components/consent-print-view/consent-print-view';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import {
   PatientDiagnosis,
   getDiagnosisStatusLabel,
@@ -83,12 +84,37 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   private location = inject(Location);
   private radiologicImagesService = inject(RadiologicImagesService);
   private modalService = inject(ModalService);
+  permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
     { label: 'Pacientes', route: '/patients' },
     { label: 'Detalle' }
   ];
+
+  // Mapa declarativo tab → permiso requerido (null = siempre visible con patients.view)
+  private readonly TAB_PERMISSIONS: Record<string, string | null> = {
+    info: null,
+    medical: null,
+    allergies: PERMISSIONS.AllergiesView,
+    consents: PERMISSIONS.ConsentsView,
+    problems: PERMISSIONS.DiagnosesView,
+    odontogram: PERMISSIONS.DentalChartsView,
+    periodontogram: PERMISSIONS.PeriodontogramsView,
+    cephalometry: PERMISSIONS.CephalometryView,
+    radiographs: PERMISSIONS.AttachedFilesView,
+    fiscal: null,
+    financial: PERMISSIONS.PatientsViewFinancial,
+    history: PERMISSIONS.PatientsViewHistory,
+    changes: PERMISSIONS.AuditLogsView,
+    files: PERMISSIONS.AttachedFilesView,
+  };
+
+  visibleTabs = computed(() =>
+    Object.entries(this.TAB_PERMISSIONS)
+      .filter(([_, perm]) => !perm || this.permissionService.hasPermission(perm))
+      .map(([tab]) => tab)
+  );
 
   patient = signal<Patient | null>(null);
   loading = signal(false);
@@ -222,7 +248,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     // Read query params for tab navigation and consent context
     const qp = this.route.snapshot.queryParamMap;
     const tab = qp.get('tab');
-    if (tab) {
+    if (tab && this.visibleTabs().includes(tab)) {
       this.setActiveTab(tab as any);
     }
     const appointmentId = qp.get('appointmentId');
@@ -262,6 +288,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   }
 
   setActiveTab(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'): void {
+    if (!this.visibleTabs().includes(tab)) return;
     this.activeTab.set(tab);
     if (tab === 'allergies' && !this.allergiesLoaded && !this.allergiesLoading()) {
       this.loadAllergies();

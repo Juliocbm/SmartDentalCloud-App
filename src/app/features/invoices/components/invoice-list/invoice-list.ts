@@ -13,6 +13,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-invoice-list',
@@ -22,6 +23,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   styleUrl: './invoice-list.scss'
 })
 export class InvoiceListComponent implements OnInit, OnDestroy {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private invoicesService = inject(InvoicesService);
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);

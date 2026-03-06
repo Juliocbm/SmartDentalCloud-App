@@ -16,16 +16,19 @@
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
-        <button class="btn btn-outline" (click)="editPatient()">
-          <i class="fa-solid fa-pen"></i>
-          Editar
-        </button>
-        @if (pat.isActive) {
+        @if (permissionService.hasPermission('patients.edit')) {
+          <button class="btn btn-outline" (click)="editPatient()">
+            <i class="fa-solid fa-pen"></i>
+            Editar
+          </button>
+        }
+        @if (pat.isActive && permissionService.hasPermission('patients.deactivate')) {
           <button class="btn btn-outline btn-danger" (click)="toggleActive()">
             <i class="fa-solid fa-toggle-off"></i>
             Desactivar
           </button>
-        } @else {
+        }
+        @if (!pat.isActive && permissionService.hasPermission('patients.activate')) {
           <button class="btn btn-outline btn-success" (click)="toggleActive()">
             <i class="fa-solid fa-toggle-on"></i>
             Activar
@@ -77,6 +80,7 @@
           <i class="fa-solid fa-heartbeat"></i>
           <span>Historia Médica</span>
         </button>
+        @if (visibleTabs().includes('allergies')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'allergies'"
@@ -87,6 +91,8 @@
             <span class="nav-count" [class.nav-count-danger]="hasSevereAllergies()">{{ getActiveAllergiesCount() }}</span>
           }
         </button>
+        }
+        @if (visibleTabs().includes('consents')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'consents'"
@@ -97,6 +103,8 @@
             <span class="nav-count">{{ getPendingConsentsCount() }}</span>
           }
         </button>
+        }
+        @if (visibleTabs().includes('problems')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'problems'"
@@ -107,6 +115,8 @@
             <span class="nav-count nav-count-danger">{{ getActiveDiagnosesCount() }}</span>
           }
         </button>
+        }
+        @if (visibleTabs().includes('odontogram')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'odontogram'"
@@ -114,6 +124,8 @@
           <i class="fa-solid fa-tooth"></i>
           <span>Odontograma</span>
         </button>
+        }
+        @if (visibleTabs().includes('periodontogram')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'periodontogram'"
@@ -121,6 +133,8 @@
           <i class="fa-solid fa-chart-line"></i>
           <span>Periodontograma</span>
         </button>
+        }
+        @if (visibleTabs().includes('cephalometry')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'cephalometry'"
@@ -128,6 +142,8 @@
           <i class="fa-solid fa-x-ray"></i>
           <span>Cefalometría</span>
         </button>
+        }
+        @if (visibleTabs().includes('radiographs')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'radiographs'"
@@ -135,6 +151,7 @@
           <i class="fa-solid fa-image"></i>
           <span>Radiografías</span>
         </button>
+        }
         <button
           class="nav-item"
           [class.active]="activeTab() === 'fiscal'"
@@ -142,6 +159,7 @@
           <i class="fa-solid fa-file-invoice"></i>
           <span>Datos Fiscales</span>
         </button>
+        @if (visibleTabs().includes('financial')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'financial'"
@@ -149,6 +167,8 @@
           <i class="fa-solid fa-wallet"></i>
           <span>Resumen Financiero</span>
         </button>
+        }
+        @if (visibleTabs().includes('history')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'history'"
@@ -156,6 +176,8 @@
           <i class="fa-solid fa-clock-rotate-left"></i>
           <span>Historial</span>
         </button>
+        }
+        @if (visibleTabs().includes('changes')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'changes'"
@@ -163,6 +185,8 @@
           <i class="fa-solid fa-list-check"></i>
           <span>Cambios</span>
         </button>
+        }
+        @if (visibleTabs().includes('files')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'files'"
@@ -173,6 +197,7 @@
             <span class="nav-count">{{ files().length }}</span>
           }
         </button>
+        }
       </nav>
 
       <!-- Content -->
@@ -361,6 +386,7 @@
                 <i class="fa-solid fa-heartbeat"></i>
                 Historia Médica
               </h3>
+              @if (permissionService.hasPermission('patients.edit')) {
               <button class="btn btn-outline btn-sm" (click)="toggleEditMedical()">
                 @if (editingMedical()) {
                   <i class="fa-solid fa-xmark"></i> Cancelar
@@ -368,6 +394,7 @@
                   <i class="fa-solid fa-pen"></i> Editar
                 }
               </button>
+              }
             </div>
             <hr>
 
@@ -501,10 +528,12 @@
               <i class="fa-solid fa-heartbeat"></i>
               <h3>Sin Historia Médica</h3>
               <p>Este paciente no tiene información médica registrada</p>
+              @if (permissionService.hasPermission('patients.edit')) {
               <button class="btn btn-outline btn-success" (click)="toggleEditMedical()">
                 <i class="fa-solid fa-plus"></i>
                 Agregar Historia Médica
               </button>
+              }
             </div>
           }
         </div>
@@ -517,10 +546,12 @@
               <i class="fa-solid fa-shield-virus"></i>
               Alergias Registradas
             </h3>
+            @if (permissionService.hasPermission('allergies.create')) {
             <button class="btn btn-outline btn-sm" (click)="openAllergyModal()">
               <i class="fa-solid fa-plus"></i>
               Nueva Alergia
             </button>
+            }
           </div>
           <hr>
 
@@ -558,7 +589,7 @@
                         <span class="badge badge-sm badge-success" title="Verificado"><i class="fa-solid fa-check-circle"></i></span>
                       }
                     </div>
-                    @if (allergy.isActive) {
+                    @if (allergy.isActive && permissionService.hasPermission('allergies.edit')) {
                       <div class="medical-list-item__actions">
                         <button class="btn btn-ghost btn-danger-text" title="Desactivar" (click)="deactivateAllergy(allergy)">
                           <i class="fa-solid fa-ban"></i>
@@ -610,9 +641,11 @@
               <button class="btn btn-outline btn-sm" (click)="showPinSetup.set(true)">
                 <i class="fa-solid fa-key"></i> Configurar PIN
               </button>
+              @if (permissionService.hasPermission('consents.create')) {
               <button class="btn btn-outline btn-sm" (click)="openConsentModal()">
                 <i class="fa-solid fa-plus"></i> Nuevo Consentimiento
               </button>
+              }
             </div>
           </div>
           <hr>
@@ -642,7 +675,7 @@
                       }
                     </div>
                     <div class="medical-list-item__actions">
-                      @if (consent.status === 'Pending') {
+                      @if (consent.status === 'Pending' && permissionService.hasPermission('consents.sign')) {
                         <button class="btn btn-primary" (click)="startSignConsent(consent)">
                           <i class="fa-solid fa-file-signature"></i> Firmar
                         </button>
@@ -654,9 +687,11 @@
                         <button class="btn btn-ghost" title="Ver firmas" (click)="loadConsentSignatures(consent)">
                           <i class="fa-solid fa-eye"></i>
                         </button>
+                        @if (permissionService.hasPermission('consents.edit')) {
                         <button class="btn btn-ghost btn-danger-text" title="Revocar" (click)="revokeConsent(consent)">
                           <i class="fa-solid fa-ban"></i>
                         </button>
+                        }
                       }
                     </div>
                   </div>
@@ -777,10 +812,12 @@
               <i class="fa-solid fa-clipboard-list"></i>
               Diagnósticos
             </h3>
+            @if (permissionService.hasPermission('diagnoses.create')) {
             <button class="btn btn-outline btn-sm" (click)="openDiagnosisModal()">
               <i class="fa-solid fa-plus"></i>
               Nuevo Diagnóstico
             </button>
+            }
           </div>
           <hr>
 
@@ -816,7 +853,7 @@
                         <span class="text-sm text-muted"><i class="fa-solid fa-calendar"></i> {{ formatDateFile(diagnosis.onsetDate) }}</span>
                       }
                     </div>
-                    @if (diagnosis.status === 'Active') {
+                    @if (diagnosis.status === 'Active' && permissionService.hasPermission('diagnoses.edit')) {
                       <div class="medical-list-item__actions">
                         <button class="btn btn-ghost btn-success-text" title="Marcar como resuelto" (click)="resolveDiagnosis(diagnosis)">
                           <i class="fa-solid fa-check-circle"></i>
@@ -892,10 +929,12 @@
               Radiografías
               <span class="badge badge-info">{{ radioImages().length }}</span>
             </h3>
+            @if (permissionService.hasPermission('attached_files.upload')) {
             <button class="btn btn-outline btn-sm" (click)="openRadioUploadModal()">
               <i class="fa-solid fa-upload"></i>
               Subir Radiografía
             </button>
+            }
           </div>
           <hr>
 
@@ -936,9 +975,11 @@
                     <button class="btn btn-ghost btn-xs" title="Ver" (click)="viewRadioImage(img)">
                       <i class="fa-solid fa-eye"></i>
                     </button>
+                    @if (permissionService.hasPermission('attached_files.delete')) {
                     <button class="btn btn-ghost btn-xs text-danger" title="Eliminar" (click)="deleteRadioImage(img)">
                       <i class="fa-solid fa-trash"></i>
                     </button>
+                    }
                   </div>
                 </div>
               }
@@ -962,9 +1003,11 @@
             <div class="empty-state">
               <i class="fa-solid fa-image fa-3x"></i>
               <p>No hay radiografías registradas</p>
+              @if (permissionService.hasPermission('attached_files.upload')) {
               <button class="btn btn-outline btn-sm" (click)="openRadioUploadModal()">
                 <i class="fa-solid fa-upload"></i> Subir primera radiografía
               </button>
+              }
             </div>
           }
         </div>
@@ -1046,6 +1089,7 @@
               <i class="fa-solid fa-file-invoice"></i>
               Datos Fiscales
             </h3>
+            @if (permissionService.hasPermission('patients.edit')) {
             <button class="btn btn-outline btn-sm" (click)="toggleEditTax()">
               @if (editingTax()) {
                 <i class="fa-solid fa-xmark"></i> Cancelar
@@ -1053,6 +1097,7 @@
                 <i class="fa-solid fa-pen"></i> Editar
               }
             </button>
+            }
           </div>
           <hr>
 
@@ -1125,10 +1170,12 @@
                 <i class="fa-solid fa-file-invoice"></i>
                 <h3>Sin Datos Fiscales</h3>
                 <p>Este paciente no tiene información fiscal registrada. Es necesaria para generar CFDI.</p>
+                @if (permissionService.hasPermission('patients.edit')) {
                 <button class="btn btn-outline btn-success" (click)="toggleEditTax()">
                   <i class="fa-solid fa-plus"></i>
                   Agregar Datos Fiscales
                 </button>
+                }
               </div>
             }
           }
@@ -1463,6 +1510,7 @@
               <i class="fa-solid fa-paperclip"></i>
               Archivos Adjuntos
             </h3>
+            @if (permissionService.hasPermission('attached_files.upload')) {
             <button
               type="button"
               class="btn btn-outline btn-sm"
@@ -1471,6 +1519,7 @@
               <i class="fa-solid fa-upload"></i>
               Subir Archivo
             </button>
+            }
           </div>
           <hr>
 
@@ -1522,9 +1571,11 @@
                       <button class="btn btn-ghost" title="Descargar" (click)="downloadAttachedFile(file)">
                         <i class="fa-solid fa-download"></i>
                       </button>
+                      @if (permissionService.hasPermission('attached_files.delete')) {
                       <button class="btn btn-ghost btn-danger-text" title="Eliminar archivo" (click)="deleteFile(file.id)">
                         <i class="fa-solid fa-trash"></i>
                       </button>
+                      }
                     </div>
                   </div>
                   @if (file.description) {
@@ -1568,10 +1619,12 @@
               <i class="fa-solid fa-folder-open"></i>
               <h3>Sin Archivos</h3>
               <p>Este paciente no tiene archivos adjuntos</p>
+              @if (permissionService.hasPermission('attached_files.upload')) {
               <button class="btn btn-outline btn-success" (click)="openFileUploadModal()">
                 <i class="fa-solid fa-upload"></i>
                 Subir Primer Archivo
               </button>
+              }
             </div>
           }
         </div>

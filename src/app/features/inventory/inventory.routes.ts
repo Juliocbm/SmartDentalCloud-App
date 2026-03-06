@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { permissionGuard } from '../../core/guards/auth.guard';
+import { PERMISSIONS } from '../../core/services/permission.service';
 
 /**
  * Rutas del módulo de inventario
@@ -17,6 +19,7 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.InventoryCreate)],
         loadComponent: () => import('./components/product-form/product-form').then(m => m.ProductFormComponent)
       },
       {
@@ -26,6 +29,7 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: ':id/edit',
+        canActivate: [permissionGuard(PERMISSIONS.InventoryEdit)],
         loadComponent: () => import('./components/product-form/product-form').then(m => m.ProductFormComponent)
       }
     ]
@@ -39,6 +43,7 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.InventoryCreate)],
         loadComponent: () => import('./components/category-form/category-form').then(m => m.CategoryFormComponent)
       },
       {
@@ -48,6 +53,7 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: ':id/edit',
+        canActivate: [permissionGuard(PERMISSIONS.InventoryEdit)],
         loadComponent: () => import('./components/category-form/category-form').then(m => m.CategoryFormComponent)
       }
     ]
@@ -65,6 +71,7 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.SuppliersCreate)],
         loadComponent: () => import('./components/supplier-form/supplier-form').then(m => m.SupplierFormComponent)
       },
       {
@@ -74,6 +81,7 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: ':id/edit',
+        canActivate: [permissionGuard(PERMISSIONS.SuppliersEdit)],
         loadComponent: () => import('./components/supplier-form/supplier-form').then(m => m.SupplierFormComponent)
       }
     ]
@@ -87,6 +95,7 @@ export const INVENTORY_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.InventoryPurchaseOrders)],
         loadComponent: () => import('./components/purchase-order-form/purchase-order-form').then(m => m.PurchaseOrderFormComponent)
       },
       {

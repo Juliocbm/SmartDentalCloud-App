@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { permissionGuard } from '../../core/guards/auth.guard';
+import { PERMISSIONS } from '../../core/services/permission.service';
 import { PrescriptionsService } from './services/prescriptions.service';
 import { PatientsService } from '../patients/services/patients.service';
 
@@ -15,6 +17,7 @@ export const PRESCRIPTIONS_ROUTES: Routes = [
       },
       {
         path: 'new',
+        canActivate: [permissionGuard(PERMISSIONS.PrescriptionsCreate)],
         loadComponent: () =>
           import('./components/prescription-form/prescription-form').then(m => m.PrescriptionFormComponent),
         title: 'Nueva Receta'

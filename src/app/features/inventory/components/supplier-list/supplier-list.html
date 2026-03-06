@@ -6,10 +6,12 @@
     [icon]="'fa-truck'"
     [breadcrumbs]="breadcrumbItems()">
     <div actions>
-      <a class="btn btn-outline btn-success" routerLink="/inventory/suppliers/new">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Proveedor
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.InventoryCreate)) {
+        <a class="btn btn-outline btn-success" routerLink="/inventory/suppliers/new">
+          <i class="fa-solid fa-plus"></i>
+          Nuevo Proveedor
+        </a>
+      }
     </div>
   </app-page-header>
 
@@ -173,12 +175,16 @@
                 <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/inventory/suppliers', supplier.id]">
                   <i class="fa-solid fa-eye"></i>
                 </button>
-                <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/inventory/suppliers', supplier.id, 'edit']">
-                  <i class="fa-solid fa-pen"></i>
-                </button>
-                <button class="btn-icon btn-icon-danger" title="Eliminar" (click)="deleteSupplier(supplier.id)">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+                @if (permissionService.hasPermission(PERMISSIONS.InventoryEdit)) {
+                  <button class="btn-icon btn-icon-edit" title="Editar" [routerLink]="['/inventory/suppliers', supplier.id, 'edit']">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                }
+                @if (permissionService.hasPermission(PERMISSIONS.InventoryDelete)) {
+                  <button class="btn-icon btn-icon-danger" title="Eliminar" (click)="deleteSupplier(supplier.id)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                }
               </td>
             </tr>
           }

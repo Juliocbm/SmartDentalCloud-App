@@ -30,13 +30,13 @@
           Imprimir
         }
       </button>
-      @if (canEdit()) {
+      @if (canEdit() && permissionService.hasPermission('treatment_plans.edit')) {
         <a class="btn btn-outline" [routerLink]="['/treatment-plans', plan()!.id, 'edit']">
           <i class="fa-solid fa-pen"></i>
           Editar
         </a>
       }
-      @if (canApprove()) {
+      @if (canApprove() && permissionService.hasPermission('treatment_plans.approve')) {
         <button class="btn btn-outline btn-success" (click)="onApprove()" [disabled]="actionLoading()">
           <i class="fa-solid fa-circle-check"></i>
           Aprobar

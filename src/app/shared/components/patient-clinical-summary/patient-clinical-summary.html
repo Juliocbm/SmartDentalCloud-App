@@ -1,4 +1,4 @@
-@if (patientId()) {
+@if (patientId() && hasAnyClinicalPermission) {
   <div class="clinical-summary" [class.compact]="compact()">
     <!-- Blood Type -->
     @if (bloodType()) {
@@ -10,6 +10,7 @@
     }
 
     <!-- Allergies -->
+    @if (canViewAllergies) {
     <div class="summary-item" [class.has-alerts]="severeAllergiesCount > 0">
       <i class="fa-solid fa-shield-virus"></i>
       <span class="item-label">Alergias</span>
@@ -23,8 +24,10 @@
         </span>
       }
     </div>
+    }
 
     <!-- Diagnoses -->
+    @if (canViewDiagnoses) {
     <div class="summary-item">
       <i class="fa-solid fa-clipboard-list"></i>
       <span class="item-label">Diagnósticos</span>
@@ -32,9 +35,10 @@
         {{ activeDiagnosesCount }}
       </span>
     </div>
+    }
 
     <!-- Pending Consents -->
-    @if (pendingConsentsCount() > 0) {
+    @if (canViewConsents && pendingConsentsCount() > 0) {
       <div class="summary-item">
         <i class="fa-solid fa-file-signature"></i>
         <span class="item-label">Consentimientos</span>

@@ -12,6 +12,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-appointment-list',
@@ -26,6 +27,8 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
   private logger = inject(LoggingService);
   private searchSubject = new Subject<string>();
   locationsService = inject(LocationsService);
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

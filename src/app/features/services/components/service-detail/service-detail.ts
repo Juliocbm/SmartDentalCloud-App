@@ -7,6 +7,7 @@ import { DentalServiceItem, SERVICE_CATEGORIES } from '../../models/service.mode
 import { NotificationService } from '../../../../core/services/notification.service';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-service-detail',
@@ -23,6 +24,7 @@ export class ServiceDetailComponent implements OnInit {
   private servicesService = inject(ServicesService);
   private notifications = inject(NotificationService);
   private location = inject(Location);
+  permissionService = inject(PermissionService);
 
   service = signal<DentalServiceItem | null>(null);
   loading = signal(false);

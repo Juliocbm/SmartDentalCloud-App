@@ -14,6 +14,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-prescription-list',
@@ -23,6 +24,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   styleUrl: './prescription-list.scss'
 })
 export class PrescriptionListComponent implements OnInit {
+  permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
   private prescriptionsService = inject(PrescriptionsService);
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);

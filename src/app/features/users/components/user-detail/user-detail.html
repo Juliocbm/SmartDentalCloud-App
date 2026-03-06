@@ -16,20 +16,22 @@
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
-        <button class="btn btn-outline" (click)="editUser()">
-          <i class="fa-solid fa-pen"></i>
-          Editar
-        </button>
-        @if (currentUser.isActive) {
-          <button class="btn btn-outline btn-danger" (click)="toggleUserActive()">
-            <i class="fa-solid fa-toggle-off"></i>
-            Desactivar
+        @if (permissionService.hasPermission('users.edit')) {
+          <button class="btn btn-outline" (click)="editUser()">
+            <i class="fa-solid fa-pen"></i>
+            Editar
           </button>
-        } @else {
-          <button class="btn btn-outline btn-success" (click)="toggleUserActive()">
-            <i class="fa-solid fa-toggle-on"></i>
-            Activar
-          </button>
+          @if (currentUser.isActive) {
+            <button class="btn btn-outline btn-danger" (click)="toggleUserActive()">
+              <i class="fa-solid fa-toggle-off"></i>
+              Desactivar
+            </button>
+          } @else {
+            <button class="btn btn-outline btn-success" (click)="toggleUserActive()">
+              <i class="fa-solid fa-toggle-on"></i>
+              Activar
+            </button>
+          }
         }
       }
     </div>

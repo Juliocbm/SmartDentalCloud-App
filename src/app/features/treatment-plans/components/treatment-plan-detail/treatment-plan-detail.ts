@@ -26,6 +26,7 @@ import { SendEmailModalComponent } from '../../../../shared/components/send-emai
 import { ServiceSelectComponent } from '../../../invoices/components/service-select/service-select';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-treatment-plan-detail',
@@ -45,6 +46,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
   private logger = inject(LoggingService);
   private location = inject(Location);
   private patientsService = inject(PatientsService);
+  permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

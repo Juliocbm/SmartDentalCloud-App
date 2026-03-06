@@ -6,10 +6,12 @@
     [icon]="'fa-money-bill-wave'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
-      <a routerLink="/payments/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Registrar Pago
-      </a>
+      @if (permissionService.hasPermission(PERMISSIONS.PaymentsCreate)) {
+        <a routerLink="/payments/new" class="btn btn-outline btn-success">
+          <i class="fa-solid fa-plus"></i>
+          Registrar Pago
+        </a>
+      }
     </div>
   </app-page-header>
 

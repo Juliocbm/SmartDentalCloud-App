@@ -10,6 +10,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { LocationFormModalComponent, LocationFormModalData } from '../location-form-modal/location-form-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-location-detail',
@@ -26,6 +27,7 @@ export class LocationDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private modalService = inject(ModalService);
+  permissionService = inject(PermissionService);
 
   location = signal<Location | null>(null);
   loading = signal(true);

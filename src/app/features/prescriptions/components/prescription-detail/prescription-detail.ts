@@ -13,6 +13,7 @@ import { SendEmailModalComponent } from '../../../../shared/components/send-emai
 import { PatientsService } from '../../../patients/services/patients.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-prescription-detail',
@@ -30,6 +31,7 @@ export class PrescriptionDetailComponent implements OnInit {
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);
   private location = inject(Location);
+  permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
