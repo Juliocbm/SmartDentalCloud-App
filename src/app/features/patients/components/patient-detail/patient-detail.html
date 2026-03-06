@@ -255,7 +255,7 @@
                   @if (patient()!.curp) {
                     <div class="info-row">
                       <span class="info-label">CURP:</span>
-                      <span class="info-value" style="font-family: monospace; letter-spacing: 0.5px;">{{ patient()!.curp }}</span>
+                      <span class="info-value text-mono">{{ patient()!.curp }}</span>
                     </div>
                   }
                   @if (patient()!.occupation) {
@@ -361,7 +361,7 @@
                   <div class="form-group">
                     <label class="form-label">Tipo de Sangre</label>
                     <select
-                      class="form-control"
+                      class="form-input"
                       [ngModel]="medBloodType()"
                       (ngModelChange)="medBloodType.set($event)"
                     >
@@ -374,7 +374,7 @@
                   <div class="form-group">
                     <label class="form-label">Estado Fumador</label>
                     <select
-                      class="form-control"
+                      class="form-input"
                       [ngModel]="medSmokingStatus()"
                       (ngModelChange)="medSmokingStatus.set($event)"
                     >
@@ -407,7 +407,7 @@
                   <label class="form-label">Medicamentos Actuales</label>
                   <input
                     type="text"
-                    class="form-control"
+                    class="form-input"
                     placeholder="Ej: Metformina 500mg, Losartán 50mg..."
                     [ngModel]="medCurrentMedications()"
                     (ngModelChange)="medCurrentMedications.set($event)"
@@ -416,7 +416,7 @@
                 <div class="form-group">
                   <label class="form-label">Notas Médicas</label>
                   <textarea
-                    class="form-control"
+                    class="form-input"
                     rows="3"
                     placeholder="Observaciones médicas adicionales..."
                     [ngModel]="medNotes()"
@@ -809,7 +809,7 @@
                     }
                   </div>
                   @if (diagnosis.status === 'Active' && diagnosis.linkedTreatmentsCount > 0 && diagnosis.linkedCompletedTreatmentsCount === diagnosis.linkedTreatmentsCount) {
-                    <div class="alert alert-success" style="margin: var(--spacing-xs) 0; padding: var(--spacing-xs) var(--spacing-sm); font-size: 0.85rem;">
+                    <div class="alert alert-success alert-compact">
                       <i class="fa-solid fa-lightbulb"></i>
                       Todos los tratamientos vinculados están completados. Se sugiere marcar este diagnóstico como resuelto.
                     </div>
@@ -1040,7 +1040,7 @@
                 <label class="form-label">RFC <span class="required">*</span></label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-input"
                   placeholder="XAXX010101000"
                   [ngModel]="taxId()"
                   (ngModelChange)="taxId.set($event)"
@@ -1050,7 +1050,7 @@
                 <label class="form-label">Razón Social <span class="required">*</span></label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-input"
                   placeholder="Nombre o razón social"
                   [ngModel]="legalName()"
                   (ngModelChange)="legalName.set($event)"
@@ -1060,7 +1060,7 @@
                 <label class="form-label">Domicilio Fiscal <span class="required">*</span></label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-input"
                   placeholder="Calle, Colonia, CP, Ciudad, Estado"
                   [ngModel]="fiscalAddress()"
                   (ngModelChange)="fiscalAddress.set($event)"
@@ -1425,7 +1425,7 @@
           @if (!filesLoading() && files().length > 0) {
             <div class="filter-bar">
               <select
-                class="form-control form-control-sm"
+                class="form-input form-input-sm"
                 [ngModel]="filterCategory()"
                 (ngModelChange)="filterCategory.set($event)"
               >
@@ -1447,7 +1447,7 @@
                     <i [class]="'fa-solid ' + getFileIcon(file.fileType)"></i>
                   </div>
                   <div class="file-info">
-                    <a class="file-name" (click)="downloadAttachedFile(file)" style="cursor: pointer;">
+                    <a class="file-name" (click)="downloadAttachedFile(file)">
                       {{ file.fileName }}
                     </a>
                     <div class="file-meta">

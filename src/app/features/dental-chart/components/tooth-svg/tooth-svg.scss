@@ -48,8 +48,10 @@
 // Tooth Shape SVG
 // ============================================
 .tooth-shape {
-  width: 62px;
-  height: 79px;
+  width: 100%;
+  max-width: 62px;
+  height: auto;
+  aspect-ratio: 62 / 79;
   transition: var(--transition-fast);
   overflow: visible;
 }
@@ -67,7 +69,7 @@
   }
 
   &.crown-absent {
-    fill: #E8E8E8 !important;
+    fill: var(--odonto-absent) !important;
     stroke: var(--border-medium);
     stroke-dasharray: 3 2;
   }
@@ -91,15 +93,15 @@
   opacity: 0.55;
 
   .tooth-shadow-path {
-    stroke: var(--border-medium, #BDBDBD);
+    stroke: var(--border-medium);
     stroke-width: 0.8;
     stroke-dasharray: 3 2;
   }
 }
 
 .tooth-root {
-  fill: var(--odonto-root, #E8E8E8);
-  stroke: var(--odonto-root-border, #BDBDBD);
+  fill: var(--odonto-root);
+  stroke: var(--odonto-root-border);
   stroke-width: 0.5;
   stroke-linecap: round;
   transition: var(--transition-base);
@@ -131,7 +133,7 @@
 
 // ── Extracted X ──
 .extracted-x {
-  stroke: #D32F2F;
+  stroke: var(--odonto-extracted);
   stroke-width: 2;
   stroke-linecap: round;
   opacity: 0.7;
@@ -148,79 +150,79 @@
 // Condition Overlays
 // ============================================
 .condition-corona {
-  fill: #FFC107;
-  stroke: #F9A825;
+  fill: var(--odonto-corona);
+  stroke: var(--odonto-corona-border);
   stroke-width: 0.8;
   opacity: 0.75;
 }
 
 .condition-endo {
-  stroke: #E91E63;
+  stroke: var(--odonto-endo);
   stroke-width: 1.2;
   stroke-linecap: round;
   opacity: 0.6;
 }
 
 .condition-sellante {
-  fill: #8BC34A;
+  fill: var(--odonto-sellante);
   opacity: 0.45;
-  stroke: #689F38;
+  stroke: var(--odonto-sellante-border);
   stroke-width: 0.5;
 }
 
 .condition-bracket {
-  fill: #78909C;
-  stroke: #546E7A;
+  fill: var(--odonto-bracket);
+  stroke: var(--odonto-bracket-border);
   stroke-width: 0.5;
 }
 
 .condition-wire {
-  stroke: #90A4AE;
+  stroke: var(--odonto-wire);
   stroke-width: 0.8;
 }
 
 .condition-fractura {
   fill: none;
-  stroke: #9C27B0;
+  stroke: var(--odonto-fractura);
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 .condition-caries {
-  fill: #5D4037;
+  fill: var(--odonto-caries);
   opacity: 0.7;
-  stroke: #3E2723;
+  stroke: var(--odonto-caries-border);
   stroke-width: 0.5;
 }
 
 .condition-puente {
-  stroke: #1565C0;
+  stroke: var(--odonto-puente);
   stroke-width: 2;
   stroke-linecap: round;
 }
 
 .condition-puente-post {
-  stroke: #1565C0;
+  stroke: var(--odonto-puente);
   stroke-width: 1.5;
   stroke-linecap: round;
 }
 
 .condition-absceso {
-  fill: #F44336;
+  fill: var(--odonto-absceso);
   opacity: 0.5;
   stroke: none;
 }
 
 .condition-absceso-inner {
-  fill: #D32F2F;
+  fill: var(--odonto-absceso-inner);
   opacity: 0.8;
   stroke: none;
 }
 
 .condition-gingivitis {
   fill: none;
-  stroke: #E53935;
+  stroke: var(--odonto-gingivitis);
   stroke-width: 1.5;
   stroke-linecap: round;
   opacity: 0.7;
@@ -228,7 +230,7 @@
 
 .condition-movilidad {
   fill: none;
-  stroke: #FF6F00;
+  stroke: var(--odonto-movilidad);
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -236,38 +238,38 @@
 }
 
 .condition-protesis {
-  stroke: #7B1FA2;
+  stroke: var(--odonto-protesis);
   stroke-width: 2;
   stroke-linecap: round;
 }
 
 .condition-protesis-hook {
   fill: none;
-  stroke: #7B1FA2;
+  stroke: var(--odonto-protesis);
   stroke-width: 1.5;
   stroke-linecap: round;
 }
 
 .condition-perno {
-  stroke: #455A64;
+  stroke: var(--odonto-perno);
   stroke-width: 2.5;
   stroke-linecap: round;
 }
 
 .condition-perno-head {
-  fill: #455A64;
+  fill: var(--odonto-perno);
   stroke: none;
 }
 
 .condition-erosion {
-  stroke: #BF360C;
+  stroke: var(--odonto-erosion);
   stroke-width: 1;
   stroke-linecap: round;
   opacity: 0.6;
 }
 
 .condition-residuo {
-  stroke: #616161;
+  stroke: var(--odonto-residuo);
   stroke-width: 1.2;
   stroke-dasharray: 3 2;
   opacity: 0.7;
@@ -276,7 +278,7 @@
 .condition-residuo-text {
   font-size: 8px;
   font-weight: 700;
-  fill: #616161;
+  fill: var(--odonto-residuo);
   opacity: 0.8;
 }
 

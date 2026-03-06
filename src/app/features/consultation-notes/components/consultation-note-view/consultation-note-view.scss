@@ -55,12 +55,16 @@
   gap: 6px;
   margin-top: var(--spacing-sm);
   padding: 4px 10px;
-  background: var(--bg-info, #eff6ff);
-  border: 1px solid var(--border-info, #bfdbfe);
+  background: var(--bg-info);
+  border: 1px solid var(--border-info);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
-  color: var(--color-info, #3b82f6);
+  color: var(--info-600);
   font-weight: var(--font-weight-semibold);
+
+  & + & {
+    margin-top: var(--spacing-xs);
+  }
 }
 
 // Responsive: .detail-container, .detail-header, .info-section

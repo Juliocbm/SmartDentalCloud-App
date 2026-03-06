@@ -1,4 +1,4 @@
-<aside class="sidebar" [class.sidebar--collapsed]="collapsed()">
+<aside class="sidebar" [class.sidebar--collapsed]="collapsed()" role="navigation" aria-label="Menú principal">
   <!-- Header -->
   <div class="sidebar__header">
     <div class="sidebar__logo">
@@ -10,7 +10,8 @@
     <button 
       class="sidebar__toggle" 
       (click)="toggleSidebar()" 
-      [title]="collapsed() ? 'Expandir' : 'Colapsar'">
+      [title]="collapsed() ? 'Expandir' : 'Colapsar'"
+      [attr.aria-label]="collapsed() ? 'Expandir menú' : 'Colapsar menú'">
       <i class="fa-solid" [class.fa-angles-left]="!collapsed()" [class.fa-angles-right]="collapsed()"></i>
     </button>
   </div>

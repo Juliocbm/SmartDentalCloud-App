@@ -50,9 +50,9 @@
               <i class="fa-solid fa-user"></i>
             }
           </div>
-          <div class="form-group" style="flex: 1;">
+          <div class="form-group flex-1">
             <label class="form-label">URL de la imagen</label>
-            <input type="url" class="form-control" placeholder="https://ejemplo.com/foto.jpg"
+            <input type="url" class="form-input" placeholder="https://ejemplo.com/foto.jpg"
               [ngModel]="profilePictureUrl()" (ngModelChange)="profilePictureUrl.set($event)" />
             <span class="form-hint">Ingresa la URL de una imagen para tu foto de perfil</span>
           </div>
@@ -64,18 +64,18 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Teléfono</label>
-            <input type="tel" class="form-control" placeholder="Número de teléfono"
+            <input type="tel" class="form-input" placeholder="Número de teléfono"
               [ngModel]="phoneNumber()" (ngModelChange)="phoneNumber.set($event)" />
           </div>
           <div class="form-group">
             <label class="form-label">Email Alternativo</label>
-            <input type="email" class="form-control" placeholder="Email alternativo"
+            <input type="email" class="form-input" placeholder="Email alternativo"
               [ngModel]="alternateEmail()" (ngModelChange)="alternateEmail.set($event)" />
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Dirección</label>
-          <input type="text" class="form-control" placeholder="Dirección"
+          <input type="text" class="form-input" placeholder="Dirección"
             [ngModel]="address()" (ngModelChange)="address.set($event)" />
         </div>
       </div>
@@ -85,24 +85,24 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Especialidad</label>
-            <input type="text" class="form-control" placeholder="Ej: Ortodoncia"
+            <input type="text" class="form-input" placeholder="Ej: Ortodoncia"
               [ngModel]="specialty()" (ngModelChange)="specialty.set($event)" />
           </div>
           <div class="form-group">
             <label class="form-label">Cédula Profesional</label>
-            <input type="text" class="form-control" placeholder="Número de cédula"
+            <input type="text" class="form-input" placeholder="Número de cédula"
               [ngModel]="professionalLicense()" (ngModelChange)="professionalLicense.set($event)" />
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Años de Experiencia</label>
-            <input type="number" class="form-control" placeholder="0" min="0"
+            <input type="number" class="form-input" placeholder="0" min="0"
               [ngModel]="yearsOfExperience()" (ngModelChange)="yearsOfExperience.set($event)" />
           </div>
           <div class="form-group">
             <label class="form-label">Formación Académica</label>
-            <input type="text" class="form-control" placeholder="Universidad, posgrado..."
+            <input type="text" class="form-input" placeholder="Universidad, posgrado..."
               [ngModel]="education()" (ngModelChange)="education.set($event)" />
           </div>
         </div>
@@ -113,12 +113,12 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" placeholder="Nombre del contacto"
+            <input type="text" class="form-input" placeholder="Nombre del contacto"
               [ngModel]="emergencyContactName()" (ngModelChange)="emergencyContactName.set($event)" />
           </div>
           <div class="form-group">
             <label class="form-label">Teléfono</label>
-            <input type="tel" class="form-control" placeholder="Teléfono del contacto"
+            <input type="tel" class="form-input" placeholder="Teléfono del contacto"
               [ngModel]="emergencyContactPhone()" (ngModelChange)="emergencyContactPhone.set($event)" />
           </div>
         </div>
@@ -127,7 +127,7 @@
       <div class="info-section">
         <h3><i class="fa-solid fa-quote-left"></i> Biografía</h3>
         <div class="form-group">
-          <textarea class="form-control" rows="4" placeholder="Breve descripción profesional..."
+          <textarea class="form-input" rows="4" placeholder="Breve descripción profesional..."
             [ngModel]="bio()" (ngModelChange)="bio.set($event)"></textarea>
         </div>
       </div>

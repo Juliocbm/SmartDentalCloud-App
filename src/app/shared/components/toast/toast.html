@@ -1,5 +1,5 @@
 <!-- Toast notifications -->
-<div class="toast-container">
+<div class="toast-container" aria-live="polite" aria-atomic="false">
   @for (notification of notifications(); track notification.id) {
     <div class="toast toast-{{ notification.type }}" [class.toast-dismissing]="notification.dismissing" role="alert">
       <div class="toast-icon">

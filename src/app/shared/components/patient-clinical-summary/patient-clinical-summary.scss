@@ -1,12 +1,12 @@
 .clinical-summary {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 10px 16px;
-  background: var(--bg-secondary, #f8fafc);
-  border: 1px solid var(--border-primary, #e2e8f0);
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-lg);
   flex-wrap: wrap;
 
   .summary-item {
@@ -42,18 +42,18 @@
       text-align: center;
 
       &.count-neutral {
-        background: var(--bg-tertiary, #e2e8f0);
+        background: var(--bg-tertiary);
         color: var(--text-muted);
       }
 
       &.count-danger {
-        background: #fee2e2;
-        color: #dc2626;
+        background: var(--error-100);
+        color: var(--error-600);
       }
 
       &.count-warning {
-        background: #fef3c7;
-        color: #d97706;
+        background: var(--warning-100);
+        color: var(--warning-600);
       }
     }
 
@@ -63,7 +63,11 @@
       gap: 3px;
       font-size: 0.6875rem;
       font-weight: 600;
-      color: #dc2626;
+      color: var(--error-600);
+
+      &.alert-indicator-warning {
+        color: var(--warning-600);
+      }
 
       i {
         font-size: 0.625rem;
@@ -72,13 +76,13 @@
 
     &.blood-type {
       > i:first-child {
-        color: #dc2626;
+        color: var(--error-600);
       }
     }
 
     &.has-alerts {
       > i:first-child {
-        color: #dc2626;
+        color: var(--error-600);
       }
     }
   }
@@ -89,7 +93,7 @@
     align-items: center;
     gap: 4px;
     font-size: 0.75rem;
-    color: var(--color-primary, #3b82f6);
+    color: var(--color-primary);
     text-decoration: none;
 
     &:hover {
@@ -99,9 +103,9 @@
 
   // Compact mode
   &.compact {
-    padding: 6px 12px;
-    gap: 12px;
-    margin-bottom: 12px;
+    padding: var(--spacing-xs) var(--spacing-md);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
 
     .summary-item {
       font-size: 0.75rem;

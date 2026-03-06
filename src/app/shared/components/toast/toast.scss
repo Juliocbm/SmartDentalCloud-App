@@ -6,7 +6,7 @@
   position: fixed;
   top: 1rem;
   right: 1rem;
-  z-index: 10000;
+  z-index: var(--z-tooltip);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -20,8 +20,8 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.875rem 1rem;
-  border-radius: var(--radius-md, 8px);
-  background: var(--surface-primary, #fff);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
   border-left: 4px solid;
   pointer-events: all;
@@ -34,34 +34,34 @@
   }
 
   &-success {
-    border-left-color: var(--success-500, #22c55e);
+    border-left-color: var(--success-500);
 
     .toast-icon {
-      color: var(--success-500, #22c55e);
+      color: var(--success-500);
     }
   }
 
   &-error {
-    border-left-color: var(--error-500, #ef4444);
+    border-left-color: var(--error-500);
 
     .toast-icon {
-      color: var(--error-500, #ef4444);
+      color: var(--error-500);
     }
   }
 
   &-warning {
-    border-left-color: var(--warning-500, #f59e0b);
+    border-left-color: var(--warning-500);
 
     .toast-icon {
-      color: var(--warning-500, #f59e0b);
+      color: var(--warning-500);
     }
   }
 
   &-info {
-    border-left-color: var(--primary-500, #3b82f6);
+    border-left-color: var(--primary-500);
 
     .toast-icon {
-      color: var(--primary-500, #3b82f6);
+      color: var(--primary-500);
     }
   }
 }
@@ -75,7 +75,7 @@
   flex: 1;
   font-size: 0.875rem;
   line-height: 1.4;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary);
 }
 
 .toast-close {
@@ -87,22 +87,22 @@
   height: 1.5rem;
   border: none;
   background: none;
-  color: var(--text-tertiary, #94a3b8);
+  color: var(--text-tertiary);
   cursor: pointer;
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--radius-sm);
   transition: color 0.15s, background 0.15s;
 
   &:hover {
-    color: var(--text-primary, #1e293b);
-    background: var(--surface-secondary, #f1f5f9);
+    color: var(--text-primary);
+    background: var(--surface-secondary);
   }
 }
 
 // Confirm Dialog — usa <app-modal> global, solo estilo del mensaje
 .confirm-message {
-  font-size: var(--font-size-base, 0.9375rem);
+  font-size: var(--font-size-base);
   line-height: 1.5;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary);
   white-space: pre-line;
   margin: 0;
 }

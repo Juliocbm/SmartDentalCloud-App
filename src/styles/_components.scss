@@ -467,40 +467,56 @@
   margin-bottom: var(--spacing-sm);
 }
 
+.form-input,
 .form-control {
   width: 100%;
   padding: 10px 14px;
-  font-size: var(--font-size-base);
-  border: 1px solid var(--border-medium);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
   background: var(--surface-primary);
   color: var(--text-primary);
-  transition: var(--transition-base);
-  
+  transition: all var(--transition-base);
+  line-height: var(--line-height-normal);
+  font-family: var(--font-family-base);
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:hover:not(:focus) {
+    border-color: var(--border-medium);
+  }
+
   &:focus {
     outline: none;
     border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px var(--primary-100);
   }
-  
+
+  &.input-error {
+    border-color: var(--error-500);
+
+    &:focus {
+      box-shadow: 0 0 0 3px var(--error-100);
+    }
+  }
+
   &:disabled {
     background: var(--surface-secondary);
     cursor: not-allowed;
     opacity: 0.6;
   }
-  
-  &::placeholder {
-    color: var(--text-muted);
-  }
 }
 
+textarea.form-input,
 textarea.form-control {
   resize: vertical;
   min-height: 100px;
 }
 
 .form-select {
-  @extend .form-control;
+  @extend .form-input;
   cursor: pointer;
 }
 
@@ -1268,6 +1284,7 @@ textarea.form-control {
       font-weight: var(--font-weight-medium);
     }
 
+    .form-input,
     .form-control,
     select {
       padding: var(--spacing-sm) var(--spacing-lg);
@@ -1299,7 +1316,7 @@ textarea.form-control {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: var(--z-modal-backdrop);
   padding: var(--spacing-lg);
   animation: fadeIn 0.2s ease-out;
 }
@@ -1573,47 +1590,6 @@ textarea.form-control {
     }
   }
 
-  .form-input,
-  .form-textarea {
-    padding: 10px 14px;
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-base);
-    background: var(--surface-primary);
-    color: var(--text-primary);
-    transition: all var(--transition-base);
-    line-height: var(--line-height-normal);
-    font-family: var(--font-family-base);
-
-    &::placeholder {
-      color: var(--text-muted);
-    }
-
-    &:hover:not(:focus) {
-      border-color: var(--border-medium);
-    }
-
-    &:focus {
-      outline: none;
-      border-color: var(--primary-500);
-      box-shadow: 0 0 0 3px var(--primary-100);
-    }
-
-    &.input-error {
-      border-color: var(--error-500);
-
-      &:focus {
-        box-shadow: 0 0 0 3px var(--error-100);
-      }
-    }
-
-    &:disabled {
-      background: var(--surface-secondary);
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-  }
-
   select.form-input {
     appearance: none;
     -webkit-appearance: none;
@@ -1851,20 +1827,6 @@ select.form-input {
   }
 }
 
-.spinner {
-  border: 3px solid var(--border-secondary);
-  border-top: 3px solid var(--primary-500);
-  border-radius: var(--radius-full);
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 .loading-small {
   display: flex;
   align-items: center;
@@ -1914,7 +1876,7 @@ select.form-input {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 1000;
+    z-index: var(--z-tooltip);
   }
 
   // Flecha del tooltip
@@ -2376,6 +2338,22 @@ button.link-primary {
       flex: 1;
       min-width: auto;
     }
+  }
+}
+
+// ===== AUTH THEME TOGGLE (global para evitar ::ng-deep en auth pages) =====
+.auth-theme-toggle .theme-toggle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.35rem;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
   }
 }
 

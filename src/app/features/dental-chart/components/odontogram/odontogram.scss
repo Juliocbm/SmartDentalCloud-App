@@ -130,6 +130,8 @@
   background: var(--surface-secondary);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-primary);
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .stats-row {
@@ -206,6 +208,8 @@
   border-radius: var(--radius-lg);
   padding: var(--spacing-xl);
   position: relative;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .jaw-label {
@@ -226,11 +230,12 @@
   align-items: flex-start;
   justify-content: center;
   gap: 0;
+  min-width: 0;
 }
 
 .quadrant {
-  flex: 1;
-  max-width: 50%;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .quadrant-label {
@@ -249,6 +254,13 @@
   justify-content: center;
   gap: 1px;
   align-items: flex-end;
+  flex-wrap: nowrap;
+
+  app-tooth-svg {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 62px;
+  }
 
   .lower-jaw & {
     align-items: flex-start;
@@ -748,7 +760,7 @@
 }
 
 // ============================================
-// Form elements (extend global .form-group / .form-control)
+// Form elements (extend global .form-group / .form-input)
 // ============================================
 .form-group {
   label {
@@ -760,35 +772,12 @@
   }
 }
 
-.form-control {
-  width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-md);
+.form-input {
   font-size: var(--font-size-sm);
-  color: var(--text-primary);
-  background: var(--surface-primary);
-  transition: var(--transition-fast);
   resize: vertical;
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-
-  &:disabled {
-    background: var(--surface-secondary);
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  &::placeholder {
-    color: var(--text-muted);
-  }
 }
 
-.form-control-sm {
+.form-input-sm {
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: var(--font-size-xs);
 }

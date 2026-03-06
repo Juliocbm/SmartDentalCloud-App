@@ -469,23 +469,6 @@
     font-size: var(--font-size-sm);
   }
 
-  .form-control {
-    width: 100%;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-base);
-    color: var(--text-primary);
-    background: var(--surface-primary);
-    box-sizing: border-box;
-
-    &:focus {
-      outline: none;
-      border-color: var(--primary-500);
-      box-shadow: 0 0 0 3px var(--primary-100);
-    }
-  }
-
   .form-actions-row {
     display: flex;
     justify-content: flex-end;

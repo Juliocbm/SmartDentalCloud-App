@@ -3,8 +3,7 @@
 // ============================================
 
 // === Design Tokens ===
-$sidebar-width: 260px;
-$sidebar-collapsed-width: 70px;
+// Width values come from CSS custom properties in _variables.scss
 $sidebar-transition: 0.2s ease-out;
 $sidebar-indent: 24px;
 
@@ -14,7 +13,7 @@ $sidebar-indent: 24px;
   left: 0;
   top: 0;
   bottom: 0;
-  width: $sidebar-width;
+  width: var(--sidebar-width);
   background: var(--surface-primary);
   border-right: 1px solid var(--border-primary);
   display: flex;
@@ -24,7 +23,7 @@ $sidebar-indent: 24px;
   box-shadow: var(--shadow-md);
 
   &--collapsed {
-    width: $sidebar-collapsed-width;
+    width: var(--sidebar-collapsed-width);
 
     .sidebar__header {
       padding: 0.75rem 0.5rem 0.5rem;

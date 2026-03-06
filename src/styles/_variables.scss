@@ -24,7 +24,7 @@
   --primary-600: #2563eb;
   --primary-700: #1e40af;
   --primary-800: #1e3a8a;
-  --primary-900: #1e3a8a;
+  --primary-900: #172554;
   
   // ===== Colores de Estado - Success =====
   --success-50: #f0fdf4;
@@ -39,6 +39,7 @@
   // ===== Colores de Estado - Error =====
   --error-50: #fef2f2;
   --error-100: #fee2e2;
+  --error-200: #fecaca;
   --error-500: #ef4444;
   --error-600: #dc2626;
   --error-700: #b91c1c;
@@ -49,6 +50,8 @@
   // ===== Colores de Estado - Warning =====
   --warning-50: #fffbeb;
   --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
   --warning-500: #f59e0b;
   --warning-600: #d97706;
   --warning-700: #b45309;
@@ -78,7 +81,28 @@
   --neutral-900: #111827;
   --neutral-bg: rgba(107, 114, 128, 0.1);
   --neutral-text: #6b7280;
-  
+
+  // ===== Aliases de Compatibilidad =====
+  // --danger-* → alias de --error-* (componentes legacy usan "danger")
+  --danger-50: var(--error-50);
+  --danger-100: var(--error-100);
+  --danger-200: var(--error-200);
+  --danger-500: var(--error-500);
+  --danger-600: var(--error-600);
+  --danger-700: var(--error-700);
+
+  // --bg-* → alias de --surface-* (componentes legacy)
+  --bg-primary: var(--surface-primary);
+  --bg-secondary: var(--surface-secondary);
+  --bg-tertiary: var(--surface-tertiary);
+  --bg-hover: var(--surface-secondary);
+  --bg-info: var(--info-50);
+
+  // Otros aliases legacy
+  --color-primary: var(--primary-500);
+  --border-color: var(--border-primary);
+  --border-info: var(--primary-200);
+
   // ===== Gradientes Especiales =====
   --gradient-primary: linear-gradient(135deg, #1e40af, #3b82f6);
   --gradient-admin: linear-gradient(135deg, #7c3aed, #a855f7);
@@ -111,16 +135,42 @@
   
   // ===== Espaciado =====
   --spacing-xs: 4px;
-  --spacing-sm: 6px;
-  --spacing-md: 10px;
-  --spacing-lg: 14px;
-  --spacing-xl: 20px;
-  --spacing-2xl: 28px;
-  --spacing-3xl: 36px;
-  --spacing-4xl: 44px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 48px;
+  --spacing-4xl: 64px;
   
+  // ===== Colores Clínicos (Odontograma) =====
+  --odonto-root: #E8E8E8;
+  --odonto-root-border: #BDBDBD;
+  --odonto-absent: #E8E8E8;
+  --odonto-extracted: #D32F2F;
+  --odonto-corona: #FFC107;
+  --odonto-corona-border: #F9A825;
+  --odonto-endo: #E91E63;
+  --odonto-sellante: #8BC34A;
+  --odonto-sellante-border: #689F38;
+  --odonto-bracket: #78909C;
+  --odonto-bracket-border: #546E7A;
+  --odonto-wire: #90A4AE;
+  --odonto-fractura: #9C27B0;
+  --odonto-caries: #5D4037;
+  --odonto-caries-border: #3E2723;
+  --odonto-puente: #1565C0;
+  --odonto-absceso: #F44336;
+  --odonto-absceso-inner: #D32F2F;
+  --odonto-gingivitis: #E53935;
+  --odonto-movilidad: #FF6F00;
+  --odonto-protesis: #7B1FA2;
+  --odonto-perno: #455A64;
+  --odonto-erosion: #BF360C;
+  --odonto-residuo: #616161;
+
   // ===== Espaciado Específico de Componentes =====
-  --form-section-spacing: 5px;  // Separación entre secciones de formularios
+  --form-section-spacing: var(--spacing-xs);  // Separación entre secciones de formularios
   
   // ===== Transiciones =====
   --transition-fast: all 0.15s ease;
@@ -159,7 +209,7 @@
   --layout-width-medium: 1000px;
   --layout-width-narrow: 800px;
   --header-height: 56px;
-  --sidebar-width: 240px;
+  --sidebar-width: 260px;
   --sidebar-collapsed-width: 70px;
   
   // ===== Breakpoints =====
@@ -213,14 +263,6 @@
   --metric-warning-color: var(--warning-600);
   --metric-info-bg: var(--info-50);
   --metric-info-color: var(--info-600);
-  
-  // Metric Card (Dark Theme)
-  --metric-card-background: var(--surface-primary);
-  --metric-primary-bg: rgba(59, 130, 246, 0.15);
-  --metric-success-bg: rgba(52, 211, 153, 0.15);
-  --metric-error-bg: rgba(248, 113, 113, 0.15);
-  --metric-warning-bg: rgba(251, 191, 36, 0.15);
-  --metric-info-bg: rgba(34, 211, 238, 0.15);
   
   // Section Cards
   --section-card-background: var(--surface-primary);
@@ -392,6 +434,7 @@
   // Error - Más brillante para mejor contraste
   --error-50: #7f1d1d;
   --error-100: #991b1b;
+  --error-200: #b91c1c;
   --error-500: #f87171;
   --error-600: #ef4444;
   --error-700: #dc2626;
@@ -401,6 +444,8 @@
   // Warning - Más brillante para mejor contraste
   --warning-50: #78350f;
   --warning-100: #92400e;
+  --warning-200: #b45309;
+  --warning-300: #d97706;
   --warning-500: #fbbf24;
   --warning-600: #f59e0b;
   --warning-700: #d97706;
@@ -509,6 +554,8 @@
   // Warning - Naranja cálido (más saturado que primary)
   --warning-50: #fff7ed;
   --warning-100: #ffedd5;
+  --warning-200: #fed7aa;
+  --warning-300: #fdba74;
   --warning-500: #ea580c;
   --warning-600: #c2410c;
   --warning-700: #9a3412;
@@ -648,6 +695,8 @@
   // Warning
   --warning-50: #fff5e6;
   --warning-100: #ffebcc;
+  --warning-200: #ffd699;
+  --warning-300: #ffc266;
   --warning-500: #cc6600;
   --warning-600: #aa5500;
   --warning-700: #884400;
@@ -787,6 +836,8 @@
   // Warning - Ámbar pastel
   --warning-50: #fffbeb;
   --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
   --warning-500: #f59e0b;
   --warning-600: #d97706;
   --warning-700: #b45309;

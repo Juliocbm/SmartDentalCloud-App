@@ -1,0 +1,277 @@
+// ============================================
+// SmartDentalCloud - Print Styles
+// Estilos optimizados para impresión de documentos médicos
+// ============================================
+
+@media print {
+  // ===== Global Reset =====
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: 11pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+  }
+
+  // ===== Hide non-printable elements =====
+  .no-print,
+  .sidebar,
+  .main-header,
+  .header-actions,
+  .page-header,
+  .toast-container,
+  .modal-overlay,
+  .breadcrumb,
+  .btn:not(.print-visible),
+  .fab,
+  .tooltip,
+  [data-tooltip],
+  .skeleton,
+  .spinner,
+  .loading-spinner {
+    display: none !important;
+  }
+
+  // ===== Layout Reset =====
+  .main-content,
+  .patient-content,
+  .app-layout {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  // ===== Page Breaks =====
+  .print-page-break {
+    page-break-before: always;
+  }
+
+  .print-no-break {
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  table, figure, .card, .info-card, .form-section {
+    page-break-inside: avoid;
+  }
+
+  // ===== Tables =====
+  table {
+    border-collapse: collapse;
+    width: 100%;
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px 10px;
+      font-size: 10pt;
+    }
+
+    th {
+      background: #f0f0f0 !important;
+      font-weight: 700;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    thead {
+      display: table-header-group;
+    }
+  }
+
+  // ===== Links =====
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  // ===== Badges & Status =====
+  .badge,
+  .status-badge {
+    border: 1px solid #999;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  // ===== Patient Record =====
+  .patient-detail {
+    .patient-sidebar-nav {
+      display: none !important;
+    }
+
+    .patient-content {
+      margin-left: 0 !important;
+    }
+
+    .info-card {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+  }
+
+  // ===== Prescription (Receta) =====
+  .rx-print {
+    padding: 20mm 15mm;
+    font-family: 'Times New Roman', Times, serif;
+
+    .rx-header {
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .rx-clinic-name {
+      font-size: 16pt;
+      font-weight: 700;
+    }
+
+    .rx-doctor-info {
+      font-size: 9pt;
+      color: #333;
+    }
+
+    .rx-patient-info {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 15px;
+      font-size: 10pt;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+
+    .rx-body {
+      min-height: 300px;
+      font-size: 11pt;
+      line-height: 1.8;
+    }
+
+    .rx-footer {
+      margin-top: 40px;
+      border-top: 1px solid #000;
+      padding-top: 10px;
+      text-align: center;
+
+      .rx-signature {
+        margin-top: 60px;
+        border-top: 1px solid #000;
+        display: inline-block;
+        min-width: 200px;
+        padding-top: 5px;
+        font-size: 9pt;
+      }
+    }
+  }
+
+  // ===== Invoice (Factura) =====
+  .invoice-print {
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .invoice-total {
+      font-size: 14pt;
+      font-weight: 700;
+      text-align: right;
+      border-top: 2px solid #000;
+      padding-top: 8px;
+      margin-top: 10px;
+    }
+
+    .invoice-items table {
+      margin-bottom: 15px;
+    }
+  }
+
+  // ===== Informed Consent (Consentimiento) =====
+  .consent-print {
+    .consent-signature-area {
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+
+      .signature-line {
+        flex: 1;
+        border-top: 1px solid #000;
+        padding-top: 5px;
+        text-align: center;
+        font-size: 9pt;
+      }
+    }
+  }
+
+  // ===== Clinical Export =====
+  .clinical-export-print {
+    .section-title {
+      font-size: 13pt;
+      font-weight: 700;
+      border-bottom: 1px solid #000;
+      padding-bottom: 4px;
+      margin: 15px 0 8px;
+    }
+
+    .clinical-data {
+      font-size: 10pt;
+
+      dt {
+        font-weight: 700;
+        display: inline;
+      }
+
+      dd {
+        display: inline;
+        margin: 0;
+
+        &::after {
+          content: '';
+          display: block;
+          margin-bottom: 4px;
+        }
+      }
+    }
+  }
+
+  // ===== Utility Classes =====
+  .print-only {
+    display: block !important;
+  }
+
+  .print-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #000;
+  }
+
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #666;
+    padding: 5px 0;
+    border-top: 1px solid #ccc;
+  }
+}
+
+// Hidden by default, shown only in print
+.print-only {
+  display: none;
+}

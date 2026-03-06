@@ -14,7 +14,7 @@
         [ngModel]="searchTerm()" (ngModelChange)="onSearchChange($event)" />
     </div>
     <div class="filter-group">
-      <select class="form-control" [ngModel]="statusFilter()" (ngModelChange)="onStatusChange($event)">
+      <select class="form-input" [ngModel]="statusFilter()" (ngModelChange)="onStatusChange($event)">
         <option value="">Todos los estados</option>
         @for (opt of statusOptions; track opt) {
           <option [value]="opt">{{ CFDI_STATUS_CONFIG[opt].label }}</option>

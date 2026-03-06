@@ -419,7 +419,7 @@
                 <div class="form-group">
                   <label class="form-label">Motivo de Cancelación</label>
                   <select
-                    class="form-control"
+                    class="form-input"
                     [ngModel]="cancelMotivo()"
                     (ngModelChange)="cancelMotivo.set($event)"
                   >
@@ -432,7 +432,7 @@
                 <div class="form-group">
                   <label class="form-label">Observaciones</label>
                   <textarea
-                    class="form-control"
+                    class="form-input"
                     rows="2"
                     placeholder="Observaciones opcionales..."
                     [ngModel]="cancelObservaciones()"

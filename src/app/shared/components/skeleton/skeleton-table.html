@@ -1,0 +1,18 @@
+<div class="skeleton-table">
+  <div class="skeleton-table-header">
+    @for (col of colItems; track col) {
+      <div class="skeleton-table-cell">
+        <app-skeleton type="text" [width]="col === 0 ? '70%' : '50%'"></app-skeleton>
+      </div>
+    }
+  </div>
+  @for (row of rowItems; track row) {
+    <div class="skeleton-table-row">
+      @for (col of colItems; track col) {
+        <div class="skeleton-table-cell">
+          <app-skeleton type="text" [width]="col === 0 ? '80%' : '60%'"></app-skeleton>
+        </div>
+      }
+    </div>
+  }
+</div>

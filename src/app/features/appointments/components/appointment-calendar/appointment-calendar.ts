@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, viewChild } from '@angular/core';
+import { Component, OnInit, inject, signal, viewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
@@ -28,7 +28,8 @@ import { DentistAutocompleteComponent } from '../../../../shared/components/dent
   standalone: true,
   imports: [CommonModule, FullCalendarModule, RouterLink, PageHeaderComponent, ModalComponent, LocationAutocompleteComponent, DentistAutocompleteComponent],
   templateUrl: './appointment-calendar.html',
-  styleUrl: './appointment-calendar.scss'
+  styleUrl: './appointment-calendar.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class AppointmentCalendarComponent implements OnInit {
   private appointmentsService = inject(AppointmentsService);

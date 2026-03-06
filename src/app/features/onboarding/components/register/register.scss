@@ -129,20 +129,8 @@
   .required { color: var(--error-500); }
 }
 
-.form-control {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
+.form-input {
   font-size: var(--font-size-sm);
-  background: var(--surface-primary);
-  color: var(--text-primary);
-  transition: var(--transition-smooth);
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-  }
 }
 
 .form-hint {
@@ -160,7 +148,7 @@
   align-items: center;
   gap: 0;
 
-  .form-control {
+  .form-input {
     border-radius: var(--radius-md) 0 0 var(--radius-md);
     border-right: none;
   }

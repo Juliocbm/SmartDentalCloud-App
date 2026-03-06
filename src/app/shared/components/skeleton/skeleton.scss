@@ -1,0 +1,113 @@
+// ============================================
+// Skeleton Loading Component
+// ============================================
+
+.skeleton {
+  background: var(--surface-secondary);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+
+  &-animated::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--neutral-200) 50%,
+      transparent 100%
+    );
+    animation: skeletonShimmer 1.5s infinite;
+  }
+}
+
+// Type variants
+.skeleton-text {
+  height: 14px;
+  margin-bottom: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+
+  &:last-child {
+    width: 60%;
+  }
+}
+
+.skeleton-title {
+  height: 22px;
+  margin-bottom: var(--spacing-md);
+  width: 40%;
+}
+
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.skeleton-thumbnail {
+  height: 120px;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-button {
+  height: 36px;
+  width: 100px;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-badge {
+  height: 22px;
+  width: 64px;
+  border-radius: var(--radius-full);
+  display: inline-block;
+}
+
+// Skeleton table layout
+.skeleton-table {
+  width: 100%;
+}
+
+.skeleton-table-header {
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 2px solid var(--border-primary);
+}
+
+.skeleton-table-row {
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.skeleton-table-cell {
+  flex: 1;
+}
+
+// Skeleton list layout
+.skeleton-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.skeleton-list-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

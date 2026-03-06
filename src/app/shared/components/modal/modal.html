@@ -1,4 +1,4 @@
-<div class="modal-overlay" (click)="onBackdropClick($event)">
+<div class="modal-overlay" (click)="onBackdropClick($event)" role="dialog" aria-modal="true" [attr.aria-labelledby]="'modal-title-' + title()">
   <div class="modal-container" [ngClass]="'modal-' + size()">
     <!-- Header -->
     <div class="modal-header">
@@ -9,7 +9,7 @@
           </div>
         }
         <div class="modal-title-content">
-          <h2 class="modal-title">{{ title() }}</h2>
+          <h2 class="modal-title" id="modal-title-{{ title() }}">{{ title() }}</h2>
           @if (subtitle()) {
             <p class="modal-subtitle">{{ subtitle() }}</p>
           }

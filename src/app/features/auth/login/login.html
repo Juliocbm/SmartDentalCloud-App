@@ -30,7 +30,7 @@
           type="email"
           id="email"
           formControlName="email"
-          class="form-control"
+          class="form-input"
           placeholder="usuario@ejemplo.com"
           [class.error]="emailControl?.invalid && emailControl?.touched"
         />
@@ -57,7 +57,7 @@
             [type]="showPassword() ? 'text' : 'password'"
             id="password"
             formControlName="password"
-            class="form-control"
+            class="form-input"
             placeholder="••••••••"
             [class.error]="passwordControl?.invalid && passwordControl?.touched"
           />

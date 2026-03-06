@@ -111,8 +111,7 @@
   padding: 0;
   margin: 0 var(--spacing-xl) var(--spacing-xl);
   
-  ::ng-deep {
-    .fc {
+  .fc {
       background: var(--surface-primary);
       width: 100%;
       max-width: 100%;
@@ -389,7 +388,6 @@
           text-overflow: ellipsis;
         }
       }
-    }
   }
 }
 
@@ -443,7 +441,7 @@
   .calendar-content {
     padding: var(--spacing-md);
     
-    ::ng-deep .fc {
+    .fc {
       .fc-toolbar {
         flex-direction: column;
         gap: var(--spacing-sm);

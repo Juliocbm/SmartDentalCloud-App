@@ -280,7 +280,7 @@
           <div class="form-group">
             <label>Notas</label>
             <textarea
-              class="form-control"
+              class="form-input"
               rows="3"
               [ngModel]="editNotes()"
               (ngModelChange)="editNotes.set($event)"
@@ -333,7 +333,7 @@
               <div class="surface-row">
                 <span class="surface-name">{{ surfaceLabels[surface] }}</span>
                 <select
-                  class="form-control form-control-sm"
+                  class="form-input form-input-sm"
                   [ngModel]="editSurfaces()[surface] ?? ''"
                   (ngModelChange)="setSurfaceCondition(surface, $event || null)"
                   [disabled]="readonly()">

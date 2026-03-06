@@ -1,0 +1,8 @@
+@for (item of items; track item) {
+  <div
+    class="skeleton skeleton-{{ type }}"
+    [class.skeleton-animated]="animated"
+    [style.width]="width"
+    [style.height]="height || null">
+  </div>
+}

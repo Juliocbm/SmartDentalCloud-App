@@ -9,9 +9,10 @@
 @use './styles/components';
 @use './styles/dashboard';
 @use './styles/datepicker';
+@use './styles/print';
 
-// Importar Font Awesome
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+// Font Awesome (local via npm)
+@import '@fortawesome/fontawesome-free/css/all.min.css';
 
 // ===== Reset y estilos base =====
 * {
@@ -45,11 +46,11 @@ html, body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-500);
+  background: var(--neutral-300);
   border-radius: var(--radius-sm);
   
   &:hover {
-    background: var(--primary-600);
+    background: var(--neutral-400);
   }
 }
 
@@ -97,22 +98,4 @@ select:focus-visible {
   }
 }
 
-// ===== Estilos de impresión =====
-@media print {
-  *:not(.rx-print):not(.rx-print *) {
-    box-shadow: none !important;
-  }
-
-  .no-print,
-  .sidebar,
-  .header-actions,
-  .main-header,
-  button:not(.rx-print button) {
-    display: none !important;
-  }
-
-  body {
-    margin: 0;
-    padding: 0;
-  }
-}
+// Print styles importados desde _print.scss
