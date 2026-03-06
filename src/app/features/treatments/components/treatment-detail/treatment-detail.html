@@ -152,143 +152,163 @@
 
       <!-- ========== TAB: General ========== -->
       @if (activeTab() === 'general') {
-        <!-- Row 1: Info General + Info Dental -->
-        <div class="info-two-col">
-          <div class="info-section">
-            <h3><i class="fa-solid fa-info-circle"></i> Información General</h3>
+        <div class="info-section">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-info-circle"></i>
+              Información del Tratamiento
+            </h3>
+          </div>
+          <hr>
+
+          <!-- General + Dental (dos columnas) -->
+          <div class="info-two-col">
+            <div class="info-group">
+              <h4 class="info-group__title">
+                <i class="fa-solid fa-file-medical"></i>
+                General
+              </h4>
+              <div class="info-card">
+                <div class="info-row">
+                  <span class="info-label">Paciente:</span>
+                  <span class="info-value">
+                    <a [routerLink]="['/patients', t.patientId]" class="link-primary">
+                      {{ t.patientName || 'Sin nombre' }}
+                    </a>
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Servicio:</span>
+                  <span class="info-value">
+                    @if (t.serviceId) {
+                      <a [routerLink]="['/services', t.serviceId]" class="link-primary">
+                        {{ t.serviceName || '—' }}
+                      </a>
+                    } @else {
+                      {{ t.serviceName || '—' }}
+                    }
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Costo:</span>
+                  <span class="info-value price-value">{{ formatCurrency(t.serviceCost) }}</span>
+                </div>
+                @if (t.patientDiagnosisId) {
+                  <div class="info-row">
+                    <span class="info-label">Diagnóstico:</span>
+                    <span class="info-value">
+                      <span class="badge badge-info">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        @if (t.patientDiagnosisCie10Code) {
+                          {{ t.patientDiagnosisCie10Code }} —
+                        }
+                        {{ t.patientDiagnosisDescription }}
+                      </span>
+                    </span>
+                  </div>
+                }
+                @if (t.notes) {
+                  <div class="info-row">
+                    <span class="info-label">Notas:</span>
+                    <span class="info-value">{{ t.notes }}</span>
+                  </div>
+                }
+                <div class="info-row">
+                  <span class="info-label">Consentimiento:</span>
+                  <span class="info-value">
+                    @if (consentCheck(); as cc) {
+                      @if (cc.hasSignedConsent) {
+                        <span class="badge badge-success">
+                          <i class="fa-solid fa-file-signature"></i>
+                          Firmado — {{ cc.consentTitle }}
+                        </span>
+                      } @else if (cc.pendingConsentsCount > 0) {
+                        <span class="badge badge-warning">
+                          <i class="fa-solid fa-clock"></i>
+                          {{ cc.pendingConsentsCount }} pendiente{{ cc.pendingConsentsCount > 1 ? 's' : '' }}
+                        </span>
+                      } @else {
+                        <span class="consent-missing">
+                          <i class="fa-solid fa-exclamation-circle"></i>
+                          Sin consentimiento asociado
+                        </span>
+                      }
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-group">
+              <h4 class="info-group__title">
+                <i class="fa-solid fa-tooth"></i>
+                Información Dental
+              </h4>
+              <div class="info-card">
+                <div class="info-row">
+                  <span class="info-label">Diente:</span>
+                  <span class="info-value">
+                    @if (t.toothNumber) {
+                      <span class="badge badge-neutral">
+                        <i class="fa-solid fa-tooth"></i>
+                        #{{ t.toothNumber }}
+                      </span>
+                    } @else {
+                      —
+                    }
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Superficie:</span>
+                  <span class="info-value">{{ t.surface || '—' }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Cuadrante:</span>
+                  <span class="info-value">{{ t.quadrant ? 'Q' + t.quadrant : '—' }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Múltiples Dientes:</span>
+                  <span class="info-value">{{ t.isMultipleTooth ? 'Sí' : 'No' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="info-divider">
+
+          <!-- Fechas y Duración -->
+          <div class="info-group">
+            <h4 class="info-group__title">
+              <i class="fa-solid fa-calendar-days"></i>
+              Fechas y Duración
+            </h4>
             <div class="info-card">
               <div class="info-row">
-                <span class="info-label">Paciente:</span>
-                <span class="info-value">
-                  <a [routerLink]="['/patients', t.patientId]" class="link-primary">
-                    {{ t.patientName || 'Sin nombre' }}
-                  </a>
-                </span>
+                <span class="info-label">Inicio:</span>
+                <span class="info-value">{{ formatDate(t.startDate) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Servicio:</span>
-                <span class="info-value">
-                  @if (t.serviceId) {
-                    <a [routerLink]="['/services', t.serviceId]" class="link-primary">
-                      {{ t.serviceName || '—' }}
-                    </a>
-                  } @else {
-                    {{ t.serviceName || '—' }}
-                  }
-                </span>
+                <span class="info-label">Fin:</span>
+                <span class="info-value">{{ formatDate(t.endDate) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Costo:</span>
-                <span class="info-value price-value">{{ formatCurrency(t.serviceCost) }}</span>
+                <span class="info-label">Duración:</span>
+                <span class="info-value">{{ t.duration ? t.duration + ' minutos' : '—' }}</span>
               </div>
-              @if (t.patientDiagnosisId) {
+              @if (t.appointmentId) {
                 <div class="info-row">
-                  <span class="info-label">Diagnóstico:</span>
+                  <span class="info-label">Cita Asociada:</span>
                   <span class="info-value">
-                    <span class="badge badge-info">
-                      <i class="fa-solid fa-clipboard-list"></i>
-                      @if (t.patientDiagnosisCie10Code) {
-                        {{ t.patientDiagnosisCie10Code }} —
-                      }
-                      {{ t.patientDiagnosisDescription }}
-                    </span>
+                    <a [routerLink]="['/appointments', t.appointmentId]" class="link-primary">
+                      <i class="fa-solid fa-calendar-check"></i>
+                      Ver Cita
+                    </a>
                   </span>
                 </div>
               }
-              @if (t.notes) {
-                <div class="info-row">
-                  <span class="info-label">Notas:</span>
-                  <span class="info-value">{{ t.notes }}</span>
-                </div>
-              }
-              <!-- Consent indicator -->
-              <div class="info-row">
-                <span class="info-label">Consentimiento:</span>
-                <span class="info-value">
-                  @if (consentCheck(); as cc) {
-                    @if (cc.hasSignedConsent) {
-                      <span class="badge badge-success">
-                        <i class="fa-solid fa-file-signature"></i>
-                        Firmado — {{ cc.consentTitle }}
-                      </span>
-                    } @else if (cc.pendingConsentsCount > 0) {
-                      <span class="badge badge-warning">
-                        <i class="fa-solid fa-clock"></i>
-                        {{ cc.pendingConsentsCount }} pendiente{{ cc.pendingConsentsCount > 1 ? 's' : '' }}
-                      </span>
-                    } @else {
-                      <span class="consent-missing">
-                        <i class="fa-solid fa-exclamation-circle"></i>
-                        Sin consentimiento asociado
-                      </span>
-                    }
-                  } @else {
-                    <span class="text-muted">—</span>
-                  }
-                </span>
-              </div>
             </div>
-          </div>
-
-          <div class="info-section">
-            <h3><i class="fa-solid fa-tooth"></i> Información Dental</h3>
-            <div class="info-card">
-              <div class="info-row">
-                <span class="info-label">Diente:</span>
-                <span class="info-value">
-                  @if (t.toothNumber) {
-                    <span class="badge badge-neutral">
-                      <i class="fa-solid fa-tooth"></i>
-                      #{{ t.toothNumber }}
-                    </span>
-                  } @else {
-                    —
-                  }
-                </span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Superficie:</span>
-                <span class="info-value">{{ t.surface || '—' }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Cuadrante:</span>
-                <span class="info-value">{{ t.quadrant ? 'Q' + t.quadrant : '—' }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Múltiples Dientes:</span>
-                <span class="info-value">{{ t.isMultipleTooth ? 'Sí' : 'No' }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Row 2: Fechas -->
-        <div class="info-section">
-          <h3><i class="fa-solid fa-calendar-days"></i> Fechas y Duración</h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Inicio:</span>
-              <span class="info-value">{{ formatDate(t.startDate) }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Fin:</span>
-              <span class="info-value">{{ formatDate(t.endDate) }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Duración:</span>
-              <span class="info-value">{{ t.duration ? t.duration + ' minutos' : '—' }}</span>
-            </div>
-            @if (t.appointmentId) {
-              <div class="info-row">
-                <span class="info-label">Cita Asociada:</span>
-                <span class="info-value">
-                  <a [routerLink]="['/appointments', t.appointmentId]" class="link-primary">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    Ver Cita
-                  </a>
-                </span>
-              </div>
-            }
           </div>
         </div>
 
@@ -306,22 +326,19 @@
       @if (activeTab() === 'followups') {
         <div class="info-section">
           <div class="section-header">
-            <h3>
+            <h3 class="section-header__title">
               <i class="fa-solid fa-clipboard-check"></i>
               Seguimientos
               @if (followUps().length > 0) {
-                <span class="section-count">{{ followUps().length }}</span>
+                <span class="badge badge-info">{{ followUps().length }}</span>
               }
             </h3>
-            <button
-              type="button"
-              class="btn btn-outline btn-sm"
-              (click)="openFollowUpModal()"
-            >
+            <button class="btn btn-outline btn-sm" (click)="openFollowUpModal()">
               <i class="fa-solid fa-plus"></i>
               Nuevo Seguimiento
             </button>
           </div>
+          <hr>
 
           @if (followUpsLoading()) {
             <div class="inline-loading">
@@ -378,22 +395,19 @@
       @if (activeTab() === 'materials') {
         <div class="info-section">
           <div class="section-header">
-            <h3>
+            <h3 class="section-header__title">
               <i class="fa-solid fa-boxes-stacked"></i>
               Materiales Usados
               @if (materials().length > 0) {
-                <span class="section-count">{{ materials().length }}</span>
+                <span class="badge badge-info">{{ materials().length }}</span>
               }
             </h3>
-            <button
-              type="button"
-              class="btn btn-outline btn-sm"
-              (click)="openMaterialModal()"
-            >
+            <button class="btn btn-outline btn-sm" (click)="openMaterialModal()">
               <i class="fa-solid fa-plus"></i>
               Agregar Material
             </button>
           </div>
+          <hr>
 
           @if (materialsLoading()) {
             <div class="inline-loading">
@@ -463,22 +477,19 @@
       @if (activeTab() === 'sessions') {
         <div class="info-section">
           <div class="section-header">
-            <h3>
+            <h3 class="section-header__title">
               <i class="fa-solid fa-layer-group"></i>
               Sesiones
               @if (sessions().length > 0) {
-                <span class="section-count">{{ sessions().length }}</span>
+                <span class="badge badge-info">{{ sessions().length }}</span>
               }
             </h3>
-            <button
-              type="button"
-              class="btn btn-outline btn-sm"
-              (click)="openSessionModal()"
-            >
+            <button class="btn btn-outline btn-sm" (click)="openSessionModal()">
               <i class="fa-solid fa-plus"></i>
               Nueva Sesión
             </button>
           </div>
+          <hr>
 
           @if (sessionsLoading()) {
             <div class="inline-loading">

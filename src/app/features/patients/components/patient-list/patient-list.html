@@ -101,7 +101,7 @@
                 <i class="fa-solid fa-user"></i>
               </div>
               <div class="info-content">
-                <div class="info-title">{{ getFullName(patient) }}</div>
+                <a class="info-title link-primary" [routerLink]="['/patients', patient.id]">{{ getFullName(patient) }}</a>
                 <div class="info-subtitle">#{{ patient.id.substring(0, 8) }}</div>
               </div>
             </div>

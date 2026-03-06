@@ -179,170 +179,185 @@
       <div class="patient-content">
       <!-- Info Tab -->
       @if (activeTab() === 'info') {
-        <div class="info-two-col">
-          <div class="info-section">
-            <h3>
+        <div class="info-section">
+          <div class="section-header">
+            <h3 class="section-header__title">
               <i class="fa-solid fa-user"></i>
-              Datos Personales
+              Información del Paciente
             </h3>
-            <div class="info-card">
-              <div class="info-row">
-                <span class="info-label">Nombre Completo:</span>
-                <span class="info-value">{{ getFullName() }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Fecha de Nacimiento:</span>
-                <span class="info-value">{{ formatDate(patient()!.dateOfBirth) }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Edad:</span>
-                <span class="info-value">{{ getAge() }}</span>
-              </div>
-              @if (patient()!.gender) {
-                <div class="info-row">
-                  <span class="info-label">Género:</span>
-                  <span class="info-value">{{ patient()!.gender }}</span>
-                </div>
-              }
-            </div>
           </div>
+          <hr>
 
-          <div class="info-section">
-            <h3>
-              <i class="fa-solid fa-address-book"></i>
-              Información de Contacto
-            </h3>
-            <div class="info-card">
-              @if (patient()!.phoneNumber) {
-                <div class="info-row">
-                  <span class="info-label">Teléfono:</span>
-                  <span class="info-value">{{ patient()!.phoneNumber }}</span>
-                </div>
-              }
-              @if (patient()!.email) {
-                <div class="info-row">
-                  <span class="info-label">Email:</span>
-                  <span class="info-value">{{ patient()!.email }}</span>
-                </div>
-              }
-              @if (patient()!.address) {
-                <div class="info-row">
-                  <span class="info-label">Dirección:</span>
-                  <span class="info-value">{{ patient()!.address }}</span>
-                </div>
-              }
-              @if (!patient()!.phoneNumber && !patient()!.email && !patient()!.address) {
-                <div class="info-empty">
-                  <i class="fa-solid fa-circle-info"></i>
-                  Sin información de contacto registrada
-                </div>
-              }
-            </div>
-          </div>
-        </div>
-
-        <!-- Identificación Oficial + Dirección + Contacto Emergencia (NOM-024) -->
-        @if (patient()!.curp || patient()!.occupation || patient()!.maritalStatus || patient()!.state || patient()!.municipality || patient()!.emergencyContactName) {
+          <!-- Datos Personales + Contacto (dos columnas) -->
           <div class="info-two-col">
-            <!-- Identificación Oficial -->
-            @if (patient()!.curp || patient()!.occupation || patient()!.maritalStatus) {
-              <div class="info-section">
-                <h3>
-                  <i class="fa-solid fa-id-card"></i>
-                  Identificación Oficial
-                </h3>
-                <div class="info-card">
-                  @if (patient()!.curp) {
-                    <div class="info-row">
-                      <span class="info-label">CURP:</span>
-                      <span class="info-value text-mono">{{ patient()!.curp }}</span>
-                    </div>
-                  }
-                  @if (patient()!.occupation) {
-                    <div class="info-row">
-                      <span class="info-label">Ocupación:</span>
-                      <span class="info-value">{{ patient()!.occupation }}</span>
-                    </div>
-                  }
-                  @if (patient()!.maritalStatus) {
-                    <div class="info-row">
-                      <span class="info-label">Estado Civil:</span>
-                      <span class="info-value">{{ patient()!.maritalStatus }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-
-            <!-- Dirección Estructurada -->
-            @if (patient()!.state || patient()!.municipality || patient()!.locality || patient()!.zipCode) {
-              <div class="info-section">
-                <h3>
-                  <i class="fa-solid fa-location-dot"></i>
-                  Dirección
-                </h3>
-                <div class="info-card">
-                  @if (patient()!.state) {
-                    <div class="info-row">
-                      <span class="info-label">Estado:</span>
-                      <span class="info-value">{{ patient()!.state }}</span>
-                    </div>
-                  }
-                  @if (patient()!.municipality) {
-                    <div class="info-row">
-                      <span class="info-label">Municipio:</span>
-                      <span class="info-value">{{ patient()!.municipality }}</span>
-                    </div>
-                  }
-                  @if (patient()!.locality) {
-                    <div class="info-row">
-                      <span class="info-label">Localidad:</span>
-                      <span class="info-value">{{ patient()!.locality }}</span>
-                    </div>
-                  }
-                  @if (patient()!.zipCode) {
-                    <div class="info-row">
-                      <span class="info-label">Código Postal:</span>
-                      <span class="info-value">{{ patient()!.zipCode }}</span>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-
-          <!-- Contacto de Emergencia -->
-          @if (patient()!.emergencyContactName || patient()!.emergencyContactPhone) {
-            <div class="info-section">
-              <h3>
-                <i class="fa-solid fa-phone-volume"></i>
-                Contacto de Emergencia
-              </h3>
+            <div class="info-group">
+              <h4 class="info-group__title">
+                <i class="fa-solid fa-user"></i>
+                Datos Personales
+              </h4>
               <div class="info-card">
-                @if (patient()!.emergencyContactName) {
+                <div class="info-row">
+                  <span class="info-label">Nombre Completo:</span>
+                  <span class="info-value">{{ getFullName() }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Fecha de Nacimiento:</span>
+                  <span class="info-value">{{ formatDate(patient()!.dateOfBirth) }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Edad:</span>
+                  <span class="info-value">{{ getAge() }}</span>
+                </div>
+                @if (patient()!.gender) {
                   <div class="info-row">
-                    <span class="info-label">Nombre:</span>
-                    <span class="info-value">{{ patient()!.emergencyContactName }}</span>
+                    <span class="info-label">Género:</span>
+                    <span class="info-value">{{ patient()!.gender }}</span>
                   </div>
                 }
-                @if (patient()!.emergencyContactPhone) {
+              </div>
+            </div>
+
+            <div class="info-group">
+              <h4 class="info-group__title">
+                <i class="fa-solid fa-address-book"></i>
+                Contacto
+              </h4>
+              <div class="info-card">
+                @if (patient()!.phoneNumber) {
                   <div class="info-row">
                     <span class="info-label">Teléfono:</span>
-                    <span class="info-value">{{ patient()!.emergencyContactPhone }}</span>
+                    <span class="info-value">{{ patient()!.phoneNumber }}</span>
+                  </div>
+                }
+                @if (patient()!.email) {
+                  <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">{{ patient()!.email }}</span>
+                  </div>
+                }
+                @if (patient()!.address) {
+                  <div class="info-row">
+                    <span class="info-label">Dirección:</span>
+                    <span class="info-value">{{ patient()!.address }}</span>
+                  </div>
+                }
+                @if (!patient()!.phoneNumber && !patient()!.email && !patient()!.address) {
+                  <div class="info-empty">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Sin información de contacto registrada
                   </div>
                 }
               </div>
             </div>
+          </div>
+
+          <!-- Identificación Oficial + Dirección + Contacto Emergencia (NOM-024) -->
+          @if (patient()!.curp || patient()!.occupation || patient()!.maritalStatus || patient()!.state || patient()!.municipality || patient()!.emergencyContactName) {
+            <hr class="info-divider">
+
+            <div class="info-two-col">
+              <!-- Identificación Oficial -->
+              @if (patient()!.curp || patient()!.occupation || patient()!.maritalStatus) {
+                <div class="info-group">
+                  <h4 class="info-group__title">
+                    <i class="fa-solid fa-id-card"></i>
+                    Identificación Oficial
+                  </h4>
+                  <div class="info-card">
+                    @if (patient()!.curp) {
+                      <div class="info-row">
+                        <span class="info-label">CURP:</span>
+                        <span class="info-value text-mono">{{ patient()!.curp }}</span>
+                      </div>
+                    }
+                    @if (patient()!.occupation) {
+                      <div class="info-row">
+                        <span class="info-label">Ocupación:</span>
+                        <span class="info-value">{{ patient()!.occupation }}</span>
+                      </div>
+                    }
+                    @if (patient()!.maritalStatus) {
+                      <div class="info-row">
+                        <span class="info-label">Estado Civil:</span>
+                        <span class="info-value">{{ patient()!.maritalStatus }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Dirección Estructurada -->
+              @if (patient()!.state || patient()!.municipality || patient()!.locality || patient()!.zipCode) {
+                <div class="info-group">
+                  <h4 class="info-group__title">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Dirección
+                  </h4>
+                  <div class="info-card">
+                    @if (patient()!.state) {
+                      <div class="info-row">
+                        <span class="info-label">Estado:</span>
+                        <span class="info-value">{{ patient()!.state }}</span>
+                      </div>
+                    }
+                    @if (patient()!.municipality) {
+                      <div class="info-row">
+                        <span class="info-label">Municipio:</span>
+                        <span class="info-value">{{ patient()!.municipality }}</span>
+                      </div>
+                    }
+                    @if (patient()!.locality) {
+                      <div class="info-row">
+                        <span class="info-label">Localidad:</span>
+                        <span class="info-value">{{ patient()!.locality }}</span>
+                      </div>
+                    }
+                    @if (patient()!.zipCode) {
+                      <div class="info-row">
+                        <span class="info-label">Código Postal:</span>
+                        <span class="info-value">{{ patient()!.zipCode }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Contacto de Emergencia -->
+            @if (patient()!.emergencyContactName || patient()!.emergencyContactPhone) {
+              <hr class="info-divider">
+
+              <div class="info-group">
+                <h4 class="info-group__title">
+                  <i class="fa-solid fa-phone-volume"></i>
+                  Contacto de Emergencia
+                </h4>
+                <div class="info-card">
+                  @if (patient()!.emergencyContactName) {
+                    <div class="info-row">
+                      <span class="info-label">Nombre:</span>
+                      <span class="info-value">{{ patient()!.emergencyContactName }}</span>
+                    </div>
+                  }
+                  @if (patient()!.emergencyContactPhone) {
+                    <div class="info-row">
+                      <span class="info-label">Teléfono:</span>
+                      <span class="info-value">{{ patient()!.emergencyContactPhone }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
           }
-        }
+        </div>
       }
 
       <!-- Medical Tab -->
       @if (activeTab() === 'medical') {
         <div class="info-section">
           @if (hasMedicalHistory() || editingMedical()) {
-            <div class="section-header-with-action">
-              <h3>
+            <div class="section-header">
+              <h3 class="section-header__title">
                 <i class="fa-solid fa-heartbeat"></i>
                 Historia Médica
               </h3>
@@ -354,6 +369,7 @@
                 }
               </button>
             </div>
+            <hr>
 
             @if (editingMedical()) {
               <div class="medical-form">
@@ -496,15 +512,17 @@
       <!-- Allergies Tab (NOM-024) -->
       @if (activeTab() === 'allergies') {
         <div class="info-section">
-          <div class="section-header-with-action">
-            <h3>
+          <div class="section-header">
+            <h3 class="section-header__title">
               <i class="fa-solid fa-shield-virus"></i>
               Alergias Registradas
             </h3>
-            <button class="btn btn-primary btn-sm" (click)="openAllergyModal()">
-              <i class="fa-solid fa-plus"></i> Nueva Alergia
+            <button class="btn btn-outline btn-sm" (click)="openAllergyModal()">
+              <i class="fa-solid fa-plus"></i>
+              Nueva Alergia
             </button>
           </div>
+          <hr>
 
           @if (hasSevereAllergies()) {
             <div class="alert alert-danger">
@@ -525,12 +543,12 @@
               <p>No se han registrado alergias para este paciente</p>
             </div>
           } @else {
-            <div class="allergies-list">
+            <div class="medical-list">
               @for (allergy of allergies(); track allergy.id) {
-                <div class="allergy-card-compact" [class.allergy-inactive]="!allergy.isActive">
-                  <div class="allergy-main-row">
-                    <div class="allergy-info">
-                      <span class="allergy-name">{{ allergy.allergenName }}</span>
+                <div class="medical-list-item" [class.--inactive]="!allergy.isActive">
+                  <div class="medical-list-item__main">
+                    <div class="medical-list-item__info">
+                      <span class="medical-list-item__title">{{ allergy.allergenName }}</span>
                       <span class="badge badge-sm" [ngClass]="getSeverityClass(allergy.severity)">{{ getSeverityLabel(allergy.severity) }}</span>
                       <span class="badge badge-sm badge-secondary">{{ getAllergenTypeLabel(allergy.allergenType) }}</span>
                       @if (!allergy.isActive) {
@@ -541,13 +559,15 @@
                       }
                     </div>
                     @if (allergy.isActive) {
-                      <button class="btn btn-ghost btn-xs btn-danger-text" title="Desactivar" (click)="deactivateAllergy(allergy)">
-                        <i class="fa-solid fa-ban"></i>
-                      </button>
+                      <div class="medical-list-item__actions">
+                        <button class="btn btn-ghost btn-danger-text" title="Desactivar" (click)="deactivateAllergy(allergy)">
+                          <i class="fa-solid fa-ban"></i>
+                        </button>
+                      </div>
                     }
                   </div>
                   @if (allergy.reactionDescription || allergy.detectedAt || allergy.notes) {
-                    <div class="allergy-meta">
+                    <div class="medical-list-item__meta">
                       @if (allergy.reactionDescription) {
                         <span class="text-sm"><i class="fa-solid fa-notes-medical"></i> {{ allergy.reactionDescription }}</span>
                       }
@@ -581,8 +601,8 @@
       <!-- Consents Tab (NOM-024) -->
       @if (activeTab() === 'consents') {
         <div class="info-section">
-          <div class="section-header-with-action">
-            <h3>
+          <div class="section-header">
+            <h3 class="section-header__title">
               <i class="fa-solid fa-file-signature"></i>
               Consentimientos Informados
             </h3>
@@ -590,11 +610,12 @@
               <button class="btn btn-outline btn-sm" (click)="showPinSetup.set(true)">
                 <i class="fa-solid fa-key"></i> Configurar PIN
               </button>
-              <button class="btn btn-primary btn-sm" (click)="openConsentModal()">
+              <button class="btn btn-outline btn-sm" (click)="openConsentModal()">
                 <i class="fa-solid fa-plus"></i> Nuevo Consentimiento
               </button>
             </div>
           </div>
+          <hr>
 
           @if (consentsLoading()) {
             <div class="loading-container">
@@ -608,39 +629,39 @@
               <p>No se han registrado consentimientos informados para este paciente</p>
             </div>
           } @else {
-            <div class="consents-list">
+            <div class="medical-list">
               @for (consent of consents(); track consent.id) {
-                <div class="consent-card-compact">
-                  <div class="consent-main-row">
-                    <div class="consent-info">
-                      <span class="consent-name">{{ consent.title }}</span>
+                <div class="medical-list-item">
+                  <div class="medical-list-item__main">
+                    <div class="medical-list-item__info">
+                      <span class="medical-list-item__title">{{ consent.title }}</span>
                       <span class="badge badge-sm" [ngClass]="getConsentStatusClass(consent.status)">{{ getConsentStatusLabel(consent.status) }}</span>
                       <span class="badge badge-sm badge-secondary">{{ getConsentTypeLabel(consent.consentType) }}</span>
                       @if (consent.signedAt) {
                         <span class="text-sm text-muted"><i class="fa-solid fa-pen-nib"></i> {{ formatDateFile(consent.signedAt) }}</span>
                       }
                     </div>
-                    <div class="consent-actions-compact">
+                    <div class="medical-list-item__actions">
                       @if (consent.status === 'Pending') {
-                        <button class="btn btn-primary btn-xs" (click)="startSignConsent(consent)">
+                        <button class="btn btn-primary" (click)="startSignConsent(consent)">
                           <i class="fa-solid fa-file-signature"></i> Firmar
                         </button>
                       }
                       @if (consent.status === 'Signed') {
-                        <button class="btn btn-ghost btn-xs" title="Imprimir" (click)="openConsentPrintView(consent)">
+                        <button class="btn btn-ghost" title="Imprimir" (click)="openConsentPrintView(consent)">
                           <i class="fa-solid fa-print"></i>
                         </button>
-                        <button class="btn btn-ghost btn-xs" title="Ver firmas" (click)="loadConsentSignatures(consent)">
+                        <button class="btn btn-ghost" title="Ver firmas" (click)="loadConsentSignatures(consent)">
                           <i class="fa-solid fa-eye"></i>
                         </button>
-                        <button class="btn btn-ghost btn-xs btn-danger-text" title="Revocar" (click)="revokeConsent(consent)">
+                        <button class="btn btn-ghost btn-danger-text" title="Revocar" (click)="revokeConsent(consent)">
                           <i class="fa-solid fa-ban"></i>
                         </button>
                       }
                     </div>
                   </div>
                   @if (consent.witnessName || consent.revokedAt) {
-                    <div class="consent-meta">
+                    <div class="medical-list-item__meta">
                       @if (consent.witnessName) {
                         <span class="text-sm"><i class="fa-solid fa-user"></i> Testigo: {{ consent.witnessName }}</span>
                       }
@@ -751,15 +772,17 @@
       <!-- Diagnoses Tab (NOM-024) -->
       @if (activeTab() === 'problems') {
         <div class="info-section">
-          <div class="section-header-with-action">
-            <h3>
+          <div class="section-header">
+            <h3 class="section-header__title">
               <i class="fa-solid fa-clipboard-list"></i>
               Diagnósticos
             </h3>
-            <button class="btn btn-primary btn-sm" (click)="openDiagnosisModal()">
-              <i class="fa-solid fa-plus"></i> Nuevo Diagnóstico
+            <button class="btn btn-outline btn-sm" (click)="openDiagnosisModal()">
+              <i class="fa-solid fa-plus"></i>
+              Nuevo Diagnóstico
             </button>
           </div>
+          <hr>
 
           @if (diagnosesLoading()) {
             <div class="loading-container">
@@ -773,12 +796,12 @@
               <p>No se han registrado diagnósticos para este paciente</p>
             </div>
           } @else {
-            <div class="problems-list">
+            <div class="medical-list">
               @for (diagnosis of diagnoses(); track diagnosis.id) {
-                <div class="problem-card-compact" [class.problem-resolved]="diagnosis.status !== 'Active'">
-                  <div class="problem-main-row">
-                    <div class="problem-info">
-                      <span class="problem-name">{{ diagnosis.description }}</span>
+                <div class="medical-list-item" [class.--inactive]="diagnosis.status !== 'Active'">
+                  <div class="medical-list-item__main">
+                    <div class="medical-list-item__info">
+                      <span class="medical-list-item__title">{{ diagnosis.description }}</span>
                       <span class="badge badge-sm" [ngClass]="getDiagnosisStatusClass(diagnosis.status)">{{ getDiagnosisStatusLabel(diagnosis.status) }}</span>
                       @if (diagnosis.cie10Code) {
                         <span class="badge badge-sm badge-info">{{ diagnosis.cie10Code }}</span>
@@ -794,13 +817,15 @@
                       }
                     </div>
                     @if (diagnosis.status === 'Active') {
-                      <button class="btn btn-ghost btn-xs btn-success-text" title="Marcar como resuelto" (click)="resolveDiagnosis(diagnosis)">
-                        <i class="fa-solid fa-check-circle"></i>
-                      </button>
+                      <div class="medical-list-item__actions">
+                        <button class="btn btn-ghost btn-success-text" title="Marcar como resuelto" (click)="resolveDiagnosis(diagnosis)">
+                          <i class="fa-solid fa-check-circle"></i>
+                        </button>
+                      </div>
                     }
                   </div>
                   @if (diagnosis.notes || (diagnosis.status === 'Active' && diagnosis.linkedTreatmentsCount > 0 && diagnosis.linkedCompletedTreatmentsCount === diagnosis.linkedTreatmentsCount)) {
-                    <div class="problem-meta">
+                    <div class="medical-list-item__meta">
                       @if (diagnosis.status === 'Active' && diagnosis.linkedTreatmentsCount > 0 && diagnosis.linkedCompletedTreatmentsCount === diagnosis.linkedTreatmentsCount) {
                         <span class="text-sm text-success"><i class="fa-solid fa-lightbulb"></i> Tratamientos completados - sugerir resolver</span>
                       }
@@ -861,21 +886,18 @@
       <!-- Radiographs Tab (NOM-024 §5.3) -->
       @if (activeTab() === 'radiographs') {
         <div class="info-section">
-          <div class="section-header-with-action">
-            <h3>
+          <div class="section-header">
+            <h3 class="section-header__title">
               <i class="fa-solid fa-image"></i>
               Radiografías
               <span class="badge badge-info">{{ radioImages().length }}</span>
             </h3>
-            <div>
-              <button class="btn btn-outline btn-sm" [routerLink]="['/patients', patient()!.id, 'export']">
-                <i class="fa-solid fa-file-export"></i> Exportar Clínico
-              </button>
-              <button class="btn btn-primary btn-sm" (click)="openRadioUploadModal()">
-                <i class="fa-solid fa-upload"></i> Subir Radiografía
-              </button>
-            </div>
+            <button class="btn btn-outline btn-sm" (click)="openRadioUploadModal()">
+              <i class="fa-solid fa-upload"></i>
+              Subir Radiografía
+            </button>
           </div>
+          <hr>
 
           <!-- Loading -->
           @if (radioImagesLoading()) {
@@ -1019,8 +1041,8 @@
       <!-- Fiscal Tab -->
       @if (activeTab() === 'fiscal') {
         <div class="info-section">
-          <div class="section-header-with-action">
-            <h3>
+          <div class="section-header">
+            <h3 class="section-header__title">
               <i class="fa-solid fa-file-invoice"></i>
               Datos Fiscales
             </h3>
@@ -1032,6 +1054,7 @@
               }
             </button>
           </div>
+          <hr>
 
           @if (editingTax()) {
             <div class="fiscal-form">
@@ -1115,6 +1138,14 @@
       <!-- Financial Tab -->
       @if (activeTab() === 'financial') {
         <div class="info-section">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-wallet"></i>
+              Resumen Financiero
+            </h3>
+          </div>
+          <hr>
+
           @if (financialLoading()) {
             <div class="inline-loading">
               <i class="fa-solid fa-spinner fa-spin"></i>
@@ -1216,6 +1247,14 @@
       <!-- History Tab -->
       @if (activeTab() === 'history') {
         <div class="info-section">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              Historial Clínico
+            </h3>
+          </div>
+          <hr>
+
           @if (historyLoading()) {
             <div class="inline-loading">
               <i class="fa-solid fa-spinner fa-spin"></i>
@@ -1320,8 +1359,8 @@
       <!-- Changes Tab (NOM-024 Audit Trail) -->
       @if (activeTab() === 'changes') {
         <div class="info-section">
-          <div class="section-header-row">
-            <h3>
+          <div class="section-header">
+            <h3 class="section-header__title">
               <i class="fa-solid fa-list-check"></i>
               Historial de Cambios
             </h3>
@@ -1333,6 +1372,7 @@
               }
             </select>
           </div>
+          <hr>
 
           @if (changesLoading()) {
             <div class="inline-loading">
@@ -1418,8 +1458,8 @@
       <!-- Files Tab -->
       @if (activeTab() === 'files') {
         <div class="info-section">
-          <div class="files-header">
-            <h3>
+          <div class="section-header">
+            <h3 class="section-header__title">
               <i class="fa-solid fa-paperclip"></i>
               Archivos Adjuntos
             </h3>
@@ -1432,6 +1472,7 @@
               Subir Archivo
             </button>
           </div>
+          <hr>
 
           <!-- Loading -->
           @if (filesLoading()) {
@@ -1460,38 +1501,41 @@
 
           <!-- Files List -->
           @if (!filesLoading() && filteredFiles().length > 0) {
-            <div class="files-grid">
+            <div class="medical-list">
               @for (file of filteredFiles(); track file.id) {
-                <div class="file-card">
-                  <div class="file-icon">
-                    <i [class]="'fa-solid ' + getFileIcon(file.fileType)"></i>
-                  </div>
-                  <div class="file-info">
-                    <a class="file-name" (click)="downloadAttachedFile(file)">
-                      {{ file.fileName }}
-                    </a>
-                    <div class="file-meta">
+                <div class="medical-list-item">
+                  <div class="medical-list-item__main">
+                    <div class="medical-list-item__info">
+                      <span class="file-icon-inline">
+                        <i [class]="'fa-solid ' + getFileIcon(file.fileType)"></i>
+                      </span>
+                      <a class="medical-list-item__title" (click)="downloadAttachedFile(file)" style="cursor: pointer;">
+                        {{ file.fileName }}
+                      </a>
                       @if (file.category) {
-                        <span class="file-category">{{ file.category }}</span>
+                        <span class="badge badge-sm badge-secondary">{{ file.category }}</span>
                       }
-                      <span class="file-size">{{ formatFileSize(file.fileSize) }}</span>
-                      <span class="file-date">{{ formatDateFile(file.createdAt) }}</span>
+                      <span class="text-sm text-muted">{{ formatFileSize(file.fileSize) }}</span>
+                      <span class="text-sm text-muted"><i class="fa-solid fa-calendar"></i> {{ formatDateFile(file.createdAt) }}</span>
                     </div>
-                    @if (file.description) {
-                      <p class="file-description">{{ file.description }}</p>
-                    }
+                    <div class="medical-list-item__actions">
+                      <button class="btn btn-ghost" title="Descargar" (click)="downloadAttachedFile(file)">
+                        <i class="fa-solid fa-download"></i>
+                      </button>
+                      <button class="btn btn-ghost btn-danger-text" title="Eliminar archivo" (click)="deleteFile(file.id)">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    class="btn-icon-sm"
-                    title="Eliminar archivo"
-                    (click)="deleteFile(file.id)"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
+                  @if (file.description) {
+                    <div class="medical-list-item__meta">
+                      <span class="text-sm text-muted">{{ file.description }}</span>
+                    </div>
+                  }
                 </div>
               }
             </div>
-            @if (filesTotalPages() > 1) {
+            @if (filesTotalCount() > 0) {
               <div class="pagination-mini">
                 <button class="btn-page" [disabled]="filesPage() === 1" (click)="onFilesPageChange(filesPage() - 1)">
                   <i class="fa-solid fa-chevron-left"></i>

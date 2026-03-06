@@ -109,7 +109,7 @@
                     <i class="fa-solid fa-user-doctor"></i>
                   </div>
                   <div class="info-content">
-                    <div class="info-title">{{ dentist.name }}</div>
+                    <a class="info-title link-primary" [routerLink]="['/users', dentist.id]">{{ dentist.name }}</a>
                     <div class="info-subtitle">{{ dentist.email }}</div>
                   </div>
                 </div>

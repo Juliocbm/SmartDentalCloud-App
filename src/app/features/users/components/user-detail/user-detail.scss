@@ -1,110 +1,234 @@
-// Base: usa .detail-container, .detail-body, .info-section, .info-card,
+// Base: usa .detail-container, .info-section, .info-card,
 //       .info-row, .info-two-col, .info-empty, .empty-state de _components.scss
 
-// ===== Roles badges =====
-.roles-list {
+// ===== Sidebar Layout =====
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--spacing-2xl);
+  align-items: stretch;
+}
+
+.detail-nav {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-xs);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-align: left;
+
+    i {
+      width: 20px;
+      text-align: center;
+      font-size: var(--font-size-base);
+    }
+
+    &:hover {
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+    }
+
+    &.active {
+      background: var(--primary-50);
+      color: var(--primary-700);
+      font-weight: var(--font-weight-semibold);
+
+      i {
+        color: var(--primary-600);
+      }
+    }
+  }
 }
 
-.role-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.role-badge {
+.nav-count {
   display: inline-flex;
   align-items: center;
-  padding: var(--spacing-xs) var(--spacing-lg);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-
-  &.badge-admin {
-    background: var(--primary-100);
-    color: var(--primary-700);
-  }
-
-  &.badge-doctor {
-    background: var(--error-100);
-    color: var(--error-700);
-  }
-
-  &.badge-receptionist {
-    background: var(--warning-100);
-    color: var(--warning-700);
-  }
-
-  &.badge-assistant {
-    background: var(--success-100);
-    color: var(--success-700);
-  }
-
-  &.badge-default {
-    background: var(--surface-tertiary);
-    color: var(--text-secondary);
-  }
-}
-
-.role-description {
-  font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
-}
-
-// ===== Permissions count badge =====
-.permissions-count {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-normal);
-  padding: 2px 8px;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--spacing-xs);
+  margin-left: auto;
   background: var(--primary-100);
   color: var(--primary-700);
   border-radius: var(--radius-full);
-  margin-left: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
 }
 
-// ===== Permissions grid =====
-.permissions-grid {
+.detail-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+// ===== Roles grid (cards horizontales) =====
+.roles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md);
 }
 
-.permission-group {
-  .group-title {
+.role-card {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  background: var(--surface-primary);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    i {
+      font-size: var(--font-size-base);
+      color: var(--primary-600);
+      flex-shrink: 0;
+    }
+  }
+
+  &__name {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--text-primary);
-    margin: 0 0 var(--spacing-sm) 0;
-    padding-bottom: var(--spacing-xs);
-    border-bottom: 2px solid var(--primary-500);
+  }
+
+  &__description {
+    margin: var(--spacing-xs) 0 0;
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    line-height: 1.4;
   }
 }
 
-.permissions-list {
+// ===== Permissions (chips inline) =====
+.permissions-table {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
-.permission-item {
+.permissions-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-sm) 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--border-primary);
+  }
+
+  &__category {
+    min-width: 160px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+}
+
+.permission-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--spacing-sm);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+// ===== Mini Pagination =====
+.pagination-mini {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  padding: var(--spacing-xs) 0;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) 0 var(--spacing-sm);
 
-  i {
-    color: var(--success-500);
-    font-size: var(--font-size-xs);
+  .btn-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    background: var(--surface-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover:not(:disabled) {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  .pagination-info-mini {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    min-width: 50px;
+    text-align: center;
+  }
+
+  .pagination-total {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: var(--spacing-sm);
   }
 }
 
 // ===== Responsive =====
 @media (max-width: 768px) {
-  .permissions-grid {
-    grid-template-columns: 1fr 1fr;
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    position: static;
+
+    .nav-item span:not(.nav-count) {
+      display: none;
+    }
+  }
+
+  .permissions-row {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    &__category {
+      min-width: unset;
+    }
   }
 }

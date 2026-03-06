@@ -696,6 +696,16 @@ textarea.form-control {
       overflow: hidden;
       text-overflow: ellipsis;
       font-size: var(--font-size-sm);
+
+      &.link-primary {
+        color: var(--primary-500);
+        text-decoration: none;
+
+        &:hover {
+          color: var(--primary-400);
+          text-decoration: underline;
+        }
+      }
     }
     
     .info-subtitle {
@@ -2045,7 +2055,7 @@ select.form-input {
   padding: var(--spacing-2xl);
   box-shadow: var(--shadow-sm);
 
-  h3 {
+  h3:not(.section-header__title) {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
@@ -2057,7 +2067,8 @@ select.form-input {
     font-weight: var(--font-weight-semibold);
 
     i {
-      color: var(--primary-500);
+      font-size: 1rem;
+      color: var(--primary-600);
     }
   }
 }
@@ -2065,12 +2076,11 @@ select.form-input {
 .info-card {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
 
   .info-row {
     display: flex;
     gap: var(--spacing-lg);
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-sm) 0;
 
     &:not(:last-child) {
       border-bottom: 1px solid var(--border-primary);
@@ -2364,6 +2374,281 @@ button.link-primary {
     
     .btn {
       width: 100%;
+    }
+  }
+}
+
+// ===== SECTION HEADERS - DISEÑO ESTÁNDAR =====
+// Patrón reutilizable para cabeceras de secciones en vistas de detalle
+// Basado en el diseño de "Historia Médica" en patient-detail
+// Estructura HTML esperada:
+// <div class="section-header">
+//   <h3 class="section-header__title">
+//     <i class="fa-solid fa-icon"></i>
+//     Título de la Sección
+//   </h3>
+//   <button class="btn btn-outline btn-sm">...</button> <!-- opcional -->
+// </div>
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) 0;
+  margin-bottom: 0;
+  min-height: 40px;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    line-height: 1;
+
+    i {
+      font-size: var(--font-size-lg);
+      color: var(--primary-600);
+    }
+  }
+
+  &__description {
+    margin: var(--spacing-xs) 0 0 0;
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  // Soporte para btn-group dentro de section-header
+  .btn-group {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+
+  // Separador después de la cabecera
+  + hr {
+    border: none;
+    border-top: 1px solid var(--border-primary);
+    margin: var(--spacing-md) 0 var(--spacing-lg) 0;
+  }
+
+  // Variante compacta
+  &--compact {
+    padding: var(--spacing-sm) 0;
+    min-height: 32px;
+  }
+}
+
+// ===== INFO GROUP - SUB-GRUPOS DENTRO DE SECCIONES =====
+// Sub-título ligero para agrupar info-rows dentro de una sección principal.
+// Crea jerarquía visual: section-header (h3) > info-group (h4) > info-rows
+// Estructura HTML esperada:
+// <div class="info-group">
+//   <h4 class="info-group__title">
+//     <i class="fa-solid fa-icon"></i> Subtítulo
+//   </h4>
+//   <div class="info-card">
+//     <div class="info-row">...</div>
+//   </div>
+// </div>
+
+.info-group {
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1;
+
+    i {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+    }
+  }
+}
+
+// Divisor sutil entre info-groups dentro de una misma sección/card
+.info-divider {
+  border: none;
+  border-top: 1px dashed var(--border-primary);
+  margin: var(--spacing-lg) 0;
+}
+
+// ===== MEDICAL LIST ITEMS - DISEÑO ESTÁNDAR COMPACTO =====
+// Patrón reutilizable para listas de items médicos (alergias, consentimientos, diagnósticos, etc.)
+// Estructura HTML esperada:
+// <div class="medical-list-item [--inactive]">
+//   <div class="medical-list-item__main">
+//     <div class="medical-list-item__info">
+//       <span class="medical-list-item__title">...</span>
+//       <span class="badge badge-sm">...</span>
+//       <span class="text-sm text-muted">...</span>
+//     </div>
+//     <div class="medical-list-item__actions">...</div>
+//   </div>
+//   <div class="medical-list-item__meta">...</div> <!-- opcional -->
+// </div>
+
+.medical-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.medical-list-item {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--surface-primary);
+  transition: var(--transition-base);
+
+  &:hover {
+    border-color: var(--primary-200);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  &.--inactive {
+    opacity: 0.6;
+    background: var(--surface-secondary);
+  }
+
+  &__main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    flex: 1;
+
+    .file-icon-inline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--primary-50);
+      color: var(--primary-600);
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+  }
+
+  &__title {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+    flex-shrink: 0;
+
+    .btn {
+      min-width: 36px;
+      height: 36px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+
+      i {
+        font-size: 0.95rem;
+      }
+
+      &.btn-ghost {
+        background: transparent;
+        border-color: transparent;
+        color: var(--text-secondary);
+
+        &:hover:not(:disabled) {
+          background: var(--surface-hover);
+          border-color: var(--border-primary);
+          color: var(--text-primary);
+          transform: translateY(-1px);
+        }
+
+        &.btn-danger-text {
+          color: var(--error-500);
+
+          &:hover:not(:disabled) {
+            background: var(--error-50);
+            border-color: var(--error-200);
+            color: var(--error-600);
+          }
+        }
+
+        &.btn-success-text {
+          color: var(--success-500);
+
+          &:hover:not(:disabled) {
+            background: var(--success-50);
+            border-color: var(--success-200);
+            color: var(--success-600);
+          }
+        }
+      }
+
+      &.btn-primary {
+        min-width: auto;
+        padding: 0 var(--spacing-md);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+
+        &:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+
+    > span {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+
+      i {
+        opacity: 0.7;
+      }
     }
   }
 }

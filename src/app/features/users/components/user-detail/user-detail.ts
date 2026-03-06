@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UsersService } from '../../services/users.service';
@@ -31,6 +31,30 @@ export class UserDetailComponent implements OnInit {
     { label: 'Usuarios', route: '/users' },
     { label: 'Detalle' }
   ];
+
+  // Tabs
+  activeTab = signal<'general' | 'access'>('general');
+
+  // Permissions pagination (client-side)
+  permissionsPage = signal(1);
+  readonly PERMISSIONS_PAGE_SIZE = 5;
+
+  permissionCategories = computed(() => {
+    const u = this.user();
+    if (!u?.permissions?.length) return [];
+    return Array.from(this.groupPermissionsByCategory(u.permissions).entries())
+      .map(([category, perms]) => ({ category, permissions: perms }));
+  });
+
+  permissionsTotalPages = computed(() =>
+    Math.ceil(this.permissionCategories().length / this.PERMISSIONS_PAGE_SIZE)
+  );
+
+  pagedPermissionCategories = computed(() => {
+    const all = this.permissionCategories();
+    const start = (this.permissionsPage() - 1) * this.PERMISSIONS_PAGE_SIZE;
+    return all.slice(start, start + this.PERMISSIONS_PAGE_SIZE);
+  });
 
   user = signal<User | null>(null);
   loading = signal(true);
@@ -71,6 +95,14 @@ export class UserDetailComponent implements OnInit {
     if (!u?.roles) return false;
     const clinicalRoles = ['doctor', 'dentist', 'specialist', 'dentista', 'especialista'];
     return u.roles.some(r => clinicalRoles.includes(r.name.toLowerCase()));
+  }
+
+  setActiveTab(tab: 'general' | 'access'): void {
+    this.activeTab.set(tab);
+  }
+
+  onPermissionsPageChange(page: number): void {
+    this.permissionsPage.set(page);
   }
 
   editUser(): void {
