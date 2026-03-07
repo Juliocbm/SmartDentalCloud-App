@@ -3,6 +3,7 @@
     [title]="user() ? user()!.name : 'Usuario'"
     [icon]="'fa-user-md'"
     [showBackButton]="true"
+    [backRoute]="'/users'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (user(); as currentUser) {

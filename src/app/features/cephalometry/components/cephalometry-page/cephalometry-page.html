@@ -3,14 +3,10 @@
     [title]="getTitle()"
     subtitle="Trazado y análisis cefalométrico digital"
     icon="fa-solid fa-x-ray"
+    [showBackButton]="true"
+    [backRoute]="'/patients/' + patientId"
     [breadcrumbs]="breadcrumbItems"
   >
-    <div actions>
-      <button class="btn btn-outline btn-sm" (click)="goBack()">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver al Paciente
-      </button>
-    </div>
     @if (analysis(); as a) {
       <div title-extra>
         <span class="badge"

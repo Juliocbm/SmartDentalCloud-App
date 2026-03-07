@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ReportsService } from '../../services/reports.service';
 import { AccountsReceivableItem, AccountsReceivableSummary } from '../../models/report.models';
@@ -17,7 +17,6 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 })
 export class AccountsReceivableComponent implements OnInit {
   private reportsService = inject(ReportsService);
-  private router = inject(Router);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -97,14 +96,6 @@ export class AccountsReceivableComponent implements OnInit {
   applyDaysFilter(days: number | null): void {
     this.minDaysOverdue.set(days);
     this.loadData();
-  }
-
-  goToInvoice(invoiceId: string): void {
-    this.router.navigate(['/invoices', invoiceId]);
-  }
-
-  goToPatient(patientId: string): void {
-    this.router.navigate(['/patients', patientId]);
   }
 
   getOverdueClass(days: number): string {

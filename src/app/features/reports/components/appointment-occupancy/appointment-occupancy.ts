@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ReportsService } from '../../services/reports.service';
 import { AppointmentOccupancy } from '../../models/report.models';
@@ -10,7 +11,7 @@ import { DatePickerComponent } from '../../../../shared/components/date-picker/d
 @Component({
   selector: 'app-appointment-occupancy',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, DatePickerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DatePickerComponent],
   templateUrl: './appointment-occupancy.html',
   styleUrl: './appointment-occupancy.scss'
 })

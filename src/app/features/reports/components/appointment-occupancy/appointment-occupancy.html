@@ -4,6 +4,7 @@
     [subtitle]="'Análisis de ocupación y asistencia'"
     [icon]="'fa-calendar-check'"
     [showBackButton]="true"
+    [backRoute]="'/reports'"
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
@@ -108,7 +109,9 @@
             <tbody>
               @for (d of r.byDentist; track d.dentistId) {
                 <tr>
-                  <td><strong>{{ d.dentistName }}</strong></td>
+                  <td>
+                    <a [routerLink]="['/users', d.dentistId]" class="link-primary">{{ d.dentistName }}</a>
+                  </td>
                   <td>{{ d.totalAppointments }}</td>
                   <td>{{ d.completed }}</td>
                   <td>{{ d.cancelled }}</td>

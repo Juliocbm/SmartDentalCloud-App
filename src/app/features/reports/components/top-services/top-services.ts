@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ReportsService } from '../../services/reports.service';
 import { TopService } from '../../models/report.models';
@@ -10,7 +11,7 @@ import { DatePickerComponent } from '../../../../shared/components/date-picker/d
 @Component({
   selector: 'app-top-services',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, DatePickerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DatePickerComponent],
   templateUrl: './top-services.html',
   styleUrl: './top-services.scss'
 })

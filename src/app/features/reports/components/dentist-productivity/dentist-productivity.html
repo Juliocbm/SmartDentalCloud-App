@@ -4,6 +4,7 @@
     [subtitle]="'Rendimiento y métricas por profesional'"
     [icon]="'fa-user-doctor'"
     [showBackButton]="true"
+    [backRoute]="'/reports'"
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
@@ -68,11 +69,13 @@
           @for (d of data(); track d.dentistId) {
             <tr>
               <td>
-                <div class="dentist-cell">
-                  <div class="dentist-cell__avatar">
+                <div class="info-cell">
+                  <div class="avatar avatar-primary">
                     <i class="fa-solid fa-user-doctor"></i>
                   </div>
-                  <strong>{{ d.dentistName }}</strong>
+                  <div class="info-content">
+                    <a [routerLink]="['/users', d.dentistId]" class="link-primary info-title">{{ d.dentistName }}</a>
+                  </div>
                 </div>
               </td>
               <td class="text-center">

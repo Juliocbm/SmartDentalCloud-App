@@ -3,8 +3,8 @@
     [title]="getTitle()"
     [icon]="'fa-chart-line'"
     [showBackButton]="true"
-    [breadcrumbs]="breadcrumbItems"
-    (backClick)="goBack()">
+    [backRoute]="'/patients/' + patientId"
+    [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (periodontogram(); as perio) {
         <span class="badge"

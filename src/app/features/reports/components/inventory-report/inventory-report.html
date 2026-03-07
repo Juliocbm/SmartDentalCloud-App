@@ -4,6 +4,7 @@
     [subtitle]="'Estado general del inventario'"
     [icon]="'fa-boxes-stacked'"
     [showBackButton]="true"
+    [backRoute]="'/reports'"
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
@@ -87,7 +88,9 @@
             <tbody>
               @for (item of r.lowStockItems; track item.productId) {
                 <tr>
-                  <td><strong>{{ item.productName }}</strong></td>
+                  <td>
+                    <a [routerLink]="['/inventory/products', item.productId]" class="link-primary">{{ item.productName }}</a>
+                  </td>
                   <td class="text-muted">{{ item.categoryName || '—' }}</td>
                   <td>
                     <span class="stock-badge" [class]="getStockClass(item.currentStock, item.minimumStock)">
@@ -123,7 +126,13 @@
             <tbody>
               @for (cat of r.byCategory; track cat.categoryName) {
                 <tr>
-                  <td><strong>{{ cat.categoryName }}</strong></td>
+                  <td>
+                    @if (cat.categoryId) {
+                      <a [routerLink]="['/inventory/categories', cat.categoryId]" class="link-primary">{{ cat.categoryName }}</a>
+                    } @else {
+                      {{ cat.categoryName }}
+                    }
+                  </td>
                   <td>{{ cat.productCount }}</td>
                   <td>{{ cat.totalStock }}</td>
                   <td class="amount-cell">{{ formatCurrency(cat.totalValue) }}</td>

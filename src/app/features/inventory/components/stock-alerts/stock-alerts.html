@@ -4,6 +4,8 @@
     [title]="'Alertas de Stock'"
     [subtitle]="'Productos con niveles de inventario críticos o bajos'"
     [icon]="'fa-triangle-exclamation'"
+    [showBackButton]="true"
+    [backRoute]="'/inventory'"
     [breadcrumbs]="breadcrumbItems()">
     <div actions>
       <a class="btn btn-outline" routerLink="/inventory/products">

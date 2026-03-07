@@ -49,6 +49,7 @@ export interface TreatmentsSummary {
 }
 
 export interface TreatmentsByType {
+  serviceId?: string;
   serviceName: string;
   count: number;
   revenue: number;
@@ -84,6 +85,7 @@ export interface LowStockItem {
 }
 
 export interface CategoryStock {
+  categoryId?: string;
   categoryName: string;
   productCount: number;
   totalStock: number;

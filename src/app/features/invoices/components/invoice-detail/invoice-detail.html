@@ -4,6 +4,7 @@
     [subtitle]="invoice()?.serie && invoice()?.folio ? invoice()!.serie + '-' + invoice()!.folio : ''"
     [icon]="'fa-file-invoice-dollar'"
     [showBackButton]="true"
+    [backRoute]="'/invoices/list'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (invoice(); as inv) {

@@ -4,6 +4,8 @@
     [title]="'Facturas'"
     [subtitle]="'Gestión de facturas emitidas'"
     [icon]="'fa-file-invoice-dollar'"
+    [showBackButton]="true"
+    [backRoute]="'/invoices'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
       <button class="btn btn-outline" (click)="exportToCsv()">

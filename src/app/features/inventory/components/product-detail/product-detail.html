@@ -3,6 +3,7 @@
     [title]="product() ? product()!.name : 'Producto'"
     [icon]="'fa-box'"
     [showBackButton]="true"
+    [backRoute]="'/inventory/products'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (product(); as p) {

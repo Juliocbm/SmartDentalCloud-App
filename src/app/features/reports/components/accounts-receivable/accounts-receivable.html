@@ -4,6 +4,7 @@
     [subtitle]="'Facturas pendientes y vencidas'"
     [icon]="'fa-file-invoice-dollar'"
     [showBackButton]="true"
+    [backRoute]="'/reports'"
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
@@ -137,12 +138,12 @@
           @for (item of filteredItems(); track item.invoiceId) {
             <tr>
               <td>
-                <a class="link-cell" (click)="goToPatient(item.patientId)">
+                <a [routerLink]="['/patients', item.patientId]" class="link-primary">
                   {{ item.patientName }}
                 </a>
               </td>
               <td>
-                <a class="link-cell" (click)="goToInvoice(item.invoiceId)">
+                <a [routerLink]="['/invoices', item.invoiceId]" class="link-primary">
                   {{ item.invoiceNumber || '—' }}
                 </a>
               </td>

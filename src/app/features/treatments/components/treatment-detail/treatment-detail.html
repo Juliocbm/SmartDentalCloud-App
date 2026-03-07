@@ -3,6 +3,7 @@
     [title]="treatment()?.serviceName || 'Tratamiento'"
     [icon]="'fa-tooth'"
     [showBackButton]="true"
+    [backRoute]="'/treatments'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (treatment(); as t) {

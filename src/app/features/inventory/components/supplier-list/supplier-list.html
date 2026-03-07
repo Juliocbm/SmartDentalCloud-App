@@ -4,6 +4,8 @@
     [title]="'Proveedores'"
     [subtitle]="'Gestiona los proveedores de inventario'"
     [icon]="'fa-truck'"
+    [showBackButton]="true"
+    [backRoute]="'/inventory'"
     [breadcrumbs]="breadcrumbItems()">
     <div actions>
       @if (permissionService.hasPermission(PERMISSIONS.InventoryCreate)) {

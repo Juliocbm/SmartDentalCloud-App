@@ -4,6 +4,7 @@
     [subtitle]="'Resumen por estado y tipo de servicio'"
     [icon]="'fa-tooth'"
     [showBackButton]="true"
+    [backRoute]="'/reports'"
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
@@ -130,7 +131,13 @@
             <tbody>
               @for (item of r.byType; track item.serviceName) {
                 <tr>
-                  <td><strong>{{ item.serviceName }}</strong></td>
+                  <td>
+                    @if (item.serviceId) {
+                      <a [routerLink]="['/services', item.serviceId]" class="link-primary">{{ item.serviceName }}</a>
+                    } @else {
+                      {{ item.serviceName }}
+                    }
+                  </td>
                   <td class="text-center">{{ item.count }}</td>
                   <td class="text-right amount-cell">{{ formatCurrency(item.revenue) }}</td>
                 </tr>

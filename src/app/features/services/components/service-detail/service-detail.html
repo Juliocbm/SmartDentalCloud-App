@@ -3,6 +3,7 @@
     [title]="service()?.name || 'Servicio'"
     [icon]="'fa-briefcase-medical'"
     [showBackButton]="true"
+    [backRoute]="'/services'"
     [breadcrumbs]="breadcrumbs">
     <div title-extra>
       @if (service(); as svc) {

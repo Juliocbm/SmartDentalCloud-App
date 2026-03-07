@@ -4,6 +4,7 @@
     [subtitle]="order()?.orderNumber || ''"
     [icon]="'fa-box'"
     [showBackButton]="true"
+    [backRoute]="'/inventory/purchase-orders'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
       @if (order(); as po) {

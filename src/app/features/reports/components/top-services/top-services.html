@@ -4,6 +4,7 @@
     [subtitle]="'Ranking de servicios por frecuencia de uso'"
     [icon]="'fa-ranking-star'"
     [showBackButton]="true"
+    [backRoute]="'/reports'"
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
@@ -70,7 +71,9 @@
               <td class="col-rank">
                 <span class="rank-badge" [class.rank-badge--top]="i < 3">{{ i + 1 }}</span>
               </td>
-              <td><strong>{{ item.serviceName }}</strong></td>
+              <td>
+                <a [routerLink]="['/services', item.serviceId]" class="link-primary">{{ item.serviceName }}</a>
+              </td>
               <td class="text-muted">{{ item.categoryName || '—' }}</td>
               <td>
                 <div class="usage-cell">

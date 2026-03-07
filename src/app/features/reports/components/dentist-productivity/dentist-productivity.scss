@@ -9,21 +9,4 @@
   white-space: nowrap;
 }
 
-.dentist-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-
-  &__avatar {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--primary-50);
-    color: var(--primary-600);
-    border-radius: var(--radius-full);
-    font-size: var(--font-size-sm);
-    flex-shrink: 0;
-  }
-}
+// Dentist cell uses global .info-cell + .avatar from _components.scss

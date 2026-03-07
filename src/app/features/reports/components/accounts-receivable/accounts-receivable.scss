@@ -48,17 +48,7 @@
   }
 }
 
-// Table-specific
-.link-cell {
-  color: var(--primary-600);
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: var(--font-weight-medium);
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
+// Table-specific — entity links use global .link-primary from _components.scss
 
 .date-cell {
   white-space: nowrap;
