@@ -11,12 +11,12 @@ import {
   AUDIT_ACTIONS,
   DEFAULT_AUDIT_ACTION_CONFIG
 } from '../../models/audit-log.models';
-import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
 
 @Component({
   selector: 'app-audit-log-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, DatePickerComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, DateRangePickerComponent],
   templateUrl: './audit-log-list.html',
   styleUrl: './audit-log-list.scss'
 })
@@ -80,6 +80,17 @@ export class AuditLogListComponent implements OnInit {
   }
 
   onFilterChange(): void {
+    this.loadLogs();
+  }
+
+  onRangeChange(range: DateRange | null): void {
+    if (range) {
+      this.startDateFilter.set(range.start);
+      this.endDateFilter.set(range.end);
+    } else {
+      this.startDateFilter.set('');
+      this.endDateFilter.set('');
+    }
     this.loadLogs();
   }
 

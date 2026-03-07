@@ -11,13 +11,13 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
-import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, DatePickerComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, DateRangePickerComponent],
   templateUrl: './appointment-list.html',
   styleUrls: ['./appointment-list.scss']
 })
@@ -39,7 +39,8 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
   loading = signal(true);
   error = signal<string | null>(null);
   
-  selectedDate = signal(new Date());
+  startDate = signal(this.formatDate(new Date()));
+  endDate = signal(this.formatDate(this.addDays(new Date(), 7)));
   filterStatus = signal<AppointmentStatus | ''>('');
   searchTerm = signal('');
 
@@ -93,7 +94,9 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
     
-    this.appointmentsService.getByDate(this.selectedDate()).subscribe({
+    const start = new Date(this.startDate() + 'T00:00:00');
+    const end = new Date(this.endDate() + 'T23:59:59');
+    this.appointmentsService.getByRange(start, end).subscribe({
       next: (appointments) => {
         this.appointments.set(appointments);
         this.loading.set(false);
@@ -106,18 +109,22 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
     });
   }
 
-  onDatePickerChange(value: string | null): void {
-    if (value) {
-      this.selectedDate.set(new Date(value + 'T00:00:00'));
+  onRangeChange(range: DateRange | null): void {
+    if (range) {
+      this.startDate.set(range.start);
+      this.endDate.set(range.end);
     } else {
-      this.selectedDate.set(new Date());
+      const today = this.formatDate(new Date());
+      this.startDate.set(today);
+      this.endDate.set(this.formatDate(this.addDays(new Date(), 7)));
     }
     this.loadAppointments();
   }
 
-  onDateChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.selectedDate.set(new Date(input.value + 'T00:00:00'));
+  showToday(): void {
+    const today = this.formatDate(new Date());
+    this.startDate.set(today);
+    this.endDate.set(today);
     this.loadAppointments();
   }
 
@@ -160,7 +167,13 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatDateForInput(date: Date): string {
+  private addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  private formatDate(date: Date): string {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');

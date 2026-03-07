@@ -29,20 +29,10 @@
         }
       </select>
 
-      <app-date-picker
-        [ngModel]="startDateFilter()"
-        (ngModelChange)="startDateFilter.set($event); onFilterChange()"
-        placeholder="Desde..."
-      >
-        Desde
-      </app-date-picker>
-      <app-date-picker
-        [ngModel]="endDateFilter()"
-        (ngModelChange)="endDateFilter.set($event); onFilterChange()"
-        placeholder="Hasta..."
-      >
-        Hasta
-      </app-date-picker>
+      <app-date-range-picker
+        [startDate]="startDateFilter()"
+        [endDate]="endDateFilter()"
+        (rangeChange)="onRangeChange($event)"/>
     </div>
 
     <div class="filter-actions">

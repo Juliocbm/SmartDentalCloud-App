@@ -9,15 +9,11 @@
   </app-page-header>
 
   <div class="filters-section">
-    <div class="filter-group">
-      <app-date-picker [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onDateChange()" placeholder="Desde...">
-        Desde
-      </app-date-picker>
-    </div>
-    <div class="filter-group">
-      <app-date-picker [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onDateChange()" placeholder="Hasta...">
-        Hasta
-      </app-date-picker>
+    <div class="filter-actions">
+      <app-date-range-picker
+        [startDate]="startDate()"
+        [endDate]="endDate()"
+        (rangeChange)="onRangeChange($event)"/>
     </div>
   </div>
 

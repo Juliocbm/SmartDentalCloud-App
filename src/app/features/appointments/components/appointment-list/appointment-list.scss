@@ -8,6 +8,12 @@
 // Empty/Loading: usa .empty-state, .loading-container de _components.scss
 
 // ===== Table Cell Content =====
+.date-cell {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
 .time-cell {
   min-width: 100px;
 

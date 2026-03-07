@@ -6,12 +6,12 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ReportsService } from '../../services/reports.service';
 import { TopService } from '../../models/report.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
-import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
 
 @Component({
   selector: 'app-top-services',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DatePickerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DateRangePickerComponent],
   templateUrl: './top-services.html',
   styleUrl: './top-services.scss'
 })
@@ -43,8 +43,12 @@ export class TopServicesComponent implements OnInit {
     });
   }
 
-  onDateChange(): void {
-    this.loadReport();
+  onRangeChange(range: DateRange | null): void {
+    if (range) {
+      this.startDate.set(range.start);
+      this.endDate.set(range.end);
+      this.loadReport();
+    }
   }
 
   formatCurrency(value: number): string {

@@ -37,13 +37,14 @@
     </div>
 
     <div class="filter-actions">
-      <app-date-picker
-        [ngModel]="formatDateForInput(selectedDate())"
-        (ngModelChange)="onDatePickerChange($event)"
-        placeholder="Filtrar por fecha..."
-      >
-        Fecha
-      </app-date-picker>
+      <button type="button" class="btn btn-outline btn-sm" (click)="showToday()" title="Mostrar solo citas de hoy">
+        <i class="fa-solid fa-calendar-day"></i>
+        Hoy
+      </button>
+      <app-date-range-picker
+        [startDate]="startDate()"
+        [endDate]="endDate()"
+        (rangeChange)="onRangeChange($event)"/>
       <select 
         class="filter-select"
         [value]="filterStatus()"
@@ -89,6 +90,7 @@
         <table class="table">
           <thead>
             <tr>
+              <th>Fecha</th>
               <th>Hora</th>
               <th>Paciente</th>
               <th>Dentista</th>
@@ -103,6 +105,7 @@
           <tbody>
             @for (appointment of filteredAppointments(); track appointment.id) {
               <tr>
+                <td class="date-cell">{{ appointment.displayDate }}</td>
                 <td class="time-cell">
                   <div class="time-info">
                     <span class="time">{{ appointment.displayTime }}</span>

@@ -1,0 +1,24 @@
+<div class="range-picker-wrapper">
+  <i class="fa-solid fa-calendar-days range-picker-icon"></i>
+  <input
+    #rangeInput
+    type="text"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [value]="displayValue"
+    class="range-picker-input"
+    [class.has-value]="currentValue"
+    readonly
+  />
+
+  @if (currentValue && !disabled) {
+    <button
+      type="button"
+      (click)="onClear()"
+      class="range-picker-clear"
+      title="Limpiar rango"
+    >
+      <i class="fa-solid fa-times"></i>
+    </button>
+  }
+</div>
