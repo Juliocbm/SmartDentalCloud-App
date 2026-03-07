@@ -73,6 +73,10 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   width: fit-content;
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: 2;
 }
 
 .dentition-tab {

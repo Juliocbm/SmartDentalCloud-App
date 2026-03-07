@@ -894,7 +894,7 @@
       <!-- Odontogram Tab -->
       @if (activeTab() === 'odontogram') {
         <div class="info-section">
-          <app-odontogram
+          <app-odontogram-history-list
             [patientId]="patient()!.id"
             [patientName]="getFullName()"
           />

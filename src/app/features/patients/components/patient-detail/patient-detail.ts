@@ -10,7 +10,7 @@ import { AttachedFilesService } from '../../services/attached-files.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
-import { OdontogramComponent } from '../../../dental-chart/components/odontogram/odontogram';
+import { OdontogramHistoryListComponent } from '../../../dental-chart/components/odontogram-history-list/odontogram-history-list';
 import { PerioHistoryListComponent } from '../../../periodontogram/components/perio-history-list/perio-history-list';
 import { CephHistoryListComponent } from '../../../cephalometry/components/ceph-history-list/ceph-history-list';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
@@ -63,7 +63,7 @@ import { FileUploadModalComponent, FileUploadModalData } from '../file-upload-mo
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, OdontogramComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent, PatientClinicalSummaryComponent, SignaturePadComponent, SignatureModalComponent, SignaturePinSetupComponent, ConsentPrintViewComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OdontogramHistoryListComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent, PatientClinicalSummaryComponent, SignaturePadComponent, SignatureModalComponent, SignaturePinSetupComponent, ConsentPrintViewComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })

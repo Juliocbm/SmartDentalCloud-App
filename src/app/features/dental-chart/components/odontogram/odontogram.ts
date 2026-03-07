@@ -1,9 +1,11 @@
-import { Component, inject, signal, computed, input, output, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, input, output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToothSvgComponent } from '../tooth-svg/tooth-svg';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { DentalChartService } from '../../services/dental-chart.service';
+import { OdontogramEvaluationService } from '../../services/odontogram-evaluation.service';
+import { OdontogramEvaluation, OdontogramToothInput } from '../../models/odontogram-evaluation.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -42,8 +44,9 @@ import {
   templateUrl: './odontogram.html',
   styleUrl: './odontogram.scss'
 })
-export class OdontogramComponent implements OnInit {
+export class OdontogramComponent implements OnInit, OnChanges {
   private dentalChartService = inject(DentalChartService);
+  private evaluationService = inject(OdontogramEvaluationService);
   private logger = inject(LoggingService);
   private notifications = inject(NotificationService);
 
@@ -52,8 +55,23 @@ export class OdontogramComponent implements OnInit {
   patientName = input<string>('');
   readonly = input<boolean>(false);
 
+  // Evaluation mode inputs (when used from OdontogramPageComponent)
+  evaluationId = input<string | undefined>(undefined);
+  evaluationStatus = input<string | undefined>(undefined);
+  evaluationTeeth = input<DentalChartTooth[] | undefined>(undefined);
+
   // Outputs
   toothUpdated = output<DentalChartTooth>();
+  evaluationUpdated = output<OdontogramEvaluation>();
+
+  // Computed: readonly when evaluation is Signed
+  isEvaluationReadonly = computed(() => {
+    const status = this.evaluationStatus();
+    return status === 'Signed' || this.readonly();
+  });
+
+  // Is in evaluation mode?
+  isEvaluationMode = computed(() => !!this.evaluationId());
 
   // Dentition type toggle
   dentitionType = signal<'permanent' | 'primary'>('permanent');
@@ -150,10 +168,43 @@ export class OdontogramComponent implements OnInit {
     this.loadChart();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['evaluationTeeth'] && this.evaluationTeeth()) {
+      this.teeth.set(this.evaluationTeeth()!);
+      this.loading.set(false);
+    }
+  }
+
   loadChart(): void {
+    // If evaluation teeth are provided, use them directly
+    const evalTeeth = this.evaluationTeeth();
+    if (evalTeeth && evalTeeth.length > 0) {
+      this.teeth.set(evalTeeth);
+      this.loading.set(false);
+      return;
+    }
+
     this.loading.set(true);
     this.error.set(null);
 
+    // If in evaluation mode, load from evaluation endpoint
+    const evalId = this.evaluationId();
+    if (evalId) {
+      this.evaluationService.getById(evalId).subscribe({
+        next: (evaluation) => {
+          this.teeth.set(evaluation.teeth);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.logger.error('Error loading odontogram evaluation:', err);
+          this.error.set(getApiErrorMessage(err));
+          this.loading.set(false);
+        }
+      });
+      return;
+    }
+
+    // Legacy mode: load from patient dental chart
     this.dentalChartService.getChart(this.patientId()).subscribe({
       next: (teeth) => {
         if (teeth.length === 0) {
@@ -294,7 +345,7 @@ export class OdontogramComponent implements OnInit {
 
   saveTooth(): void {
     const tooth = this.selectedTooth();
-    if (!tooth || this.readonly()) return;
+    if (!tooth || this.isEvaluationReadonly()) return;
 
     this.saving.set(true);
 
@@ -305,24 +356,17 @@ export class OdontogramComponent implements OnInit {
       notes: this.editNotes() || null
     };
 
+    // In evaluation mode, save all teeth via bulk endpoint
+    const evalId = this.evaluationId();
+    if (evalId) {
+      this.saveToothViaEvaluation(tooth, request, evalId);
+      return;
+    }
+
+    // Legacy mode: save individual tooth
     this.dentalChartService.updateTooth(this.patientId(), tooth.toothNumber, request).subscribe({
       next: (updated) => {
-        // Update local state
-        const current = this.teeth();
-        const idx = current.findIndex(t => t.toothNumber === tooth.toothNumber);
-        if (idx >= 0) {
-          const newTeeth = [...current];
-          newTeeth[idx] = updated;
-          this.teeth.set(newTeeth);
-        }
-
-        this.selectedTooth.set(updated);
-        this.toothUpdated.emit(updated);
-        this.saving.set(false);
-        this.notifications.success(`Pieza ${tooth.toothNumber} actualizada`);
-
-        // Reload history
-        this.loadToothHistory(tooth.toothNumber);
+        this.applyToothUpdate(tooth, updated);
       },
       error: (err) => {
         this.logger.error('Error updating tooth:', err);
@@ -330,6 +374,73 @@ export class OdontogramComponent implements OnInit {
         this.notifications.error(getApiErrorMessage(err));
       }
     });
+  }
+
+  private saveToothViaEvaluation(tooth: DentalChartTooth, request: UpdateToothRequest, evalId: string): void {
+    // Update local state first, then send all teeth to bulk endpoint
+    const current = this.teeth();
+    const updatedTeeth = current.map(t => {
+      if (t.toothNumber === tooth.toothNumber) {
+        return {
+          ...t,
+          status: request.status,
+          conditions: request.conditions,
+          surfaceConditions: request.surfaceConditions,
+          notes: request.notes ?? null
+        } as DentalChartTooth;
+      }
+      return t;
+    });
+
+    const teethInput: OdontogramToothInput[] = updatedTeeth.map(t => ({
+      toothNumber: t.toothNumber,
+      toothType: t.toothType,
+      status: t.status,
+      conditions: t.conditions ?? [],
+      surfaceConditions: t.surfaceConditions ?? {},
+      notes: t.notes ?? null
+    }));
+
+    this.evaluationService.saveTeeth({
+      odontogramId: evalId,
+      rowVersion: null,
+      teeth: teethInput
+    }).subscribe({
+      next: (evaluation) => {
+        this.teeth.set(evaluation.teeth);
+        const updated = evaluation.teeth.find(t => t.toothNumber === tooth.toothNumber);
+        if (updated) {
+          this.selectedTooth.set(updated);
+          this.toothUpdated.emit(updated);
+        }
+        this.evaluationUpdated.emit(evaluation);
+        this.saving.set(false);
+        this.notifications.success(`Pieza ${tooth.toothNumber} actualizada`);
+      },
+      error: (err) => {
+        this.logger.error('Error saving evaluation teeth:', err);
+        this.saving.set(false);
+        this.notifications.error(getApiErrorMessage(err));
+      }
+    });
+  }
+
+  private applyToothUpdate(tooth: DentalChartTooth, updated: DentalChartTooth): void {
+    const current = this.teeth();
+    const idx = current.findIndex(t => t.toothNumber === tooth.toothNumber);
+    if (idx >= 0) {
+      const newTeeth = [...current];
+      newTeeth[idx] = updated;
+      this.teeth.set(newTeeth);
+    }
+
+    this.selectedTooth.set(updated);
+    this.toothUpdated.emit(updated);
+    this.saving.set(false);
+    this.notifications.success(`Pieza ${tooth.toothNumber} actualizada`);
+
+    // Reload history
+    this.loadToothHistory(tooth.toothNumber);
   }
 
   // ============================================

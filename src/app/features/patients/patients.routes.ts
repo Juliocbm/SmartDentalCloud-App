@@ -47,6 +47,11 @@ export const PATIENTS_ROUTES: Routes = [
           .then(m => m.ClinicalExportComponent)
       },
       {
+        path: ':id/odontogram/:odontogramId',
+        loadComponent: () => import('../../features/dental-chart/components/odontogram-page/odontogram-page')
+          .then(m => m.OdontogramPageComponent)
+      },
+      {
         path: ':id/periodontogram/:perioId',
         loadComponent: () => import('../../features/periodontogram/components/periodontogram-page/periodontogram-page')
           .then(m => m.PeriodontogramPageComponent)

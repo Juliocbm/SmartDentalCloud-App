@@ -1,0 +1,83 @@
+<div class="detail-container">
+  <app-page-header
+    [title]="getTitle()"
+    [icon]="'fa-tooth'"
+    [showBackButton]="true"
+    [backRoute]="'/patients/' + patientId"
+    [breadcrumbs]="breadcrumbItems">
+    <div title-extra>
+      @if (evaluation(); as eval) {
+        <span class="badge"
+          [ngClass]="ODONTOGRAM_STATUS_CONFIG[eval.status].cssClass">
+          <i [class]="'fa-solid ' + ODONTOGRAM_STATUS_CONFIG[eval.status].icon"></i>
+          {{ ODONTOGRAM_STATUS_CONFIG[eval.status].label }}
+        </span>
+      }
+    </div>
+    <div actions class="header-form-actions">
+      @if (evaluation(); as eval) {
+        @if (eval.status === 'Draft') {
+          <button type="button" class="btn btn-outline"
+            (click)="signOdontogram()">
+            <i class="fa-solid fa-file-signature"></i>
+            Firmar
+          </button>
+        } @else {
+          <span class="badge badge-success">
+            <i class="fa-solid fa-lock"></i>
+            Firmado — Solo lectura
+          </span>
+        }
+      }
+    </div>
+  </app-page-header>
+
+  @if (loading() || creating()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>{{ creating() ? 'Creando odontograma...' : 'Cargando odontograma...' }}</p>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error</h2>
+      <p>{{ error() }}</p>
+      <button class="btn btn-outline" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver
+      </button>
+    </div>
+  } @else if (evaluation(); as eval) {
+    <div class="odontogram-content">
+      <!-- Summary header -->
+      <div class="detail-header">
+        <div class="header-info">
+          <div class="info-item">
+            <i class="fa-solid fa-user"></i>
+            <span class="label">Paciente</span>
+            <span class="value">{{ eval.patientName }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-calendar"></i>
+            <span class="label">Fecha</span>
+            <span class="value">{{ formatDate(eval.examDate) }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-user-doctor"></i>
+            <span class="label">Realizado por</span>
+            <span class="value">{{ eval.performedByName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Odontogram Component -->
+      <app-odontogram
+        [patientId]="patientId"
+        [patientName]="eval.patientName"
+        [evaluationId]="eval.id"
+        [evaluationStatus]="eval.status"
+        [evaluationTeeth]="eval.teeth"
+        (evaluationUpdated)="onEvaluationUpdated($event)"/>
+    </div>
+  }
+</div>

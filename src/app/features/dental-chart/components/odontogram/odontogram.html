@@ -1,11 +1,13 @@
 <div class="odontogram-container">
-  <div class="section-header">
-    <h3 class="section-header__title">
-      <i class="fa-solid fa-tooth"></i>
-      Odontograma
-    </h3>
-  </div>
-  <hr>
+  @if (!isEvaluationMode()) {
+    <div class="section-header">
+      <h3 class="section-header__title">
+        <i class="fa-solid fa-tooth"></i>
+        Odontograma
+      </h3>
+    </div>
+    <hr>
+  }
 
   <!-- Loading State -->
   @if (loading()) {
@@ -30,22 +32,6 @@
 
       <!-- Chart Area -->
       <div class="chart-area">
-
-        <!-- Dentition Toggle -->
-        <div class="dentition-toggle">
-          <button
-            class="dentition-tab"
-            [class.active]="dentitionType() === 'permanent'"
-            (click)="switchDentition('permanent')">
-            Permanente
-          </button>
-          <button
-            class="dentition-tab"
-            [class.active]="dentitionType() === 'primary'"
-            (click)="switchDentition('primary')">
-            Temporal
-          </button>
-        </div>
 
         <!-- Stats Bar -->
         <div class="stats-bar">
@@ -80,6 +66,22 @@
 
         <!-- Dental Chart -->
         <div class="chart-diagram">
+
+          <!-- Dentition Toggle -->
+          <div class="dentition-toggle">
+            <button
+              class="dentition-tab"
+              [class.active]="dentitionType() === 'permanent'"
+              (click)="switchDentition('permanent')">
+              Permanente
+            </button>
+            <button
+              class="dentition-tab"
+              [class.active]="dentitionType() === 'primary'"
+              (click)="switchDentition('primary')">
+              Temporal
+            </button>
+          </div>
 
           @if (dentitionType() === 'primary' && !hasPrimaryTeeth()) {
             <!-- Empty state: primary teeth not yet initialized -->
