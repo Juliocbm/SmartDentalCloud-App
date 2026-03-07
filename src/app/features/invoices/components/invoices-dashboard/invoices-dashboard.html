@@ -6,6 +6,19 @@
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
+  <!-- Alerta: Facturas con saldo pendiente -->
+  @if (unpaidInvoices().length > 0) {
+    <div class="alert-banner alert-banner--warning">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>
+        Tienes <strong>{{ unpaidInvoices().length }}</strong> factura{{ unpaidInvoices().length === 1 ? '' : 's' }} con saldo pendiente.
+      </span>
+      <a routerLink="/invoices/list" [queryParams]="{status: 'Issued'}" class="btn btn--sm btn--warning">
+        Ver Pendientes
+      </a>
+    </div>
+  }
+
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
@@ -17,19 +30,6 @@
       <span class="alert-message">{{ error() }}</span>
     </div>
   } @else {
-    <!-- Alerta: Facturas con saldo pendiente -->
-    @if (unpaidInvoices().length > 0) {
-      <div class="alert-banner alert-banner--warning">
-        <i class="fa-solid fa-exclamation-triangle"></i>
-        <span>
-          Tienes <strong>{{ unpaidInvoices().length }}</strong> factura{{ unpaidInvoices().length === 1 ? '' : 's' }} con saldo pendiente.
-        </span>
-        <a routerLink="/invoices/list" [queryParams]="{status: 'Issued'}" class="btn btn--sm btn--warning">
-          Ver Pendientes
-        </a>
-      </div>
-    }
-
     <!-- Indicadores + Accesos Rápidos -->
     <div class="bottom-grid">
       <!-- Indicadores Clave -->

@@ -4,6 +4,10 @@
     [subtitle]="'Panel de control general de la clínica'"
     [icon]="'fa-gauge'">
     <div actions>
+      <app-location-autocomplete
+        [placeholder]="'Filtrar por sucursal...'"
+        (locationSelected)="onLocationSelected($event)">
+      </app-location-autocomplete>
       <button class="btn btn-outline" (click)="refreshData()" [disabled]="loading()">
         <i class="fa-solid fa-sync-alt" [class.fa-spin]="loading()"></i>
         Actualizar
@@ -17,23 +21,23 @@
     </div>
   </app-page-header>
 
+  <!-- Alert Banner: Stock Bajo -->
+  @if (lowStockCount() > 0) {
+    <div class="alert-banner alert-banner--warning">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>Hay <strong>{{ lowStockCount() }}</strong> productos con stock bajo que requieren atención.</span>
+      <a routerLink="/inventory/alerts" class="btn btn-sm btn-warning">
+        Ver Alertas
+      </a>
+    </div>
+  }
+
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando dashboard...</p>
     </div>
   } @else {
-    <!-- Alert Banner: Stock Bajo -->
-    @if (lowStockCount() > 0) {
-      <div class="alert-banner alert-banner--warning">
-        <i class="fa-solid fa-exclamation-triangle"></i>
-        <span>Hay <strong>{{ lowStockCount() }}</strong> productos con stock bajo que requieren atención.</span>
-        <a routerLink="/inventory/alerts" class="btn btn-sm btn-warning">
-          Ver Alertas
-        </a>
-      </div>
-    }
-
     <!-- KPI Metrics -->
     <div class="metrics-grid">
       @if (permissionService.hasPermission(PERMISSIONS.AppointmentsView)) {
@@ -137,8 +141,8 @@
       </div>
     </div>
 
-    <!-- Content Grid: Citas + Planes -->
-    <div class="analytics-grid">
+    <!-- Content Grid: Citas + Planes + Inventario -->
+    <div class="analytics-grid cols-3">
       <!-- Próximas Citas -->
       @if (permissionService.hasPermission(PERMISSIONS.AppointmentsView)) {
       <div class="section-card">
@@ -218,10 +222,9 @@
         }
       </div>
       }
-    </div>
 
-    <!-- Alertas de Inventario -->
-    @if (permissionService.hasPermission(PERMISSIONS.InventoryView) && lowStockItems().length > 0) {
+      <!-- Alertas de Inventario -->
+      @if (permissionService.hasPermission(PERMISSIONS.InventoryView) && lowStockItems().length > 0) {
       <div class="section-card">
         <div class="section-header">
           <h2 class="section-title">
@@ -251,6 +254,7 @@
           }
         </div>
       </div>
-    }
+      }
+    </div>
   }
 </div>

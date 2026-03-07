@@ -14,20 +14,29 @@ import {
 export class DashboardService {
   private api = inject(ApiService);
 
-  loadDashboardData(): Observable<DashboardData> {
+  loadDashboardData(locationId?: string | null): Observable<DashboardData> {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const todayStr = this.toLocalDateString(today);
     const startOfMonthStr = this.toLocalDateString(startOfMonth);
 
-    return forkJoin({
-      todayAppointments: this.api.get<DashboardAppointment[]>('/appointments', {
-        date: todayStr
-      }).pipe(catchError(() => of([] as DashboardAppointment[]))),
+    const appointmentParams: Record<string, any> = { date: todayStr };
+    const upcomingParams: Record<string, any> = { limit: 8 };
+    const inventoryParams: Record<string, any> = {};
+    if (locationId) {
+      appointmentParams['locationId'] = locationId;
+      upcomingParams['locationId'] = locationId;
+      inventoryParams['locationId'] = locationId;
+    }
 
-      upcomingAppointments: this.api.get<DashboardAppointment[]>('/appointments/upcoming', {
-        limit: 8
-      }).pipe(catchError(() => of([] as DashboardAppointment[]))),
+    return forkJoin({
+      todayAppointments: this.api.get<DashboardAppointment[]>('/appointments', appointmentParams).pipe(
+        catchError(() => of([] as DashboardAppointment[]))
+      ),
+
+      upcomingAppointments: this.api.get<DashboardAppointment[]>('/appointments/upcoming', upcomingParams).pipe(
+        catchError(() => of([] as DashboardAppointment[]))
+      ),
 
       treatments: this.api.get<DashboardTreatment[]>('/treatments', {
         status: 'InProgress',
@@ -50,7 +59,7 @@ export class DashboardService {
         catchError(() => of({ totalIncome: 0, totalPending: 0, invoiceCount: 0, paymentCount: 0 }))
       ),
 
-      inventory: this.api.get<DashboardInventory>('/reports/inventory-summary').pipe(
+      inventory: this.api.get<DashboardInventory>('/reports/inventory-summary', inventoryParams).pipe(
         catchError(() => of({ totalProducts: 0, lowStockProducts: 0, outOfStockProducts: 0, lowStockItems: [] }))
       )
     });

@@ -6,6 +6,18 @@
     [breadcrumbs]="breadcrumbItems">
   </app-page-header>
 
+  <!-- Alertas críticas -->
+  @if (criticalAlertsCount() > 0) {
+    <div class="alert-banner alert-banner--warning">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>
+        <strong>{{ criticalAlertsCount() }} alerta{{ criticalAlertsCount() > 1 ? 's' : '' }} crítica{{ criticalAlertsCount() > 1 ? 's' : '' }}</strong>
+        requiere{{ criticalAlertsCount() > 1 ? 'n' : '' }} atención inmediata
+      </span>
+      <button class="btn btn--sm btn--warning" (click)="viewAllPatients()">Ver Alertas</button>
+    </div>
+  }
+
   @if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
@@ -17,18 +29,6 @@
       <span class="alert-message">{{ error() }}</span>
     </div>
   } @else {
-    <!-- Alertas críticas -->
-    @if (criticalAlertsCount() > 0) {
-      <div class="alert-banner alert-banner--warning">
-        <i class="fa-solid fa-exclamation-triangle"></i>
-        <span>
-          <strong>{{ criticalAlertsCount() }} alerta{{ criticalAlertsCount() > 1 ? 's' : '' }} crítica{{ criticalAlertsCount() > 1 ? 's' : '' }}</strong>
-          requiere{{ criticalAlertsCount() > 1 ? 'n' : '' }} atención inmediata
-        </span>
-        <button class="btn btn--sm btn--warning" (click)="viewAllPatients()">Ver Alertas</button>
-      </div>
-    }
-
     <!-- Grid: Indicadores + Accesos Rápidos -->
     <div class="bottom-grid">
       <!-- Indicadores Clave -->

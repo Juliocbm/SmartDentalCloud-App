@@ -4,14 +4,27 @@
     [subtitle]="'Panel de control del módulo de inventario'"
     [icon]="'fa-boxes-stacked'"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <app-location-autocomplete
+        [selectedLocationId]="selectedLocationId()"
+        placeholder="Filtrar por sucursal..."
+        (locationSelected)="onLocationSelected($event)">
+      </app-location-autocomplete>
+    </div>
   </app-page-header>
 
-  <!-- Filtro de ubicación (golden rule) -->
-  <app-location-autocomplete
-    [selectedLocationId]="selectedLocationId()"
-    placeholder="Filtrar por sucursal..."
-    (locationSelected)="onLocationSelected($event)"
-  />
+  <!-- Alertas destacadas -->
+  @if (totalAlerts() > 0) {
+    <div class="alert-banner alert-banner--warning">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>
+        Tienes <strong>{{ totalAlerts() }}</strong> producto{{ totalAlerts() === 1 ? '' : 's' }} con alertas de stock.
+      </span>
+      <a [routerLink]="['/inventory/alerts']" class="btn btn--sm btn--warning">
+        Ver Alertas
+      </a>
+    </div>
+  }
 
   @if (loading()) {
     <div class="loading-container">
@@ -24,19 +37,6 @@
       <span class="alert-message">{{ error() }}</span>
     </div>
   } @else {
-    <!-- Alertas destacadas -->
-    @if (totalAlerts() > 0) {
-      <div class="alert-banner alert-banner--warning">
-        <i class="fa-solid fa-exclamation-triangle"></i>
-        <span>
-          Tienes <strong>{{ totalAlerts() }}</strong> producto{{ totalAlerts() === 1 ? '' : 's' }} con alertas de stock.
-        </span>
-        <a [routerLink]="['/inventory/alerts']" class="btn btn--sm btn--warning">
-          Ver Alertas
-        </a>
-      </div>
-    }
-
     <!-- Grid: Indicadores + Accesos Rápidos -->
     <div class="bottom-grid">
       <!-- Indicadores Clave -->

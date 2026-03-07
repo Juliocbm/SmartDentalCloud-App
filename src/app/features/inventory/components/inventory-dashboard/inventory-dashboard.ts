@@ -166,7 +166,7 @@ export class InventoryDashboardComponent implements OnInit {
   }
 
   private loadInventoryValue(): void {
-    this.analyticsService.calculateInventoryValue().subscribe({
+    this.analyticsService.calculateInventoryValue(this.selectedLocationId()).subscribe({
       next: (value) => this.totalInventoryValue.set(value),
       error: (err) => this.logger.error('Error calculating inventory value:', err)
     });
@@ -202,7 +202,7 @@ export class InventoryDashboardComponent implements OnInit {
 
   private loadCategoryDistribution(): void {
     this.loadingCategories.set(true);
-    this.analyticsService.getCategoryDistribution().subscribe({
+    this.analyticsService.getCategoryDistribution(this.selectedLocationId()).subscribe({
       next: (categories) => {
         this.categoryDistribution.set(categories);
         this.loadingCategories.set(false);
@@ -216,7 +216,7 @@ export class InventoryDashboardComponent implements OnInit {
 
   private loadRecentActivity(): void {
     this.loadingActivity.set(true);
-    this.analyticsService.getRecentActivity(5).subscribe({
+    this.analyticsService.getRecentActivity(5, this.selectedLocationId()).subscribe({
       next: (activities) => {
         this.recentActivity.set(activities);
         this.loadingActivity.set(false);

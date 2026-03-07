@@ -2,6 +2,8 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
+import { LocationAutocompleteComponent } from '../../shared/components/location-autocomplete/location-autocomplete';
+import { LocationSummary } from '../settings/models/location.models';
 import { DashboardService } from './services/dashboard.service';
 import { DashboardData, QuickAction } from './models/dashboard.models';
 import { LoggingService } from '../../core/services/logging.service';
@@ -10,7 +12,7 @@ import { PermissionService, PERMISSIONS } from '../../core/services/permission.s
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, LocationAutocompleteComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -22,6 +24,7 @@ export class DashboardComponent implements OnInit {
 
   loading = signal(true);
   data = signal<DashboardData | null>(null);
+  selectedLocationId = signal<string | null>(null);
 
   private allQuickActions: QuickAction[] = [
     { label: 'Nueva Cita', description: 'Agendar paciente', icon: 'fa-calendar-plus', route: '/appointments/new', color: 'primary', requiredPermission: PERMISSIONS.AppointmentsCreate },
@@ -63,13 +66,18 @@ export class DashboardComponent implements OnInit {
     this.loadData();
   }
 
+  onLocationSelected(location: LocationSummary | null): void {
+    this.selectedLocationId.set(location?.id ?? null);
+    this.loadData();
+  }
+
   refreshData(): void {
     this.loadData();
   }
 
   private loadData(): void {
     this.loading.set(true);
-    this.dashboardService.loadDashboardData().subscribe({
+    this.dashboardService.loadDashboardData(this.selectedLocationId()).subscribe({
       next: (data) => {
         this.data.set(data);
         this.loading.set(false);

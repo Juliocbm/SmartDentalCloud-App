@@ -27,7 +27,8 @@ export class InventoryAnalyticsService {
    * Calcula el valor total del inventario (costo de adquisición)
    * Suma: currentStock * unitCost de todos los productos
    */
-  calculateInventoryValue(): Observable<number> {
+  calculateInventoryValue(locationId?: string | null): Observable<number> {
+    // TODO: When backend supports location-filtered stock valuation, pass locationId
     return this.productsService.getAll().pipe(
       map(products => products.reduce((total, product) => {
         const productValue = (product.currentStock || 0) * (product.unitCost || 0);
@@ -102,7 +103,7 @@ export class InventoryAnalyticsService {
    * Obtiene actividad reciente del inventario
    * @param limit Número de actividades a retornar (default: 10)
    */
-  getRecentActivity(limit: number = 10): Observable<InventoryActivity[]> {
+  getRecentActivity(limit: number = 10, locationId?: string | null): Observable<InventoryActivity[]> {
     // TODO: Implementar con backend real cuando esté disponible
     // Por ahora, generar actividades de muestra basadas en cambios de productos
     return this.productsService.getAll().pipe(
@@ -156,7 +157,8 @@ export class InventoryAnalyticsService {
   /**
    * Obtiene distribución de productos por categoría
    */
-  getCategoryDistribution(): Observable<CategoryStockStatus[]> {
+  getCategoryDistribution(locationId?: string | null): Observable<CategoryStockStatus[]> {
+    // TODO: When backend supports location-filtered category stats, pass locationId
     return this.productsService.getAll().pipe(
       map(products => {
         const categoryMap = new Map<string, {

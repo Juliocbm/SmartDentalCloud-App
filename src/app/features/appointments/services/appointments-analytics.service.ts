@@ -35,15 +35,11 @@ export class AppointmentsAnalyticsService {
     const endOfMonth = this.endOfMonth(today);
 
     return forkJoin({
-      todayAppointments: this.appointmentsService.getByRange(startOfDay, endOfDay),
-      weekAppointments: this.appointmentsService.getByRange(startOfWeek, endOfWeek),
+      todayAppointments: this.appointmentsService.getByRange(startOfDay, endOfDay, undefined, undefined, locationId),
+      weekAppointments: this.appointmentsService.getByRange(startOfWeek, endOfWeek, undefined, undefined, locationId),
       monthStats: this.appointmentsService.getStatistics(startOfMonth, endOfMonth)
     }).pipe(
       map(({ todayAppointments, weekAppointments, monthStats }) => {
-        if (locationId) {
-          todayAppointments = todayAppointments.filter(a => a.locationId === locationId);
-          weekAppointments = weekAppointments.filter(a => a.locationId === locationId);
-        }
         const todayCompleted = todayAppointments.filter(a => a.status === AppointmentStatus.Completed).length;
         const todayPending = todayAppointments.filter(a => 
           a.status === AppointmentStatus.Scheduled || a.status === AppointmentStatus.Confirmed
@@ -72,9 +68,8 @@ export class AppointmentsAnalyticsService {
     const now = new Date();
     const endOfDay = this.endOfDay(now);
 
-    return this.appointmentsService.getByRange(now, endOfDay).pipe(
+    return this.appointmentsService.getByRange(now, endOfDay, undefined, undefined, locationId).pipe(
       map(appointments => {
-        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         return appointments
           .filter(a => a.status === AppointmentStatus.Scheduled || a.status === AppointmentStatus.Confirmed)
           .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
@@ -91,9 +86,8 @@ export class AppointmentsAnalyticsService {
     const now = new Date();
     const endOfWeek = this.endOfWeek(now);
 
-    return this.appointmentsService.getByRange(now, endOfWeek, undefined, AppointmentStatus.Scheduled).pipe(
+    return this.appointmentsService.getByRange(now, endOfWeek, undefined, AppointmentStatus.Scheduled, locationId).pipe(
       map(appointments => {
-        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         return appointments
           .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
           .slice(0, limit)
@@ -109,9 +103,8 @@ export class AppointmentsAnalyticsService {
     const start = startDate || this.startOfMonth(new Date());
     const end = endDate || this.endOfMonth(new Date());
 
-    return this.appointmentsService.getByRange(start, end).pipe(
+    return this.appointmentsService.getByRange(start, end, undefined, undefined, locationId).pipe(
       map(appointments => {
-        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         const statusCounts = new Map<AppointmentStatus, number>();
         
         appointments.forEach(apt => {
@@ -137,9 +130,8 @@ export class AppointmentsAnalyticsService {
     const end = endDate || this.endOfMonth(new Date());
     const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-    return this.appointmentsService.getByRange(start, end).pipe(
+    return this.appointmentsService.getByRange(start, end, undefined, undefined, locationId).pipe(
       map(appointments => {
-        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         const dayCounts = new Array(7).fill(0);
         
         appointments.forEach(apt => {
@@ -163,9 +155,8 @@ export class AppointmentsAnalyticsService {
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    return this.appointmentsService.getByRange(weekAgo, now).pipe(
+    return this.appointmentsService.getByRange(weekAgo, now, undefined, undefined, locationId).pipe(
       map(appointments => {
-        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         const activities: AppointmentActivity[] = [];
 
         appointments.forEach(apt => {
@@ -194,9 +185,8 @@ export class AppointmentsAnalyticsService {
     const now = new Date();
     const sixMonthsAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
 
-    return this.appointmentsService.getByRange(sixMonthsAgo, now).pipe(
+    return this.appointmentsService.getByRange(sixMonthsAgo, now, undefined, undefined, locationId).pipe(
       map(appointments => {
-        if (locationId) appointments = appointments.filter(a => a.locationId === locationId);
         const patientMap = new Map<string, {
           patientId: string;
           patientName: string;

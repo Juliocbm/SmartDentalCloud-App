@@ -63,11 +63,13 @@ export class AppointmentsService {
     return this.api.patch<void>(`/appointments/${id}/notes`, { notes });
   }
 
-  getByDate(date: Date, userId?: string): Observable<AppointmentListItem[]> {
-    return this.api.get<Appointment[]>('/appointments', {
+  getByDate(date: Date, userId?: string, locationId?: string | null): Observable<AppointmentListItem[]> {
+    const params: Record<string, any> = {
       date: this.toLocalDateString(date),
       userId
-    }).pipe(
+    };
+    if (locationId) params['locationId'] = locationId;
+    return this.api.get<Appointment[]>('/appointments', params).pipe(
       map(appointments => appointments.map(apt => this.toListItem(this.mapDates(apt))))
     );
   }
@@ -88,22 +90,26 @@ export class AppointmentsService {
     );
   }
 
-  getByRange(startDate: Date, endDate: Date, userId?: string, status?: string): Observable<AppointmentListItem[]> {
-    return this.api.get<Appointment[]>('/appointments/range', {
+  getByRange(startDate: Date, endDate: Date, userId?: string, status?: string, locationId?: string | null): Observable<AppointmentListItem[]> {
+    const params: Record<string, any> = {
       startDate: this.toLocalDateTimeString(startDate),
       endDate: this.toLocalDateTimeString(endDate),
       userId,
       status
-    }).pipe(
+    };
+    if (locationId) params['locationId'] = locationId;
+    return this.api.get<Appointment[]>('/appointments/range', params).pipe(
       map(appointments => appointments.map(apt => this.toListItem(this.mapDates(apt))))
     );
   }
 
-  getUpcoming(limit: number = 10, userId?: string): Observable<AppointmentListItem[]> {
-    return this.api.get<Appointment[]>('/appointments/upcoming', {
+  getUpcoming(limit: number = 10, userId?: string, locationId?: string | null): Observable<AppointmentListItem[]> {
+    const params: Record<string, any> = {
       limit,
       userId
-    }).pipe(
+    };
+    if (locationId) params['locationId'] = locationId;
+    return this.api.get<Appointment[]>('/appointments/upcoming', params).pipe(
       map(appointments => appointments.map(apt => this.toListItem(this.mapDates(apt))))
     );
   }

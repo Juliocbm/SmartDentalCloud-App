@@ -1,13 +1,11 @@
 :host {
   display: block;
-  width: 100%;
 }
 
 .autocomplete-container {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  width: 100%;
 }
 
 .autocomplete-label {
@@ -21,18 +19,22 @@
   .required {
     color: var(--error-500);
   }
+
+  &:empty {
+    display: none;
+  }
 }
 
 .autocomplete-input-wrapper {
   position: relative;
-  width: 100%;
 }
 
 .autocomplete-input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 8px 14px;
   padding-right: var(--spacing-4xl);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
+  line-height: 1;
   color: var(--text-primary);
   background-color: var(--surface-primary);
   border: 1px solid var(--border-primary);
@@ -72,10 +74,12 @@
 .autocomplete-icon {
   position: absolute;
   right: var(--spacing-md);
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
   color: var(--text-secondary);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-sm);
   pointer-events: none;
 }
 
@@ -87,7 +91,8 @@
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-sm);
+  line-height: 1;
   cursor: pointer;
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);

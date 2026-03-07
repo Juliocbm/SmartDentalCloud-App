@@ -76,7 +76,7 @@
 
   i {
     color: var(--primary-600);
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
   }
 }
 
@@ -112,7 +112,7 @@
   align-items: center;
   gap: var(--spacing-lg);
   padding: var(--spacing-md) var(--spacing-lg);
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
   background: var(--warning-bg);
   border: 1px solid var(--warning-200);
   border-radius: var(--radius-lg);
@@ -552,7 +552,7 @@
   display: grid;
   grid-template-columns: var(--dashboard-metrics-columns);
   gap: var(--metric-card-gap);
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
 }
 
 /// Tarjeta de métrica
@@ -616,7 +616,7 @@
 
   .metric-arrow {
     color: var(--text-tertiary);
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     opacity: 0;
     transition: var(--transition-base);
     flex-shrink: 0;
