@@ -4,9 +4,6 @@ import { FormsModule } from '@angular/forms';
 
 import { CephCanvasComponent } from '../ceph-canvas/ceph-canvas.component';
 import { CephResultsComponent } from '../ceph-results/ceph-results.component';
-import { PatientAutocompleteComponent } from '../../../../../shared/components/patient-autocomplete/patient-autocomplete';
-import { DatePickerComponent } from '../../../../../shared/components/date-picker/date-picker';
-import { PatientSearchResult } from '../../../../patients/models/patient.models';
 
 import { CephalometryAnalysisService } from '../../services/cephalometry-analysis.service';
 import { CephalometryCalibrationService } from '../../services/cephalometry-calibration.service';
@@ -39,7 +36,6 @@ import { getApiErrorMessage } from '../../../../../core/utils/api-error.utils';
   imports: [
     CommonModule, FormsModule,
     CephCanvasComponent, CephResultsComponent,
-    PatientAutocompleteComponent, DatePickerComponent,
   ],
   templateUrl: './ceph-tracer.component.html',
   styleUrls: ['./ceph-tracer.component.scss'],
@@ -348,24 +344,6 @@ export class CephTracerComponent implements OnInit, OnDestroy {
     this.recalculate();
   }
 
-  onPatientSelected(patient: PatientSearchResult | null): void {
-    if (patient) {
-      this.patient.name = patient.name;
-      this.selectedPatientId = patient.id;
-      this.selectedPatientName = patient.name;
-    } else {
-      this.patient.name = '';
-      this.selectedPatientId = null;
-      this.selectedPatientName = null;
-    }
-    this.recalculate();
-  }
-
-
-  onDateChange(date: string | null): void {
-    this.patient.date = date || todayISO();
-    this.recalculate();
-  }
 
   trackByKey(_: number, lm: { key: string }): string {
     return lm.key;

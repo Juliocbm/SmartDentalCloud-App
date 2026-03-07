@@ -538,39 +538,39 @@ textarea.form-control {
 }
 
 .badge-primary {
-  background: var(--primary-50);
-  color: var(--primary-700);
+  background: var(--primary-bg);
+  color: var(--primary-text);
 }
 
 .badge-success {
-  background: var(--success-50);
-  color: var(--success-700);
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 .badge-error {
-  background: var(--error-50);
-  color: var(--error-700);
+  background: var(--error-bg);
+  color: var(--error-text);
 }
 
 .badge-warning {
-  background: var(--warning-50);
-  color: var(--warning-700);
+  background: var(--warning-bg);
+  color: var(--warning-text);
 }
 
 .badge-info {
-  background: var(--info-50);
-  color: var(--info-700);
+  background: var(--info-bg);
+  color: var(--info-text);
 }
 
 .badge-neutral,
 .badge-inactive {
-  background: var(--neutral-100);
-  color: var(--neutral-600);
+  background: var(--neutral-bg);
+  color: var(--neutral-text);
 }
 
 .badge-active {
-  background: var(--success-50);
-  color: var(--success-700);
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 .badge-link {

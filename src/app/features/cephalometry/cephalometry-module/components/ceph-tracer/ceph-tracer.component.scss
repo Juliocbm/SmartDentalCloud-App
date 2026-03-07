@@ -134,24 +134,13 @@
   }
 }
 
-// ===== Patient grid (2 columns: wide + narrow, 2 rows) =====
+// ===== Patient grid (single row: name + age + sex) =====
 .ceph-patient-grid {
   display: grid;
-  grid-template-columns: 1fr 90px;
+  grid-template-columns: 1fr 70px 60px;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-xs);
   align-items: stretch;
-
-  // Hide labels — we have our own "Paciente" header
-  .autocomplete-label,
-  .datepicker-label {
-    display: none;
-  }
-
-  .autocomplete-container,
-  .datepicker-container {
-    gap: 0;
-  }
 }
 
 // Edad & Sexo — exactly match autocomplete-input styles

@@ -62,20 +62,10 @@
         <span class="ceph-row-title">Paciente</span>
       </div>
       <div class="ceph-patient-grid">
-        <app-patient-autocomplete
-          [selectedPatientId]="selectedPatientId"
-          [selectedPatientName]="selectedPatientName"
-          placeholder="Buscar paciente..."
-          (patientSelected)="onPatientSelected($event)"
-        ></app-patient-autocomplete>
+        <input type="text" class="ceph-input-match" [value]="selectedPatientName || ''" readonly
+          placeholder="Paciente" />
         <input type="number" [(ngModel)]="patient.age" (ngModelChange)="onConfigChange()"
           min="0" max="120" class="ceph-input-match" placeholder="Edad" />
-
-        <app-date-picker
-          [placeholder]="'Fecha del estudio'"
-          [value]="patient.date"
-          (valueChange)="onDateChange($event)"
-        ></app-date-picker>
         <select [(ngModel)]="patient.sex" (ngModelChange)="onConfigChange()" class="ceph-input-match">
           <option value="F">F</option>
           <option value="M">M</option>
