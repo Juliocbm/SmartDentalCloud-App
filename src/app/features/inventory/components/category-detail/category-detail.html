@@ -3,7 +3,7 @@
     [title]="category() ? category()!.name : 'Categoría'"
     [icon]="'fa-tag'"
     [showBackButton]="true"
-    [backRoute]="'/inventory/categories'"
+    [defaultBackRoute]="'/inventory/categories'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (category(); as cat) {

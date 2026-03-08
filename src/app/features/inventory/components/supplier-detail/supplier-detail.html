@@ -3,7 +3,7 @@
     [title]="supplier() ? supplier()!.name : 'Proveedor'"
     [icon]="'fa-truck'"
     [showBackButton]="true"
-    [backRoute]="'/inventory/suppliers'"
+    [defaultBackRoute]="'/inventory/suppliers'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (supplier(); as sup) {
