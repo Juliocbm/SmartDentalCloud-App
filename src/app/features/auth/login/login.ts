@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NavigationStateService } from '../../../core/services/navigation-state.service';
 import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle';
 import { getApiErrorMessage } from '../../../core/utils/api-error.utils';
 
@@ -16,6 +17,7 @@ import { getApiErrorMessage } from '../../../core/utils/api-error.utils';
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private navigationState = inject(NavigationStateService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -52,8 +54,10 @@ export class LoginComponent {
 
     this.authService.login(credentials, this.rememberMe()).subscribe({
       next: () => {
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
-        this.router.navigate([returnUrl]);
+        const returnUrl = this.route.snapshot.queryParams['returnUrl']
+          || this.navigationState.getState()?.url
+          || '/dashboard';
+        this.router.navigateByUrl(returnUrl);
       },
       error: (err) => {
         this.loading.set(false);

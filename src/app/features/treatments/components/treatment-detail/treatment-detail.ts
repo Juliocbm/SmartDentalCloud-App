@@ -21,6 +21,7 @@ import { AllergyAlertBannerComponent } from '../../../../shared/components/aller
 import { PatientClinicalSummaryComponent } from '../../../../shared/components/patient-clinical-summary/patient-clinical-summary';
 import { InformedConsentsService, ConsentCheck } from '../../../patients/services/informed-consents.service';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { NavigationStateService } from '../../../../core/services/navigation-state.service';
 
 @Component({
   selector: 'app-treatment-detail',
@@ -41,6 +42,7 @@ export class TreatmentDetailComponent implements OnInit {
   private modalService = inject(ModalService);
   private allergiesService = inject(PatientAllergiesService);
   private consentsService = inject(InformedConsentsService);
+  private navigationState = inject(NavigationStateService);
   permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -83,12 +85,18 @@ export class TreatmentDetailComponent implements OnInit {
 
   setActiveTab(tab: 'general' | 'followups' | 'materials' | 'sessions'): void {
     this.activeTab.set(tab);
+    this.navigationState.saveState(this.router.url, tab);
   }
 
   ngOnInit(): void {
     const treatmentId = this.route.snapshot.paramMap.get('id');
     if (treatmentId) {
       this.loadTreatment(treatmentId);
+    }
+
+    const savedTab = this.navigationState.getSavedTab(this.router.url);
+    if (savedTab) {
+      this.setActiveTab(savedTab as any);
     }
   }
 

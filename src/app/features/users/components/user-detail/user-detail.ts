@@ -9,6 +9,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { NavigationStateService } from '../../../../core/services/navigation-state.service';
 
 @Component({
   selector: 'app-user-detail',
@@ -26,6 +27,7 @@ export class UserDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
   private location = inject(Location);
+  private navigationState = inject(NavigationStateService);
   permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -69,6 +71,11 @@ export class UserDetailComponent implements OnInit {
     } else {
       this.router.navigate(['/users']);
     }
+
+    const savedTab = this.navigationState.getSavedTab(this.router.url);
+    if (savedTab) {
+      this.setActiveTab(savedTab as any);
+    }
   }
 
   private loadUser(id: string): void {
@@ -101,6 +108,7 @@ export class UserDetailComponent implements OnInit {
 
   setActiveTab(tab: 'general' | 'access'): void {
     this.activeTab.set(tab);
+    this.navigationState.saveState(this.router.url, tab);
   }
 
   onPermissionsPageChange(page: number): void {

@@ -6,6 +6,7 @@ import { ToastComponent } from '../toast/toast';
 import { ModalService } from '../../services/modal.service';
 import { LocationsService } from '../../../features/settings/services/locations.service';
 import { SidebarStateService } from '../../../core/services/sidebar-state.service';
+import { NavigationStateService } from '../../../core/services/navigation-state.service';
 
 @Component({
   selector: 'app-layout',
@@ -18,10 +19,12 @@ export class LayoutComponent implements OnInit, AfterViewInit {
   private vcr = inject(ViewContainerRef);
   private modalService = inject(ModalService);
   private locationsService = inject(LocationsService);
+  private navigationState = inject(NavigationStateService);
   sidebarState = inject(SidebarStateService);
 
   ngOnInit(): void {
     this.locationsService.getSummaries().subscribe();
+    this.navigationState.startTracking();
   }
 
   ngAfterViewInit(): void {

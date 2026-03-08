@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { NavigationStateService } from '../../../../core/services/navigation-state.service';
 import { PatientsService } from '../../services/patients.service';
 import { Patient, UpdateTaxInfoRequest, UpdateMedicalHistoryRequest, BloodType, SmokingStatus, ChangeHistoryEntry, PATIENT_ENTITY_TYPE_LABELS, PATIENT_ENTITY_TYPE_ICONS, PATIENT_ENTITY_TYPE_FILTERS } from '../../models/patient.models';
 import { AttachedFile, FILE_CATEGORIES, getFileIcon, formatFileSize } from '../../models/attached-file.models';
@@ -84,6 +85,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   private location = inject(Location);
   private radiologicImagesService = inject(RadiologicImagesService);
   private modalService = inject(ModalService);
+  private navigationState = inject(NavigationStateService);
   permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -247,7 +249,8 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
 
     // Read query params for tab navigation and consent context
     const qp = this.route.snapshot.queryParamMap;
-    const tab = qp.get('tab');
+    const tab = qp.get('tab')
+      || this.navigationState.getSavedTab(this.router.url);
     if (tab && this.visibleTabs().includes(tab)) {
       this.setActiveTab(tab as any);
     }
@@ -290,6 +293,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   setActiveTab(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'): void {
     if (!this.visibleTabs().includes(tab)) return;
     this.activeTab.set(tab);
+    this.navigationState.saveState(this.router.url, tab);
     if (tab === 'allergies' && !this.allergiesLoaded && !this.allergiesLoading()) {
       this.loadAllergies();
     }

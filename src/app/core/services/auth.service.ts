@@ -192,10 +192,18 @@ export class AuthService {
    * Usado internamente y por authInterceptor.
    */
   handleLogout(): void {
+    this.clearNavigationState();
     this.clearSession();
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
     this.router.navigate(['/login']);
+  }
+
+  private clearNavigationState(): void {
+    const keysToRemove = Object.keys(localStorage).filter(k =>
+      k.startsWith('nav_state_') || k.startsWith('nav_tabs_')
+    );
+    keysToRemove.forEach(k => localStorage.removeItem(k));
   }
 
   private startTokenExpiryCheck(): void {

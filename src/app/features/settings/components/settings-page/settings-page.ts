@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { WorkScheduleEditorComponent } from '../work-schedule-editor/work-schedule-editor';
@@ -10,6 +11,7 @@ import { ConsentTemplateListComponent } from '../consent-template-list/consent-t
 import { ImageUploadComponent } from '../../../../shared/components/image-upload/image-upload';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { NavigationStateService } from '../../../../core/services/navigation-state.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import {
   TenantSettings,
@@ -32,6 +34,8 @@ type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | '
 export class SettingsPageComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private notifications = inject(NotificationService);
+  private navigationState = inject(NavigationStateService);
+  private router = inject(Router);
 
   scheduleEditor = viewChild<WorkScheduleEditorComponent>('scheduleEditor');
   dentistScheduleManager = viewChild<DentistScheduleManagerComponent>('dentistScheduleManager');
@@ -92,10 +96,16 @@ export class SettingsPageComponent implements OnInit {
   ngOnInit(): void {
     this.loadSettings();
     this.loadSmtpConfig();
+
+    const savedTab = this.navigationState.getSavedTab(this.router.url);
+    if (savedTab) {
+      this.setTab(savedTab as SettingsTab);
+    }
   }
 
   setTab(tab: SettingsTab): void {
     this.activeTab.set(tab);
+    this.navigationState.saveState(this.router.url, tab);
   }
 
   // === Load ===
