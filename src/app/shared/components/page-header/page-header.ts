@@ -23,6 +23,7 @@ export class PageHeaderComponent {
   @Input() icon?: string;
   @Input() showBackButton: boolean = false;
   @Input() backRoute?: string;
+  @Input() defaultBackRoute?: string;
   @Input() breadcrumbs: BreadcrumbItem[] = [];
 
   constructor(
@@ -33,6 +34,12 @@ export class PageHeaderComponent {
   onBackClick(): void {
     if (this.backRoute) {
       this.router.navigate([this.backRoute]);
+    } else if (this.defaultBackRoute) {
+      if (window.history.length > 1) {
+        this.location.back();
+      } else {
+        this.router.navigate([this.defaultBackRoute]);
+      }
     } else {
       this.location.back();
     }

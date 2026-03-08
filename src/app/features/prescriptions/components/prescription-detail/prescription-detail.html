@@ -4,7 +4,7 @@
     [subtitle]="prescription()?.id?.substring(0, 8)?.toUpperCase() || ''"
     [icon]="'fa-prescription'"
     [showBackButton]="true"
-    [backRoute]="'/prescriptions'"
+    [defaultBackRoute]="'/prescriptions'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (prescription(); as rx) {

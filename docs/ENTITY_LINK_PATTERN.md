@@ -136,6 +136,53 @@ Estándar para convertir nombres de entidades relacionadas en hipervínculos nav
 
 ---
 
+## Navegación de Retorno desde Entity Links
+
+Los entity links navegan a vistas de detalle que pueden ser alcanzadas desde **múltiples orígenes** (tablas, otros detalles, reportes). El botón "atrás" debe respetar el origen real del usuario.
+
+### Regla: Usar `defaultBackRoute` en detalles, NO `backRoute`
+
+```html
+<!-- ✅ CORRECTO — Detail views alcanzables desde múltiples orígenes -->
+<app-page-header
+  [showBackButton]="true"
+  [defaultBackRoute]="'/patients'"    <!-- fallback si no hay history -->
+/>
+<!-- Comportamiento: location.back() → respeta origen real -->
+<!-- Fallback: si no hay history (URL directa/F5) → /patients -->
+
+<!-- ❌ INCORRECTO — Hardcodea el destino, ignora el origen -->
+<app-page-header
+  [showBackButton]="true"
+  [backRoute]="'/patients'"           <!-- SIEMPRE va a /patients -->
+/>
+```
+
+### ¿Cuándo usar cuál?
+
+| Input | Comportamiento | Usar en |
+|-------|---------------|---------|
+| `backRoute` | Navega SIEMPRE a esa ruta | **Formularios** (create/edit), sub-páginas fijas, Context Service |
+| `defaultBackRoute` | `location.back()` primero, ruta como fallback | **Detail views** alcanzables desde entity links |
+| Ninguno | `location.back()` siempre | Componentes con un solo origen posible |
+
+### Componentes que usan `defaultBackRoute`
+
+| Componente | Fallback | Orígenes posibles |
+|-----------|----------|-------------------|
+| `patient-detail` | `/patients` | invoices, appointments, treatments, treatment-plans, payments, prescriptions, reports |
+| `treatment-detail` | `/treatments` | patient-detail, treatment-plans |
+| `user-detail` | `/users` | appointments, treatments |
+| `appointment-detail` | `/appointments` | patients, dashboard |
+| `treatment-plan-detail` | `/treatment-plans` | patient-detail |
+| `invoice-detail` | `/invoices/list` | patient-detail, payments |
+| `prescription-detail` | `/prescriptions` | patient-detail |
+| `service-detail` | `/services` | treatments |
+| `payment-detail` | `/payments` | invoices, patient-detail |
+| `location-detail` | `/settings` | appointments, stock-alerts |
+
+---
+
 ## Clase CSS de Referencia
 
 La clase `.link-primary` está definida globalmente en `_components.scss`:

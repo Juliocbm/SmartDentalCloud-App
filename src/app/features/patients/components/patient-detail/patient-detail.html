@@ -3,7 +3,7 @@
     [title]="patient() ? (patient()!.firstName + ' ' + patient()!.lastName) : 'Paciente'"
     [icon]="'fa-user'"
     [showBackButton]="true"
-    [backRoute]="'/patients'"
+    [defaultBackRoute]="'/patients'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (patient(); as pat) {

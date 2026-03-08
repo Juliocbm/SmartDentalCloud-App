@@ -4,7 +4,7 @@
     [subtitle]="plan()?.planNumber || ''"
     [icon]="'fa-clipboard-list'"
     [showBackButton]="true"
-    [backRoute]="'/treatment-plans'"
+    [defaultBackRoute]="'/treatment-plans'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (plan(); as p) {

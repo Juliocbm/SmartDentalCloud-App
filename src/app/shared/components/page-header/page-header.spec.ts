@@ -39,12 +39,32 @@ describe('PageHeaderComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
 
-  it('should use Location.back() when no backRoute', () => {
+  it('should use Location.back() when no backRoute and no defaultBackRoute', () => {
     const location = TestBed.inject(Location);
     spyOn(location, 'back');
     component.backRoute = undefined;
+    component.defaultBackRoute = undefined;
     component.onBackClick();
     expect(location.back).toHaveBeenCalled();
+  });
+
+  it('should use Location.back() when defaultBackRoute is set and history exists', () => {
+    const location = TestBed.inject(Location);
+    spyOn(location, 'back');
+    spyOnProperty(window.history, 'length', 'get').and.returnValue(3);
+    component.backRoute = undefined;
+    component.defaultBackRoute = '/patients';
+    component.onBackClick();
+    expect(location.back).toHaveBeenCalled();
+  });
+
+  it('should navigate to defaultBackRoute when no history', () => {
+    spyOn(router, 'navigate');
+    spyOnProperty(window.history, 'length', 'get').and.returnValue(1);
+    component.backRoute = undefined;
+    component.defaultBackRoute = '/patients';
+    component.onBackClick();
+    expect(router.navigate).toHaveBeenCalledWith(['/patients']);
   });
 
   it('should navigate to breadcrumb route', () => {

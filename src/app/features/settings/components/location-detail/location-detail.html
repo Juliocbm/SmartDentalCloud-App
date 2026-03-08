@@ -3,7 +3,7 @@
     [title]="location() ? location()!.name : 'Sucursal'"
     [icon]="'fa-location-dot'"
     [showBackButton]="true"
-    [backRoute]="'/settings'"
+    [defaultBackRoute]="'/settings'"
     [breadcrumbs]="breadcrumbItems">
     <div title-extra>
       @if (location(); as loc) {
