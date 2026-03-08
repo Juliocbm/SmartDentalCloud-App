@@ -4,6 +4,8 @@
     [title]="'Planes de Tratamiento'"
     [subtitle]="'Gestión de planes de tratamiento para pacientes'"
     [icon]="'fa-clipboard-list'"
+    [showBackButton]="true"
+    [defaultBackRoute]="'/dashboard'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
       @if (permissionService.hasPermission(PERMISSIONS.TreatmentPlansCreate)) {

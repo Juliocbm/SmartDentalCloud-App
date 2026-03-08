@@ -4,6 +4,8 @@
     [title]="'Tratamientos'"
     [subtitle]="'Historial de tratamientos ejecutados'"
     [icon]="'fa-tooth'"
+    [showBackButton]="true"
+    [defaultBackRoute]="'/dashboard'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
       <button class="btn btn-outline" (click)="exportToCsv()">

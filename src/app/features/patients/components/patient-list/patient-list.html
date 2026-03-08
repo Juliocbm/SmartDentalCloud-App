@@ -4,6 +4,8 @@
     [title]="'Pacientes'"
     [subtitle]="'Gestión de pacientes del consultorio'"
     [icon]="'fa-users'"
+    [showBackButton]="true"
+    [defaultBackRoute]="'/dashboard'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
       @if (permissionService.hasPermission(PERMISSIONS.PatientsExport)) {
