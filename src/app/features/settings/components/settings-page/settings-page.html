@@ -384,54 +384,25 @@
                 </h3>
                 <p class="section-header__description">Personaliza la imagen de tu consultorio</p>
               </div>
-              <button class="btn btn-outline btn-sm" [disabled]="saving()" (click)="saveBranding()">
-                @if (saving()) {
-                  <span class="btn-spinner"></span>
-                  Guardando...
-                } @else {
-                  <i class="fa-solid fa-floppy-disk"></i>
-                  Guardar Branding
-                }
-              </button>
             </div>
             <hr>
 
-            <div class="branding-card">
-              <div class="branding-preview-area">
-                <span class="branding-preview-label">Vista previa</span>
-                @if (brandingLogoUrl()) {
-                  <div class="logo-preview">
-                    <img [src]="brandingLogoUrl()" alt="Logo del consultorio" />
-                  </div>
-                } @else {
-                  <div class="logo-placeholder">
-                    <i class="fa-solid fa-image"></i>
-                    <span>Sin logo</span>
-                  </div>
-                }
-              </div>
+            <app-image-upload
+              [currentImageUrl]="brandingLogoUrl()"
+              uploadUrl="/tenants/branding/logo"
+              downloadUrl="/tenants/branding/logo/file"
+              deleteUrl="/tenants/branding/logo"
+              accept="image/png,image/jpeg,image/webp,image/svg+xml"
+              [maxSizeMb]="5"
+              placeholder="Seleccionar logo"
+              previewShape="rectangle"
+              (imageUploaded)="onLogoUploaded($event)"
+              (imageRemoved)="onLogoRemoved()">
+            </app-image-upload>
 
-              <div class="branding-form-area">
-                <div class="form-group">
-                  <label class="form-label">URL del Logo</label>
-                  <input
-                    type="url"
-                    class="form-input"
-                    placeholder="https://ejemplo.com/mi-logo.png"
-                    [ngModel]="brandingLogoUrl()"
-                    (ngModelChange)="brandingLogoUrl.set($event)"
-                  />
-                  <span class="field-hint">
-                    <i class="fa-solid fa-circle-info"></i>
-                    PNG o SVG recomendado, tamaño máximo 200×60px
-                  </span>
-                </div>
-
-                <div class="branding-tips">
-                  <p><i class="fa-solid fa-check"></i> El logo aparecerá en facturas, recetas y correos</p>
-                  <p><i class="fa-solid fa-check"></i> Usa un fondo transparente para mejores resultados</p>
-                </div>
-              </div>
+            <div class="branding-tips">
+              <p><i class="fa-solid fa-check"></i> El logo aparecerá en facturas, recetas y correos</p>
+              <p><i class="fa-solid fa-check"></i> Usa un fondo transparente para mejores resultados</p>
             </div>
           </div>
         }

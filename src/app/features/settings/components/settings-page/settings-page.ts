@@ -7,6 +7,7 @@ import { DentistScheduleManagerComponent } from '../dentist-schedule-manager/den
 import { ScheduleExceptionsManagerComponent } from '../schedule-exceptions-manager/schedule-exceptions-manager';
 import { LocationListComponent } from '../location-list/location-list';
 import { ConsentTemplateListComponent } from '../consent-template-list/consent-template-list';
+import { ImageUploadComponent } from '../../../../shared/components/image-upload/image-upload';
 import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -24,7 +25,7 @@ type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | '
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent, ConsentTemplateListComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent, ConsentTemplateListComponent, ImageUploadComponent],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss'
 })
@@ -265,21 +266,16 @@ export class SettingsPageComponent implements OnInit {
     });
   }
 
-  // === Save Branding ===
+  // === Branding (Image Upload) ===
 
-  saveBranding(): void {
-    if (this.saving()) return;
-    this.saving.set(true);
-    this.settingsService.updateBranding({ logoUrl: this.brandingLogoUrl().trim() || undefined }).subscribe({
-      next: () => {
-        this.notifications.success('Branding actualizado');
-        this.saving.set(false);
-      },
-      error: (err) => {
-        this.notifications.error(getApiErrorMessage(err));
-        this.saving.set(false);
-      }
-    });
+  onLogoUploaded(imageUrl: string): void {
+    this.brandingLogoUrl.set(imageUrl);
+    this.notifications.success('Logo actualizado exitosamente');
+  }
+
+  onLogoRemoved(): void {
+    this.brandingLogoUrl.set('');
+    this.notifications.success('Logo eliminado');
   }
 
   // === Save Domain ===

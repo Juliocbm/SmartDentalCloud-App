@@ -42,21 +42,18 @@
     <div class="detail-body">
       <div class="info-section">
         <h3><i class="fa-solid fa-camera"></i> Foto de Perfil</h3>
-        <div class="profile-picture-edit">
-          <div class="profile-avatar profile-avatar--preview">
-            @if (profilePictureUrl()) {
-              <img [src]="profilePictureUrl()" alt="Vista previa" />
-            } @else {
-              <i class="fa-solid fa-user"></i>
-            }
-          </div>
-          <div class="form-group flex-1">
-            <label class="form-label">URL de la imagen</label>
-            <input type="url" class="form-input" placeholder="https://ejemplo.com/foto.jpg"
-              [ngModel]="profilePictureUrl()" (ngModelChange)="profilePictureUrl.set($event)" />
-            <span class="form-hint">Ingresa la URL de una imagen para tu foto de perfil</span>
-          </div>
-        </div>
+        <app-image-upload
+          [currentImageUrl]="profilePictureUrl()"
+          uploadUrl="/users/me/profile-picture"
+          downloadUrl="/users/me/profile-picture/file"
+          deleteUrl="/users/me/profile-picture"
+          accept="image/png,image/jpeg,image/webp"
+          [maxSizeMb]="5"
+          placeholder="Seleccionar foto"
+          previewShape="circle"
+          (imageUploaded)="onProfilePictureUploaded($event)"
+          (imageRemoved)="onProfilePictureRemoved()">
+        </app-image-upload>
       </div>
 
       <div class="info-section">
@@ -135,12 +132,12 @@
   } @else {
     <!-- View Mode -->
     <div class="detail-body">
-      @if (profile()?.profilePictureUrl) {
+      @if (profileCache.profilePictureUrl()) {
         <div class="info-section profile-picture-section">
           <h3><i class="fa-solid fa-camera"></i> Foto de Perfil</h3>
           <div class="profile-picture-view">
             <div class="profile-avatar profile-avatar--large">
-              <img [src]="profile()!.profilePictureUrl" alt="Foto de perfil" />
+              <img [src]="profileCache.profilePictureUrl()!" alt="Foto de perfil" />
             </div>
             <div class="profile-picture-name">
               <span class="profile-picture-label">{{ currentUser?.name }}</span>

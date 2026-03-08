@@ -2,12 +2,6 @@ import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 
-export interface CachedProfile {
-  profilePictureUrl?: string;
-  name?: string;
-  roles?: string[];
-}
-
 @Injectable({ providedIn: 'root' })
 export class UserProfileCacheService {
   private api = inject(ApiService);
@@ -15,6 +9,8 @@ export class UserProfileCacheService {
 
   profilePictureUrl = signal<string | null>(null);
   private loaded = false;
+  private currentBlobUrl: string | null = null;
+  private cacheBuster = 0;
 
   loadProfilePicture(): void {
     if (this.loaded) return;
@@ -22,16 +18,34 @@ export class UserProfileCacheService {
     if (!user) return;
 
     this.loaded = true;
-    this.api.get<{ profilePictureUrl?: string }>(`/users/${user.id}/profile`).subscribe({
-      next: (profile) => {
-        this.profilePictureUrl.set(profile?.profilePictureUrl || null);
+
+    // Descarga directa del blob — un solo request; 404 = sin foto
+    // Siempre cache-bust para evitar respuestas stale del navegador
+    const bust = this.cacheBuster || Date.now();
+    this.api.getBlob(`/users/me/profile-picture/file?_t=${bust}`).subscribe({
+      next: (blob) => {
+        this.revokeBlobUrl();
+        this.currentBlobUrl = URL.createObjectURL(blob);
+        this.profilePictureUrl.set(this.currentBlobUrl);
       },
-      error: () => {}
+      error: () => {
+        this.profilePictureUrl.set(null);
+      }
     });
+  }
+
+  private revokeBlobUrl(): void {
+    if (this.currentBlobUrl) {
+      URL.revokeObjectURL(this.currentBlobUrl);
+      this.currentBlobUrl = null;
+    }
   }
 
   refresh(): void {
     this.loaded = false;
+    this.cacheBuster = Date.now();
+    this.revokeBlobUrl();
+    this.profilePictureUrl.set(null);
     this.loadProfilePicture();
   }
 }

@@ -1,0 +1,80 @@
+<div class="image-upload" [class.circle]="previewShape === 'circle'">
+  <!-- Preview Area -->
+  <div class="image-upload__preview" [class.image-upload__preview--circle]="previewShape === 'circle'">
+    @if (loadingImage()) {
+      <div class="image-upload__placeholder">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Cargando...</span>
+      </div>
+    } @else if (displayUrl) {
+      <img [src]="displayUrl" alt="Vista previa" />
+    } @else {
+      <div class="image-upload__placeholder">
+        <i class="fa-solid fa-image"></i>
+        <span>Sin imagen</span>
+      </div>
+    }
+  </div>
+
+  <!-- Controls Area -->
+  <div class="image-upload__controls">
+    @if (selectedFile(); as file) {
+      <!-- File selected, pending upload -->
+      <div class="image-upload__file-info">
+        <i class="fa-solid fa-image"></i>
+        <span class="image-upload__file-name">{{ file.name }}</span>
+        <span class="image-upload__file-size">({{ formatFileSize(file.size) }})</span>
+      </div>
+      <div class="image-upload__actions">
+        <button type="button" class="btn btn-outline btn-sm" (click)="upload()" [disabled]="uploading()">
+          @if (uploading()) {
+            <span class="btn-spinner"></span>
+            Subiendo...
+          } @else {
+            <i class="fa-solid fa-upload"></i>
+            Subir
+          }
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" (click)="cancelSelection()" [disabled]="uploading()">
+          <i class="fa-solid fa-times"></i>
+          Cancelar
+        </button>
+      </div>
+    } @else {
+      <!-- No file selected -->
+      <div class="image-upload__actions">
+        <label class="btn btn-outline btn-sm image-upload__select-btn">
+          <i class="fa-solid fa-folder-open"></i>
+          {{ placeholder }}
+          <input
+            type="file"
+            [accept]="accept"
+            (change)="onFileSelected($event)"
+            class="image-upload__input"
+          />
+        </label>
+        @if (hasImage && deleteUrl) {
+          <button type="button" class="btn btn-outline btn-sm btn-danger" (click)="remove()" [disabled]="deleting()">
+            @if (deleting()) {
+              <span class="btn-spinner"></span>
+            } @else {
+              <i class="fa-solid fa-trash"></i>
+            }
+            Eliminar
+          </button>
+        }
+      </div>
+      <span class="image-upload__hint">
+        <i class="fa-solid fa-circle-info"></i>
+        PNG, JPG o WEBP. Máximo {{ maxSizeMb }}MB
+      </span>
+    }
+
+    @if (error()) {
+      <span class="image-upload__error">
+        <i class="fa-solid fa-exclamation-circle"></i>
+        {{ error() }}
+      </span>
+    }
+  </div>
+</div>

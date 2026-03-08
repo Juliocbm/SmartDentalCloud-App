@@ -10,11 +10,12 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { UserProfileCacheService } from '../../../../core/services/user-profile-cache.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { ImageUploadComponent } from '../../../../shared/components/image-upload/image-upload';
 
 @Component({
   selector: 'app-my-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, ImageUploadComponent],
   templateUrl: './my-profile.html',
   styleUrl: './my-profile.scss'
 })
@@ -23,7 +24,7 @@ export class MyProfileComponent implements OnInit {
   private usersService = inject(UsersService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
-  private profileCache = inject(UserProfileCacheService);
+  profileCache = inject(UserProfileCacheService);
 
   breadcrumbs: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-house' },
@@ -110,7 +111,6 @@ export class MyProfileComponent implements OnInit {
       education: this.education().trim() || undefined,
       emergencyContactName: this.emergencyContactName().trim() || undefined,
       emergencyContactPhone: this.emergencyContactPhone().trim() || undefined,
-      profilePictureUrl: this.profilePictureUrl().trim() || undefined,
       bio: this.bio().trim() || undefined
     };
 
@@ -127,5 +127,17 @@ export class MyProfileComponent implements OnInit {
         this.notifications.error(getApiErrorMessage(err));
       }
     });
+  }
+
+  onProfilePictureUploaded(imageUrl: string): void {
+    this.profilePictureUrl.set(imageUrl);
+    this.profileCache.refresh();
+    this.notifications.success('Foto de perfil actualizada');
+  }
+
+  onProfilePictureRemoved(): void {
+    this.profilePictureUrl.set('');
+    this.profileCache.refresh();
+    this.notifications.success('Foto de perfil eliminada');
   }
 }
