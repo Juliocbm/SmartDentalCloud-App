@@ -236,35 +236,38 @@
   --dashboard-container-padding: 1.5rem;
   --dashboard-container-max-width: 1400px;
   
-  // Metrics Cards
-  --metric-card-gap: 1rem;
-  --metric-card-padding: 1rem;
-  --metric-card-border: 1px solid var(--border-primary);
-  --metric-card-radius: var(--radius-lg);
-  --metric-card-background: var(--surface-primary);
-  --metric-card-hover-shadow: var(--shadow-lg);
-  --metric-card-hover-transform: translateY(-2px);
-  
-  --metric-icon-size: 42px;
-  --metric-icon-radius: var(--radius-md);
-  --metric-icon-font-size: 1.125rem;
-  
-  --metric-value-font-size: 1.5rem;
-  --metric-value-font-weight: 700;
-  --metric-label-font-size: 0.8125rem;
-  --metric-label-color: var(--text-secondary);
-  
-  // Metric Card Variants (backgrounds para iconos)
-  --metric-primary-bg: var(--primary-50);
-  --metric-primary-color: var(--primary-600);
-  --metric-success-bg: var(--success-50);
-  --metric-success-color: var(--success-600);
-  --metric-error-bg: var(--error-50);
-  --metric-error-color: var(--error-600);
-  --metric-warning-bg: var(--warning-50);
-  --metric-warning-color: var(--warning-600);
-  --metric-info-bg: var(--info-50);
-  --metric-info-color: var(--info-600);
+  // KPI Cards (unified indicator component)
+  --kpi-grid-gap: var(--spacing-lg);
+  --kpi-grid-min-col: 200px;
+  --kpi-card-padding: 0.875rem 1rem;
+  --kpi-card-radius: var(--radius-lg);
+  --kpi-card-bg: var(--surface-primary);
+  --kpi-card-border: 1px solid var(--border-primary);
+  --kpi-card-shadow: var(--shadow-sm);
+  --kpi-card-hover-shadow: var(--shadow-lg);
+  --kpi-card-hover-transform: translateY(-2px);
+  --kpi-icon-size: 32px;
+  --kpi-icon-radius: var(--radius-md);
+  --kpi-icon-font-size: 0.875rem;
+  --kpi-label-size: var(--font-size-xs);
+  --kpi-label-color: var(--text-tertiary);
+  --kpi-value-size: 1.375rem;
+  --kpi-value-weight: 800;
+  --kpi-trend-size: var(--font-size-xs);
+  --kpi-sparkline-height: 32px;
+  --kpi-sparkline-opacity: 0.15;
+
+  // KPI Card Color Variants (icon backgrounds)
+  --kpi-primary-bg: var(--primary-50);
+  --kpi-primary-color: var(--primary-600);
+  --kpi-success-bg: var(--success-50);
+  --kpi-success-color: var(--success-600);
+  --kpi-error-bg: var(--error-50);
+  --kpi-error-color: var(--error-600);
+  --kpi-warning-bg: var(--warning-50);
+  --kpi-warning-color: var(--warning-600);
+  --kpi-info-bg: var(--info-50);
+  --kpi-info-color: var(--info-600);
   
   // Section Cards
   --section-card-background: var(--surface-primary);
@@ -315,7 +318,7 @@
 
   // ===== Section Components =====
   --section-header-gap: var(--spacing-md);
-  --section-badge-size: 24px;
+  --section-badge-size: 16px;
   --section-badge-padding: 0 var(--spacing-xs);
 
   // ===== Timeline Components =====
@@ -341,8 +344,8 @@
   --urgency-border-width: 4px;
 
   // ===== Analytics Grid =====
-  --analytics-grid-columns: repeat(2, 1fr);
-  --analytics-grid-columns-3: repeat(3, 1fr);
+  --analytics-grid-columns: repeat(2, minmax(0, 1fr));
+  --analytics-grid-columns-3: repeat(3, minmax(0, 1fr));
   --analytics-grid-gap: var(--spacing-lg);
 
   // ===== Category Chart (Progress Bars) =====

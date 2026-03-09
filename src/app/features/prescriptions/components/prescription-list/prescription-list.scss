@@ -11,54 +11,7 @@
 // Botones: usa clases globales .btn, .btn-icon de _components.scss
 // ============================================
 
-// ===== KPI Cards =====
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
-}
-
-.kpi-card {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  background: var(--surface-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
-
-  .kpi-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-xl);
-
-    &.primary { background: var(--primary-50); color: var(--primary-600); }
-    &.success { background: var(--success-50); color: var(--success-600); }
-    &.info { background: var(--info-50); color: var(--info-600); }
-  }
-
-  .kpi-content {
-    display: flex;
-    flex-direction: column;
-
-    .kpi-value {
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-bold);
-      color: var(--text-primary);
-    }
-
-    .kpi-label {
-      font-size: var(--font-size-xs);
-      color: var(--text-tertiary);
-    }
-  }
-}
+// KPI Cards: usa .kpi-grid/.kpi-card de _components.scss
 
 // ===== Table Cell Content =====
 
@@ -114,10 +67,6 @@
 // ===== Responsive =====
 
 @media (max-width: 768px) {
-  .kpi-grid {
-    grid-template-columns: 1fr;
-  }
-
   .filters-section {
     flex-direction: column;
 

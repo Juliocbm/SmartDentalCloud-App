@@ -10,8 +10,11 @@ import { TreatmentSession, CreateSessionRequest } from '../models/treatment-sess
 export class TreatmentsService {
   private api = inject(ApiService);
 
-  getAll(): Observable<Treatment[]> {
-    return this.api.get<Treatment[]>('/treatments');
+  getAll(startDate?: string, endDate?: string): Observable<Treatment[]> {
+    const params: Record<string, string> = {};
+    if (startDate) params['startDate'] = startDate;
+    if (endDate) params['endDate'] = endDate;
+    return this.api.get<Treatment[]>('/treatments', params);
   }
 
   getById(id: string): Observable<Treatment> {

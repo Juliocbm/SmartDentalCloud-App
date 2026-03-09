@@ -10,41 +10,33 @@
 
   <!-- KPI Cards -->
   <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-icon primary">
-        <i class="fa-solid fa-file-invoice"></i>
+    <div class="kpi-card kpi-card--primary">
+      <div class="kpi-card__header">
+        <span class="kpi-card__label">Facturas Pendientes</span>
+        <div class="kpi-card__icon"><i class="fa-solid fa-file-invoice"></i></div>
       </div>
-      <div class="kpi-content">
-        <span class="kpi-value">{{ summary().totalInvoices }}</span>
-        <span class="kpi-label">Facturas Pendientes</span>
-      </div>
+      <div class="kpi-card__value">{{ summary().totalInvoices }}</div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-icon warning">
-        <i class="fa-solid fa-coins"></i>
+    <div class="kpi-card kpi-card--warning">
+      <div class="kpi-card__header">
+        <span class="kpi-card__label">Total por Cobrar</span>
+        <div class="kpi-card__icon"><i class="fa-solid fa-coins"></i></div>
       </div>
-      <div class="kpi-content">
-        <span class="kpi-value">{{ formatCurrency(summary().totalBalance) }}</span>
-        <span class="kpi-label">Total por Cobrar</span>
-      </div>
+      <div class="kpi-card__value">{{ formatCurrency(summary().totalBalance) }}</div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-icon error">
-        <i class="fa-solid fa-exclamation-triangle"></i>
+    <div class="kpi-card kpi-card--error">
+      <div class="kpi-card__header">
+        <span class="kpi-card__label">Vencidas</span>
+        <div class="kpi-card__icon"><i class="fa-solid fa-exclamation-triangle"></i></div>
       </div>
-      <div class="kpi-content">
-        <span class="kpi-value">{{ summary().overdueInvoices }}</span>
-        <span class="kpi-label">Vencidas</span>
-      </div>
+      <div class="kpi-card__value">{{ summary().overdueInvoices }}</div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-icon error">
-        <i class="fa-solid fa-clock"></i>
+    <div class="kpi-card kpi-card--error">
+      <div class="kpi-card__header">
+        <span class="kpi-card__label">Monto Vencido</span>
+        <div class="kpi-card__icon"><i class="fa-solid fa-clock"></i></div>
       </div>
-      <div class="kpi-content">
-        <span class="kpi-value">{{ formatCurrency(summary().totalOverdue) }}</span>
-        <span class="kpi-label">Monto Vencido</span>
-      </div>
+      <div class="kpi-card__value">{{ formatCurrency(summary().totalOverdue) }}</div>
     </div>
   </div>
 

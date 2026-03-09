@@ -107,6 +107,11 @@
   }
 }
 
+// When presets are injected, contain arrows within the month header
+.has-presets .flatpickr-months {
+  position: relative;
+}
+
 // ===== Días de la semana =====
 .flatpickr-weekdays {
   padding: var(--spacing-xs) 0;
@@ -383,6 +388,49 @@ span.flatpickr-weekday {
 
     &:hover::after {
       border-color: var(--primary-500);
+    }
+  }
+}
+
+// ===== Presets (inyectados en el popup del calendario) =====
+.flatpickr-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-sm);
+  border-bottom: 1px solid var(--border-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.flatpickr-preset-btn {
+  padding: 3px 9px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-base);
+  color: var(--text-secondary);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+  line-height: 1.4;
+
+  &:hover {
+    color: var(--primary-600);
+    border-color: var(--primary-300);
+    background: var(--primary-50);
+  }
+
+  &--active {
+    color: #ffffff;
+    background: var(--primary-500);
+    border-color: var(--primary-500);
+
+    &:hover {
+      color: #ffffff;
+      background: var(--primary-600);
+      border-color: var(--primary-600);
     }
   }
 }

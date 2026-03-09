@@ -17,32 +17,26 @@
   <!-- KPI Cards -->
   @if (!loading() && !error()) {
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon primary">
-          <i class="fa-solid fa-prescription"></i>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Recetas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-prescription"></i></div>
         </div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ totalCount() }}</span>
-          <span class="kpi-label">Total Recetas</span>
-        </div>
+        <div class="kpi-card__value">{{ totalCount() }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon success">
-          <i class="fa-solid fa-check-circle"></i>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Activas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-check-circle"></i></div>
         </div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ activeCount() }}</span>
-          <span class="kpi-label">Activas</span>
-        </div>
+        <div class="kpi-card__value">{{ activeCount() }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon info">
-          <i class="fa-solid fa-prescription-bottle-medical"></i>
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Dispensadas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
         </div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ completedCount() }}</span>
-          <span class="kpi-label">Dispensadas</span>
-        </div>
+        <div class="kpi-card__value">{{ completedCount() }}</div>
       </div>
     </div>
   }

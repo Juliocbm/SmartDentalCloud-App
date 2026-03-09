@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PieChartComponent, BarChartComponent, ChartDataItem } from '../../../../shared/components/charts';
+import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
 import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentsAnalyticsService } from '../../services/appointments-analytics.service';
 import { LoggingService } from '../../../../core/services/logging.service';
@@ -22,17 +23,10 @@ import {
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
-interface QuickAction {
-  label: string;
-  description: string;
-  icon: string;
-  route: string;
-}
-
 @Component({
   selector: 'app-appointments-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, DateRangePickerComponent],
   templateUrl: './appointments-dashboard.html',
   styleUrls: ['./appointments-dashboard.scss']
 })
@@ -43,6 +37,7 @@ export class AppointmentsDashboardComponent implements OnInit {
   locationsService = inject(LocationsService);
 
   selectedLocationId = signal<string | null>(null);
+  dateRange = signal<DateRange>(this.getDefaultDateRange());
 
   // Estados de carga
   loading = signal(true);
@@ -80,34 +75,6 @@ export class AppointmentsDashboardComponent implements OnInit {
     { label: 'Citas' }
   ];
 
-  // Accesos rápidos
-  quickActions: QuickAction[] = [
-    {
-      label: 'Nueva Cita',
-      description: 'Programar una cita',
-      icon: 'fa-calendar-plus',
-      route: ROUTES.APPOINTMENTS_NEW
-    },
-    {
-      label: 'Calendario',
-      description: 'Ver calendario completo',
-      icon: 'fa-calendar-days',
-      route: ROUTES.APPOINTMENTS_CALENDAR
-    },
-    {
-      label: 'Citas',
-      description: 'Ver todas las citas',
-      icon: 'fa-list',
-      route: ROUTES.APPOINTMENTS
-    },
-    {
-      label: 'Pacientes',
-      description: 'Gestionar pacientes',
-      icon: 'fa-users',
-      route: ROUTES.PATIENTS
-    }
-  ];
-
   // Computed: Datos para gráfico de estados
   statusChartData = computed<ChartDataItem[]>(() =>
     this.statusDistribution()
@@ -140,6 +107,17 @@ export class AppointmentsDashboardComponent implements OnInit {
     this.loadDashboardData();
   }
 
+  onDateRangeChange(range: DateRange | null): void {
+    if (!range) return;
+    this.dateRange.set(range);
+    this.loadAnalyticsData();
+  }
+
+  private getDateRangeAsDates(): { start: Date; end: Date } {
+    const { start, end } = this.dateRange();
+    return { start: new Date(start + 'T00:00:00'), end: new Date(end + 'T23:59:59') };
+  }
+
   private loadDashboardData(): void {
     this.loading.set(true);
     
@@ -158,10 +136,17 @@ export class AppointmentsDashboardComponent implements OnInit {
       }
     });
 
-    // Cargar datos adicionales en paralelo
+    // Cargar datos operacionales (no afectados por date range)
     this.loadUpcomingAppointments(locId);
     this.loadPendingConfirmations(locId);
     this.loadRecentActivity(locId);
+
+    // Cargar datos analíticos (afectados por date range)
+    this.loadAnalyticsData();
+  }
+
+  private loadAnalyticsData(): void {
+    const locId = this.selectedLocationId();
     this.loadStatusDistribution(locId);
     this.loadWeekdayDistribution(locId);
     this.loadFrequentPatients(locId);
@@ -211,7 +196,8 @@ export class AppointmentsDashboardComponent implements OnInit {
 
   private loadStatusDistribution(locId: string | null): void {
     this.loadingStatusChart.set(true);
-    this.analyticsService.getStatusDistribution(undefined, undefined, locId).subscribe({
+    const { start, end } = this.getDateRangeAsDates();
+    this.analyticsService.getStatusDistribution(start, end, locId).subscribe({
       next: (distribution) => {
         this.statusDistribution.set(distribution);
         this.loadingStatusChart.set(false);
@@ -225,7 +211,8 @@ export class AppointmentsDashboardComponent implements OnInit {
 
   private loadWeekdayDistribution(locId: string | null): void {
     this.loadingWeekdayChart.set(true);
-    this.analyticsService.getWeekdayDistribution(undefined, undefined, locId).subscribe({
+    const { start, end } = this.getDateRangeAsDates();
+    this.analyticsService.getWeekdayDistribution(start, end, locId).subscribe({
       next: (distribution) => {
         this.weekdayDistribution.set(distribution);
         this.loadingWeekdayChart.set(false);
@@ -239,7 +226,8 @@ export class AppointmentsDashboardComponent implements OnInit {
 
   private loadFrequentPatients(locId: string | null): void {
     this.loadingPatients.set(true);
-    this.analyticsService.getFrequentPatients(5, locId).subscribe({
+    const { start, end } = this.getDateRangeAsDates();
+    this.analyticsService.getFrequentPatients(5, locId, start, end).subscribe({
       next: (patients) => {
         this.frequentPatients.set(patients);
         this.loadingPatients.set(false);
@@ -287,8 +275,30 @@ export class AppointmentsDashboardComponent implements OnInit {
   }
 
   getUrgencyClass(hoursUntil: number): string {
-    if (hoursUntil <= 2) return 'urgency-critical';
-    if (hoursUntil <= 24) return 'urgency-warning';
-    return 'urgency-info';
+    if (hoursUntil <= 2) return 'dash-item--urgency-critical';
+    if (hoursUntil <= 24) return 'dash-item--urgency-warning';
+    return 'dash-item--urgency-info';
+  }
+
+  getUrgencyLeadingClass(hoursUntil: number): string {
+    if (hoursUntil <= 2) return 'dash-item__leading--error';
+    if (hoursUntil <= 24) return 'dash-item__leading--warning';
+    return 'dash-item__leading--info';
+  }
+
+  getUrgencyBadgeClass(hoursUntil: number): string {
+    if (hoursUntil <= 2) return 'hours-badge--critical';
+    if (hoursUntil <= 24) return 'hours-badge--warning';
+    return 'hours-badge--info';
+  }
+
+  private getDefaultDateRange(): DateRange {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return {
+      start: `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}`,
+      end: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+    };
   }
 }

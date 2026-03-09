@@ -10,6 +10,19 @@
         placeholder="Filtrar por sucursal..."
         (locationSelected)="onLocationSelected($event)">
       </app-location-autocomplete>
+      <app-date-range-picker
+        [showPresets]="true"
+        [defaultPreset]="'this_month'"
+        (rangeChange)="onDateRangeChange($event)"
+      />
+      <a routerLink="/appointments/new" class="btn btn-outline btn-success">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Cita
+      </a>
+      <a routerLink="/appointments" class="btn btn-outline">
+        <i class="fa-solid fa-list"></i>
+        Ver Todas
+      </a>
     </div>
   </app-page-header>
 
@@ -37,150 +50,99 @@
       <span>{{ error() }}</span>
     </div>
   } @else {
-    <!-- Grid: Indicadores + Accesos Rápidos -->
-    <div class="bottom-grid">
-      <!-- Indicadores Clave -->
-      <div class="section-card grid-narrow">
-        <h2 class="section-title">
-          <i class="fa-solid fa-gauge-high"></i>
-          Indicadores de Hoy
-        </h2>
-        <div class="indicators-list">
-          <!-- Citas Hoy -->
-          <a [routerLink]="['/appointments']" class="quick-action-card">
-            <div class="action-icon primary">
-              <i class="fa-solid fa-calendar-day"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Citas Hoy</h3>
-              <p class="action-value">{{ metrics()?.todayTotal || 0 }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
-          <!-- Completadas Hoy -->
-          <a [routerLink]="['/appointments']" [queryParams]="{status: 'Completed'}" class="quick-action-card">
-            <div class="action-icon success">
-              <i class="fa-solid fa-check-circle"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Completadas</h3>
-              <p class="action-value">{{ metrics()?.todayCompleted || 0 }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
-          <!-- Pendientes Hoy -->
-          <a [routerLink]="['/appointments']" [queryParams]="{status: 'Scheduled'}" class="quick-action-card">
-            <div class="action-icon warning">
-              <i class="fa-solid fa-clock"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Pendientes</h3>
-              <p class="action-value">{{ metrics()?.todayPending || 0 }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
-          <!-- Esta Semana -->
-          <a [routerLink]="['/appointments/calendar']" class="quick-action-card">
-            <div class="action-icon info">
-              <i class="fa-solid fa-calendar-week"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Esta Semana</h3>
-              <p class="action-value">{{ metrics()?.weekTotal || 0 }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
+    <!-- KPI Indicators -->
+    <div class="kpi-grid">
+      <a class="kpi-card kpi-card--primary" [routerLink]="['/appointments']">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Citas Hoy</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-calendar-day"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ metrics()?.todayTotal || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16"/>
+          </svg>
+        </div>
+      </a>
+      <a class="kpi-card kpi-card--success" [routerLink]="['/appointments']" [queryParams]="{status: 'Completed'}">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Completadas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-check-circle"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ metrics()?.todayCompleted || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+          </svg>
+        </div>
+      </a>
+      <a class="kpi-card kpi-card--warning" [routerLink]="['/appointments']" [queryParams]="{status: 'Scheduled'}">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Pendientes</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-clock"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ metrics()?.todayPending || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--down">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34"/>
+          </svg>
+        </div>
+      </a>
+      <a class="kpi-card kpi-card--info" [routerLink]="['/appointments/calendar']">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Esta Semana</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-calendar-week"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ metrics()?.weekTotal || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22"/>
+          </svg>
+        </div>
+      </a>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Tasa Completadas (Mes)</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-chart-line"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ (metrics()?.completionRateMonth || 0) | number:'1.0-0' }}%</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,34 Q30,30 60,28 T120,22 T180,16 T200,10 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,34 Q30,30 60,28 T120,22 T180,16 T200,10"/>
+          </svg>
         </div>
       </div>
-
-      <!-- Accesos Rápidos -->
-      <div class="section-card grid-wide">
-        <h2 class="section-title">
-          <i class="fa-solid fa-bolt"></i>
-          Accesos Rápidos
-        </h2>
-        <div class="quick-actions-grid cols-4">
-          @for (action of quickActions; track action.route) {
-            <a [routerLink]="action.route" class="quick-action-card">
-              <div class="action-icon">
-                <i class="fa-solid {{ action.icon }}"></i>
-              </div>
-              <div class="action-content">
-                <h3 class="action-title">{{ action.label }}</h3>
-                <p class="action-description">{{ action.description }}</p>
-              </div>
-              <i class="fa-solid fa-chevron-right action-arrow"></i>
-            </a>
-          }
+      <div class="kpi-card kpi-card--error">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">No Shows (Mes)</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-user-slash"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ metrics()?.noShowsThisMonth || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--down">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,16 Q30,20 60,18 T120,26 T180,32 T200,36 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,16 Q30,20 60,18 T120,26 T180,32 T200,36"/>
+          </svg>
         </div>
       </div>
     </div>
 
-    <!-- Grid de Gráficos (2 columnas) -->
-    <div class="analytics-grid">
-      <!-- Distribución por Estado - Pie Chart -->
-      <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-chart-pie"></i>
-          Citas por Estado (Este Mes)
-        </h2>
-        
-        @if (loadingStatusChart()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (statusChartData().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-chart-pie"></i>
-            <p>No hay datos de citas este mes</p>
-          </div>
-        } @else {
-          <app-pie-chart
-            [data]="statusChartData()"
-            [doughnut]="true"
-            [showLegend]="true"
-            [height]="'280px'"
-          />
-        }
-      </div>
-
-      <!-- Citas por Día - Bar Chart -->
-      <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-chart-bar"></i>
-          Citas por Día de la Semana
-        </h2>
-        
-        @if (loadingWeekdayChart()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (weekdayChartData().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-chart-bar"></i>
-            <p>No hay datos suficientes</p>
-          </div>
-        } @else {
-          <app-bar-chart
-            [data]="weekdayChartData()"
-            [horizontal]="false"
-            [height]="'280px'"
-          />
-        }
-      </div>
-    </div>
-
-    <!-- Grid de 3 columnas: Próximas + Sin Confirmar + Actividad -->
+    <!-- Grid de 3 columnas: Próximas + Sin Confirmar + Pacientes Frecuentes -->
     <div class="analytics-grid cols-3">
       <!-- Próximas Citas del Día -->
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-clock"></i>
             Próximas Citas Hoy
           </h2>
           @if (upcomingAppointments().length > 0) {
-            <span class="section-badge">{{ upcomingAppointments().length }}</span>
+            <span class="dash-section-header__badge">{{ upcomingAppointments().length }}</span>
           }
         </div>
 
@@ -215,13 +177,13 @@
 
       <!-- Citas Sin Confirmar -->
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-bell"></i>
             Sin Confirmar
           </h2>
           @if (pendingConfirmations().length > 0) {
-            <span class="section-badge">{{ pendingConfirmations().length }}</span>
+            <span class="dash-section-header__badge">{{ pendingConfirmations().length }}</span>
           }
         </div>
 
@@ -235,22 +197,21 @@
             <p>Todas las citas están confirmadas</p>
           </div>
         } @else {
-          <div class="pending-confirmations-list">
+          <div class="dash-list">
             @for (pending of pendingConfirmations(); track pending.id) {
               <a 
                 [routerLink]="['/appointments', pending.id]" 
-                class="pending-confirmation-item"
-                [class]="getUrgencyClass(pending.hoursUntil)">
-                <div class="urgency-indicator">
+                class="dash-item">
+                <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="getUrgencyLeadingClass(pending.hoursUntil)">
                   <i class="fa-solid fa-clock"></i>
                 </div>
-                <div class="pending-details">
-                  <span class="patient-name">{{ pending.patientName }}</span>
-                  <span class="pending-time">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ pending.patientName }}</span>
+                  <span class="dash-item__subtitle">
                     {{ pending.displayDate }} - {{ pending.displayTime }}
                   </span>
                 </div>
-                <span class="hours-badge">
+                <span class="hours-badge" [ngClass]="getUrgencyBadgeClass(pending.hoursUntil)">
                   @if (pending.hoursUntil <= 0) {
                     Ahora
                   } @else if (pending.hoursUntil < 24) {
@@ -265,50 +226,14 @@
         }
       </div>
 
-      <!-- Actividad Reciente -->
+      <!-- Pacientes Frecuentes -->
       <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          Actividad Reciente
-        </h2>
-        
-        @if (loadingActivity()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (recentActivity().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-history"></i>
-            <p>No hay actividad reciente</p>
-          </div>
-        } @else {
-          <div class="activity-timeline">
-            @for (activity of recentActivity(); track activity.id) {
-              <div class="activity-item">
-                <div class="activity-icon {{ getActivityColor(activity.type) }}">
-                  <i class="fa-solid {{ getActivityIcon(activity.type) }}"></i>
-                </div>
-                <div class="activity-content">
-                  <p class="activity-description">{{ activity.description }}</p>
-                  <span class="activity-time">
-                    <i class="fa-solid fa-clock"></i>
-                    {{ formatRelativeTime(activity.timestamp) }}
-                  </span>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </div>
-    </div>
-
-    <!-- Grid adicional: Pacientes Frecuentes -->
-    <div class="analytics-grid">
-      <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-star"></i>
-          Pacientes Frecuentes
-        </h2>
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-star"></i>
+            Pacientes Frecuentes
+          </h2>
+        </div>
         
         @if (loadingPatients()) {
           <div class="loading-spinner">
@@ -320,21 +245,21 @@
             <p>No hay datos de pacientes frecuentes</p>
           </div>
         } @else {
-          <div class="frequent-patients-list">
+          <div class="dash-list">
             @for (patient of frequentPatients(); track patient.patientId) {
-              <a [routerLink]="['/patients', patient.patientId]" class="frequent-patient-item">
-                <div class="patient-info">
-                  <span class="patient-name">{{ patient.patientName }}</span>
-                  <span class="visit-count">{{ patient.totalAppointments }} visitas</span>
+              <a [routerLink]="['/patients', patient.patientId]" class="dash-item">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ patient.patientName }}</span>
+                  <span class="dash-item__subtitle">{{ patient.completedAppointments }} visitas</span>
                 </div>
-                <div class="patient-stats">
+                <div class="dash-item__trailing">
                   @if (patient.nextAppointment) {
-                    <span class="next-visit">
+                    <span class="dash-item__meta" style="color: var(--primary-600)">
                       <i class="fa-solid fa-calendar"></i>
                       {{ formatDate(patient.nextAppointment) }}
                     </span>
                   } @else {
-                    <span class="no-next-visit">Sin cita próxima</span>
+                    <span class="dash-item__meta" style="font-style: italic">Sin cita próxima</span>
                   }
                 </div>
               </a>
@@ -342,32 +267,101 @@
           </div>
         }
       </div>
+    </div>
 
-      <!-- Estadísticas del Mes -->
+    <!-- Grid de 3 columnas: Gráficos + Actividad Reciente -->
+    <div class="analytics-grid cols-3">
+      <!-- Distribución por Estado - Pie Chart -->
       <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-chart-line"></i>
-          Estadísticas del Mes
-        </h2>
-        
-        <div class="month-stats">
-          <div class="stat-item">
-            <span class="stat-label">Tasa de Completadas</span>
-            <span class="stat-value success">{{ (metrics()?.completionRateMonth || 0) | number:'1.0-0' }}%</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">No Shows</span>
-            <span class="stat-value warning">{{ metrics()?.noShowsThisMonth || 0 }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Citas Semana</span>
-            <span class="stat-value">{{ metrics()?.weekTotal || 0 }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Completadas Semana</span>
-            <span class="stat-value success">{{ metrics()?.weekCompleted || 0 }}</span>
-          </div>
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-chart-pie"></i>
+            Citas por Estado
+          </h2>
         </div>
+        
+        @if (loadingStatusChart()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (statusChartData().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-chart-pie"></i>
+            <p>No hay datos de citas este mes</p>
+          </div>
+        } @else {
+          <app-pie-chart
+            [data]="statusChartData()"
+            [doughnut]="true"
+            [showLegend]="true"
+            [height]="'280px'"
+          />
+        }
+      </div>
+
+      <!-- Citas por Día - Bar Chart -->
+      <div class="section-card">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-chart-bar"></i>
+            Citas por Día de la Semana
+          </h2>
+        </div>
+        
+        @if (loadingWeekdayChart()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (weekdayChartData().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-chart-bar"></i>
+            <p>No hay datos suficientes</p>
+          </div>
+        } @else {
+          <app-bar-chart
+            [data]="weekdayChartData()"
+            [horizontal]="false"
+            [height]="'280px'"
+          />
+        }
+      </div>
+
+      <!-- Actividad Reciente -->
+      <div class="section-card">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            Actividad Reciente
+          </h2>
+        </div>
+        
+        @if (loadingActivity()) {
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+          </div>
+        } @else if (recentActivity().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-history"></i>
+            <p>No hay actividad reciente</p>
+          </div>
+        } @else {
+          <div class="dash-list">
+            @for (activity of recentActivity(); track activity.id) {
+              <div class="dash-item">
+                <div class="dash-item__leading" [ngClass]="getActivityColor(activity.type)">
+                  <i class="fa-solid {{ getActivityIcon(activity.type) }}"></i>
+                </div>
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ activity.description }}</span>
+                  <span class="dash-item__subtitle">
+                    <i class="fa-solid fa-clock"></i>
+                    {{ formatRelativeTime(activity.timestamp) }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
   }

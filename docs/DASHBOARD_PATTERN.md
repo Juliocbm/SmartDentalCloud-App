@@ -1,69 +1,151 @@
 # Patrón de Dashboard - SmartDentalCloud
 
-## 📋 Propósito
-
-Define el patrón estándar para crear dashboards (vistas generales) en la aplicación. Proporciona una estructura consistente, reutilizable y mantenible usando variables globales CSS.
+Define el patrón estándar para dashboards en la aplicación. Estructura consistente, sin redundancias, con separación clara entre acciones y contenido.
 
 ---
 
-## 🏗️ Arquitectura de Estilos
+## Decisiones de Diseño
 
-### Archivos Involucrados
+### D1 — Acciones primarias van en `page-header actions`
+Cada dashboard de módulo tiene **máximo 2-3 botones** en el header:
+- **Botón de creación** del módulo (ej: `+ Nueva Cita`) con `btn btn-outline btn-success`
+- **Botón "Ver Todos/Todas"** para ir al listado con `btn btn-outline`
+- **Filtro de sucursal** (`app-location-autocomplete`) donde aplique
+
+### D2 — NO hay sección "Acciones Rápidas" en dashboards de módulo
+Las acciones de creación están en el `page-header`. Los links de navegación están en el sidebar. Solo el **Dashboard General** conserva "Acciones Rápidas" como hub central.
+
+### D3 — KPIs usan `.kpi-grid` / `.kpi-card` (BEM)
+Todos los indicadores usan el componente unificado `.kpi-card` con sparklines. Ver `docs/KPI_CARD_GUIDELINES.md`.
+
+### D5 — Date Range Picker en dashboards con analíticas históricas
+Dashboards que muestran datos analíticos o históricos incluyen `<app-date-range-picker>` en el `page-header actions`.
+
+**Principios:**
+- Solo datos **analíticos/históricos** se filtran por rango de fecha (gráficos, distribuciones, ingresos, rankings)
+- Datos **operacionales/futuros** NO se filtran (citas de hoy, próximas citas, planes pendientes, stock actual)
+- Preset por defecto: `'this_month'` para dashboards operacionales, `'last_3_months'` para dashboards de análisis extendido
+- El componente se coloca **después** del filtro de sucursal y **antes** de los botones de acción
+
+**Dashboards con date range picker:**
+
+| Dashboard | Default Preset | Secciones afectadas | Secciones NO afectadas |
+|-----------|---------------|---------------------|------------------------|
+| **General** | `this_month` | Ingresos, Pendiente de Cobro | Citas de Hoy, Tratamientos Activos, Planes por Aprobar, Stock |
+| **Dentistas** | `this_month` | Todas las métricas y rankings | — |
+| **Tratamientos** | `last_3_months` | KPIs, gráficos, listas de tratamientos | — |
+| **Facturación** | `last_3_months` | KPIs, gráficos, listas de facturas | — |
+| **Citas** | `this_month` | Distribución por estado, por día, pacientes frecuentes | Métricas del día, próximas citas, pendientes confirmación, actividad reciente |
+
+**Patrón TypeScript:**
+```typescript
+// Signal para el rango de fechas
+dateRange = signal<DateRange>(this.getDefaultDateRange());
+
+onDateRangeChange(range: DateRange | null): void {
+  if (!range) return;
+  this.dateRange.set(range);
+  this.loadAnalyticsData(); // Solo recargar datos afectados
+}
+
+private getDefaultDateRange(): DateRange {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), 1); // o -3 meses
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return {
+    start: `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}`,
+    end: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+  };
+}
+```
+
+### D4 — Grids unificados
+Solo existen dos clases de grid para contenido:
+- `.analytics-grid` — 2 columnas (gráficos, listas side-by-side)
+- `.analytics-grid.cols-3` — 3 columnas (listas, timelines)
+
+**Clases eliminadas:** `.bottom-grid`, `.dashboard-grid`, `.charts-grid`, `.triple-grid`, `.quick-actions-row`, `.indicators-list`
+
+---
+
+## Arquitectura de Estilos
 
 ```
-src/
-├── styles/
-│   ├── _variables.scss      # Variables CSS globales
-│   ├── _components.scss     # Componentes UI globales (botones, alerts, etc.)
-│   └── _dashboard.scss      # ⭐ Estilos reutilizables de dashboard
-│
-└── app/features/[modulo]/components/[modulo]-dashboard/
-    ├── [modulo]-dashboard.ts       # Lógica del componente
-    ├── [modulo]-dashboard.html     # Template
-    └── [modulo]-dashboard.scss     # Solo estilos ESPECÍFICOS del módulo
-```
+src/styles/
+├── _variables.scss      # Variables CSS (KPI, spacing, colors)
+├── _components.scss     # .kpi-grid, .kpi-card (BEM), botones, alerts
+└── _dashboard.scss      # .analytics-grid, .section-card, .quick-action-card, timelines
 
-### Principio de Separación
+src/app/features/[modulo]/components/[modulo]-dashboard/
+├── [modulo]-dashboard.ts       # Lógica
+├── [modulo]-dashboard.html     # Template
+└── [modulo]-dashboard.scss     # Solo estilos ESPECÍFICOS del dominio
+```
 
 | Archivo | Contenido |
 |---------|----------|
-| `_dashboard.scss` | Layouts, cards, timelines, badges - **reutilizable en cualquier dashboard** |
-| `[modulo]-dashboard.scss` | Solo estilos específicos del dominio (ej: `.expiring-product-item`) |
+| `_components.scss` | `.kpi-grid`, `.kpi-card` BEM con sparklines |
+| `_dashboard.scss` | `.analytics-grid`, `.section-card`, `.quick-action-card`, timelines, badges |
+| `[modulo]-dashboard.scss` | Solo estilos de dominio (ej: `.treatment-item`, `.dentist-rank`) |
 
 ---
 
-## 🎯 Componentes del Dashboard
+## Layout Canónico — Dashboard de Módulo
 
-### 1. **Indicadores Clave**
-Tarjetas compactas que muestran KPIs principales (Total, Valor, etc.).
+```
+┌─────────────────────────────────────────────────┐
+│ page-header  [Título]     [Filtro] [+Nuevo] [📋]│
+├─────────────────────────────────────────────────┤
+│ alert-banner (condicional)                      │
+├─────────────────────────────────────────────────┤
+│ kpi-grid (indicadores KPI con sparklines)       │
+├────────────────────┬────────────────────────────┤
+│ analytics-grid     │ (2 cols: gráficos/stats)   │
+├──────────┬─────────┴──┬─────────────────────────┤
+│ col 1    │ col 2      │ col 3                   │
+│ analytics-grid.cols-3 (listas/timelines)        │
+└──────────┴────────────┴─────────────────────────┘
+```
 
-### 2. **Accesos Rápidos (Quick Actions)**
-Navegación directa a acciones comunes del módulo.
-
-### 3. **Banner de Alertas**
-Notificaciones destacadas para información crítica.
-
-### 4. **Analytics Grid**
-Gráficos y visualizaciones de datos (2 o 3 columnas).
-
-### 5. **Listas de Datos**
-Timelines de actividad, productos próximos a vencer, top items, etc.
-
-### 6. **Section Card**
-Contenedor para agrupar contenido relacionado.
-
----
-
-## 🏗️ Estructura HTML
+### HTML Canónico
 
 ```html
 <div class="page-container container-wide">
   <app-page-header
-    [title]="'Nombre del Dashboard'"
-    [subtitle]="'Descripción breve del dashboard'"
-    [icon]="'fa-boxes-stacked'"
+    [title]="'Módulo'"
+    [subtitle]="'Panel de control del módulo'"
+    [icon]="'fa-icon'"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <!-- Filtro sucursal (solo si aplica) -->
+      <app-location-autocomplete ... />
+      <!-- Date range picker (solo si hay analíticas históricas) -->
+      <app-date-range-picker
+        [showPresets]="true"
+        [defaultPreset]="'this_month'"
+        (rangeChange)="onDateRangeChange($event)"
+      />
+      <!-- Botón de creación primaria -->
+      <a routerLink="/module/new" class="btn btn-outline btn-success">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Item
+      </a>
+      <!-- Botón ver listado -->
+      <a routerLink="/module" class="btn btn-outline">
+        <i class="fa-solid fa-list"></i>
+        Ver Todos
+      </a>
+    </div>
   </app-page-header>
+
+  <!-- Alert Banner (condicional) -->
+  @if (alertCount() > 0) {
+    <div class="alert-banner alert-banner--warning">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>Tienes <strong>{{ alertCount() }}</strong> alertas.</span>
+      <a routerLink="/module/alerts" class="btn btn--sm btn--warning">Ver Alertas</a>
+    </div>
+  }
 
   @if (loading()) {
     <div class="loading-container">
@@ -76,162 +158,35 @@ Contenedor para agrupar contenido relacionado.
       <span>{{ error() }}</span>
     </div>
   } @else {
-    <!-- Banner de Alerta (Opcional) -->
-    @if (totalAlerts() > 0) {
-      <div class="alert-banner alert-banner--warning">
-        <i class="fa-solid fa-exclamation-triangle"></i>
-        <span>Tienes <strong>{{ totalAlerts() }}</strong> alertas pendientes.</span>
-        <a [routerLink]="['/module/alerts']" class="btn btn--sm btn--warning">
-          Ver Alertas
-        </a>
-      </div>
-    }
-
-    <!-- Grid Superior: Indicadores + Accesos Rápidos -->
-    <div class="bottom-grid">
-      <!-- Indicadores Clave (columna estrecha) -->
-      <div class="section-card grid-narrow">
-        <h2 class="section-title">
-          <i class="fa-solid fa-gauge-high"></i>
-          Indicadores Clave
-        </h2>
-        <div class="indicators-list">
-          <a [routerLink]="['/module/items']" class="quick-action-card">
-            <div class="action-icon primary">
-              <i class="fa-solid fa-boxes-stacked"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Total Items</h3>
-              <p class="action-value">{{ totalItems() }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
-          <a [routerLink]="['/module/value']" class="quick-action-card">
-            <div class="action-icon success">
-              <i class="fa-solid fa-coins"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Valor Total</h3>
-              <p class="action-value">{{ formatCurrency(totalValue()) }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
+    <!-- KPIs con sparklines -->
+    <div class="kpi-grid">
+      <a class="kpi-card kpi-card--primary" routerLink="/module">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-box"></i></div>
         </div>
-      </div>
-
-      <!-- Accesos Rápidos (columna ancha) -->
-      <div class="section-card grid-wide">
-        <h2 class="section-title">
-          <i class="fa-solid fa-bolt"></i>
-          Accesos Rápidos
-        </h2>
-        <div class="quick-actions-grid cols-4">
-          @for (action of quickActions; track action.route) {
-            <a [routerLink]="action.route" class="quick-action-card">
-              <div class="action-icon">
-                <i class="fa-solid {{ action.icon }}"></i>
-              </div>
-              <div class="action-content">
-                <h3 class="action-title">{{ action.label }}</h3>
-                <p class="action-description">{{ action.description }}</p>
-              </div>
-              <i class="fa-solid fa-chevron-right action-arrow"></i>
-            </a>
-          }
+        <div class="kpi-card__value">{{ total() }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+          </svg>
         </div>
-      </div>
+      </a>
+      <!-- ... más KPIs -->
     </div>
 
-    <!-- Grid de Gráficos (2 columnas) -->
+    <!-- Gráficos (2 columnas) -->
     <div class="analytics-grid">
-      <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-chart-pie"></i>
-          Distribución por Categorías
-        </h2>
-        @if (loadingCategories()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (categories().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-folder-open"></i>
-            <p>No hay categorías registradas</p>
-          </div>
-        } @else {
-          <app-pie-chart [data]="categoryChartData()" />
-        }
-      </div>
-      <div class="section-card">
-        <!-- Segundo gráfico -->
-      </div>
+      <div class="section-card"> <!-- Gráfico 1 --> </div>
+      <div class="section-card"> <!-- Gráfico 2 --> </div>
     </div>
 
-    <!-- Grid de Listas (3 columnas) -->
+    <!-- Listas (3 columnas) -->
     <div class="analytics-grid cols-3">
-      <!-- Lista 1: Con badge en header -->
-      <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
-            <i class="fa-solid fa-calendar-xmark"></i>
-            Próximos a Vencer
-          </h2>
-          @if (expiringItems().length > 0) {
-            <span class="section-badge">{{ expiringItems().length }}</span>
-          }
-        </div>
-        @if (loadingExpiring()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (expiringItems().length === 0) {
-          <div class="empty-state success">
-            <i class="fa-solid fa-circle-check"></i>
-            <p>No hay items próximos a vencer</p>
-          </div>
-        } @else {
-          <div class="data-list">
-            @for (item of expiringItems(); track item.id) {
-              <a [routerLink]="['/module/items', item.id]" class="data-list-item compact">
-                <!-- Contenido específico del módulo -->
-              </a>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Lista 2 -->
-      <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-star"></i>
-          Más Utilizados
-        </h2>
-        <!-- Similar structure -->
-      </div>
-
-      <!-- Timeline de Actividad -->
-      <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          Actividad Reciente
-        </h2>
-        <div class="activity-timeline">
-          @for (activity of recentActivity(); track activity.id) {
-            <div class="activity-item">
-              <div class="activity-icon {{ activity.color }}">
-                <i class="fa-solid {{ activity.icon }}"></i>
-              </div>
-              <div class="activity-content">
-                <p class="activity-description">{{ activity.description }}</p>
-                <span class="activity-time">
-                  <i class="fa-solid fa-clock"></i>
-                  {{ activity.timestamp | date:'dd/MM HH:mm' }}
-                </span>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
+      <div class="section-card"> <!-- Lista 1 --> </div>
+      <div class="section-card"> <!-- Lista 2 --> </div>
+      <div class="section-card"> <!-- Lista 3 --> </div>
     </div>
   }
 </div>
@@ -239,115 +194,97 @@ Contenedor para agrupar contenido relacionado.
 
 ---
 
-## 💻 Estructura TypeScript
+## Layout — Dashboard General (excepción)
+
+El Dashboard General (`dashboard.html`) es el **hub central** y conserva "Acciones Rápidas":
+
+```
+┌─────────────────────────────────────────────────┐
+│ page-header  [Dashboard]  [Filtro] [Actualizar] │
+├─────────────────────────────────────────────────┤
+│ alert-banner (stock bajo, condicional)          │
+├─────────────────────────────────────────────────┤
+│ kpi-grid (6 KPIs con sparklines + permisos)     │
+├─────────────────────────────────────────────────┤
+│ Acciones Rápidas (quick-actions-grid cols-3)    │
+│ [Nueva Cita] [Nuevo Paciente] [Nueva Factura]   │
+│ [Tratamiento] [Calendario] [Reportes]           │
+├──────────┬──────────┬───────────────────────────┤
+│ Próximas │ Planes   │ Alertas Inventario        │
+│ Citas    │ Aprobar  │                           │
+└──────────┴──────────┴───────────────────────────┘
+```
+
+**Diferencias con dashboards de módulo:**
+- `page-header`: Solo Filtro sucursal + Actualizar (NO botón de creación)
+- Conserva sección "Acciones Rápidas" con `quickActions` filtradas por permisos
+- KPIs protegidos por `@if (permissionService.hasPermission(...))`
+
+---
+
+## Acciones por Dashboard
+
+| Dashboard | `page-header actions` |
+|-----------|----------------------|
+| **General** | Filtro sucursal · Date Range (`this_month`) · Actualizar |
+| **Citas** | Filtro sucursal · Date Range (`this_month`) · `+ Nueva Cita` · `Ver Todas` |
+| **Pacientes** | `+ Nuevo Paciente` · `Ver Todos` |
+| **Facturación** | Date Range (`last_3_months`) · `+ Nueva Factura` · `Ver Todas` |
+| **Inventario** | Filtro sucursal · `Ver Productos` |
+| **Tratamientos** | Date Range (`last_3_months`) · `+ Nuevo Tratamiento` · `Ver Todos` |
+| **Planes** | `+ Nuevo Plan` · `Ver Todos` |
+| **Dentistas** | Date Range (`this_month`) · `Ver Todos` · `Reporte Productividad` |
+
+### Detalle: Dashboard de Dentistas
+
+| Elemento | Descripción |
+|----------|-------------|
+| **KPIs** | 6: Total, Activos, Citas Completadas, Ingresos Generados, Tasa Completación, Prom. Ingresos/Dentista |
+| **Charts** | 2: Ingresos por Dentista (horizontal bar), Citas por Dentista (vertical bar) |
+| **Sections** | 3: Top por Ingresos, Top por Tratamientos, Equipo de Dentistas |
+| **Alert Banner** | Dentistas sin actividad registrada este mes |
+| **Analytics Service** | `DentistAnalyticsService` — compone `UsersService` + `ReportsService` |
+| **Entity Links** | Nombre del dentista → `/users/:id` en rankings y equipo |
+
+---
+
+## Estructura TypeScript
 
 ```typescript
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
-import { ROUTES } from '../../../../core/constants/routes.constants';
-
-interface DashboardMetric {
-  label: string;
-  value: number;
-  icon: string;
-  colorClass: 'primary' | 'success' | 'warning' | 'critical' | 'info';
-  route: string;
-}
-
-interface QuickAction {
-  label: string;
-  description: string;
-  icon: string;
-  route: string;
-}
-
 @Component({
   selector: 'app-module-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, ...],
   templateUrl: './module-dashboard.html',
-  styleUrls: ['./module-dashboard.scss']
+  styleUrl: './module-dashboard.scss'
 })
 export class ModuleDashboardComponent implements OnInit {
-  // Servicios
   private dataService = inject(DataService);
+  private logger = inject(LoggingService);
 
-  // Signals para estado
   loading = signal(true);
   error = signal<string | null>(null);
-  
-  // Signals para datos
+
+  // Datos (signals)
   totalItems = signal(0);
-  criticalCount = signal(0);
-  warningCount = signal(0);
 
   // Breadcrumbs
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fa-home' },
-    { label: 'Nombre del Módulo' }
+    { label: 'Módulo' }
   ];
 
-  // Métricas computadas
-  metrics = computed<DashboardMetric[]>(() => [
-    {
-      label: 'Total Items',
-      value: this.totalItems(),
-      icon: 'fa-boxes-stacked',
-      colorClass: 'primary',
-      route: '/module/items'
-    },
-    {
-      label: 'Críticos',
-      value: this.criticalCount(),
-      icon: 'fa-circle-exclamation',
-      colorClass: 'critical',
-      route: '/module/critical'
-    },
-    {
-      label: 'Advertencias',
-      value: this.warningCount(),
-      icon: 'fa-triangle-exclamation',
-      colorClass: 'warning',
-      route: '/module/warnings'
-    }
-  ]);
-
-  // Accesos rápidos (estáticos)
-  quickActions: QuickAction[] = [
-    {
-      label: 'Acción 1',
-      description: 'Descripción breve de la acción',
-      icon: 'fa-plus',
-      route: '/module/action1'
-    },
-    {
-      label: 'Acción 2',
-      description: 'Otra acción común',
-      icon: 'fa-list',
-      route: '/module/action2'
-    }
-  ];
+  // NO definir quickActions — las acciones están en page-header
 
   ngOnInit(): void {
-    this.loadDashboardData();
+    this.loadData();
   }
 
-  private loadDashboardData(): void {
+  private loadData(): void {
     this.loading.set(true);
     this.dataService.getData().subscribe({
-      next: (data) => {
-        this.totalItems.set(data.total);
-        this.criticalCount.set(data.critical);
-        this.warningCount.set(data.warnings);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading dashboard:', err);
-        this.error.set('Error al cargar datos del dashboard');
-        this.loading.set(false);
-      }
+      next: (data) => { this.totalItems.set(data.total); this.loading.set(false); },
+      error: (err) => { this.error.set(getApiErrorMessage(err)); this.loading.set(false); }
     });
   }
 }
@@ -355,452 +292,154 @@ export class ModuleDashboardComponent implements OnInit {
 
 ---
 
-## 🎨 Estilos SCSS
+## Clases CSS Disponibles
 
-### Archivo Global: `_dashboard.scss`
-
-Contiene **~730 líneas** de estilos reutilizables. Ya está importado en `styles.scss`.
-
-### Archivo del Módulo: `[modulo]-dashboard.scss`
-
-**Solo debe contener estilos específicos del dominio.** Ejemplo:
-
-```scss
-// ============================================
-// Dashboard de [Módulo] - Estilos Específicos
-// Los estilos base de dashboard están en _dashboard.scss
-// ============================================
-
-// ✅ Solo agregar estilos para elementos ÚNICOS del módulo
-// ❌ NO duplicar layouts, cards, timelines, badges
-
-// Ejemplo: Lista específica de productos próximos a vencer
-.expiring-product-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  padding: var(--list-item-padding);
-  background: var(--list-item-background);
-  border-left: 3px solid transparent;
-  border-radius: var(--list-item-radius);
-  transition: var(--transition-smooth);
-
-  &:hover {
-    background: var(--list-item-hover-background);
-  }
-
-  // Variantes de urgencia
-  &.urgency-critical {
-    border-left-color: var(--error-600);
-  }
-
-  &.urgency-warning {
-    border-left-color: var(--warning-600);
-  }
-}
-
-// Ejemplo: Gráfico de barras por categoría
-.category-chart {
-  display: flex;
-  flex-direction: column;
-  gap: var(--category-bar-gap);
-}
-```
-
-### Regla de Oro
-
-| Si necesitas... | Usa... |
-|-----------------|--------|
-| Grid de 2 columnas | `.analytics-grid` |
-| Grid de 3 columnas | `.analytics-grid.cols-3` |
-| Grid indicadores + acciones | `.bottom-grid` |
-| Tarjeta contenedora | `.section-card` |
-| Cards de acción | `.quick-action-card` |
-| Timeline | `.activity-timeline` + `.activity-item` |
-| Lista con scroll | `.data-list` + `.data-list-item` |
-| Estado vacío | `.empty-state` |
-| Spinner | `.loading-spinner` |
-
----
-
-## 📐 Variables Globales Disponibles
-
-### Container
-```scss
---dashboard-container-padding: 1.5rem
---dashboard-container-max-width: 1400px
-```
-
-### Metric Cards
-```scss
---metric-card-gap: 1.5rem
---metric-card-padding: 1.5rem
---metric-card-background: var(--surface-primary)
---metric-card-radius: var(--radius-lg)
---metric-card-hover-shadow: var(--shadow-lg)
-
---metric-icon-size: 56px
---metric-value-font-size: 2rem
---metric-label-font-size: 0.875rem
-```
-
-### Color Variants
-```scss
---metric-primary-bg: var(--primary-50)
---metric-primary-color: var(--primary-600)
---metric-success-bg: var(--success-50)
---metric-success-color: var(--success-600)
---metric-error-bg: var(--error-50)
---metric-error-color: var(--error-600)
---metric-warning-bg: var(--warning-50)
---metric-warning-color: var(--warning-600)
---metric-info-bg: var(--info-50)
---metric-info-color: var(--info-600)
-```
-
-### Quick Actions
-```scss
---quick-action-gap: 1rem
---quick-action-padding: 1.25rem
---quick-action-background: var(--surface-secondary)
---quick-action-icon-size: 48px
-```
-
-### Analytics Grid (Fase 2)
-```scss
---analytics-grid-columns: repeat(2, 1fr)
---analytics-grid-gap: var(--spacing-xl)
-```
-
-### Category Chart (Progress Bars)
-```scss
---category-bar-height: 24px
---category-bar-radius: var(--radius-sm)
---category-bar-background: var(--neutral-100)
---category-bar-border: 1px solid var(--border-primary)
---category-bar-gap: var(--spacing-lg)
-
---category-bar-normal: var(--gradient-primary)
---category-bar-warning: var(--warning-gradient)
---category-bar-critical: var(--error-gradient)
-```
-
-### Activity Timeline
-```scss
---activity-item-background: var(--surface-secondary)
---activity-item-hover: var(--surface-tertiary)
---activity-item-padding: var(--spacing-md)
---activity-item-radius: var(--radius-md)
---activity-item-gap: var(--spacing-md)
-
---activity-icon-size: 36px
---activity-icon-radius: var(--radius-full)
-```
-
-Ver `src/styles/_variables.scss` para todas las variables disponibles.
-
----
-
-## 🎨 Clases CSS Disponibles (en `_dashboard.scss`)
-
-### Layouts
+### Grids
 
 | Clase | Descripción | Columnas |
 |-------|-------------|----------|
+| `.kpi-grid` | Grid responsive para KPIs | auto-fit, min 220px |
 | `.analytics-grid` | Grid para gráficos/secciones | 2 columnas |
 | `.analytics-grid.cols-3` | Grid de 3 columnas | 3 columnas |
-| `.bottom-grid` | Grid asimétrico | 1:2 ratio |
-| `.indicators-list` | Grid para indicadores | 2 columnas |
-| `.quick-actions-grid` | Grid de acciones | Configurable |
-| `.quick-actions-grid.cols-2` | Variante 2 columnas | 2 columnas |
-| `.quick-actions-grid.cols-4` | Variante 4 columnas | 4 columnas |
-| `.metrics-grid` | Grid de métricas KPI | 4 columnas |
+| `.quick-actions-grid` | Grid de acciones (solo Dashboard General) | Configurable |
+| `.quick-actions-grid.cols-3` | Variante 3 columnas | 3 columnas |
 
-### Contenedores
+### KPIs (en `_components.scss`)
 
 | Clase | Descripción |
 |-------|-------------|
-| `.page-container.container-wide` | Contenedor principal |
-| `.section-card` | Tarjeta contenedora de sección |
-| `.section-header` | Header con título y badge |
-| `.section-title` | Título de sección con icono |
-| `.section-badge` | Badge numérico en header |
+| `.kpi-card` | Tarjeta KPI base |
+| `.kpi-card--primary/success/warning/error/info` | Variantes de color por tipo de métrica |
+| `.kpi-card__header` | Fila label + icon |
+| `.kpi-card__label` | Texto descriptivo |
+| `.kpi-card__icon` | Ícono |
+| `.kpi-card__value` | Valor numérico principal |
+| `.kpi-card__trend` | (Opcional) Badge de tendencia debajo del valor |
+| `.kpi-card__sparkline` | (Opcional) Gráfica de fondo translúcida |
+| `.kpi-card__sparkline--up/down/neutral` | Dirección de tendencia de la sparkline |
+| `.kpi-card__trend--up/down/neutral` | Variantes de color/ícono para la tendencia |
 
-### Cards de Acción
-
-| Clase | Descripción |
-|-------|-------------|
-| `.quick-action-card` | Tarjeta de acción clickeable |
-| `.dashboard-action-card` | Alias de quick-action-card |
-| `.action-icon` | Icono de la acción |
-| `.action-icon.primary` | Variante azul |
-| `.action-icon.success` | Variante verde |
-| `.action-icon.warning` | Variante amarillo |
-| `.action-icon.critical` | Variante rojo |
-| `.action-content` | Contenedor de texto |
-| `.action-title` | Título de la acción |
-| `.action-description` | Descripción |
-| `.action-value` | Valor numérico (para indicadores) |
-| `.action-arrow` | Flecha de navegación |
-
-### Cards de Métricas KPI
+### Contenedores (en `_dashboard.scss`)
 
 | Clase | Descripción |
 |-------|-------------|
-| `.metric-card` | Tarjeta de métrica |
-| `.metric-card.primary` | Variante azul |
-| `.metric-card.success` | Variante verde |
-| `.metric-card.warning` | Variante amarillo |
-| `.metric-card.critical` | Variante rojo |
-| `.metric-card.info` | Variante cyan |
-| `.metric-icon` | Icono de la métrica |
-| `.metric-content` | Contenedor de texto |
-| `.metric-label` | Etiqueta |
-| `.metric-value` | Valor |
-| `.metric-arrow` | Flecha de navegación |
+| `.page-container.container-wide` | Contenedor principal del dashboard |
+| `.section-card` | Tarjeta contenedora de secciones (gráficos, listas, timelines) |
+| `.dash-section-header` | Header estándar de sección de dashboard (título + icono + acciones/badge) |
+| `.dash-section-header__title` | Título de la sección con icono |
+| `.dash-section-header__badge` | Badge numérico compacto para contadores |
+| `.dash-list` | Contenedor de lista de dashboard con scroll vertical |
+| `.dash-item` | Item estándar de lista (leading + contenido + trailing) |
 
-### Alert Banner
+### Dashboard Sections & List Items
 
-| Clase | Descripción |
-|-------|-------------|
-| `.alert-banner` | Banner de alerta destacada (base) |
-| `.alert-banner--warning` | Variante warning con fondo amarillo intenso |
+Estructura recomendada para secciones de listas en dashboards:
 
-**Uso recomendado:**
 ```html
-<div class="alert-banner alert-banner--warning">
-  <i class="fa-solid fa-exclamation-triangle"></i>
-  <span>Mensaje de alerta con <strong>énfasis</strong>.</span>
-  <a [routerLink]="['/ruta']" class="btn btn--sm btn--warning">
-    Ver Detalles
-  </a>
+<div class="section-card">
+  <div class="dash-section-header">
+    <h2 class="dash-section-header__title">
+      <i class="fa-solid fa-icon"></i>
+      Título de sección
+    </h2>
+    @if (items().length > 0) {
+      <span class="dash-section-header__badge">{{ items().length }}</span>
+    }
+  </div>
+
+  <div class="dash-list">
+    @for (item of items(); track item.id) {
+      <a class="dash-item" [routerLink]="['/ruta', item.id]">
+        <div class="dash-item__leading"><i class="fa-solid fa-icon"></i></div>
+        <div class="dash-item__content">
+          <span class="dash-item__title">{{ item.title }}</span>
+          <span class="dash-item__subtitle">{{ item.subtitle }}</span>
+        </div>
+        <div class="dash-item__trailing">
+          <!-- badge / meta -->
+        </div>
+      </a>
+    }
+  </div>
 </div>
 ```
 
-### Botones (nomenclatura BEM)
+Sub-elementos BEM principales de `.dash-item`:
 
-| Clase | Descripción |
-|-------|-------------|
-| `.btn--sm` | Tamaño pequeño |
-| `.btn--lg` | Tamaño grande |
-| `.btn--warning` | Botón amarillo/naranja sólido |
-| `.btn--ghost` | Botón transparente |
+- **`dash-item__leading`** — Icono, avatar o indicador de urgencia.
+- **`dash-item__content`** — Columna central con título y subtítulo.
+- **`dash-item__title`** — Título truncado en una línea.
+- **`dash-item__subtitle`** — Descripción secundaria truncada.
+- **`dash-item__trailing`** — Valores numéricos, badges o metadata.
 
-> **Nota:** Las clases BEM (`btn--*`) son alias de las clases tradicionales (`btn-*`) y pueden usarse indistintamente.
+Variantes de `dash-item__leading` para estados/urgencia:
 
-### Listas de Datos
+- **`dash-item__leading--avatar`** — Iniciales/redondo para pacientes/usuarios.
+- **`dash-item__leading--rank`** — Posición (ej. ranking de dentistas).
+- **`dash-item__leading--urgency`** — Indicador de urgencia con colores de éxito/info/warning/error.
 
-| Clase | Descripción |
-|-------|-------------|
-| `.data-list` | Lista con scroll vertical |
-| `.data-list-item` | Item de lista clickeable |
-| `.data-list-item.compact` | Variante compacta |
-| `.item-arrow` | Flecha de navegación |
+### Alert Banner
 
-### Timeline de Actividad
-
-| Clase | Descripción |
-|-------|-------------|
-| `.activity-timeline` | Contenedor del timeline |
-| `.activity-item` | Item de actividad |
-| `.activity-icon` | Icono del evento |
-| `.activity-icon.success` | Variante verde |
-| `.activity-icon.info` | Variante cyan |
-| `.activity-icon.warning` | Variante amarillo |
-| `.activity-icon.error` | Variante rojo |
-| `.activity-icon.primary` | Variante azul |
-| `.activity-content` | Contenido |
-| `.activity-description` | Descripción del evento |
-| `.activity-time` | Timestamp |
+```html
+<div class="alert-banner alert-banner--warning">
+  <i class="fa-solid fa-exclamation-triangle"></i>
+  <span>Mensaje con <strong>énfasis</strong>.</span>
+  <a routerLink="/ruta" class="btn btn--sm btn--warning">Acción</a>
+</div>
+```
 
 ### Estados
 
 | Clase | Descripción |
 |-------|-------------|
-| `.loading-container` | Carga principal (página completa) |
-| `.loading-spinner` | Spinner en sección |
+| `.loading-container` | Carga de página completa |
+| `.loading-spinner` | Spinner de sección |
 | `.empty-state` | Estado vacío |
-| `.empty-state.success` | Variante positiva ("no hay pendientes") |
+| `.empty-state.success` | Variante positiva |
 
-### Badges
+### Variables CSS de Dashboard (en `_variables.scss`)
 
-| Clase | Descripción |
-|-------|-------------|
-| `.status-badge` | Badge de estado |
-| `.status-badge.status-critical` | Estado crítico (rojo) |
-| `.status-badge.status-warning` | Estado advertencia (amarillo) |
-| `.status-badge.status-normal` | Estado normal (verde) |
-| `.status-badge.status-info` | Estado info (cyan) |
+Estas variables globales controlan el layout y apariencia de los dashboards:
 
-### Indicadores de Urgencia
-
-| Clase | Descripción |
-|-------|-------------|
-| `.urgency-indicator` | Indicador de urgencia |
-| `.urgency-indicator.critical` | Urgencia crítica |
-| `.urgency-indicator.warning` | Urgencia media |
-| `.urgency-indicator.info` | Urgencia baja |
-
----
-
-## 🔍 Verificación de Variables Globales
-
-### Checklist ✅
-
-Al crear o revisar un dashboard, verifica:
-
-```scss
-// ✅ CORRECTO - Usar variables CSS
-padding: var(--spacing-2xl);
-gap: var(--metric-card-gap);
-background: var(--metric-card-background);
-@media (max-width: var(--breakpoint-md)) { }
-
-// ❌ INCORRECTO - Valores hardcoded
-padding: 28px;
-gap: 1.5rem;
-background: #ffffff;
-@media (max-width: 768px) { }
-```
-
-### Excepciones Permitidas
-
-Solo estos valores pueden ser literales:
-- `1px` para borders (ej: `border: 1px solid var(--border-color)`)
-- `0` para valores cero
-- `1fr` para grid layouts
-- Porcentajes específicos (ej: `width: 100%`)
+- **Contenedor de dashboard**
+  - `--dashboard-container-padding`
+  - `--dashboard-container-max-width`
+- **KPI Cards**
+  - `--kpi-grid-gap`, `--kpi-grid-min-col`
+  - `--kpi-card-padding`, `--kpi-card-radius`, `--kpi-card-bg`, `--kpi-card-border`, `--kpi-card-shadow`, `--kpi-card-hover-shadow`, `--kpi-card-hover-transform`
+  - `--kpi-icon-size`, `--kpi-icon-radius`, `--kpi-icon-font-size`
+  - `--kpi-label-size`, `--kpi-label-color`, `--kpi-value-size`, `--kpi-value-weight`, `--kpi-trend-size`
+  - `--kpi-sparkline-height`, `--kpi-sparkline-opacity`
+  - `--kpi-primary-bg`/`--kpi-primary-color`, `--kpi-success-*`, `--kpi-error-*`, `--kpi-warning-*`, `--kpi-info-*`
+- **Section cards y grids**
+  - `--section-card-background`, `--section-card-border`, `--section-card-radius`, `--section-card-padding`
+  - `--section-title-font-size`, `--section-title-font-weight`, `--section-title-margin`, `--section-title-gap`
+  - `--analytics-grid-columns`, `--analytics-grid-columns-3`, `--analytics-grid-gap`
+- **Listas y headers de sección**
+  - `--list-item-gap`, `--list-item-padding`, `--list-item-background`, `--list-item-hover-background`, `--list-item-border`, `--list-item-radius`, `--list-item-hover-transform`
+  - `--section-header-gap`, `--section-badge-size`, `--section-badge-padding`
 
 ---
 
-## ✅ Best Practices
+## Reglas
 
-### DO ✅
-
-```typescript
-// ✅ Usar signals y computed
-totalItems = signal(0);
-metrics = computed(() => [...]);
-
-// ✅ Usar constantes ROUTES
-import { ROUTES } from '../../../../core/constants/routes.constants';
-route: ROUTES.INVENTORY
-
-// ✅ Usar interfaces tipadas
-interface DashboardMetric {
-  label: string;
-  value: number;
-  icon: string;
-  colorClass: string;
-  route: string;
-}
-
-// ✅ Manejo de errores
-this.dataService.getData().subscribe({
-  next: (data) => { /* ... */ },
-  error: (err) => {
-    console.error('Error:', err);
-    this.error.set('Mensaje amigable');
-  }
-});
-```
-
-### DON'T ❌
-
-```scss
-// ❌ NO hardcodear colores
-background: #3b82f6;
-
-// ❌ NO hardcodear medidas
-padding: 24px;
-font-size: 14px;
-
-// ❌ NO duplicar estilos
-.my-custom-card {
-  // Usar .metric-card en su lugar
-}
-
-// ❌ NO usar !important
-color: red !important;
-```
+1. **Acciones de creación → `page-header actions`**, nunca en el cuerpo del dashboard
+2. **Solo Dashboard General tiene "Acciones Rápidas"** como hub de navegación
+3. **KPIs → `.kpi-grid` + `.kpi-card`**, nunca `.metric-card` ni `.quick-action-card`
+4. **Grids → `.analytics-grid`**, nunca `.dashboard-grid`, `.charts-grid`, `.triple-grid`
+5. **No definir `quickActions[]` en TS de módulo** — las acciones están en HTML del page-header
+6. **Estilos de dominio en SCSS de componente**, layouts y cards en `_dashboard.scss` y `_components.scss`
+7. **Sparklines en dashboards**, omitirlas en reportes
+8. **Variables CSS**, no valores hardcodeados
+9. **Date Range Picker** en dashboards con analíticas históricas; separar datos operacionales (no filtrados) de analíticos (filtrados por rango)
+10. **Etiquetas de KPI genéricas** cuando el rango es dinámico (ej: "Ingresos" en vez de "Ingresos del Mes")
 
 ---
 
-## 📱 Responsive Design
+## Referencias
 
-El patrón incluye breakpoints responsive automáticos:
-
-- **Desktop**: Grid completo
-- **Tablet (≤768px)**: 1 columna en métricas, ajustes en banner
-- **Mobile (≤480px)**: Espaciado reducido, valores de métricas más pequeños
-
----
-
-## 🔄 Actualización de Dashboards Existentes
-
-Para migrar un dashboard antiguo:
-
-1. **HTML**: Usar estructura del patrón
-2. **TypeScript**: Convertir a signals y computed
-3. **SCSS**: Eliminar estilos custom, usar clases globales
-4. **Rutas**: Usar constantes ROUTES
-5. **Iconos**: FontAwesome solid
-
----
-
-## 🌗 Soporte de Temas
-
-Todas las variables soportan automáticamente:
-- ✅ Tema claro
-- ✅ Tema oscuro
-- ✅ Tema alto contraste
-
-No se requiere código adicional.
-
----
-
-## 📚 Ejemplos de Uso
-
-### Inventory Dashboard
-```
-src/app/features/inventory/components/inventory-dashboard/
-```
-
-### Futuro: Appointments Dashboard
-```
-src/app/features/appointments/components/appointments-dashboard/
-```
-
-### Futuro: Billing Dashboard
-```
-src/app/features/billing/components/billing-dashboard/
-```
-
----
-
-## 🧪 Testing
-
-```typescript
-describe('ModuleDashboardComponent', () => {
-  it('should display metrics correctly', () => {
-    // Test metrics rendering
-  });
-
-  it('should handle loading state', () => {
-    // Test loading state
-  });
-
-  it('should handle error state', () => {
-    // Test error handling
-  });
-});
-```
-
----
-
-## 📖 Referencias
-
+- KPI Cards: `docs/KPI_CARD_GUIDELINES.md`
+- Section Headers: `docs/SECTION_HEADER_GUIDELINES.md`
 - Variables CSS: `src/styles/_variables.scss`
-- Componentes Globales: `src/styles/_components.scss`
-- Context Pattern: `docs/CONTEXT_SERVICE_PATTERN.md`
-- Form Pattern: `docs/FORM_STANDARD_PATTERN.md`
+- Componentes: `src/styles/_components.scss`
+- Dashboard base: `src/styles/_dashboard.scss`

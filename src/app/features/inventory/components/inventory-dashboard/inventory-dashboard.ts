@@ -14,15 +14,6 @@ import { TopProduct, ExpiringProduct, CategoryStockStatus, InventoryActivity, AC
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
-interface DashboardMetric {
-  label: string;
-  value: number;
-  icon: string;
-  colorClass: string;
-  route: string;
-  format?: 'number' | 'currency';
-}
-
 @Component({
   selector: 'app-inventory-dashboard',
   standalone: true,
@@ -62,6 +53,13 @@ export class InventoryDashboardComponent implements OnInit {
   
   // Configuración de actividades (iconos y colores)
   activityConfig = ACTIVITY_CONFIG;
+
+  // KPIs derivados
+  totalCategories = computed(() => this.categoryDistribution().length);
+  lowStockProducts = computed(() => {
+    const cats = this.categoryDistribution();
+    return cats.reduce((sum, c) => sum + c.lowStockCount, 0);
+  });
   
   // ✅ Reutilizar servicio global de alertas
   criticalAlerts = this.alertsService.criticalAlerts;
@@ -71,65 +69,6 @@ export class InventoryDashboardComponent implements OnInit {
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fa-home' },
     { label: 'Inventario' }
-  ];
-
-  metrics = computed<DashboardMetric[]>(() => [
-    {
-      label: 'Total Productos',
-      value: this.totalProducts(),
-      icon: 'fa-boxes-stacked',
-      colorClass: 'primary',
-      route: ROUTES.INVENTORY_PRODUCTS
-    },
-    {
-      label: 'Valor Total Inventario',
-      value: this.totalInventoryValue(),
-      icon: 'fa-dollar-sign',
-      colorClass: 'success',
-      route: ROUTES.INVENTORY_PRODUCTS,
-      format: 'currency'
-    },
-    {
-      label: 'Alertas Críticas',
-      value: this.criticalAlerts(),
-      icon: 'fa-circle-exclamation',
-      colorClass: 'critical',
-      route: ROUTES.INVENTORY_ALERTS
-    },
-    {
-      label: 'Total Alertas',
-      value: this.totalAlerts(),
-      icon: 'fa-bell',
-      colorClass: 'info',
-      route: ROUTES.INVENTORY_ALERTS
-    }
-  ]);
-
-  quickActions = [
-    {
-      label: 'Ver Productos',
-      icon: 'fa-boxes-stacked',
-      route: ROUTES.INVENTORY_PRODUCTS,
-      description: 'Gestionar catálogo de productos'
-    },
-    {
-      label: 'Ver Alertas',
-      icon: 'fa-triangle-exclamation',
-      route: ROUTES.INVENTORY_ALERTS,
-      description: 'Productos con stock crítico'
-    },
-    {
-      label: 'Categorías',
-      icon: 'fa-tags',
-      route: ROUTES.INVENTORY_CATEGORIES,
-      description: 'Organizar productos'
-    },
-    {
-      label: 'Proveedores',
-      icon: 'fa-truck',
-      route: ROUTES.INVENTORY_SUPPLIERS,
-      description: 'Gestionar proveedores'
-    }
   ];
 
   ngOnInit(): void {
@@ -240,7 +179,17 @@ export class InventoryDashboardComponent implements OnInit {
   }
 
   getActivityColor(type: string): string {
-    return this.activityConfig[type as keyof typeof this.activityConfig]?.color || 'info';
+    const color = this.activityConfig[type as keyof typeof this.activityConfig]?.color || 'info';
+    return 'dash-item__leading--' + color;
+  }
+
+  getExpiryLeadingClass(urgencyLevel: string): string {
+    const classes: Record<string, string> = {
+      'critical': 'dash-item__leading--error',
+      'warning': 'dash-item__leading--warning',
+      'info': 'dash-item__leading--info'
+    };
+    return classes[urgencyLevel] || 'dash-item__leading--warning';
   }
 
   /** Datos transformados para gráfico de categorías */

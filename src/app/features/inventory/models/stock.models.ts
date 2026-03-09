@@ -59,12 +59,17 @@ export interface StockAlert {
   productName: string;
   categoryName?: string;
   currentStock: number;
+  reservedStock: number;
+  availableStock: number;
   minStock: number;
   reorderPoint: number;
   reorderQuantity: number;
   unit: string;
+  stockDeficit: number;
+  suggestedOrderQuantity: number;
   alertLevel: 'critical' | 'warning' | 'normal';
-  daysUntilOutOfStock?: number;
+  lastCost?: number | null;
+  preferredSupplier?: string | null;
 }
 
 export type StockAlertLevel = 'critical' | 'warning' | 'normal';

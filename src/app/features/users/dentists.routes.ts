@@ -2,11 +2,12 @@ import { Routes } from '@angular/router';
 import { UsersService } from './services/users.service';
 import { RolesService } from './services/roles.service';
 import { ReportsService } from '../reports/services/reports.service';
+import { DentistAnalyticsService } from './services/dentist-analytics.service';
 
 export const DENTISTS_ROUTES: Routes = [
   {
     path: '',
-    providers: [UsersService, RolesService, ReportsService],
+    providers: [UsersService, RolesService, ReportsService, DentistAnalyticsService],
     children: [
       {
         path: '',

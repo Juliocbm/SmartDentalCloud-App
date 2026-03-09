@@ -4,7 +4,35 @@
     [subtitle]="'Panel de control del equipo de dentistas'"
     [icon]="'fa-user-doctor'"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <app-date-range-picker
+        [showPresets]="true"
+        [defaultPreset]="'this_month'"
+        (rangeChange)="onDateRangeChange($event)"
+      />
+      <a routerLink="/dentists" class="btn btn-outline">
+        <i class="fa-solid fa-list"></i>
+        Ver Todos
+      </a>
+      <a routerLink="/reports/dentist-productivity" class="btn btn-outline">
+        <i class="fa-solid fa-chart-bar"></i>
+        Reporte Productividad
+      </a>
+    </div>
   </app-page-header>
+
+  <!-- Alert Banner: Dentistas sin actividad -->
+  @if (!loading() && !error() && inactiveDentistsCount() > 0) {
+    <div class="alert-banner alert-banner--warning">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <span>
+        <strong>{{ inactiveDentistsCount() }}</strong> dentista{{ inactiveDentistsCount() === 1 ? '' : 's' }} sin actividad registrada este mes.
+      </span>
+      <a routerLink="/dentists" class="btn btn--sm btn--warning">
+        Ver Equipo
+      </a>
+    </div>
+  }
 
   @if (loading()) {
     <div class="loading-container">
@@ -17,141 +45,242 @@
       <span class="alert-message">{{ error() }}</span>
     </div>
   } @else {
-    <!-- KPI Cards -->
+    <!-- KPI Cards (8) -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper primary">
-          <i class="fa-solid fa-user-doctor"></i>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Dentistas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-user-doctor"></i></div>
         </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ totalDentists() }}</span>
-          <span class="kpi-label">Total Dentistas</span>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper success">
-          <i class="fa-solid fa-user-check"></i>
-        </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ activeDentists() }}</span>
-          <span class="kpi-label">Activos</span>
+        <div class="kpi-card__value">{{ metrics()?.totalDentists || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16"/>
+          </svg>
         </div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper info">
-          <i class="fa-solid fa-calendar-check"></i>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Activos</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-user-check"></i></div>
         </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ totalAppointmentsCompleted() }}</span>
-          <span class="kpi-label">Citas Completadas (mes)</span>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper warning">
-          <i class="fa-solid fa-tooth"></i>
-        </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ totalTreatmentsCompleted() }}</span>
-          <span class="kpi-label">Tratamientos (mes)</span>
+        <div class="kpi-card__value">{{ metrics()?.activeDentists || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+          </svg>
         </div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper success">
-          <i class="fa-solid fa-dollar-sign"></i>
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Citas Completadas (mes)</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-calendar-check"></i></div>
         </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ totalRevenue() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
-          <span class="kpi-label">Ingresos Generados (mes)</span>
+        <div class="kpi-card__value">{{ metrics()?.appointmentsCompleted || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
+          </svg>
+        </div>
+      </div>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Ingresos Generados (mes)</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-dollar-sign"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ formatCurrency(metrics()?.totalRevenue || 0) }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8"/>
+          </svg>
+        </div>
+      </div>
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Tasa Completación</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-chart-line"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ metrics()?.completionRate || 0 }}%</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,34 Q30,30 60,28 T120,22 T180,16 T200,10 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,34 Q30,30 60,28 T120,22 T180,16 T200,10"/>
+          </svg>
+        </div>
+      </div>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Prom. Ingresos/Dentista</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-scale-balanced"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ formatCurrency(metrics()?.avgRevenuePerDentist || 0) }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
+          </svg>
         </div>
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="quick-actions-row">
-      <a routerLink="/dentists" class="btn btn-outline">
-        <i class="fa-solid fa-list"></i>
-        Ver Todos
-      </a>
-      <a routerLink="/reports/dentist-productivity" class="btn btn-outline">
-        <i class="fa-solid fa-chart-bar"></i>
-        Reporte de Productividad
-      </a>
-      <a routerLink="/reports/appointment-occupancy" class="btn btn-outline">
-        <i class="fa-solid fa-calendar-check"></i>
-        Ocupación de Agenda
-      </a>
-    </div>
-
-    <!-- Content Grid -->
-    <div class="dashboard-grid">
-      <!-- Top Performers -->
+    <!-- Charts Grid (2 columnas) -->
+    <div class="analytics-grid">
+      <!-- Ingresos por Dentista -->
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
-            <i class="fa-solid fa-ranking-star"></i>
-            Productividad del Mes
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-chart-bar"></i>
+            Ingresos por Dentista
           </h2>
-          <span class="section-count">{{ topPerformers().length }}</span>
         </div>
 
-        @if (topPerformers().length === 0) {
+        @if (revenueChartData().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-chart-bar"></i>
-            <p>No hay datos de productividad este mes</p>
+            <p>No hay datos de ingresos este mes</p>
           </div>
         } @else {
-          <div class="dentist-list">
-            @for (dentist of topPerformers(); track dentist.dentistId; let idx = $index) {
-              <div class="dentist-item">
-                <div class="dentist-rank">{{ idx + 1 }}</div>
-                <div class="dentist-info">
-                  <span class="dentist-name">{{ dentist.dentistName }}</span>
-                  <span class="dentist-stats">
-                    {{ dentist.appointmentsCompleted }} citas · {{ dentist.treatmentsCompleted }} tratamientos
-                  </span>
+          <app-bar-chart
+            [data]="revenueChartData()"
+            [horizontal]="true"
+            [height]="'280px'"
+          />
+        }
+      </div>
+
+      <!-- Citas por Dentista -->
+      <div class="section-card">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-calendar-check"></i>
+            Citas Completadas por Dentista
+          </h2>
+        </div>
+
+        @if (appointmentsChartData().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-calendar-check"></i>
+            <p>No hay datos de citas este mes</p>
+          </div>
+        } @else {
+          <app-bar-chart
+            [data]="appointmentsChartData()"
+            [horizontal]="false"
+            [height]="'280px'"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Sections Grid (3 columnas) -->
+    <div class="analytics-grid cols-3">
+      <!-- Top por Ingresos -->
+      <div class="section-card">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-ranking-star"></i>
+            Top por Ingresos
+          </h2>
+          @if (topByRevenue().length > 0) {
+            <span class="dash-section-header__badge">{{ topByRevenue().length }}</span>
+          }
+        </div>
+
+        @if (topByRevenue().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-dollar-sign"></i>
+            <p>No hay datos de ingresos este mes</p>
+          </div>
+        } @else {
+          <div class="dash-list">
+            @for (dentist of topByRevenue(); track dentist.dentistId; let idx = $index) {
+              <a [routerLink]="['/users', dentist.dentistId]" class="dash-item">
+                <div class="dash-item__leading dash-item__leading--rank">
+                  {{ idx + 1 }}
                 </div>
-                <div class="dentist-meta">
-                  <span class="dentist-revenue">{{ dentist.revenueGenerated | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ dentist.dentistName }}</span>
+                  <span class="dash-item__subtitle">{{ dentist.subtitle }}</span>
                 </div>
-              </div>
+                <span class="dash-item__value" style="color: var(--success-600)">{{ formatCurrency(dentist.value) }}</span>
+              </a>
             }
           </div>
         }
       </div>
 
-      <!-- Recent Dentists -->
+      <!-- Top por Tratamientos -->
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-trophy"></i>
+            Top por Tratamientos
+          </h2>
+          @if (topByTreatments().length > 0) {
+            <span class="dash-section-header__badge">{{ topByTreatments().length }}</span>
+          }
+        </div>
+
+        @if (topByTreatments().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-tooth"></i>
+            <p>No hay datos de tratamientos este mes</p>
+          </div>
+        } @else {
+          <div class="dash-list">
+            @for (dentist of topByTreatments(); track dentist.dentistId; let idx = $index) {
+              <a [routerLink]="['/users', dentist.dentistId]" class="dash-item">
+                <div class="dash-item__leading dash-item__leading--rank">
+                  {{ idx + 1 }}
+                </div>
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ dentist.dentistName }}</span>
+                  <span class="dash-item__subtitle">{{ dentist.subtitle }}</span>
+                </div>
+                <span class="dash-item__value" style="color: var(--primary-600)">{{ dentist.value }}</span>
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Equipo de Dentistas -->
+      <div class="section-card">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-users"></i>
             Equipo de Dentistas
           </h2>
-          <span class="section-count">{{ dentists().length }}</span>
+          @if (teamList().length > 0) {
+            <span class="dash-section-header__badge">{{ teamList().length }}</span>
+          }
         </div>
 
-        @if (dentists().length === 0) {
+        @if (teamList().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-user-doctor"></i>
             <p>No hay dentistas registrados</p>
           </div>
         } @else {
-          <div class="dentist-list">
-            @for (d of recentDentists(); track d.id) {
-              <a [routerLink]="['/users', d.id]" class="dentist-item dentist-item--link">
-                <div class="dentist-avatar">
+          <div class="dash-list">
+            @for (d of teamList(); track d.id) {
+              <a [routerLink]="['/users', d.id]" class="dash-item">
+                <div class="dash-item__leading dash-item__leading--avatar">
                   <i class="fa-solid fa-user-doctor"></i>
                 </div>
-                <div class="dentist-info">
-                  <span class="dentist-name">{{ d.name }}</span>
-                  <span class="dentist-stats">
-                    {{ d.profile?.specialty || 'Sin especialidad' }}
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ d.name }}</span>
+                  <span class="dash-item__subtitle">
+                    {{ d.specialty }} · {{ d.appointmentsThisMonth }} citas
                   </span>
                 </div>
-                <div class="dentist-meta">
-                  <span class="status-badge" [class.badge-active]="d.isActive" [class.badge-inactive]="!d.isActive">
-                    {{ d.isActive ? 'Activo' : 'Inactivo' }}
-                  </span>
-                </div>
+                <span class="status-badge" [class.badge-active]="d.isActive" [class.badge-inactive]="!d.isActive">
+                  {{ d.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
               </a>
             }
           </div>

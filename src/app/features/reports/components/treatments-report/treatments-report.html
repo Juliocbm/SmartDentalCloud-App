@@ -40,33 +40,33 @@
   @if (!loading() && !error() && report(); as r) {
     <!-- KPIs -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon primary"><i class="fa-solid fa-tooth"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.total }}</span>
-          <span class="kpi-label">Total Tratamientos</span>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Tratamientos</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-tooth"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.total }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon info"><i class="fa-solid fa-spinner"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.inProgress }}</span>
-          <span class="kpi-label">En Progreso</span>
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">En Progreso</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-spinner"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.inProgress }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon success"><i class="fa-solid fa-check-circle"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.completed }}</span>
-          <span class="kpi-label">Completados</span>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Completados</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-check-circle"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.completed }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon warning"><i class="fa-solid fa-chart-pie"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.completionRate }}%</span>
-          <span class="kpi-label">Tasa de Completitud</span>
+      <div class="kpi-card kpi-card--warning">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Tasa de Completitud</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-chart-pie"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.completionRate }}%</div>
       </div>
     </div>
 

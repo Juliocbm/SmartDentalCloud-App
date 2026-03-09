@@ -27,13 +27,6 @@ interface DashboardMetric {
   color: string;
 }
 
-interface QuickAction {
-  label: string;
-  description: string;
-  icon: string;
-  route: string;
-}
-
 /**
  * Dashboard de pacientes con métricas, alertas y gráficos
  */
@@ -133,34 +126,6 @@ export class PatientsDashboardComponent implements OnInit {
     ];
   });
 
-  // Acciones rápidas
-  quickActions: QuickAction[] = [
-    {
-      label: 'Nuevo Paciente',
-      description: 'Registrar nuevo paciente',
-      icon: 'fa-user-plus',
-      route: '/patients/new'
-    },
-    {
-      label: 'Pacientes',
-      description: 'Ver todos los pacientes',
-      icon: 'fa-list',
-      route: '/patients'
-    },
-    {
-      label: 'Citas',
-      description: 'Gestionar citas',
-      icon: 'fa-calendar-days',
-      route: '/appointments'
-    },
-    {
-      label: 'Tratamientos',
-      description: 'Ver tratamientos',
-      icon: 'fa-tooth',
-      route: '/treatments'
-    }
-  ];
-
   // Conteo de alertas
   alertsCount = computed(() => this.alerts().length);
   criticalAlertsCount = computed(() => 
@@ -241,11 +206,20 @@ export class PatientsDashboardComponent implements OnInit {
 
   getAlertSeverityClass(severity: string): string {
     const classes: Record<string, string> = {
-      'high': 'alert--danger',
-      'medium': 'alert--warning',
-      'low': 'alert--info'
+      'high': 'dash-item--urgency-critical',
+      'medium': 'dash-item--urgency-warning',
+      'low': 'dash-item--urgency-info'
     };
-    return classes[severity] || 'alert--info';
+    return classes[severity] || 'dash-item--urgency-info';
+  }
+
+  getAlertLeadingClass(severity: string): string {
+    const classes: Record<string, string> = {
+      'high': 'dash-item__leading--error',
+      'medium': 'dash-item__leading--warning',
+      'low': 'dash-item__leading--info'
+    };
+    return classes[severity] || 'dash-item__leading--info';
   }
 
   formatCurrency(value: number): string {

@@ -1,6 +1,12 @@
 :host {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 }
+
+.range-picker-container {
+  position: relative;
+}
+
 
 .range-picker-wrapper {
   position: relative;
@@ -35,11 +41,11 @@
 .range-picker-input {
   width: 100%;
   min-width: 220px;
-  height: 36px;
-  padding: 0 var(--spacing-md);
+  padding: 8px 14px;
   padding-left: calc(var(--spacing-sm) + 1rem + var(--spacing-xs));
   padding-right: var(--spacing-3xl);
   font-size: var(--font-size-sm);
+  line-height: 1;
   color: var(--text-primary);
   background: transparent;
   border: none;

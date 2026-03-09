@@ -30,29 +30,6 @@
   }
 }
 
-/// Grid asimétrico para indicadores + acciones
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--analytics-grid-gap);
-  margin-bottom: var(--spacing-xl);
-
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-/// Grid de indicadores en fila
-.indicators-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-md);
-
-  @media (max-width: 500px) {
-    grid-template-columns: 1fr;
-  }
-}
-
 // ===== Section Card =====
 
 /// Tarjeta contenedora de sección
@@ -62,6 +39,7 @@
   border-radius: var(--section-card-radius);
   padding: var(--section-card-padding);
   box-shadow: var(--shadow-xs);
+  min-width: 0;
 }
 
 /// Título de sección
@@ -406,6 +384,42 @@
       grid-template-columns: 1fr;
     }
   }
+
+  /// Auto-fit: una fila en pantallas grandes, wrap natural en chicas
+  &.cols-auto {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 400px) {
+      grid-template-columns: 1fr;
+    }
+
+    .quick-action-card {
+      padding: var(--spacing-sm) var(--spacing-md);
+      gap: var(--spacing-md);
+
+      .action-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.875rem;
+      }
+
+      .action-title {
+        font-size: 0.8125rem;
+      }
+
+      .action-description {
+        font-size: 0.6875rem;
+      }
+
+      .action-arrow {
+        display: none;
+      }
+    }
+  }
 }
 
 /// Tarjeta de acción rápida (dashboard)
@@ -510,144 +524,7 @@
   }
 }
 
-/// Cards compactas para bottom-grid
-.bottom-grid .dashboard-action-card,
-.bottom-grid .quick-action-card {
-  padding: var(--spacing-md);
-  gap: var(--spacing-md);
-
-  .action-icon {
-    width: 36px;
-    height: 36px;
-    font-size: var(--font-size-base);
-  }
-
-  .action-title {
-    font-size: var(--font-size-sm);
-    margin-bottom: 2px;
-  }
-
-  .action-description {
-    font-size: var(--font-size-xs);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .action-value {
-    font-size: var(--font-size-lg);
-  }
-
-  .action-arrow {
-    font-size: var(--font-size-sm);
-  }
-}
-
-// ===== Metrics Grid =====
-
-/// Grid de métricas/KPIs
-.metrics-grid {
-  display: grid;
-  grid-template-columns: var(--dashboard-metrics-columns);
-  gap: var(--metric-card-gap);
-  margin-bottom: var(--spacing-xl);
-}
-
-/// Tarjeta de métrica
-.metric-card {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  padding: var(--metric-card-padding);
-  background: var(--metric-card-background);
-  border: var(--metric-card-border);
-  border-radius: var(--metric-card-radius);
-  text-decoration: none;
-  color: inherit;
-  transition: var(--transition-smooth);
-  
-  &:hover {
-    transform: var(--metric-card-hover-transform);
-    box-shadow: var(--metric-card-hover-shadow);
-    border-color: var(--primary-600);
-
-    .metric-arrow {
-      opacity: 1;
-      color: var(--primary-600);
-    }
-  }
-
-  .metric-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--metric-icon-size);
-    height: var(--metric-icon-size);
-    border-radius: var(--metric-icon-radius);
-    font-size: var(--metric-icon-font-size);
-    flex-shrink: 0;
-  }
-
-  .metric-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-    min-width: 0;
-  }
-
-  .metric-label {
-    font-size: var(--metric-label-font-size);
-    color: var(--metric-label-color);
-    font-weight: var(--font-weight-medium);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .metric-value {
-    font-size: var(--metric-value-font-size);
-    font-weight: var(--metric-value-font-weight);
-    line-height: var(--line-height-tight);
-    color: var(--text-primary);
-  }
-
-  .metric-arrow {
-    color: var(--text-tertiary);
-    font-size: var(--font-size-lg);
-    opacity: 0;
-    transition: var(--transition-base);
-    flex-shrink: 0;
-  }
-
-  /// Variantes de color
-  &.primary .metric-icon {
-    background: var(--metric-primary-bg);
-    color: var(--metric-primary-color);
-  }
-
-  &.success .metric-icon {
-    background: var(--metric-success-bg);
-    color: var(--metric-success-color);
-  }
-
-  &.critical .metric-icon {
-    background: var(--metric-error-bg);
-    color: var(--metric-error-color);
-  }
-
-  &.warning .metric-icon {
-    background: var(--metric-warning-bg);
-    color: var(--metric-warning-color);
-  }
-
-  &.info .metric-icon {
-    background: var(--metric-info-bg);
-    color: var(--metric-info-color);
-  }
-}
+// ===== Metrics Grid (migrated to .kpi-grid/.kpi-card in _components.scss) =====
 
 // ===== Status Badges =====
 
@@ -709,35 +586,276 @@
   }
 }
 
-// ===== Responsive Overrides =====
+// =============================================
+// DASHBOARD STANDARD COMPONENTS
+// Cabeceras y listas estandarizadas para todos los dashboards.
+// =============================================
 
-@media (max-width: 768px) {
-  .metrics-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
-  }
+// ===== Dashboard Section Header =====
+// Cabecera estándar para secciones de dashboard.
+// Estructura:
+//   <div class="dash-section-header">
+//     <h2 class="dash-section-header__title"><i>…</i> Título</h2>
+//     <span class="dash-section-header__badge">5</span>       <!-- o -->
+//     <a class="btn btn--sm btn--ghost">Ver todos</a>
+//   </div>
 
-  .metric-card {
-    padding: var(--spacing-lg);
+.dash-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-md);
 
-    .metric-value {
-      font-size: var(--font-size-3xl);
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    line-height: 1.2;
+
+    i {
+      color: var(--primary-600);
+      font-size: var(--font-size-lg);
     }
   }
 
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--section-badge-size);
+    height: var(--section-badge-size);
+    padding: var(--section-badge-padding);
+    background: var(--primary-100);
+    color: var(--primary-700);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+    flex-shrink: 0;
+  }
+}
+
+// ===== Dashboard List =====
+// Contenedor de lista con scroll.
+
+.dash-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-height: var(--list-max-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+// ===== Dashboard List Item =====
+// Item estándar de lista de dashboard.
+// Anatomía: [leading] + [content (title + subtitle)] + [trailing]
+//
+// Estructura:
+//   <a class="dash-item" [routerLink]="...">
+//     <div class="dash-item__leading">
+//       <i class="fa-solid fa-icon"></i>
+//     </div>
+//     <div class="dash-item__content">
+//       <span class="dash-item__title">Título</span>
+//       <span class="dash-item__subtitle">Detalle</span>
+//     </div>
+//     <div class="dash-item__trailing">
+//       <span class="badge badge-success">Pagada</span>
+//     </div>
+//   </a>
+
+.dash-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--list-item-background);
+  border: var(--list-item-border);
+  border-radius: var(--list-item-radius);
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--list-item-hover-background);
+    border-color: var(--primary-300);
+    box-shadow: var(--shadow-sm);
+
+    .dash-item__arrow {
+      opacity: 1;
+      color: var(--primary-600);
+    }
+  }
+
+  // --- Leading ---
+  &__leading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--primary-100);
+    color: var(--primary-600);
+    font-size: var(--font-size-sm);
+    flex-shrink: 0;
+
+    &--avatar {
+      width: 36px;
+      height: 36px;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    &--rank {
+      width: 28px;
+      height: 28px;
+      background: var(--primary-50);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+    }
+
+    &--urgency {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+    }
+
+    // Urgency colors
+    &--success {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    &--info {
+      background: var(--info-bg);
+      color: var(--info-text);
+    }
+
+    &--warning {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+
+    &--error {
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+
+    &--primary {
+      background: var(--metric-primary-bg);
+      color: var(--primary-600);
+    }
+  }
+
+  // --- Content ---
+  &__content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__subtitle {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // --- Trailing ---
+  &__trailing {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-shrink: 0;
+  }
+
+  &__value {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  &__meta {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    white-space: nowrap;
+  }
+
+  &__arrow {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-base);
+    opacity: 0;
+    transition: var(--transition-base);
+    flex-shrink: 0;
+  }
+
+  // --- Urgency variant (left border) ---
+  &--urgency-critical {
+    border-left: 3px solid var(--error-600);
+  }
+
+  &--urgency-warning {
+    border-left: 3px solid var(--warning-600);
+  }
+
+  &--urgency-info {
+    border-left: 3px solid var(--info-600);
+  }
+
+  // --- Highlight variant (e.g. birthday today) ---
+  &--highlight {
+    background: var(--success-50);
+    border-color: var(--success-200);
+
+    &:hover {
+      background: var(--success-100);
+    }
+  }
+
+  // --- No leading variant ---
+  &--no-leading {
+    .dash-item__leading {
+      display: none;
+    }
+  }
+}
+
+// ===== Responsive Overrides =====
+
+@media (max-width: 768px) {
   .quick-actions-grid {
     grid-template-columns: 1fr;
   }
 
   .section-card {
     padding: var(--spacing-lg);
-  }
-}
-
-@media (max-width: 480px) {
-  .metric-card {
-    .metric-value {
-      font-size: var(--font-size-2xl);
-    }
   }
 }

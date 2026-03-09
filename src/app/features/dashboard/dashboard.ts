@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
+import { DateRangePickerComponent, DateRange } from '../../shared/components/date-range-picker/date-range-picker';
 import { LocationAutocompleteComponent } from '../../shared/components/location-autocomplete/location-autocomplete';
 import { LocationSummary } from '../settings/models/location.models';
 import { DashboardService } from './services/dashboard.service';
@@ -12,7 +13,7 @@ import { PermissionService, PERMISSIONS } from '../../core/services/permission.s
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, LocationAutocompleteComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, LocationAutocompleteComponent, DateRangePickerComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -25,6 +26,7 @@ export class DashboardComponent implements OnInit {
   loading = signal(true);
   data = signal<DashboardData | null>(null);
   selectedLocationId = signal<string | null>(null);
+  dateRange = signal<DateRange>(this.getDefaultDateRange());
 
   private allQuickActions: QuickAction[] = [
     { label: 'Nueva Cita', description: 'Agendar paciente', icon: 'fa-calendar-plus', route: '/appointments/new', color: 'primary', requiredPermission: PERMISSIONS.AppointmentsCreate },
@@ -71,13 +73,20 @@ export class DashboardComponent implements OnInit {
     this.loadData();
   }
 
+  onDateRangeChange(range: DateRange | null): void {
+    if (!range) return;
+    this.dateRange.set(range);
+    this.loadData();
+  }
+
   refreshData(): void {
     this.loadData();
   }
 
   private loadData(): void {
     this.loading.set(true);
-    this.dashboardService.loadDashboardData(this.selectedLocationId()).subscribe({
+    const { start, end } = this.dateRange();
+    this.dashboardService.loadDashboardData(this.selectedLocationId(), start, end).subscribe({
       next: (data) => {
         this.data.set(data);
         this.loading.set(false);
@@ -128,5 +137,15 @@ export class DashboardComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     }).format(date);
+  }
+
+  private getDefaultDateRange(): DateRange {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return {
+      start: `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}`,
+      end: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+    };
   }
 }

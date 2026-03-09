@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, forkJoin, of } from 'rxjs';
+import { Observable, map, forkJoin, of, switchMap, catchError } from 'rxjs';
 import { AppointmentsService } from './appointments.service';
-import { AppointmentStatus, AppointmentStatusConfig, AppointmentListItem } from '../models/appointment.models';
+import { Appointment, AppointmentStatus, AppointmentStatusConfig, AppointmentListItem } from '../models/appointment.models';
+import { AuditLogService } from '../../audit-log/services/audit-log.service';
 import {
   UpcomingAppointment,
   PendingConfirmation,
@@ -21,6 +22,7 @@ import {
 @Injectable()
 export class AppointmentsAnalyticsService {
   private appointmentsService = inject(AppointmentsService);
+  private auditLogService = inject(AuditLogService);
 
   /**
    * Obtiene las métricas principales del dashboard.
@@ -66,9 +68,10 @@ export class AppointmentsAnalyticsService {
    */
   getUpcomingToday(limit: number = 5, locationId?: string | null): Observable<UpcomingAppointment[]> {
     const now = new Date();
-    const endOfDay = this.endOfDay(now);
+    const start = this.startOfDay(now);
+    const end = this.endOfDay(now);
 
-    return this.appointmentsService.getByRange(now, endOfDay, undefined, undefined, locationId).pipe(
+    return this.appointmentsService.getByRange(start, end, undefined, undefined, locationId).pipe(
       map(appointments => {
         return appointments
           .filter(a => a.status === AppointmentStatus.Scheduled || a.status === AppointmentStatus.Confirmed)
@@ -84,9 +87,9 @@ export class AppointmentsAnalyticsService {
    */
   getPendingConfirmations(limit: number = 5, locationId?: string | null): Observable<PendingConfirmation[]> {
     const now = new Date();
-    const endOfWeek = this.endOfWeek(now);
+    const sevenDaysAhead = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    return this.appointmentsService.getByRange(now, endOfWeek, undefined, AppointmentStatus.Scheduled, locationId).pipe(
+    return this.appointmentsService.getByRange(now, sevenDaysAhead, undefined, AppointmentStatus.Scheduled, locationId).pipe(
       map(appointments => {
         return appointments
           .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
@@ -149,51 +152,86 @@ export class AppointmentsAnalyticsService {
   }
 
   /**
-   * Obtiene actividad reciente de citas (simulada basada en citas recientes).
+   * Obtiene actividad reciente de citas desde el audit log real.
+   *
+   * Estrategia:
+   *  1. Consulta audit logs filtrados por entityType=Appointment.
+   *  2. Resuelve nombres de paciente vía batch fetch de citas.
+   *  3. Filtra por locationId si se especifica.
    */
   getRecentActivity(limit: number = 5, locationId?: string | null): Observable<AppointmentActivity[]> {
-    const now = new Date();
-    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return this.auditLogService.getLogs({
+      entityType: 'Appointment',
+      pageSize: limit * 3
+    }).pipe(
+      switchMap(logs => {
+        const uniqueIds = [...new Set(
+          logs.filter(l => l.entityId).map(l => l.entityId!)
+        )];
 
-    return this.appointmentsService.getByRange(weekAgo, now, undefined, undefined, locationId).pipe(
-      map(appointments => {
-        const activities: AppointmentActivity[] = [];
+        if (uniqueIds.length === 0) return of([]);
 
-        appointments.forEach(apt => {
-          const activityType = this.getActivityType(apt.status);
-          activities.push({
-            id: `${apt.id}-${activityType}`,
-            type: activityType,
-            description: this.getActivityDescription(activityType, apt.patientName),
-            timestamp: new Date(apt.createdAt),
-            patientName: apt.patientName,
-            appointmentId: apt.id
-          });
+        // Batch-fetch appointment details for patient name resolution
+        const fetches: Record<string, Observable<Appointment | null>> = {};
+        uniqueIds.forEach(id => {
+          fetches[id] = this.appointmentsService.getById(id).pipe(
+            catchError(() => of(null))
+          );
         });
 
-        return activities
-          .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-          .slice(0, limit);
+        return forkJoin(fetches).pipe(
+          map(appointmentMap => {
+            return logs
+              .map(log => {
+                if (!log.entityId) return null;
+                const apt = appointmentMap[log.entityId];
+                if (!apt) return null;
+                if (locationId && apt.locationId !== locationId) return null;
+
+                const activityType = this.mapAuditActionToActivityType(log.action);
+                return {
+                  id: log.id,
+                  type: activityType,
+                  description: this.getActivityDescription(activityType, apt.patientName),
+                  timestamp: new Date(log.createdAt),
+                  patientName: apt.patientName,
+                  appointmentId: log.entityId
+                } as AppointmentActivity;
+              })
+              .filter((a): a is AppointmentActivity => a !== null)
+              .slice(0, limit);
+          })
+        );
       })
     );
   }
 
   /**
-   * Obtiene pacientes frecuentes basado en número de citas.
+   * Obtiene pacientes frecuentes basado en número de citas completadas.
+   *
+   * Estrategia de dos consultas:
+   *  - Histórica (últimos 180 días → ahora): conteo de visitas y última visita.
+   *  - Futura (ahora → 90 días adelante): próxima cita Scheduled/Confirmed.
    */
-  getFrequentPatients(limit: number = 5, locationId?: string | null): Observable<FrequentPatient[]> {
+  getFrequentPatients(limit: number = 5, locationId?: string | null, startDate?: Date, endDate?: Date): Observable<FrequentPatient[]> {
     const now = new Date();
-    const sixMonthsAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+    const histStart = startDate || new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+    const histEnd = endDate || now;
+    const ninetyDaysAhead = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
 
-    return this.appointmentsService.getByRange(sixMonthsAgo, now, undefined, undefined, locationId).pipe(
-      map(appointments => {
+    return forkJoin({
+      historical: this.appointmentsService.getByRange(histStart, histEnd, undefined, undefined, locationId),
+      upcoming: this.appointmentsService.getByRange(now, ninetyDaysAhead, undefined, undefined, locationId)
+    }).pipe(
+      map(({ historical, upcoming }) => {
+        // 1. Agrupar citas históricas por paciente
         const patientMap = new Map<string, {
           patientId: string;
           patientName: string;
           appointments: AppointmentListItem[];
         }>();
 
-        appointments.forEach(apt => {
+        historical.forEach(apt => {
           if (!patientMap.has(apt.patientId)) {
             patientMap.set(apt.patientId, {
               patientId: apt.patientId,
@@ -204,19 +242,24 @@ export class AppointmentsAnalyticsService {
           patientMap.get(apt.patientId)!.appointments.push(apt);
         });
 
+        // 2. Indexar próxima cita futura por paciente (primera Scheduled/Confirmed)
+        const nextAppointmentMap = new Map<string, Date>();
+
+        upcoming
+          .filter(a => a.status === AppointmentStatus.Scheduled || a.status === AppointmentStatus.Confirmed)
+          .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
+          .forEach(apt => {
+            if (!nextAppointmentMap.has(apt.patientId)) {
+              nextAppointmentMap.set(apt.patientId, new Date(apt.startAt));
+            }
+          });
+
+        // 3. Construir resultado
         return Array.from(patientMap.values())
           .map(patient => {
             const completed = patient.appointments.filter(a => a.status === AppointmentStatus.Completed);
-            const sortedByDate = [...patient.appointments].sort((a, b) => 
-              new Date(b.startAt).getTime() - new Date(a.startAt).getTime()
-            );
-            const lastCompleted = completed.sort((a, b) => 
-              new Date(b.startAt).getTime() - new Date(a.startAt).getTime()
-            )[0];
-            const upcoming = sortedByDate.find(a => 
-              new Date(a.startAt) > now && 
-              (a.status === AppointmentStatus.Scheduled || a.status === AppointmentStatus.Confirmed)
-            );
+            const lastCompleted = completed
+              .sort((a, b) => new Date(b.startAt).getTime() - new Date(a.startAt).getTime())[0];
 
             return {
               patientId: patient.patientId,
@@ -224,10 +267,10 @@ export class AppointmentsAnalyticsService {
               totalAppointments: patient.appointments.length,
               completedAppointments: completed.length,
               lastVisit: lastCompleted ? new Date(lastCompleted.startAt) : null,
-              nextAppointment: upcoming ? new Date(upcoming.startAt) : null
+              nextAppointment: nextAppointmentMap.get(patient.patientId) ?? null
             };
           })
-          .sort((a, b) => b.totalAppointments - a.totalAppointments)
+          .sort((a, b) => b.completedAppointments - a.completedAppointments)
           .slice(0, limit);
       })
     );
@@ -267,13 +310,12 @@ export class AppointmentsAnalyticsService {
     };
   }
 
-  private getActivityType(status: AppointmentStatus): AppointmentActivityType {
-    switch (status) {
-      case AppointmentStatus.Scheduled: return 'created';
-      case AppointmentStatus.Confirmed: return 'confirmed';
-      case AppointmentStatus.Completed: return 'completed';
-      case AppointmentStatus.Cancelled: return 'cancelled';
-      case AppointmentStatus.NoShow: return 'no_show';
+  private mapAuditActionToActivityType(action: string): AppointmentActivityType {
+    switch (action) {
+      case 'Schedule': return 'created';
+      case 'Cancel': return 'cancelled';
+      case 'Complete': return 'completed';
+      case 'Update': return 'rescheduled';
       default: return 'created';
     }
   }

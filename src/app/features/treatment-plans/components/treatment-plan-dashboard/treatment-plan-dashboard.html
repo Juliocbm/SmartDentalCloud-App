@@ -4,6 +4,16 @@
     [subtitle]="'Panel de control del módulo de planes de tratamiento'"
     [icon]="'fa-clipboard-list'"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <a routerLink="/treatment-plans/new" class="btn btn-outline btn-success">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Plan
+      </a>
+      <a routerLink="/treatment-plans" class="btn btn-outline">
+        <i class="fa-solid fa-list"></i>
+        Ver Todos
+      </a>
+    </div>
   </app-page-header>
 
   @if (loading()) {
@@ -19,84 +29,96 @@
   } @else {
     <!-- KPI Cards -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper primary">
-          <i class="fa-solid fa-clipboard-list"></i>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Planes</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-clipboard-list"></i></div>
         </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ statusCounts().total }}</span>
-          <span class="kpi-label">Total Planes</span>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper warning">
-          <i class="fa-solid fa-clock"></i>
-        </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ statusCounts().draft + statusCounts().pendingApproval }}</span>
-          <span class="kpi-label">Pendientes de Aprobación</span>
+        <div class="kpi-card__value">{{ statusCounts().total }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16"/>
+          </svg>
         </div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper info">
-          <i class="fa-solid fa-spinner"></i>
+      <div class="kpi-card kpi-card--warning">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Pendientes de Aprobación</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-clock"></i></div>
         </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ statusCounts().inProgress }}</span>
-          <span class="kpi-label">En Progreso</span>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper success">
-          <i class="fa-solid fa-circle-check"></i>
-        </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ statusCounts().completed }}</span>
-          <span class="kpi-label">Completados</span>
+        <div class="kpi-card__value">{{ statusCounts().draft + statusCounts().pendingApproval }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--down">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34"/>
+          </svg>
         </div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper success">
-          <i class="fa-solid fa-chart-line"></i>
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">En Progreso</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-spinner"></i></div>
         </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ approvalRate() }}%</span>
-          <span class="kpi-label">Tasa de Aprobación</span>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper primary">
-          <i class="fa-solid fa-dollar-sign"></i>
-        </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ totalEstimatedValue() | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
-          <span class="kpi-label">Valor Total Estimado</span>
+        <div class="kpi-card__value">{{ statusCounts().inProgress }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+          </svg>
         </div>
       </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="quick-actions-row">
-      <a routerLink="/treatment-plans/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Plan
-      </a>
-      <a routerLink="/treatment-plans" class="btn btn-outline">
-        <i class="fa-solid fa-list"></i>
-        Ver Todos
-      </a>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Completados</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-circle-check"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ statusCounts().completed }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
+          </svg>
+        </div>
+      </div>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Tasa de Aprobación</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-chart-line"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ approvalRate() }}%</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8"/>
+          </svg>
+        </div>
+      </div>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Valor Total Estimado</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-dollar-sign"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ totalEstimatedValue() | currency:'MXN':'symbol-narrow':'1.0-0' }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+          </svg>
+        </div>
+      </div>
     </div>
 
     <!-- Content Grid -->
-    <div class="dashboard-grid">
+    <div class="analytics-grid">
       <!-- Pending Approval -->
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-clock"></i>
             Pendientes de Aprobación
           </h2>
-          <span class="section-count">{{ pendingApprovalPlans().length }}</span>
+          <span class="dash-section-header__badge">{{ pendingApprovalPlans().length }}</span>
         </div>
 
         @if (pendingApprovalPlans().length === 0) {
@@ -105,16 +127,16 @@
             <p>No hay planes pendientes de aprobación</p>
           </div>
         } @else {
-          <div class="plan-list">
+          <div class="dash-list">
             @for (plan of pendingApprovalPlans().slice(0, 8); track plan.id) {
-              <a [routerLink]="['/treatment-plans', plan.id]" class="plan-item">
-                <div class="plan-info">
-                  <span class="plan-title">{{ plan.title }}</span>
-                  <span class="plan-patient">{{ plan.patientName }}</span>
+              <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ plan.title }}</span>
+                  <span class="dash-item__subtitle">{{ plan.patientName }}</span>
                 </div>
-                <div class="plan-meta">
-                  <span class="plan-cost">{{ plan.totalEstimatedCost | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
-                  <span class="plan-date">{{ formatDate(plan.createdAt) }}</span>
+                <div class="dash-item__trailing">
+                  <span class="dash-item__value" style="color: var(--success-600)">{{ plan.totalEstimatedCost | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                  <span class="dash-item__meta">{{ formatDate(plan.createdAt) }}</span>
                 </div>
               </a>
             }
@@ -124,12 +146,12 @@
 
       <!-- Active Plans -->
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-spinner"></i>
             Planes Activos
           </h2>
-          <span class="section-count">{{ activePlans().length }}</span>
+          <span class="dash-section-header__badge">{{ activePlans().length }}</span>
         </div>
 
         @if (activePlans().length === 0) {
@@ -138,21 +160,21 @@
             <p>No hay planes activos</p>
           </div>
         } @else {
-          <div class="plan-list">
+          <div class="dash-list">
             @for (plan of activePlans().slice(0, 8); track plan.id) {
-              <a [routerLink]="['/treatment-plans', plan.id]" class="plan-item">
-                <div class="plan-info">
-                  <span class="plan-title">{{ plan.title }}</span>
-                  <span class="plan-patient">{{ plan.patientName }}</span>
+              <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ plan.title }}</span>
+                  <span class="dash-item__subtitle">{{ plan.patientName }}</span>
                 </div>
-                <div class="plan-meta">
+                <div class="dash-item__trailing">
                   <div class="progress-indicator">
                     <div class="progress-bar">
                       <div class="progress-fill" [style.width.%]="plan.overallProgressPercentage"></div>
                     </div>
                     <span class="progress-text">{{ plan.overallProgressPercentage }}%</span>
                   </div>
-                  <span class="plan-items">{{ plan.completedItems }}/{{ plan.totalItems }}</span>
+                  <span class="dash-item__meta">{{ plan.completedItems }}/{{ plan.totalItems }}</span>
                 </div>
               </a>
             }
@@ -162,8 +184,8 @@
 
       <!-- Recent Plans -->
       <div class="section-card section-card--full">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-clock-rotate-left"></i>
             Planes Recientes
           </h2>
@@ -175,19 +197,19 @@
             <p>No hay planes registrados</p>
           </div>
         } @else {
-          <div class="plan-list">
+          <div class="dash-list">
             @for (plan of recentPlans(); track plan.id) {
-              <a [routerLink]="['/treatment-plans', plan.id]" class="plan-item">
-                <div class="plan-info">
-                  <span class="plan-title">{{ plan.title }}</span>
-                  <span class="plan-patient">{{ plan.patientName }} · {{ plan.planNumber }}</span>
+              <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ plan.title }}</span>
+                  <span class="dash-item__subtitle">{{ plan.patientName }} · {{ plan.planNumber }}</span>
                 </div>
-                <div class="plan-meta">
+                <div class="dash-item__trailing">
                   <span [class]="'badge ' + getStatusConfig(plan.status).class">
                     <i [class]="'fa-solid ' + getStatusConfig(plan.status).icon"></i>
                     {{ getStatusConfig(plan.status).label }}
                   </span>
-                  <span class="plan-date">{{ formatDate(plan.createdAt) }}</span>
+                  <span class="dash-item__meta">{{ formatDate(plan.createdAt) }}</span>
                 </div>
               </a>
             }

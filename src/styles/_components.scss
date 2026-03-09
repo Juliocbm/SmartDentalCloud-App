@@ -199,131 +199,157 @@
   width: 100%;
 }
 
-// ===== TARJETAS KPI =====
+// ===== TARJETAS KPI (Unified Indicator Component) =====
+
+/// Grid responsive para KPI cards
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--kpi-grid-min-col), 1fr));
+  gap: var(--kpi-grid-gap);
+  margin-bottom: var(--spacing-xl);
+}
+
+/// Card indicadora — soporta <div> y <a>
 .kpi-card {
-  background: var(--gradient-card);
-  border-radius: var(--radius-lg);
-  padding: 1rem;
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--border-primary);
-  transition: var(--transition-smooth);
+  background: var(--kpi-card-bg);
+  border: var(--kpi-card-border);
+  border-radius: var(--kpi-card-radius);
+  padding: var(--kpi-card-padding);
+  box-shadow: var(--kpi-card-shadow);
   position: relative;
   overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-primary);
-  }
+  transition: var(--transition-smooth);
+  text-decoration: none;
+  color: inherit;
+  display: block;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-card-hover);
+    transform: var(--kpi-card-hover-transform);
+    box-shadow: var(--kpi-card-hover-shadow);
+  }
+
+  // Clickable variant (when <a>)
+  &[href], &[routerLink] {
+    cursor: pointer;
   }
 }
 
-.kpi-header {
+/// Header row: label + icon
+.kpi-card__header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-xs);
 }
 
-.kpi-icon-wrapper {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
+/// Label (small, muted, top)
+.kpi-card__label {
+  font-size: var(--kpi-label-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--kpi-label-color);
+  line-height: var(--line-height-normal);
+}
+
+/// Icon circle (top-right)
+.kpi-card__icon {
+  width: var(--kpi-icon-size);
+  height: var(--kpi-icon-size);
+  border-radius: var(--kpi-icon-radius);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: var(--kpi-icon-font-size);
+  flex-shrink: 0;
   background: var(--surface-tertiary);
   color: var(--text-secondary);
-  transition: var(--transition-base);
 }
 
-.kpi-trend {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-full);
-
-  &.positive {
-    background: var(--success-bg);
-    color: var(--success-text);
-  }
-
-  &.negative {
-    background: var(--error-bg);
-    color: var(--error-text);
-  }
-
-  &.neutral {
-    background: var(--neutral-bg);
-    color: var(--neutral-text);
-  }
-
-  i {
-    font-size: 0.7rem;
-  }
-}
-
-.kpi-content {
-  margin-bottom: 0.5rem;
-}
-
-.kpi-value {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
+/// Main value (big, bold)
+.kpi-card__value {
+  font-size: var(--kpi-value-size);
+  font-weight: var(--kpi-value-weight);
   color: var(--text-primary);
   line-height: var(--line-height-tight);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0;
 }
 
-.kpi-label {
-  font-size: var(--font-size-base);
+/// Trend indicator (optional)
+.kpi-card__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--kpi-trend-size);
   font-weight: var(--font-weight-semibold);
-  color: var(--text-secondary);
-  margin-bottom: 0.25rem;
-}
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-full);
 
-.kpi-sublabel {
-  font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
-}
+  i { font-size: 0.65rem; }
 
-.kpi-chart {
-  height: 40px;
-  display: flex;
-  align-items: flex-end;
-}
-
-.mini-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 3px;
-  height: 100%;
-  width: 100%;
-}
-
-.chart-bar {
-  flex: 1;
-  background: var(--gradient-primary);
-  border-radius: 2px 2px 0 0;
-  min-height: 8px;
-  opacity: 0.7;
-  transition: var(--transition-base);
-
-  &:hover {
-    opacity: 1;
+  &--up {
+    background: var(--success-50);
+    color: var(--success-600);
   }
+
+  &--down {
+    background: var(--error-50);
+    color: var(--error-600);
+  }
+
+  &--neutral {
+    background: var(--surface-tertiary);
+    color: var(--text-tertiary);
+  }
+}
+
+/// Sparkline SVG background (translucent, bottom of card)
+.kpi-card__sparkline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--kpi-sparkline-height);
+  pointer-events: none;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  &--up {
+    .sparkline-fill { fill: var(--success-400); opacity: var(--kpi-sparkline-opacity); }
+    .sparkline-line { stroke: var(--success-400); opacity: 0.35; }
+  }
+
+  &--down {
+    .sparkline-fill { fill: var(--error-400); opacity: var(--kpi-sparkline-opacity); }
+    .sparkline-line { stroke: var(--error-400); opacity: 0.35; }
+  }
+
+  &--neutral {
+    .sparkline-fill { fill: var(--primary-400); opacity: var(--kpi-sparkline-opacity); }
+    .sparkline-line { stroke: var(--primary-400); opacity: 0.35; }
+  }
+}
+
+.sparkline-fill { transition: fill 0.3s ease; }
+.sparkline-line { fill: none; stroke-width: 1.5; transition: stroke 0.3s ease; }
+
+/// Color variants — icon backgrounds
+.kpi-card--primary .kpi-card__icon { background: var(--kpi-primary-bg); color: var(--kpi-primary-color); }
+.kpi-card--success .kpi-card__icon { background: var(--kpi-success-bg); color: var(--kpi-success-color); }
+.kpi-card--warning .kpi-card__icon { background: var(--kpi-warning-bg); color: var(--kpi-warning-color); }
+.kpi-card--error .kpi-card__icon   { background: var(--kpi-error-bg); color: var(--kpi-error-color); }
+.kpi-card--info .kpi-card__icon    { background: var(--kpi-info-bg); color: var(--kpi-info-color); }
+
+/// Responsive
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-card__value { font-size: 1.25rem; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr; }
 }
 
 // ===== QUICK ACTION CARDS =====

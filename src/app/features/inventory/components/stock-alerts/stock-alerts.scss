@@ -6,85 +6,7 @@
 // Tabla: usa .table-container y .table de _components.scss
 // ============================================
 
-// ===== Alert Summary Cards =====
-.alert-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-2xl);
-}
-
-.summary-card {
-  background: var(--surface-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  border: 1px solid var(--border-primary);
-  transition: var(--transition-base);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
-
-  &.critical {
-    border-left: 4px solid var(--error-500);
-
-    .card-icon {
-      background: var(--error-50);
-      color: var(--error-500);
-    }
-  }
-
-  &.warning {
-    border-left: 4px solid var(--warning-500);
-
-    .card-icon {
-      background: var(--warning-50);
-      color: var(--warning-500);
-    }
-  }
-
-  &.total {
-    border-left: 4px solid var(--primary-500);
-
-    .card-icon {
-      background: var(--primary-50);
-      color: var(--primary-500);
-    }
-  }
-}
-
-.card-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-2xl);
-  flex-shrink: 0;
-}
-
-.card-content {
-  flex: 1;
-}
-
-.card-value {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
-  line-height: 1;
-  margin-bottom: var(--spacing-xs);
-}
-
-.card-label {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  font-weight: var(--font-weight-medium);
-}
+// Alert Summary Cards: usa .kpi-grid/.kpi-card de _components.scss
 
 // Empty: usa .empty-state de _components.scss
 // Override: ícono verde cuando no hay alertas (estado positivo)
@@ -157,7 +79,7 @@
   }
 }
 
-// Stock actual
+// Stock disponible
 .stock-cell {
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-lg);
@@ -173,10 +95,33 @@
   }
 }
 
+.stock-reserved {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+// Déficit
+.deficit-cell {
+  text-align: center;
+}
+
+.deficit-value {
+  font-weight: var(--font-weight-bold);
+  color: var(--error-600);
+  font-size: var(--font-size-sm);
+}
+
+// Cantidad sugerida
+.suggested-cell {
+  text-align: center;
+}
+
 // Celdas de números
 .min-stock-cell,
-.reorder-cell,
-.reorder-qty-cell {
+.reorder-cell {
   text-align: center;
   font-size: var(--font-size-sm);
 }
@@ -203,10 +148,6 @@
 
 // ===== Responsive Design =====
 @media (max-width: 768px) {
-  .alert-summary {
-    grid-template-columns: 1fr;
-  }
-
   .page-header {
     flex-direction: column;
     gap: var(--spacing-md);

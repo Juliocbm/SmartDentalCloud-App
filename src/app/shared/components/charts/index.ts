@@ -6,3 +6,4 @@
 export * from './chart.models';
 export * from './pie-chart/pie-chart';
 export * from './bar-chart/bar-chart';
+export * from './line-chart/line-chart';

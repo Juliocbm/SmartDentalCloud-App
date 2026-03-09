@@ -10,6 +10,10 @@
         placeholder="Filtrar por sucursal..."
         (locationSelected)="onLocationSelected($event)">
       </app-location-autocomplete>
+      <a routerLink="/inventory/products" class="btn btn-outline">
+        <i class="fa-solid fa-list"></i>
+        Ver Productos
+      </a>
     </div>
   </app-page-header>
 
@@ -37,71 +41,98 @@
       <span class="alert-message">{{ error() }}</span>
     </div>
   } @else {
-    <!-- Grid: Indicadores + Accesos Rápidos -->
-    <div class="bottom-grid">
-      <!-- Indicadores Clave -->
-      <div class="section-card grid-narrow">
-        <h2 class="section-title">
-          <i class="fa-solid fa-gauge-high"></i>
-          Indicadores Clave
-        </h2>
-        <div class="indicators-list">
-          <!-- Total de Productos -->
-          <a [routerLink]="['/inventory/products']" class="quick-action-card">
-            <div class="action-icon primary">
-              <i class="fa-solid fa-boxes-stacked"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Total Productos</h3>
-              <p class="action-value">{{ totalProducts() }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
-          <!-- Valor del Inventario -->
-          <a [routerLink]="['/inventory/products']" class="quick-action-card">
-            <div class="action-icon success">
-              <i class="fa-solid fa-coins"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Valor Inventario</h3>
-              <p class="action-value">{{ formatCurrency(totalInventoryValue()) }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
+    <!-- KPI Indicators -->
+    <div class="kpi-grid">
+      <a class="kpi-card kpi-card--primary" [routerLink]="['/inventory/products']">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Productos</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-boxes-stacked"></i></div>
         </div>
-      </div>
-
-      <!-- Accesos Rápidos -->
-      <div class="section-card grid-wide">
-        <h2 class="section-title">
-          <i class="fa-solid fa-bolt"></i>
-          Accesos Rápidos
-        </h2>
-        <div class="quick-actions-grid cols-4">
-          @for (action of quickActions; track action.route) {
-            <a [routerLink]="action.route" class="quick-action-card">
-              <div class="action-icon">
-                <i class="fa-solid {{ action.icon }}"></i>
-              </div>
-              <div class="action-content">
-                <h3 class="action-title">{{ action.label }}</h3>
-                <p class="action-description">{{ action.description }}</p>
-              </div>
-              <i class="fa-solid fa-chevron-right action-arrow"></i>
-            </a>
-          }
+        <div class="kpi-card__value">{{ totalProducts() }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+          </svg>
         </div>
-      </div>
+      </a>
+      <a class="kpi-card kpi-card--success" [routerLink]="['/inventory/products']">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Valor Inventario</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-coins"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ formatCurrency(totalInventoryValue()) }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
+          </svg>
+        </div>
+      </a>
+      <a class="kpi-card kpi-card--info" [routerLink]="['/inventory/categories']">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Categorías</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-tags"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ totalCategories() }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22"/>
+          </svg>
+        </div>
+      </a>
+      <a class="kpi-card kpi-card--warning" [routerLink]="['/inventory/alerts']">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Stock Bajo</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ lowStockProducts() }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--down">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34"/>
+          </svg>
+        </div>
+      </a>
+      <a class="kpi-card kpi-card--error" [routerLink]="['/inventory/alerts']">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Alertas Críticas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ criticalAlerts() }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--down">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,16 Q30,20 60,18 T120,26 T180,32 T200,36 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,16 Q30,20 60,18 T120,26 T180,32 T200,36"/>
+          </svg>
+        </div>
+      </a>
+      <a class="kpi-card kpi-card--warning" [routerLink]="['/inventory/alerts']">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Próximos a Vencer</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-calendar-xmark"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ expiringProducts().length }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--down">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,18 Q30,22 60,20 T120,26 T180,30 T200,32 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,18 Q30,22 60,20 T120,26 T180,30 T200,32"/>
+          </svg>
+        </div>
+      </a>
     </div>
 
-    <!-- Fase 2: Grid de dos columnas para Gráficos -->
+    <!-- Grid de dos columnas para Gráficos -->
     <div class="analytics-grid">
       <!-- Distribución por Categorías - Pie Chart -->
       <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-chart-pie"></i>
-          Distribución por Categorías
-        </h2>
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-chart-pie"></i>
+            Distribución por Categorías
+          </h2>
+        </div>
         
         @if (loadingCategories()) {
           <div class="loading-spinner">
@@ -124,10 +155,12 @@
 
       <!-- Top Productos - Bar Chart -->
       <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-ranking-star"></i>
-          Top Productos por Uso
-        </h2>
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-ranking-star"></i>
+            Top Productos por Uso
+          </h2>
+        </div>
         
         @if (loadingTopProducts()) {
           <div class="loading-spinner">
@@ -152,13 +185,13 @@
     <div class="analytics-grid cols-3">
       <!-- Productos Próximos a Vencer -->
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-calendar-xmark"></i>
             Próximos a Vencer
           </h2>
           @if (expiringProducts().length > 0) {
-            <span class="section-badge">
+            <span class="dash-section-header__badge">
               {{ expiringProducts().length }}
             </span>
           }
@@ -174,20 +207,18 @@
             <p>No hay productos próximos a vencer</p>
           </div>
         } @else {
-          <div class="expiring-products-list">
+          <div class="dash-list">
             @for (product of expiringProducts(); track product.id) {
               <a 
                 [routerLink]="['/inventory/products', product.id]" 
-                class="expiring-product-item compact"
-                [class]="'urgency-' + product.urgencyLevel">
-                
-                <div class="urgency-indicator">
+                class="dash-item"
+                [ngClass]="'dash-item--urgency-' + product.urgencyLevel">
+                <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="getExpiryLeadingClass(product.urgencyLevel)">
                   <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                
-                <div class="product-details">
-                  <span class="product-name">{{ product.name }}</span>
-                  <span class="expiry-date">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ product.name }}</span>
+                  <span class="dash-item__subtitle">
                     {{ product.expiryDate | date:'dd/MM' }} - 
                     @if (product.daysToExpire === 0) {
                       Hoy
@@ -206,10 +237,12 @@
 
       <!-- Top 5 Productos Más Usados -->
       <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-star"></i>
-          Productos Más Utilizados
-        </h2>
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-star"></i>
+            Productos Más Utilizados
+          </h2>
+        </div>
         
         @if (loadingTopProducts()) {
           <div class="loading-spinner">
@@ -221,20 +254,19 @@
             <p>No hay datos de productos utilizados</p>
           </div>
         } @else {
-          <div class="top-products-list">
+          <div class="dash-list">
             @for (product of topProducts(); track product.id) {
-              <a [routerLink]="['/inventory/products', product.id]" class="top-product-item compact">
-                <div class="product-info">
-                  <span class="product-name">{{ product.name }}</span>
-                  <span class="product-category">{{ product.categoryName }}</span>
+              <a [routerLink]="['/inventory/products', product.id]" class="dash-item">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ product.name }}</span>
+                  <span class="dash-item__subtitle">{{ product.categoryName }}</span>
                 </div>
-                
-                <div class="product-stats">
-                  <span class="usage-count">
+                <div class="dash-item__trailing">
+                  <span class="dash-item__meta">
                     <i class="fa-solid fa-chart-simple"></i>
                     {{ product.usageCount }}
                   </span>
-                  <span class="stock-badge" [class]="'status-' + product.stockStatus">
+                  <span class="stock-badge" [ngClass]="'status-' + product.stockStatus">
                     {{ product.currentStock }}
                   </span>
                 </div>
@@ -246,10 +278,12 @@
 
       <!-- Timeline de Actividad Reciente -->
       <div class="section-card">
-        <h2 class="section-title">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          Actividad Reciente
-        </h2>
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            Actividad Reciente
+          </h2>
+        </div>
         
         @if (loadingActivity()) {
           <div class="loading-spinner">
@@ -261,15 +295,15 @@
             <p>No hay actividad reciente</p>
           </div>
         } @else {
-          <div class="activity-timeline">
+          <div class="dash-list">
             @for (activity of recentActivity(); track activity.id) {
-              <div class="activity-item">
-                <div class="activity-icon {{ getActivityColor(activity.type) }}">
-                  <i class="fa-solid {{ getActivityIcon(activity.type) }}"></i>
+              <div class="dash-item">
+                <div class="dash-item__leading" [ngClass]="getActivityColor(activity.type)">
+                  <i class="fa-solid" [ngClass]="getActivityIcon(activity.type)"></i>
                 </div>
-                <div class="activity-content">
-                  <p class="activity-description">{{ activity.description }}</p>
-                  <span class="activity-time">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ activity.description }}</span>
+                  <span class="dash-item__subtitle">
                     <i class="fa-solid fa-clock"></i>
                     {{ activity.timestamp | date:'dd/MM HH:mm' }}
                   </span>

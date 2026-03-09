@@ -45,7 +45,11 @@
         <div class="info-card">
           <div class="info-row">
             <span class="info-label">Proveedor:</span>
-            <span class="info-value">{{ po.supplierName }}</span>
+            <span class="info-value">
+              <a [routerLink]="['/inventory/suppliers', po.supplierId]" class="link-primary">
+                {{ po.supplierName }}
+              </a>
+            </span>
           </div>
           <div class="info-row">
             <span class="info-label">Total de la Orden:</span>

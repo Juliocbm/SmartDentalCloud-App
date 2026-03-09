@@ -31,40 +31,40 @@
   @if (!loading() && !error() && report(); as r) {
     <!-- KPIs -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon primary"><i class="fa-solid fa-box"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.totalProducts }}</span>
-          <span class="kpi-label">Total Productos</span>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Productos</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-box"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.totalProducts }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon success"><i class="fa-solid fa-check-circle"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.activeProducts }}</span>
-          <span class="kpi-label">Activos</span>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Activos</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-check-circle"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.activeProducts }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon warning"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.lowStockProducts }}</span>
-          <span class="kpi-label">Stock Bajo</span>
+      <div class="kpi-card kpi-card--warning">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Stock Bajo</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.lowStockProducts }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon error"><i class="fa-solid fa-times-circle"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.outOfStockProducts }}</span>
-          <span class="kpi-label">Sin Stock</span>
+      <div class="kpi-card kpi-card--error">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Sin Stock</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-times-circle"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.outOfStockProducts }}</div>
       </div>
-      <div class="kpi-card kpi-card--wide">
-        <div class="kpi-icon info"><i class="fa-solid fa-coins"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ formatCurrency(r.totalValuation) }}</span>
-          <span class="kpi-label">Valorización Total</span>
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Valorización Total</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-coins"></i></div>
         </div>
+        <div class="kpi-card__value">{{ formatCurrency(r.totalValuation) }}</div>
       </div>
     </div>
 

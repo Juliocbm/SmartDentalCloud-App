@@ -1,52 +1,6 @@
 // Component-specific styles only
 // Global: .page-container, .filters-section, .search-box, .table-container, .table, .loading-container, .empty-state, .badge, .btn from _components.scss
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
-}
-
-.kpi-card {
-  background: var(--surface-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-
-  .kpi-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-md);
-    font-size: 1.25rem;
-
-    &.primary { background: var(--primary-50); color: var(--primary-600); }
-    &.warning { background: var(--warning-50); color: var(--warning-600); }
-    &.error { background: var(--error-50); color: var(--error-600); }
-  }
-
-  .kpi-content {
-    display: flex;
-    flex-direction: column;
-
-    .kpi-value {
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-bold);
-      color: var(--text-primary);
-    }
-
-    .kpi-label {
-      font-size: var(--font-size-xs);
-      color: var(--text-tertiary);
-    }
-  }
-}
+// KPI Cards: usa .kpi-grid/.kpi-card de _components.scss
 
 // Table-specific — entity links use global .link-primary from _components.scss
 
@@ -89,15 +43,4 @@
   }
 }
 
-// Responsive
-@media (max-width: 768px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .kpi-grid {
-    grid-template-columns: 1fr;
-  }
-}
+// Responsive: .kpi-grid responsive handled by _components.scss

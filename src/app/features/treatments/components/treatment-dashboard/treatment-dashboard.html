@@ -4,6 +4,21 @@
     [subtitle]="'Panel de control del módulo de tratamientos'"
     [icon]="'fa-tooth'"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <app-date-range-picker
+        [showPresets]="true"
+        [defaultPreset]="'last_3_months'"
+        (rangeChange)="onDateRangeChange($event)"
+      />
+      <a routerLink="/treatments/new" class="btn btn-outline btn-success">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Tratamiento
+      </a>
+      <a routerLink="/treatments" class="btn btn-outline">
+        <i class="fa-solid fa-list"></i>
+        Ver Todos
+      </a>
+    </div>
   </app-page-header>
 
   @if (loading()) {
@@ -19,106 +34,118 @@
   } @else {
     <!-- KPI Cards -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper primary">
-          <i class="fa-solid fa-tooth"></i>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Tratamientos</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-tooth"></i></div>
         </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ statusCounts().total }}</span>
-          <span class="kpi-label">Total Tratamientos</span>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper info">
-          <i class="fa-solid fa-spinner"></i>
-        </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ statusCounts().inProgress }}</span>
-          <span class="kpi-label">En Progreso</span>
+        <div class="kpi-card__value">{{ statusCounts().total }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16"/>
+          </svg>
         </div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper success">
-          <i class="fa-solid fa-check-circle"></i>
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">En Progreso</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-spinner"></i></div>
         </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ statusCounts().completed }}</span>
-          <span class="kpi-label">Completados</span>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper warning">
-          <i class="fa-solid fa-pause-circle"></i>
-        </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ statusCounts().onHold }}</span>
-          <span class="kpi-label">En Espera</span>
+        <div class="kpi-card__value">{{ statusCounts().inProgress }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+          </svg>
         </div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper error">
-          <i class="fa-solid fa-times-circle"></i>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Completados</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-check-circle"></i></div>
         </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ statusCounts().cancelled }}</span>
-          <span class="kpi-label">Cancelados</span>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon-wrapper success">
-          <i class="fa-solid fa-chart-line"></i>
-        </div>
-        <div class="kpi-body">
-          <span class="kpi-value">{{ completionRate() }}%</span>
-          <span class="kpi-label">Tasa de Completado</span>
+        <div class="kpi-card__value">{{ statusCounts().completed }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
+          </svg>
         </div>
       </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="quick-actions-row">
-      <a routerLink="/treatments/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Tratamiento
-      </a>
-      <a routerLink="/treatments" class="btn btn-outline">
-        <i class="fa-solid fa-list"></i>
-        Ver Todos
-      </a>
+      <div class="kpi-card kpi-card--warning">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">En Espera</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-pause-circle"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ statusCounts().onHold }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22"/>
+          </svg>
+        </div>
+      </div>
+      <div class="kpi-card kpi-card--error">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Cancelados</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-times-circle"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ statusCounts().cancelled }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--down">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34"/>
+          </svg>
+        </div>
+      </div>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Tasa de Completado</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-chart-line"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ completionRate() }}%</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8"/>
+          </svg>
+        </div>
+      </div>
     </div>
 
     <!-- Content Grid -->
-    <div class="dashboard-grid">
+    <div class="analytics-grid">
       <!-- Active Treatments -->
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-spinner"></i>
             Tratamientos Activos
           </h2>
-          <span class="section-count">{{ activeTreatments().length }}</span>
+          <span class="dash-section-header__badge">{{ activeTreatments().length }}</span>
         </div>
 
         @if (activeTreatments().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-check-circle"></i>
-            <p>No hay tratamientos activos</p>
+            <p>No hay tratamientos activos en este período</p>
           </div>
         } @else {
-          <div class="treatment-list">
+          <div class="dash-list">
             @for (tx of activeTreatments().slice(0, 8); track tx.id) {
-              <a [routerLink]="['/treatments', tx.id]" class="treatment-item">
-                <div class="treatment-info">
-                  <span class="treatment-service">{{ tx.serviceName }}</span>
-                  <span class="treatment-patient">{{ tx.patientName }}</span>
+              <a [routerLink]="['/treatments', tx.id]" class="dash-item">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ tx.serviceName }}</span>
+                  <span class="dash-item__subtitle">{{ tx.patientName }}</span>
                 </div>
-                <div class="treatment-meta">
+                <div class="dash-item__trailing">
                   @if (tx.toothNumber) {
                     <span class="tooth-badge">
                       <i class="fa-solid fa-tooth"></i> {{ tx.toothNumber }}
                     </span>
                   }
-                  <span class="treatment-date">{{ formatDate(tx.startDate) }}</span>
+                  <span class="dash-item__meta">{{ formatDate(tx.startDate) }}</span>
                 </div>
               </a>
             }
@@ -128,8 +155,8 @@
 
       <!-- Recent Treatments -->
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-clock-rotate-left"></i>
             Tratamientos Recientes
           </h2>
@@ -138,17 +165,17 @@
         @if (recentTreatments().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-tooth"></i>
-            <p>No hay tratamientos registrados</p>
+            <p>No hay tratamientos registrados en este período</p>
           </div>
         } @else {
-          <div class="treatment-list">
+          <div class="dash-list">
             @for (tx of recentTreatments(); track tx.id) {
-              <a [routerLink]="['/treatments', tx.id]" class="treatment-item">
-                <div class="treatment-info">
-                  <span class="treatment-service">{{ tx.serviceName }}</span>
-                  <span class="treatment-patient">{{ tx.patientName }}</span>
+              <a [routerLink]="['/treatments', tx.id]" class="dash-item">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ tx.serviceName }}</span>
+                  <span class="dash-item__subtitle">{{ tx.patientName }}</span>
                 </div>
-                <div class="treatment-meta">
+                <div class="dash-item__trailing">
                   <span [class]="'badge ' + getStatusConfig(tx.status).class">
                     <i [class]="'fa-solid ' + getStatusConfig(tx.status).icon"></i>
                     {{ getStatusConfig(tx.status).label }}
@@ -157,6 +184,53 @@
               </a>
             }
           </div>
+        }
+      </div>
+
+      <!-- Status Distribution (Pie/Donut) -->
+      <div class="section-card">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-chart-pie"></i>
+            Distribución por Estado
+          </h2>
+        </div>
+
+        @if (statusChartData().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-chart-pie"></i>
+            <p>No hay datos suficientes en este período</p>
+          </div>
+        } @else {
+          <app-pie-chart
+            [data]="statusChartData()"
+            [doughnut]="true"
+            [showLegend]="true"
+            [height]="'280px'"
+          />
+        }
+      </div>
+
+      <!-- Monthly Trend (Line/Area) -->
+      <div class="section-card">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
+            <i class="fa-solid fa-chart-line"></i>
+            Tratamientos Iniciados/Completados por Mes
+          </h2>
+        </div>
+
+        @if (timelineLabels().length === 0 || timelineDatasets().length === 0) {
+          <div class="empty-state">
+            <i class="fa-solid fa-chart-line"></i>
+            <p>No hay datos suficientes para mostrar la tendencia</p>
+          </div>
+        } @else {
+          <app-line-chart
+            [labels]="timelineLabels()"
+            [datasets]="timelineDatasets()"
+            [height]="'280px'"
+          />
         }
       </div>
     </div>

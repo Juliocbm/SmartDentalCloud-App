@@ -22,6 +22,78 @@ export interface DateRange {
   end: string;
 }
 
+export interface DatePreset {
+  key: string;
+  label: string;
+  getValue: () => DateRange;
+}
+
+function toLocalDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+export const DEFAULT_PRESETS: DatePreset[] = [
+  {
+    key: 'today',
+    label: 'Hoy',
+    getValue: () => {
+      const today = toLocalDateString(new Date());
+      return { start: today, end: today };
+    }
+  },
+  {
+    key: 'this_week',
+    label: 'Esta Semana',
+    getValue: () => {
+      const now = new Date();
+      const day = now.getDay();
+      const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(now.getFullYear(), now.getMonth(), diff);
+      return { start: toLocalDateString(monday), end: toLocalDateString(now) };
+    }
+  },
+  {
+    key: 'this_month',
+    label: 'Este Mes',
+    getValue: () => {
+      const now = new Date();
+      const first = new Date(now.getFullYear(), now.getMonth(), 1);
+      return { start: toLocalDateString(first), end: toLocalDateString(now) };
+    }
+  },
+  {
+    key: 'last_month',
+    label: 'Último Mes',
+    getValue: () => {
+      const now = new Date();
+      const first = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const last = new Date(now.getFullYear(), now.getMonth(), 0);
+      return { start: toLocalDateString(first), end: toLocalDateString(last) };
+    }
+  },
+  {
+    key: 'last_3_months',
+    label: 'Últimos 3 Meses',
+    getValue: () => {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+      return { start: toLocalDateString(start), end: toLocalDateString(now) };
+    }
+  },
+  {
+    key: 'this_year',
+    label: 'Este Año',
+    getValue: () => {
+      const now = new Date();
+      const first = new Date(now.getFullYear(), 0, 1);
+      return { start: toLocalDateString(first), end: toLocalDateString(now) };
+    }
+  }
+];
+
 @Component({
   selector: 'app-date-range-picker',
   standalone: true,
@@ -45,18 +117,26 @@ export class DateRangePickerComponent implements AfterViewInit, OnDestroy, OnCha
   @Input() disabled = false;
   @Input() minDate: string | 'today' | null = null;
   @Input() maxDate: string | null = null;
+  @Input() showPresets = false;
+  @Input() presets: DatePreset[] = DEFAULT_PRESETS;
+  @Input() defaultPreset: string | null = null;
 
   @Output() rangeChange = new EventEmitter<DateRange | null>();
 
   private flatpickrInstance: Instance | null = null;
+  private presetContainer: HTMLElement | null = null;
   currentValue: DateRange | null = null;
   displayValue = '';
+  activePresetKey: string | null = null;
 
   private onChange: (value: DateRange | null) => void = () => {};
   private onTouched: () => void = () => {};
 
   ngAfterViewInit(): void {
     this.initFlatpickr();
+    if (this.defaultPreset && !this.startDate && !this.endDate) {
+      this.selectPreset(this.defaultPreset);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -104,12 +184,19 @@ export class DateRangePickerComponent implements AfterViewInit, OnDestroy, OnCha
       clickOpens: true,
       disableMobile: true,
       defaultDate: this.getDefaultDates(),
+      onReady: (_selectedDates: Date[], _dateStr: string, instance: Instance) => {
+        if (this.showPresets) {
+          this.injectPresets(instance);
+        }
+      },
       onChange: (selectedDates: Date[]) => {
         if (selectedDates.length === 2) {
           const start = this.formatDate(selectedDates[0]);
           const end = this.formatDate(selectedDates[1]);
           this.currentValue = { start, end };
           this.displayValue = this.formatDisplay(start, end);
+          this.activePresetKey = this.detectActivePreset(start, end);
+          this.updatePresetActiveStates();
           this.onChange(this.currentValue);
           this.rangeChange.emit(this.currentValue);
         }
@@ -121,11 +208,60 @@ export class DateRangePickerComponent implements AfterViewInit, OnDestroy, OnCha
           const date = this.formatDate(selectedDates[0]);
           this.currentValue = { start: date, end: date };
           this.displayValue = this.formatDisplay(date, date);
+          this.activePresetKey = this.detectActivePreset(date, date);
+          this.updatePresetActiveStates();
           this.onChange(this.currentValue);
           this.rangeChange.emit(this.currentValue);
         }
       }
     });
+  }
+
+  private injectPresets(instance: Instance): void {
+    const calendarContainer = instance.calendarContainer;
+    if (!calendarContainer) return;
+
+    this.presetContainer = document.createElement('div');
+    this.presetContainer.className = 'flatpickr-presets';
+
+    for (const preset of this.presets) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'flatpickr-preset-btn';
+      btn.dataset['presetKey'] = preset.key;
+      btn.textContent = preset.label;
+      if (this.activePresetKey === preset.key) {
+        btn.classList.add('flatpickr-preset-btn--active');
+      }
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.selectPreset(preset.key);
+        instance.close();
+      });
+      this.presetContainer.appendChild(btn);
+    }
+
+    // Mark the calendar so CSS can reposition the month arrows below presets
+    calendarContainer.classList.add('has-presets');
+    calendarContainer.prepend(this.presetContainer);
+  }
+
+  private updatePresetActiveStates(): void {
+    if (!this.presetContainer) return;
+    const buttons = this.presetContainer.querySelectorAll('.flatpickr-preset-btn');
+    buttons.forEach((btn) => {
+      const key = (btn as HTMLElement).dataset['presetKey'];
+      btn.classList.toggle('flatpickr-preset-btn--active', key === this.activePresetKey);
+    });
+  }
+
+  private detectActivePreset(start: string, end: string): string | null {
+    for (const preset of this.presets) {
+      const range = preset.getValue();
+      if (range.start === start && range.end === end) return preset.key;
+    }
+    return null;
   }
 
   private getDefaultDates(): string[] {
@@ -164,12 +300,27 @@ export class DateRangePickerComponent implements AfterViewInit, OnDestroy, OnCha
     return `${day}/${month}/${year}`;
   }
 
+  selectPreset(key: string): void {
+    const preset = this.presets.find(p => p.key === key);
+    if (!preset) return;
+    const range = preset.getValue();
+    this.activePresetKey = key;
+    this.currentValue = range;
+    this.displayValue = this.formatDisplay(range.start, range.end);
+    if (this.flatpickrInstance) {
+      this.flatpickrInstance.setDate([range.start, range.end], false);
+    }
+    this.onChange(this.currentValue);
+    this.rangeChange.emit(this.currentValue);
+  }
+
   onClear(): void {
     if (this.flatpickrInstance) {
       this.flatpickrInstance.clear();
     }
     this.currentValue = null;
     this.displayValue = '';
+    this.activePresetKey = null;
     this.onChange(null);
     this.rangeChange.emit(null);
   }

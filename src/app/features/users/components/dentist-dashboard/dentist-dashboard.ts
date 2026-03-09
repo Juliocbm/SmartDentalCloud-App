@@ -1,91 +1,96 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
-import { UsersService } from '../../services/users.service';
-import { RolesService } from '../../services/roles.service';
-import { ReportsService } from '../../../reports/services/reports.service';
+import { BarChartComponent, ChartDataItem } from '../../../../shared/components/charts';
+import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
+import { DentistAnalyticsService } from '../../services/dentist-analytics.service';
+import { LoggingService } from '../../../../core/services/logging.service';
 import { User } from '../../models/user.models';
 import { DentistProductivity } from '../../../reports/models/report.models';
-import { LoggingService } from '../../../../core/services/logging.service';
+import {
+  DentistDashboardMetrics,
+  DentistRanking,
+  DentistTeamMember
+} from '../../models/dentist-analytics.models';
+import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-dentist-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, CurrencyPipe],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, DateRangePickerComponent],
   templateUrl: './dentist-dashboard.html',
   styleUrl: './dentist-dashboard.scss'
 })
 export class DentistDashboardComponent implements OnInit {
-  private usersService = inject(UsersService);
-  private rolesService = inject(RolesService);
-  private reportsService = inject(ReportsService);
+  private analyticsService = inject(DentistAnalyticsService);
   private logger = inject(LoggingService);
 
+  // Date range
+  dateRange = signal<DateRange>(this.getDefaultDateRange());
+
+  // Estados de carga
   loading = signal(true);
   error = signal<string | null>(null);
-  dentists = signal<User[]>([]);
-  productivity = signal<DentistProductivity[]>([]);
+
+  // Datos base
+  private dentists = signal<User[]>([]);
+  private productivity = signal<DentistProductivity[]>([]);
+
+  // Métricas KPI
+  metrics = signal<DentistDashboardMetrics | null>(null);
+
+  // Datos de gráficos
+  revenueChartData = signal<ChartDataItem[]>([]);
+  appointmentsChartData = signal<ChartDataItem[]>([]);
+
+  // Datos de secciones
+  topByRevenue = signal<DentistRanking[]>([]);
+  topByTreatments = signal<DentistRanking[]>([]);
+  teamList = signal<DentistTeamMember[]>([]);
+
+  // Dentistas sin actividad este mes
+  inactiveDentistsCount = computed(() => {
+    const m = this.metrics();
+    if (!m) return 0;
+    return m.totalDentists - this.productivity().length;
+  });
 
   breadcrumbItems: BreadcrumbItem[] = [
-    { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
+    { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fa-home' },
     { label: 'Dentistas', route: '/dentists' },
     { label: 'Dashboard' }
   ];
-
-  totalDentists = computed(() => this.dentists().length);
-  activeDentists = computed(() => this.dentists().filter(d => d.isActive).length);
-  inactiveDentists = computed(() => this.dentists().filter(d => !d.isActive).length);
-
-  totalAppointmentsCompleted = computed(() =>
-    this.productivity().reduce((sum, p) => sum + p.appointmentsCompleted, 0)
-  );
-
-  totalTreatmentsCompleted = computed(() =>
-    this.productivity().reduce((sum, p) => sum + p.treatmentsCompleted, 0)
-  );
-
-  totalRevenue = computed(() =>
-    this.productivity().reduce((sum, p) => sum + p.revenueGenerated, 0)
-  );
-
-  topPerformers = computed(() =>
-    [...this.productivity()]
-      .sort((a, b) => b.appointmentsCompleted - a.appointmentsCompleted)
-      .slice(0, 8)
-  );
-
-  recentDentists = computed(() =>
-    [...this.dentists()]
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 5)
-  );
 
   ngOnInit(): void {
     this.loadData();
   }
 
+  onDateRangeChange(range: DateRange | null): void {
+    if (!range) return;
+    this.dateRange.set(range);
+    this.loadData();
+  }
+
   private loadData(): void {
     this.loading.set(true);
+    this.error.set(null);
+    const { start, end } = this.dateRange();
 
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startDate = startOfMonth.toISOString().split('T')[0];
-    const endDate = now.toISOString().split('T')[0];
-
-    forkJoin([
-      this.usersService.getAll(),
-      this.rolesService.getAll(),
-      this.reportsService.getDentistProductivity(startDate, endDate)
-    ]).subscribe({
-      next: ([users, roles, productivity]) => {
-        const dentistUsers = users.filter(user =>
-          user.roles.some(r => r.name === 'Dentista')
-        );
-        this.dentists.set(dentistUsers);
+    this.analyticsService.loadDashboardData(start, end).subscribe({
+      next: ({ dentists, productivity }) => {
+        this.dentists.set(dentists);
         this.productivity.set(productivity);
+
+        // Computar todas las métricas y datos derivados
+        this.metrics.set(this.analyticsService.computeMetrics(dentists, productivity));
+        this.revenueChartData.set(this.analyticsService.getRevenueChartData(dentists, productivity));
+        this.appointmentsChartData.set(this.analyticsService.getAppointmentsChartData(dentists, productivity));
+        this.topByRevenue.set(this.analyticsService.getTopByRevenue(dentists, productivity, 5));
+        this.topByTreatments.set(this.analyticsService.getTopByTreatments(dentists, productivity, 5));
+        this.teamList.set(this.analyticsService.getTeamList(dentists, productivity));
+
         this.loading.set(false);
       },
       error: (err) => {
@@ -96,9 +101,21 @@ export class DentistDashboardComponent implements OnInit {
     });
   }
 
-  formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: 'numeric', month: 'short', year: 'numeric'
-    }).format(new Date(date));
+  private getDefaultDateRange(): DateRange {
+    const now = new Date();
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return {
+      start: `${first.getFullYear()}-${pad(first.getMonth() + 1)}-${pad(first.getDate())}`,
+      end: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+    };
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      minimumFractionDigits: 0
+    }).format(value);
   }
 }

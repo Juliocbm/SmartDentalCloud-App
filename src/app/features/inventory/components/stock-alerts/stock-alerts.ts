@@ -8,6 +8,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { StockService } from '../../services/stock.service';
 import { StockAlert, StockAlertLevel } from '../../models/stock.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
+import { LocationSummary } from '../../../settings/models/location.models';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
@@ -18,7 +20,7 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 @Component({
   selector: 'app-stock-alerts',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, LocationAutocompleteComponent],
   templateUrl: './stock-alerts.html',
   styleUrls: ['./stock-alerts.scss']
 })
@@ -34,6 +36,7 @@ export class StockAlertsComponent implements OnInit {
   error = signal<string | null>(null);
   searchTerm = signal('');
   filterLevel = signal<'all' | StockAlertLevel>('all');
+  selectedLocationId = signal<string | null>(null);
 
   // Pagination
   currentPage = signal(1);
@@ -45,8 +48,15 @@ export class StockAlertsComponent implements OnInit {
     { label: 'Alertas de Stock' }
   ]);
 
+  // Alertas filtradas por ubicación (base para KPIs y tabla)
+  locationFilteredAlerts = computed(() => {
+    const locId = this.selectedLocationId();
+    if (!locId) return this.alerts();
+    return this.alerts().filter(a => a.locationId === locId);
+  });
+
   filteredAlerts = computed(() => {
-    let result = this.alerts();
+    let result = this.locationFilteredAlerts();
 
     const search = this.searchTerm().toLowerCase().trim();
     if (search) {
@@ -77,11 +87,28 @@ export class StockAlertsComponent implements OnInit {
   });
 
   criticalCount = computed(() => 
-    this.alerts().filter(a => a.alertLevel === 'critical').length
+    this.locationFilteredAlerts().filter(a => a.alertLevel === 'critical').length
   );
 
   warningCount = computed(() => 
-    this.alerts().filter(a => a.alertLevel === 'warning').length
+    this.locationFilteredAlerts().filter(a => a.alertLevel === 'warning').length
+  );
+
+  outOfStockCount = computed(() =>
+    this.locationFilteredAlerts().filter(a => a.currentStock <= 0).length
+  );
+
+  totalDeficit = computed(() =>
+    this.locationFilteredAlerts().reduce((sum, a) => sum + (a.stockDeficit || 0), 0)
+  );
+
+  estimatedReorderCost = computed(() =>
+    this.locationFilteredAlerts().reduce((sum, a) => {
+      if (a.lastCost && a.suggestedOrderQuantity) {
+        return sum + (a.suggestedOrderQuantity * a.lastCost);
+      }
+      return sum;
+    }, 0)
   );
 
   ngOnInit(): void {
@@ -116,6 +143,11 @@ export class StockAlertsComponent implements OnInit {
     });
   }
 
+  onLocationSelected(location: LocationSummary | null): void {
+    this.selectedLocationId.set(location?.id ?? null);
+    this.currentPage.set(1);
+  }
+
   onSearchChange(value: string): void {
     this.searchSubject.next(value);
   }
@@ -141,6 +173,17 @@ export class StockAlertsComponent implements OnInit {
     start = Math.max(1, end - maxVisible + 1);
     for (let i = start; i <= end; i++) pages.push(i);
     return pages;
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN'
+    }).format(value);
+  }
+
+  formatNumber(value: number): string {
+    return new Intl.NumberFormat('es-MX').format(value);
   }
 
   getStockIcon(alert: StockAlert): string {

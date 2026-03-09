@@ -22,8 +22,11 @@ export class InvoicesService {
   /**
    * Obtiene lista de todas las facturas
    */
-  getAll(): Observable<Invoice[]> {
-    return this.api.get<Invoice[]>(this.baseUrl);
+  getAll(startDate?: string, endDate?: string): Observable<Invoice[]> {
+    const params: Record<string, string> = {};
+    if (startDate) params['startDate'] = startDate;
+    if (endDate) params['endDate'] = endDate;
+    return this.api.get<Invoice[]>(this.baseUrl, params);
   }
 
   /**

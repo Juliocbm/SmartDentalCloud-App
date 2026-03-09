@@ -4,6 +4,16 @@
     [subtitle]="'Panel de control del módulo de pacientes'"
     [icon]="'fa-users'"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <a routerLink="/patients/new" class="btn btn-outline btn-success">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Paciente
+      </a>
+      <a routerLink="/patients" class="btn btn-outline">
+        <i class="fa-solid fa-list"></i>
+        Ver Todos
+      </a>
+    </div>
   </app-page-header>
 
   <!-- Alertas críticas -->
@@ -29,91 +39,68 @@
       <span class="alert-message">{{ error() }}</span>
     </div>
   } @else {
-    <!-- Grid: Indicadores + Accesos Rápidos -->
-    <div class="bottom-grid">
-      <!-- Indicadores Clave -->
-      <div class="section-card grid-narrow">
-        <h2 class="section-title">
-          <i class="fa-solid fa-gauge-high"></i>
-          Indicadores
-        </h2>
-        <div class="indicators-list">
-          <!-- Total Pacientes -->
-          <a [routerLink]="['/patients']" class="quick-action-card">
-            <div class="action-icon primary">
-              <i class="fa-solid fa-users"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Total Pacientes</h3>
-              <p class="action-value">{{ statistics()?.totalPatients || 0 }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
-          <!-- Activos -->
-          <a [routerLink]="['/patients']" [queryParams]="{status: 'active'}" class="quick-action-card">
-            <div class="action-icon success">
-              <i class="fa-solid fa-user-check"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Activos</h3>
-              <p class="action-value">{{ statistics()?.activePatients || 0 }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
-          <!-- Nuevos este Mes -->
-          <a [routerLink]="['/patients']" [queryParams]="{filter: 'new'}" class="quick-action-card">
-            <div class="action-icon info">
-              <i class="fa-solid fa-user-plus"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Nuevos este Mes</h3>
-              <p class="action-value">{{ statistics()?.newThisMonth || 0 }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
-          <!-- Inactivos -->
-          <a [routerLink]="['/patients']" [queryParams]="{status: 'inactive'}" class="quick-action-card">
-            <div class="action-icon warning">
-              <i class="fa-solid fa-user-clock"></i>
-            </div>
-            <div class="action-content">
-              <h3 class="action-title">Inactivos</h3>
-              <p class="action-value">{{ statistics()?.inactivePatients || 0 }}</p>
-            </div>
-            <i class="fa-solid fa-chevron-right action-arrow"></i>
-          </a>
+    <!-- KPI Indicators -->
+    <div class="kpi-grid">
+      <a class="kpi-card kpi-card--primary" [routerLink]="['/patients']">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Pacientes</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-users"></i></div>
         </div>
-      </div>
-
-      <!-- Accesos Rápidos -->
-      <div class="section-card grid-wide">
-        <h2 class="section-title">
-          <i class="fa-solid fa-bolt"></i>
-          Accesos Rápidos
-        </h2>
-        <div class="quick-actions-grid cols-4">
-          @for (action of quickActions; track action.route) {
-            <a [routerLink]="action.route" class="quick-action-card">
-              <div class="action-icon">
-                <i class="fa-solid {{ action.icon }}"></i>
-              </div>
-              <div class="action-content">
-                <h3 class="action-title">{{ action.label }}</h3>
-                <p class="action-description">{{ action.description }}</p>
-              </div>
-              <i class="fa-solid fa-chevron-right action-arrow"></i>
-            </a>
-          }
+        <div class="kpi-card__value">{{ statistics()?.totalPatients || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+          </svg>
         </div>
-      </div>
+      </a>
+      <a class="kpi-card kpi-card--success" [routerLink]="['/patients']" [queryParams]="{status: 'active'}">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Activos</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-user-check"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ statistics()?.activePatients || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
+          </svg>
+        </div>
+      </a>
+      <a class="kpi-card kpi-card--info" [routerLink]="['/patients']" [queryParams]="{filter: 'new'}">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Nuevos este Mes</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-user-plus"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ statistics()?.newThisMonth || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--up">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8"/>
+          </svg>
+        </div>
+      </a>
+      <a class="kpi-card kpi-card--warning" [routerLink]="['/patients']" [queryParams]="{status: 'inactive'}">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Inactivos</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-user-clock"></i></div>
+        </div>
+        <div class="kpi-card__value">{{ statistics()?.inactivePatients || 0 }}</div>
+        <div class="kpi-card__sparkline kpi-card__sparkline--down">
+          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+            <path class="sparkline-fill" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34 L200,40 L0,40Z"/>
+            <path class="sparkline-line" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34"/>
+          </svg>
+        </div>
+      </a>
     </div>
 
     <!-- Gráficos -->
-    <div class="charts-grid">
+    <div class="analytics-grid">
       <!-- Distribución por edad -->
       <section class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-chart-bar"></i>
             Distribución por Edad
           </h2>
@@ -129,8 +116,8 @@
 
       <!-- Nuevos pacientes por mes -->
       <section class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-chart-line"></i>
             Nuevos Pacientes por Mes
           </h2>
@@ -145,15 +132,15 @@
     </div>
 
     <!-- Grid: Alertas, Pacientes Recientes, Cumpleaños (4-4-4) -->
-    <div class="triple-grid">
+    <div class="analytics-grid cols-3">
       <!-- Alertas -->
       <section class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-bell"></i>
             Alertas
           </h2>
-          <span class="section-badge">{{ alertsCount() }}</span>
+          <span class="dash-section-header__badge">{{ alertsCount() }}</span>
         </div>
         @if (alerts().length === 0) {
           <div class="empty-state">
@@ -161,15 +148,15 @@
             <p>No hay alertas pendientes</p>
           </div>
         } @else {
-          <div class="alerts-list">
+          <div class="dash-list">
             @for (alert of alerts(); track alert.id) {
-              <div class="alert-item" [class]="getAlertSeverityClass(alert.severity)">
-                <div class="alert-item__icon">
+              <div class="dash-item" [ngClass]="getAlertSeverityClass(alert.severity)">
+                <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="getAlertLeadingClass(alert.severity)">
                   <i [class]="getAlertConfig(alert.type).icon"></i>
                 </div>
-                <div class="alert-item__content">
-                  <span class="alert-item__patient">{{ alert.patientName }}</span>
-                  <span class="alert-item__message">{{ alert.message }}</span>
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ alert.patientName }}</span>
+                  <span class="dash-item__subtitle">{{ alert.message }}</span>
                 </div>
                 <button class="btn btn--sm btn--ghost" (click)="viewPatient(alert.patientId)">
                   <i class="fa-solid fa-arrow-right"></i>
@@ -182,12 +169,14 @@
 
       <!-- Pacientes recientes -->
       <section class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-user-clock"></i>
             Pacientes Recientes
           </h2>
-          <button class="btn btn--sm btn--ghost" (click)="viewAllPatients()">Ver todos</button>
+          <div class="dash-section-header__actions">
+            <button class="btn btn--sm btn--ghost" (click)="viewAllPatients()">Ver todos</button>
+          </div>
         </div>
         @if (recentPatients().length === 0) {
           <div class="empty-state">
@@ -195,22 +184,24 @@
             <p>No hay pacientes recientes</p>
           </div>
         } @else {
-          <div class="recent-patients-list">
+          <div class="dash-list">
             @for (patient of recentPatients(); track patient.id) {
-              <div class="recent-patient-item" (click)="viewPatient(patient.id)">
-                <div class="recent-patient-item__avatar">
+              <div class="dash-item" (click)="viewPatient(patient.id)">
+                <div class="dash-item__leading dash-item__leading--avatar">
                   <i class="fa-solid fa-user"></i>
                 </div>
-                <div class="recent-patient-item__info">
-                  <span class="recent-patient-item__name">{{ patient.fullName }}</span>
-                  <span class="recent-patient-item__contact">{{ patient.email || patient.phone || 'Sin contacto' }}</span>
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ patient.fullName }}</span>
+                  <span class="dash-item__subtitle">{{ patient.email || patient.phone || 'Sin contacto' }}</span>
                 </div>
-                <div class="recent-patient-item__appointment">
+                <div class="dash-item__trailing">
                   @if (patient.nextAppointment) {
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span>{{ formatDate(patient.nextAppointment) }}</span>
+                    <span class="dash-item__meta" style="color: var(--success-600)">
+                      <i class="fa-solid fa-calendar-check"></i>
+                      {{ formatDate(patient.nextAppointment) }}
+                    </span>
                   } @else {
-                    <span class="no-appointment">Sin cita programada</span>
+                    <span class="dash-item__meta" style="font-style: italic">Sin cita programada</span>
                   }
                 </div>
               </div>
@@ -221,12 +212,12 @@
 
       <!-- Cumpleaños del mes -->
       <section class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-cake-candles"></i>
             Cumpleaños del Mes
           </h2>
-          <span class="section-badge section-badge--success">{{ birthdays().length }}</span>
+          <span class="dash-section-header__badge">{{ birthdays().length }}</span>
         </div>
         @if (birthdays().length === 0) {
           <div class="empty-state">
@@ -234,17 +225,17 @@
             <p>No hay cumpleaños este mes</p>
           </div>
         } @else {
-          <div class="birthday-list">
+          <div class="dash-list">
             @for (birthday of birthdays(); track birthday.id) {
-              <div class="birthday-item" [class.birthday-item--today]="birthday.daysUntilBirthday === 0" (click)="viewPatient(birthday.id)">
-                <div class="birthday-item__avatar">
+              <div class="dash-item" [class.dash-item--highlight]="birthday.daysUntilBirthday === 0" (click)="viewPatient(birthday.id)">
+                <div class="dash-item__leading dash-item__leading--warning">
                   <i class="fa-solid fa-cake-candles"></i>
                 </div>
-                <div class="birthday-item__content">
-                  <span class="birthday-item__name">{{ birthday.fullName }}</span>
-                  <span class="birthday-item__age">Cumple {{ birthday.age }} años</span>
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ birthday.fullName }}</span>
+                  <span class="dash-item__subtitle">Cumple {{ birthday.age }} años</span>
                 </div>
-                <span class="birthday-item__days" [class.birthday-item__days--today]="birthday.daysUntilBirthday === 0">
+                <span class="dash-item__meta" [style.color]="birthday.daysUntilBirthday === 0 ? 'var(--success-600)' : null" [style.font-weight]="birthday.daysUntilBirthday === 0 ? '600' : null">
                   {{ getBirthdayLabel(birthday.daysUntilBirthday) }}
                 </span>
               </div>

@@ -26,33 +26,33 @@
   } @else if (report(); as r) {
     <!-- KPIs -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon success"><i class="fa-solid fa-money-bill-wave"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ formatCurrency(r.totalIncome) }}</span>
-          <span class="kpi-label">Total Cobrado</span>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Cobrado</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-money-bill-wave"></i></div>
         </div>
+        <div class="kpi-card__value">{{ formatCurrency(r.totalIncome) }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon warning"><i class="fa-solid fa-clock"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ formatCurrency(r.totalPending) }}</span>
-          <span class="kpi-label">Pendiente de Cobro</span>
+      <div class="kpi-card kpi-card--warning">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Pendiente de Cobro</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-clock"></i></div>
         </div>
+        <div class="kpi-card__value">{{ formatCurrency(r.totalPending) }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon info"><i class="fa-solid fa-file-invoice"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.invoiceCount }}</span>
-          <span class="kpi-label">Facturas Emitidas</span>
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Facturas Emitidas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-file-invoice"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.invoiceCount }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon primary"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.paymentCount }}</span>
-          <span class="kpi-label">Pagos Recibidos</span>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Pagos Recibidos</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.paymentCount }}</div>
       </div>
     </div>
 

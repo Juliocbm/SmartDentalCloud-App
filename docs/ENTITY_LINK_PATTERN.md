@@ -62,6 +62,7 @@ Estándar para convertir nombres de entidades relacionadas en hipervínculos nav
 | Factura | `/invoices/:id` | `link-primary` |
 | Receta | `/prescriptions/:id` | `link-primary` |
 | Sucursal | `/settings/locations/:id` | `link-primary` |
+| Proveedor | `/inventory/suppliers/:id` | `link-primary` |
 
 ---
 
@@ -99,6 +100,15 @@ Estándar para convertir nombres de entidades relacionadas en hipervínculos nav
 
 ### schedule-exceptions-manager
 - **Sucursal** → `/settings/locations/:locationId`
+
+### purchase-order-list
+- **Proveedor** → `/inventory/suppliers/:supplierId`
+
+### purchase-order-detail
+- **Proveedor** → `/inventory/suppliers/:supplierId`
+
+### purchase-order-receive
+- **Proveedor** → `/inventory/suppliers/:supplierId`
 
 ### patient-detail (tabs)
 - **Citas** → `/appointments/:id`

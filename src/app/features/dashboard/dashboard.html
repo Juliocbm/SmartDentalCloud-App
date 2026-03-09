@@ -8,16 +8,15 @@
         [placeholder]="'Filtrar por sucursal...'"
         (locationSelected)="onLocationSelected($event)">
       </app-location-autocomplete>
+      <app-date-range-picker
+        [showPresets]="true"
+        [defaultPreset]="'this_month'"
+        (rangeChange)="onDateRangeChange($event)"
+      />
       <button class="btn btn-outline" (click)="refreshData()" [disabled]="loading()">
         <i class="fa-solid fa-sync-alt" [class.fa-spin]="loading()"></i>
         Actualizar
       </button>
-      @if (permissionService.hasPermission(PERMISSIONS.AppointmentsCreate)) {
-        <a routerLink="/appointments/new" class="btn btn-outline btn-success">
-          <i class="fa-solid fa-plus"></i>
-          Nueva Cita
-        </a>
-      }
     </div>
   </app-page-header>
 
@@ -39,93 +38,113 @@
     </div>
   } @else {
     <!-- KPI Metrics -->
-    <div class="metrics-grid">
+    <div class="kpi-grid">
       @if (permissionService.hasPermission(PERMISSIONS.AppointmentsView)) {
-        <a class="metric-card primary" routerLink="/appointments">
-          <div class="metric-icon">
-            <i class="fa-solid fa-calendar-check"></i>
+        <a class="kpi-card kpi-card--primary" routerLink="/appointments">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Citas de Hoy</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-calendar-check"></i></div>
           </div>
-          <div class="metric-content">
-            <span class="metric-label">Citas de Hoy</span>
-            <span class="metric-value">{{ todayAppointmentsCount() }}</span>
+          <div class="kpi-card__value">{{ todayAppointmentsCount() }}</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,28 Q25,20 50,24 T100,18 T150,22 T200,16"/>
+            </svg>
           </div>
-          <i class="fa-solid fa-chevron-right metric-arrow"></i>
         </a>
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.ReportsView)) {
-        <a class="metric-card success" routerLink="/reports/income">
-          <div class="metric-icon">
-            <i class="fa-solid fa-dollar-sign"></i>
+        <a class="kpi-card kpi-card--success" routerLink="/reports/income">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Ingresos</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-dollar-sign"></i></div>
           </div>
-          <div class="metric-content">
-            <span class="metric-label">Ingresos del Mes</span>
-            <span class="metric-value">{{ formatCurrency(monthlyIncome()) }}</span>
+          <div class="kpi-card__value">{{ formatCurrency(monthlyIncome()) }}</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--up">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+            </svg>
           </div>
-          <i class="fa-solid fa-chevron-right metric-arrow"></i>
         </a>
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.TreatmentsView)) {
-        <a class="metric-card info" routerLink="/treatments">
-          <div class="metric-icon">
-            <i class="fa-solid fa-tooth"></i>
+        <a class="kpi-card kpi-card--info" routerLink="/treatments">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Tratamientos Activos</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-tooth"></i></div>
           </div>
-          <div class="metric-content">
-            <span class="metric-label">Tratamientos Activos</span>
-            <span class="metric-value">{{ activeTreatmentsCount() }}</span>
+          <div class="kpi-card__value">{{ activeTreatmentsCount() }}</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--up">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
+            </svg>
           </div>
-          <i class="fa-solid fa-chevron-right metric-arrow"></i>
         </a>
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.TreatmentPlansView)) {
-        <a class="metric-card warning" routerLink="/treatment-plans">
-          <div class="metric-icon">
-            <i class="fa-solid fa-clipboard-list"></i>
+        <a class="kpi-card kpi-card--warning" routerLink="/treatment-plans">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Planes por Aprobar</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-clipboard-list"></i></div>
           </div>
-          <div class="metric-content">
-            <span class="metric-label">Planes por Aprobar</span>
-            <span class="metric-value">{{ pendingApprovalCount() }}</span>
+          <div class="kpi-card__value">{{ pendingApprovalCount() }}</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22"/>
+            </svg>
           </div>
-          <i class="fa-solid fa-chevron-right metric-arrow"></i>
         </a>
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.InventoryView)) {
-        <a class="metric-card critical" routerLink="/inventory/alerts">
-          <div class="metric-icon">
-            <i class="fa-solid fa-triangle-exclamation"></i>
+        <a class="kpi-card kpi-card--error" routerLink="/inventory/alerts">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Productos Stock Bajo</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
           </div>
-          <div class="metric-content">
-            <span class="metric-label">Productos Stock Bajo</span>
-            <span class="metric-value">{{ lowStockCount() }}</span>
+          <div class="kpi-card__value">{{ lowStockCount() }}</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--down">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,12 Q30,16 60,14 T120,22 T180,28 T200,32 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,12 Q30,16 60,14 T120,22 T180,28 T200,32"/>
+            </svg>
           </div>
-          <i class="fa-solid fa-chevron-right metric-arrow"></i>
         </a>
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.ReportsView)) {
-        <a class="metric-card warning" routerLink="/reports/accounts-receivable">
-          <div class="metric-icon">
-            <i class="fa-solid fa-hand-holding-dollar"></i>
+        <a class="kpi-card kpi-card--warning" routerLink="/reports/accounts-receivable">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Pendiente de Cobro</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
           </div>
-          <div class="metric-content">
-            <span class="metric-label">Pendiente de Cobro</span>
-            <span class="metric-value">{{ formatCurrency(pendingBalance()) }}</span>
+          <div class="kpi-card__value">{{ formatCurrency(pendingBalance()) }}</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--down">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34"/>
+            </svg>
           </div>
-          <i class="fa-solid fa-chevron-right metric-arrow"></i>
         </a>
       }
     </div>
 
     <!-- Acciones Rápidas -->
     <div class="section-card quick-actions-wrapper">
-      <h2 class="section-title">
-        <i class="fa-solid fa-bolt"></i>
-        Acciones Rápidas
-      </h2>
-      <div class="quick-actions-grid cols-3">
+      <div class="dash-section-header">
+        <h2 class="dash-section-header__title">
+          <i class="fa-solid fa-bolt"></i>
+          Acciones Rápidas
+        </h2>
+      </div>
+      <div class="quick-actions-grid cols-auto">
         @for (action of quickActions(); track action.route) {
           <a [routerLink]="action.route" class="quick-action-card">
             <div class="action-icon" [ngClass]="action.color">
@@ -146,13 +165,13 @@
       <!-- Próximas Citas -->
       @if (permissionService.hasPermission(PERMISSIONS.AppointmentsView)) {
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-calendar-days"></i>
             Próximas Citas
           </h2>
           @if (upcomingAppointments().length > 0) {
-            <span class="section-badge">{{ upcomingAppointments().length }}</span>
+            <span class="dash-section-header__badge">{{ upcomingAppointments().length }}</span>
           }
         </div>
 
@@ -162,22 +181,21 @@
             <p>No hay citas programadas próximamente</p>
           </div>
         } @else {
-          <div class="data-list">
+          <div class="dash-list">
             @for (apt of upcomingAppointments(); track apt.id) {
-              <a [routerLink]="['/appointments', apt.id]" class="data-list-item compact">
-                <div class="appointment-avatar">
+              <a [routerLink]="['/appointments', apt.id]" class="dash-item">
+                <div class="dash-item__leading dash-item__leading--avatar">
                   {{ apt.patientName.charAt(0) || '?' }}
                 </div>
-                <div class="item-info">
-                  <span class="item-title">{{ apt.patientName }}</span>
-                  <span class="item-detail">
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ apt.patientName }}</span>
+                  <span class="dash-item__subtitle">
                     {{ formatDateTime(apt.startAt) }} · {{ apt.reason || 'Consulta' }}
                   </span>
                 </div>
                 <span class="badge" [ngClass]="getAppointmentStatusClass(apt.status)">
                   {{ getAppointmentStatusLabel(apt.status) }}
                 </span>
-                <i class="fa-solid fa-chevron-right item-arrow"></i>
               </a>
             }
           </div>
@@ -188,13 +206,13 @@
       <!-- Planes Pendientes de Aprobación -->
       @if (permissionService.hasPermission(PERMISSIONS.TreatmentPlansView)) {
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-clipboard-list"></i>
             Planes por Aprobar
           </h2>
           @if (pendingPlans().length > 0) {
-            <span class="section-badge">{{ pendingPlans().length }}</span>
+            <span class="dash-section-header__badge">{{ pendingPlans().length }}</span>
           }
         </div>
 
@@ -204,18 +222,17 @@
             <p>No hay planes pendientes de aprobación</p>
           </div>
         } @else {
-          <div class="data-list">
+          <div class="dash-list">
             @for (plan of pendingPlans(); track plan.id) {
-              <a [routerLink]="['/treatment-plans', plan.id]" class="data-list-item compact">
-                <div class="plan-icon">
+              <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
+                <div class="dash-item__leading dash-item__leading--warning">
                   <i class="fa-solid fa-clipboard-list"></i>
                 </div>
-                <div class="item-info">
-                  <span class="item-title">{{ plan.title }}</span>
-                  <span class="item-detail">{{ plan.patientName }} · {{ plan.totalItems }} items</span>
+                <div class="dash-item__content">
+                  <span class="dash-item__title">{{ plan.title }}</span>
+                  <span class="dash-item__subtitle">{{ plan.patientName }} · {{ plan.totalItems }} items</span>
                 </div>
-                <span class="plan-cost">{{ formatCurrency(plan.totalEstimatedCost) }}</span>
-                <i class="fa-solid fa-chevron-right item-arrow"></i>
+                <span class="dash-item__value" style="color: var(--success-600)">{{ formatCurrency(plan.totalEstimatedCost) }}</span>
               </a>
             }
           </div>
@@ -226,22 +243,22 @@
       <!-- Alertas de Inventario -->
       @if (permissionService.hasPermission(PERMISSIONS.InventoryView) && lowStockItems().length > 0) {
       <div class="section-card">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="dash-section-header">
+          <h2 class="dash-section-header__title">
             <i class="fa-solid fa-triangle-exclamation"></i>
             Alertas de Inventario
           </h2>
-          <span class="section-badge">{{ lowStockItems().length }}</span>
+          <span class="dash-section-header__badge">{{ lowStockItems().length }}</span>
         </div>
-        <div class="data-list">
+        <div class="dash-list">
           @for (item of lowStockItems().slice(0, 5); track item.productId) {
-            <div class="data-list-item compact">
-              <div class="urgency-indicator" [ngClass]="item.currentStock === 0 ? 'critical' : 'warning'">
+            <div class="dash-item">
+              <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="item.currentStock === 0 ? 'dash-item__leading--error' : 'dash-item__leading--warning'">
                 <i class="fa-solid" [ngClass]="item.currentStock === 0 ? 'fa-xmark' : 'fa-exclamation'"></i>
               </div>
-              <div class="item-info">
-                <span class="item-title">{{ item.productName }}</span>
-                <span class="item-detail">{{ item.categoryName || 'Sin categoría' }}</span>
+              <div class="dash-item__content">
+                <span class="dash-item__title">{{ item.productName }}</span>
+                <span class="dash-item__subtitle">{{ item.categoryName || 'Sin categoría' }}</span>
               </div>
               <div class="stock-levels">
                 <span class="stock-current" [class.stock-critical]="item.currentStock === 0" [class.stock-warning]="item.currentStock > 0">

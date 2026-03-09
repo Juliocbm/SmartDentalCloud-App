@@ -41,47 +41,47 @@
   @if (!loading() && !error() && report(); as r) {
     <!-- KPIs -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon primary"><i class="fa-solid fa-calendar"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.totalSlots }}</span>
-          <span class="kpi-label">Total Citas</span>
+      <div class="kpi-card kpi-card--primary">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Total Citas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-calendar"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.totalSlots }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon success"><i class="fa-solid fa-check-circle"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.completedSlots }}</span>
-          <span class="kpi-label">Completadas</span>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Completadas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-check-circle"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.completedSlots }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon error"><i class="fa-solid fa-times-circle"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.cancelledSlots }}</span>
-          <span class="kpi-label">Canceladas</span>
+      <div class="kpi-card kpi-card--error">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Canceladas</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-times-circle"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.cancelledSlots }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon warning"><i class="fa-solid fa-user-slash"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.noShowSlots }}</span>
-          <span class="kpi-label">No Show</span>
+      <div class="kpi-card kpi-card--warning">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">No Show</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-user-slash"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.noShowSlots }}</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon info"><i class="fa-solid fa-chart-pie"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.occupancyRate }}%</span>
-          <span class="kpi-label">Tasa de Ocupación</span>
+      <div class="kpi-card kpi-card--info">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Tasa de Ocupación</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-chart-pie"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.occupancyRate }}%</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon success"><i class="fa-solid fa-bullseye"></i></div>
-        <div class="kpi-content">
-          <span class="kpi-value">{{ r.completionRate }}%</span>
-          <span class="kpi-label">Tasa de Completación</span>
+      <div class="kpi-card kpi-card--success">
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">Tasa de Completación</span>
+          <div class="kpi-card__icon"><i class="fa-solid fa-bullseye"></i></div>
         </div>
+        <div class="kpi-card__value">{{ r.completionRate }}%</div>
       </div>
     </div>
 

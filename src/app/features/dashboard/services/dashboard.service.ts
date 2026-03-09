@@ -14,11 +14,12 @@ import {
 export class DashboardService {
   private api = inject(ApiService);
 
-  loadDashboardData(locationId?: string | null): Observable<DashboardData> {
+  loadDashboardData(locationId?: string | null, startDate?: string, endDate?: string): Observable<DashboardData> {
     const today = new Date();
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const todayStr = this.toLocalDateString(today);
-    const startOfMonthStr = this.toLocalDateString(startOfMonth);
+    const incomeStart = startDate || this.toLocalDateString(startOfMonth);
+    const incomeEnd = endDate || todayStr;
 
     const appointmentParams: Record<string, any> = { date: todayStr };
     const upcomingParams: Record<string, any> = { limit: 8 };
@@ -53,8 +54,8 @@ export class DashboardService {
       ),
 
       income: this.api.get<DashboardIncome>('/reports/income', {
-        startDate: startOfMonthStr,
-        endDate: todayStr
+        startDate: incomeStart,
+        endDate: incomeEnd
       }).pipe(
         catchError(() => of({ totalIncome: 0, totalPending: 0, invoiceCount: 0, paymentCount: 0 }))
       ),

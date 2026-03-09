@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PieChartComponent, ChartDataItem } from '../../../../shared/components/charts';
+import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
 import { InvoicesService } from '../../services/invoices.service';
 import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG } from '../../models/invoice.models';
 import { LoggingService } from '../../../../core/services/logging.service';
@@ -16,17 +17,10 @@ interface AgingBucket {
   cssClass: string;
 }
 
-interface QuickAction {
-  label: string;
-  description: string;
-  icon: string;
-  route: string;
-}
-
 @Component({
   selector: 'app-invoices-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, DateRangePickerComponent],
   templateUrl: './invoices-dashboard.html',
   styleUrl: './invoices-dashboard.scss'
 })
@@ -34,6 +28,7 @@ export class InvoicesDashboardComponent implements OnInit {
   private invoicesService = inject(InvoicesService);
   private logger = inject(LoggingService);
 
+  dateRange = signal<DateRange>(this.getDefaultDateRange());
   loading = signal(true);
   error = signal<string | null>(null);
   invoices = signal<Invoice[]>([]);
@@ -41,33 +36,6 @@ export class InvoicesDashboardComponent implements OnInit {
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fa-home' },
     { label: 'Facturación' }
-  ];
-
-  quickActions: QuickAction[] = [
-    {
-      label: 'Nueva Factura',
-      description: 'Crear una factura',
-      icon: 'fa-file-circle-plus',
-      route: ROUTES.INVOICES_NEW
-    },
-    {
-      label: 'Facturas',
-      description: 'Ver todas las facturas',
-      icon: 'fa-list',
-      route: ROUTES.INVOICES_LIST
-    },
-    {
-      label: 'Pagos',
-      description: 'Historial de pagos',
-      icon: 'fa-money-bill-wave',
-      route: '/payments'
-    },
-    {
-      label: 'Pacientes',
-      description: 'Gestionar pacientes',
-      icon: 'fa-users',
-      route: ROUTES.PATIENTS
-    }
   ];
 
   // Computed metrics
@@ -139,9 +107,16 @@ export class InvoicesDashboardComponent implements OnInit {
     this.loadDashboardData();
   }
 
+  onDateRangeChange(range: DateRange | null): void {
+    if (!range) return;
+    this.dateRange.set(range);
+    this.loadDashboardData();
+  }
+
   private loadDashboardData(): void {
     this.loading.set(true);
-    this.invoicesService.getAll().subscribe({
+    const { start, end } = this.dateRange();
+    this.invoicesService.getAll(start, end).subscribe({
       next: (data) => {
         this.invoices.set(data);
         this.loading.set(false);
@@ -171,5 +146,15 @@ export class InvoicesDashboardComponent implements OnInit {
       month: 'short',
       year: 'numeric'
     }).format(new Date(date));
+  }
+
+  private getDefaultDateRange(): DateRange {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return {
+      start: `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}`,
+      end: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+    };
   }
 }
