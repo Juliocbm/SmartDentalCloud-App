@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -11,11 +11,12 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-payment-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, PageHeaderComponent, DatePickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, PageHeaderComponent, DatePickerComponent, FormSelectComponent],
   templateUrl: './payment-form.html',
   styleUrl: './payment-form.scss'
 })
@@ -35,6 +36,16 @@ export class PaymentFormComponent implements OnInit {
 
   form!: FormGroup;
   paymentMethods = Object.values(PaymentMethod);
+  paymentMethodOptions: SelectOption[] = Object.values(PaymentMethod).map(m => ({
+    value: m,
+    label: PAYMENT_METHOD_CONFIG[m]?.label || m
+  }));
+  invoiceSelectOptions = computed<SelectOption[]>(() =>
+    this.invoices().map(inv => ({
+      value: inv.id,
+      label: `${inv.patientName}${inv.serie && inv.folio ? ` — ${inv.serie}-${inv.folio}` : ''} — Saldo: $${inv.balance.toFixed(2)}`
+    }))
+  );
   PAYMENT_METHOD_CONFIG = PAYMENT_METHOD_CONFIG;
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -53,6 +64,10 @@ export class PaymentFormComponent implements OnInit {
     });
 
     this.loadPendingInvoices();
+
+    this.form.get('invoiceId')?.valueChanges.subscribe(invoiceId => {
+      this.onInvoiceChange(invoiceId);
+    });
   }
 
   private loadPendingInvoices(): void {

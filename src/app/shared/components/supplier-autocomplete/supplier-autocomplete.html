@@ -1,0 +1,72 @@
+<div class="autocomplete-container">
+  <label class="autocomplete-label">
+    <ng-content></ng-content>
+    @if (required) {
+      <span class="required">*</span>
+    }
+  </label>
+
+  <div class="autocomplete-input-wrapper">
+    <input
+      type="text"
+      [formControl]="searchControl"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      class="autocomplete-input"
+      [class.error]="error"
+      [class.has-value]="selectedSupplier()"
+    />
+    
+    @if (loading()) {
+      <i class="fa-solid fa-spinner fa-spin autocomplete-icon"></i>
+    } @else if (selectedSupplier()) {
+      <button
+        type="button"
+        (click)="clearSelection()"
+        class="autocomplete-clear"
+        title="Limpiar selección"
+      >
+        <i class="fa-solid fa-times"></i>
+      </button>
+    } @else {
+      <i class="fa-solid fa-search autocomplete-icon"></i>
+    }
+
+    @if (showDropdown() && filteredSuppliers().length > 0) {
+      <div class="autocomplete-dropdown">
+        @for (supplier of filteredSuppliers(); track supplier.id) {
+          <button
+            type="button"
+            class="autocomplete-item"
+            (click)="selectSupplier(supplier)"
+          >
+            <div class="supplier-info">
+              <div class="supplier-name">
+                <i class="fa-solid fa-truck"></i>
+                {{ supplier.name }}
+              </div>
+              @if (supplier.contactName) {
+                <span class="supplier-contact">{{ supplier.contactName }}</span>
+              }
+            </div>
+          </button>
+        }
+      </div>
+    }
+
+    @if (showDropdown() && !loading() && filteredSuppliers().length === 0 && searchControl.value && searchControl.value.length >= 1) {
+      <div class="autocomplete-dropdown">
+        <div class="autocomplete-empty">
+          <i class="fa-solid fa-truck"></i>
+          <span>No se encontraron proveedores</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (error) {
+    <span class="error-message">{{ error }}</span>
+  }
+</div>

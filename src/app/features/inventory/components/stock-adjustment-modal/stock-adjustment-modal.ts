@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
@@ -9,6 +9,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { StockAdjustmentRequest } from '../../models/stock.models';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 /**
  * Datos que recibe el modal de ajuste de stock
@@ -29,7 +30,7 @@ export interface StockAdjustmentModalData {
 @Component({
   selector: 'app-stock-adjustment-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, FormSelectComponent],
   templateUrl: './stock-adjustment-modal.html',
   styleUrls: ['./stock-adjustment-modal.scss']
 })
@@ -54,7 +55,7 @@ export class StockAdjustmentModalComponent implements OnInit {
     { value: 'subtract', label: 'Salida (Restar)', icon: 'fa-minus' }
   ];
 
-  commonReasons = [
+  commonReasons: SelectOption[] = [
     'Ajuste por conteo físico',
     'Merma o daño',
     'Devolución de proveedor',
@@ -62,7 +63,11 @@ export class StockAdjustmentModalComponent implements OnInit {
     'Uso interno',
     'Muestra/Cortesía',
     'Otro'
-  ];
+  ].map(r => ({ value: r, label: r }));
+
+  locationOptions = computed<SelectOption[]>(() =>
+    this.locationsService.locationSummaries().map(l => ({ value: l.id, label: l.name }))
+  );
 
   ngOnInit(): void {
     this.showLocationSelector.set(!this.modalData.locationId && this.locationsService.hasMultipleLocations());

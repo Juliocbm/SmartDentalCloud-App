@@ -6,6 +6,7 @@ import { ModalComponentBase, ModalRef, ModalConfig } from '../../../../shared/se
 import { PatientAllergiesService } from '../../services/patient-allergies.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 import { ALLERGEN_TYPES, ALLERGY_SEVERITIES } from '../../models/patient-allergy.models';
 
 export interface AllergyFormModalData {
@@ -15,7 +16,7 @@ export interface AllergyFormModalData {
 @Component({
   selector: 'app-allergy-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, FormSelectComponent],
   templateUrl: './allergy-form-modal.html',
   styleUrl: './allergy-form-modal.scss'
 })

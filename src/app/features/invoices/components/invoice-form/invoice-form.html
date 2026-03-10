@@ -6,7 +6,8 @@
     [icon]="'fa-file-invoice-dollar'"
     [showBackButton]="true"
     [backRoute]="'/invoices'"
-    [breadcrumbs]="breadcrumbItems">
+    [breadcrumbs]="breadcrumbItems"
+    [sticky]="true">
     <div actions class="header-form-actions">
       <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="loading()">
         <i class="fa-solid fa-times"></i>
@@ -38,7 +39,7 @@
 
     <form [formGroup]="form" class="standard-form">
       <!-- Información del Paciente -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-user section-icon"></i>
           Información del Paciente
@@ -59,7 +60,7 @@
       </div>
 
       <!-- Datos Fiscales CFDI -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-file-contract section-icon"></i>
           Datos Fiscales CFDI
@@ -70,36 +71,36 @@
         <div class="form-row">
           <div class="form-group">
             <label for="usoCFDI" class="form-label">Uso de CFDI</label>
-            <select id="usoCFDI" formControlName="usoCFDI" class="form-input">
-              @for (option of cfdiUsoOptions; track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
-              }
-            </select>
+            <app-form-select
+              formControlName="usoCFDI"
+              [options]="cfdiUsoOptions"
+              placeholder="Seleccionar uso..."
+            ></app-form-select>
           </div>
 
           <div class="form-group">
             <label for="metodoPago" class="form-label">Método de Pago</label>
-            <select id="metodoPago" formControlName="metodoPago" class="form-input">
-              @for (option of cfdiMetodoPagoOptions; track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
-              }
-            </select>
+            <app-form-select
+              formControlName="metodoPago"
+              [options]="cfdiMetodoPagoOptions"
+              placeholder="Seleccionar método..."
+            ></app-form-select>
           </div>
 
           <div class="form-group">
             <label for="formaPago" class="form-label">Forma de Pago</label>
-            <select id="formaPago" formControlName="formaPago" class="form-input">
-              @for (option of cfdiFormaPagoOptions; track option.value) {
-                <option [value]="option.value">{{ option.label }}</option>
-              }
-            </select>
+            <app-form-select
+              formControlName="formaPago"
+              [options]="cfdiFormaPagoOptions"
+              placeholder="Seleccionar forma..."
+            ></app-form-select>
           </div>
         </div>
       </div>
 
       <!-- Items de Factura -->
-      <div class="form-section">
-        <div class="section-header">
+      <div class="form-section form-section--compact">
+        <div class="section-header-row">
           <h3 class="section-title">
             <i class="fa-solid fa-list-check section-icon"></i>
             Items de Factura
@@ -179,7 +180,7 @@
       </div>
 
       <!-- Invoice Total Summary -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <div class="invoice-summary">
           <div class="summary-row">
             <span class="summary-label">

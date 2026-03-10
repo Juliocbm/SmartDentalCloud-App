@@ -6,6 +6,7 @@ import { ModalComponentBase, ModalRef, ModalConfig } from '../../../../shared/se
 import { PatientDiagnosesService } from '../../services/patient-diagnoses.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 import { Cie10AutocompleteComponent } from '../../../../shared/components/cie10-autocomplete/cie10-autocomplete';
 import { Cie10Code } from '../../../../core/services/cie10.service';
 import { DIAGNOSIS_SEVERITIES } from '../../models/patient-diagnosis.models';
@@ -17,7 +18,7 @@ export interface DiagnosisFormModalData {
 @Component({
   selector: 'app-diagnosis-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent, Cie10AutocompleteComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, Cie10AutocompleteComponent, FormSelectComponent],
   templateUrl: './diagnosis-form-modal.html',
   styleUrl: './diagnosis-form-modal.scss'
 })

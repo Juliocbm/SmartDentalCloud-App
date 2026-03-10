@@ -6,7 +6,8 @@
     [icon]="isEditMode() ? 'fa-pen' : 'fa-plus'"
     [showBackButton]="true"
     [backRoute]="'/users/roles'"
-    [breadcrumbs]="breadcrumbItems()">
+    [breadcrumbs]="breadcrumbItems()"
+    [sticky]="true">
     <div actions class="header-form-actions">
       <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading()">
         <i class="fa-solid fa-times"></i>
@@ -40,7 +41,7 @@
     <form [formGroup]="roleForm" class="standard-form">
     
     <!-- Basic Information Section -->
-    <div class="form-section">
+    <div class="form-section form-section--compact">
       <h3 class="section-title">
         <i class="fa-solid fa-id-card section-icon"></i>
         Información del Rol
@@ -81,7 +82,7 @@
         <textarea
           id="description"
           formControlName="description"
-          class="form-textarea"
+          class="form-input form-textarea"
           rows="3"
           placeholder="Ej: Asistente especializado en procedimientos de ortodoncia"
         ></textarea>
@@ -92,7 +93,7 @@
     </div>
 
     <!-- Permissions Section -->
-    <div class="form-section">
+    <div class="form-section form-section--compact">
       <h3 class="section-title">
         <i class="fa-solid fa-shield-halved section-icon"></i>
         Permisos del Rol

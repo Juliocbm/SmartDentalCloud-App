@@ -9,6 +9,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { Category } from '../../models/category.models';
 import { PRODUCT_UNITS } from '../../models/product.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 interface ProductFormValue {
   code: string;
@@ -31,7 +32,7 @@ interface ProductFormValue {
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, FormSelectComponent],
   templateUrl: './product-form.html',
   styleUrls: ['./product-form.scss']
 })
@@ -45,7 +46,10 @@ export class ProductFormComponent implements OnInit {
 
   productForm!: FormGroup;
   categories = signal<Category[]>([]);
-  units = PRODUCT_UNITS;
+  categorySelectOptions = computed<SelectOption[]>(() =>
+    this.categories().map(c => ({ value: c.id, label: c.name }))
+  );
+  units: SelectOption[] = [...PRODUCT_UNITS];
   
   isEditMode = signal(false);
   productId = signal<string | null>(null);

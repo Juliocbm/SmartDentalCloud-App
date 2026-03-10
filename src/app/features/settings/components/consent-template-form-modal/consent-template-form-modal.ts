@@ -6,6 +6,7 @@ import { ModalComponentBase, ModalRef, ModalConfig } from '../../../../shared/se
 import { ConsentTemplateService, ConsentTemplate, CONSENT_TYPE_OPTIONS } from '../../services/consent-template.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 export interface ConsentTemplateFormModalData {
   template?: ConsentTemplate;
@@ -14,7 +15,7 @@ export interface ConsentTemplateFormModalData {
 @Component({
   selector: 'app-consent-template-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, FormSelectComponent],
   templateUrl: './consent-template-form-modal.html',
   styleUrl: './consent-template-form-modal.scss'
 })

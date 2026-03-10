@@ -4,13 +4,13 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PurchaseOrdersService } from '../../services/purchase-orders.service';
-import { SuppliersService } from '../../services/suppliers.service';
 import { ProductsService } from '../../services/products.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
+import { SupplierAutocompleteComponent } from '../../../../shared/components/supplier-autocomplete/supplier-autocomplete';
+import { SupplierSummary } from '../../models/supplier.models';
 import { PurchaseOrderItemModalComponent, PurchaseOrderItemFormData } from './purchase-order-item-modal';
-import { Supplier } from '../../models/supplier.models';
 import { Product } from '../../models/product.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
@@ -18,7 +18,7 @@ import { DatePickerComponent } from '../../../../shared/components/date-picker/d
 @Component({
   selector: 'app-purchase-order-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, LocationAutocompleteComponent, PurchaseOrderItemModalComponent, DatePickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, LocationAutocompleteComponent, SupplierAutocompleteComponent, PurchaseOrderItemModalComponent, DatePickerComponent],
   templateUrl: './purchase-order-form.html',
   styleUrls: ['./purchase-order-form.scss']
 })
@@ -26,17 +26,15 @@ export class PurchaseOrderFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private purchaseOrdersService = inject(PurchaseOrdersService);
-  private suppliersService = inject(SuppliersService);
   private productsService = inject(ProductsService);
   private logger = inject(LoggingService);
+  // SuppliersService is handled internally by SupplierAutocompleteComponent
   locationsService = inject(LocationsService);
 
   selectedLocationId = signal<string | null>(null);
   orderForm!: FormGroup;
-  suppliers = signal<Supplier[]>([]);
   products = signal<Product[]>([]);
-  
-  loadingSuppliers = signal(true);
+  selectedSupplierName = signal<string | null>(null);
   loadingProducts = signal(true);
   saving = signal(false);
   error = signal<string | null>(null);
@@ -69,7 +67,6 @@ export class PurchaseOrderFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.loadSuppliers();
     this.loadProducts();
   }
 
@@ -81,17 +78,9 @@ export class PurchaseOrderFormComponent implements OnInit {
     });
   }
 
-  private loadSuppliers(): void {
-    this.suppliersService.getAll(true).subscribe({
-      next: (suppliers) => {
-        this.suppliers.set(suppliers);
-        this.loadingSuppliers.set(false);
-      },
-      error: (err) => {
-        this.logger.error('Error loading suppliers:', err);
-        this.loadingSuppliers.set(false);
-      }
-    });
+  onSupplierSelected(supplier: SupplierSummary | null): void {
+    this.orderForm.patchValue({ supplierId: supplier?.id ?? '' });
+    this.selectedSupplierName.set(supplier?.name ?? null);
   }
 
   private loadProducts(): void {

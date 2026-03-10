@@ -505,11 +505,11 @@
 
           <div class="form-group">
             <label class="form-label">Prioridad</label>
-            <select formControlName="priority" class="form-input">
-              @for (priority of priorityOptions; track priority) {
-                <option [value]="priority">{{ priority }}</option>
-              }
-            </select>
+            <app-form-select
+              formControlName="priority"
+              [options]="priorityOptions"
+              placeholder="Seleccionar prioridad"
+            ></app-form-select>
           </div>
         </div>
 

@@ -10,18 +10,5 @@
 // Botones: usa clases globales .btn de _components.scss
 // ============================================
 
-// Checkbox labels (específico de este formulario)
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  cursor: pointer;
-  font-weight: var(--font-weight-normal);
-}
-
-.form-checkbox {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--primary-500);
-  cursor: pointer;
-}
+// Estilos específicos de service-form
+// .checkbox-label y .form-checkbox son globales en _components.scss

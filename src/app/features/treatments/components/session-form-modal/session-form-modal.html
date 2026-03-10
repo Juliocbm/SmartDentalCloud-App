@@ -29,17 +29,11 @@
 
     <div class="form-group">
       <label class="form-label">Cita Asociada <span class="optional-label">(Opcional)</span></label>
-      <select
+      <app-form-select
         formControlName="appointmentId"
-        class="form-input"
-      >
-        <option value="">Sin cita asociada</option>
-        @for (apt of patientAppointments(); track apt.id) {
-          <option [value]="apt.id">
-            {{ apt.displayDate }} {{ apt.displayTime }} — {{ apt.reason }}
-          </option>
-        }
-      </select>
+        [options]="appointmentOptions()"
+        placeholder="Sin cita asociada"
+      ></app-form-select>
     </div>
 
     <div class="form-group">

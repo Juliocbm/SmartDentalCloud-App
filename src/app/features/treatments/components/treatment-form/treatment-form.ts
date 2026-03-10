@@ -6,8 +6,9 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
 import { ServiceAutocompleteComponent } from '../../../../shared/components/service-autocomplete/service-autocomplete';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { TreatmentsService } from '../../services/treatments.service';
-import { TreatmentStatus, SURFACE_OPTIONS, QUADRANT_OPTIONS } from '../../models/treatment.models';
+import { TreatmentStatus, TREATMENT_STATUS_CONFIG, SURFACE_OPTIONS, QUADRANT_OPTIONS } from '../../models/treatment.models';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { DentalService } from '../../../invoices/models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -25,7 +26,8 @@ import { PatientDiagnosis } from '../../../patients/models/patient-diagnosis.mod
     PageHeaderComponent,
     PatientAutocompleteComponent,
     ServiceAutocompleteComponent,
-    DatePickerComponent
+    DatePickerComponent,
+    FormSelectComponent
   ],
   templateUrl: './treatment-form.html',
   styleUrl: './treatment-form.scss'
@@ -48,11 +50,20 @@ export class TreatmentFormComponent implements OnInit {
   selectedPatient = signal<PatientSearchResult | null>(null);
   selectedService = signal<DentalService | null>(null);
   activeDiagnoses = signal<PatientDiagnosis[]>([]);
+  diagnosisOptions = computed<SelectOption[]>(() =>
+    this.activeDiagnoses().map(d => ({
+      value: d.id,
+      label: `${d.description}${d.cie10Code ? ` (${d.cie10Code})` : ''}`
+    }))
+  );
 
   // Constants
-  surfaceOptions = SURFACE_OPTIONS;
-  quadrantOptions = QUADRANT_OPTIONS;
-  statusOptions = Object.values(TreatmentStatus);
+  surfaceOptions: SelectOption[] = SURFACE_OPTIONS;
+  quadrantOptions: SelectOption[] = QUADRANT_OPTIONS.map(q => ({ value: String(q.value), label: q.label }));
+  statusOptions: SelectOption[] = Object.values(TreatmentStatus).map(s => ({
+    value: s,
+    label: TREATMENT_STATUS_CONFIG[s]?.label || s
+  }));
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

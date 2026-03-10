@@ -9,7 +9,8 @@
       { label: 'Dashboard', route: '/dashboard' },
       { label: 'Recetas', route: '/prescriptions' },
       { label: 'Nueva Receta' }
-    ]">
+    ]"
+    [sticky]="true">
     <div actions class="header-form-actions">
       <button type="button" class="btn btn-outline" (click)="goBack()">
         <i class="fa-solid fa-times"></i>
@@ -31,7 +32,7 @@
     <form class="standard-form">
 
       <!-- Patient Selection -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-user section-icon"></i>
           Paciente
@@ -99,7 +100,7 @@
       }
 
       <!-- Diagnosis -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-stethoscope section-icon"></i>
           Diagnóstico
@@ -120,7 +121,7 @@
       </div>
 
       <!-- Medications -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <div class="section-header-row">
           <h3 class="section-title">
             <i class="fa-solid fa-pills section-icon"></i>
@@ -203,7 +204,7 @@
       </div>
 
       <!-- Notes -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-note-sticky section-icon"></i>
           Notas Adicionales
@@ -278,16 +279,13 @@
         </div>
         <div class="form-group">
           <label class="form-label">Vía de Administración</label>
-          <select
-            class="form-input"
+          <app-form-select
             [ngModel]="medForm().route"
             (ngModelChange)="updateMedField('route', $event)"
             name="modal_route"
-          >
-            @for (opt of ROUTE_OPTIONS; track opt.value) {
-              <option [value]="opt.value">{{ opt.label }}</option>
-            }
-          </select>
+            [options]="ROUTE_OPTIONS"
+            placeholder="Seleccionar vía..."
+          ></app-form-select>
         </div>
       </div>
 
@@ -321,31 +319,25 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Frecuencia <span class="required">*</span></label>
-          <select
-            class="form-input"
+          <app-form-select
             [ngModel]="medForm().frequency"
             (ngModelChange)="updateMedField('frequency', $event)"
             name="modal_frequency"
-          >
-            <option value="">Seleccionar...</option>
-            @for (opt of FREQUENCY_OPTIONS; track opt.value) {
-              <option [value]="opt.value">{{ opt.label }}</option>
-            }
-          </select>
+            [options]="FREQUENCY_OPTIONS"
+            placeholder="Seleccionar..."
+            [required]="true"
+          ></app-form-select>
         </div>
         <div class="form-group">
           <label class="form-label">Duración <span class="required">*</span></label>
-          <select
-            class="form-input"
+          <app-form-select
             [ngModel]="medForm().duration"
             (ngModelChange)="updateMedField('duration', $event)"
             name="modal_duration"
-          >
-            <option value="">Seleccionar...</option>
-            @for (opt of DURATION_OPTIONS; track opt.value) {
-              <option [value]="opt.value">{{ opt.label }}</option>
-            }
-          </select>
+            [options]="DURATION_OPTIONS"
+            placeholder="Seleccionar..."
+            [required]="true"
+          ></app-form-select>
         </div>
       </div>
 

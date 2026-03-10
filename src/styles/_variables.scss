@@ -311,6 +311,16 @@
   --list-item-radius: var(--radius-md);
   --list-item-hover-transform: translateX(4px);
 
+  // ===== Input Sizing =====
+  --input-padding-y: 8px;
+  --input-padding-x: 14px;
+  --input-font-size: var(--font-size-sm);
+  --input-line-height: 1.2;
+  --input-border-radius: var(--radius-md);
+  --input-height: 38px;
+  --input-label-font-size: var(--font-size-sm);
+  --input-label-font-weight: var(--font-weight-medium);
+
   // ===== Status Badges =====
   --badge-padding: var(--spacing-xs) var(--spacing-sm);
   --badge-radius: var(--radius-sm);

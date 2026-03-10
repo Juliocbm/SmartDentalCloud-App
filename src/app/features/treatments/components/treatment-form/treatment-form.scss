@@ -11,25 +11,3 @@
   align-items: center;
   padding-top: var(--spacing-md);
 }
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-
-  input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--primary-500);
-    cursor: pointer;
-  }
-}
-
-.form-textarea {
-  resize: vertical;
-  min-height: 100px;
-  font-family: inherit;
-}

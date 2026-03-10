@@ -119,22 +119,7 @@ export class AppointmentsDashboardComponent implements OnInit {
   }
 
   private loadDashboardData(): void {
-    this.loading.set(true);
-    
-    // Cargar métricas principales
     const locId = this.selectedLocationId();
-
-    this.analyticsService.getDashboardMetrics(locId).subscribe({
-      next: (metrics) => {
-        this.metrics.set(metrics);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.logger.error('Error loading dashboard metrics:', err);
-        this.error.set(getApiErrorMessage(err));
-        this.loading.set(false);
-      }
-    });
 
     // Cargar datos operacionales (no afectados por date range)
     this.loadUpcomingAppointments(locId);
@@ -146,7 +131,22 @@ export class AppointmentsDashboardComponent implements OnInit {
   }
 
   private loadAnalyticsData(): void {
+    this.loading.set(true);
     const locId = this.selectedLocationId();
+    const { start, end } = this.getDateRangeAsDates();
+
+    this.analyticsService.getDashboardMetrics(locId, start, end).subscribe({
+      next: (metrics) => {
+        this.metrics.set(metrics);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.logger.error('Error loading dashboard metrics:', err);
+        this.error.set(getApiErrorMessage(err));
+        this.loading.set(false);
+      }
+    });
+
     this.loadStatusDistribution(locId);
     this.loadWeekdayDistribution(locId);
     this.loadFrequentPatients(locId);

@@ -21,11 +21,12 @@ import {
 import { generateTimeOptions } from '../../models/work-schedule.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-schedule-exceptions-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ModalComponent, LocationAutocompleteComponent, DentistAutocompleteComponent, DatePickerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ModalComponent, LocationAutocompleteComponent, DentistAutocompleteComponent, DatePickerComponent, FormSelectComponent],
   templateUrl: './schedule-exceptions-manager.html',
   styleUrl: './schedule-exceptions-manager.scss'
 })
@@ -58,9 +59,9 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
   EXCEPTION_TYPE_LABELS = EXCEPTION_TYPE_LABELS;
   EXCEPTION_TYPE_ICONS = EXCEPTION_TYPE_ICONS;
   EXCEPTION_TYPE_COLORS = EXCEPTION_TYPE_COLORS;
-  timeOptions = generateTimeOptions();
+  timeOptions: SelectOption[] = generateTimeOptions().map(t => ({ value: t, label: t }));
 
-  exceptionTypes: { value: ScheduleExceptionType; label: string }[] = [
+  exceptionTypes: SelectOption[] = [
     { value: 'closedHoliday', label: 'Día Festivo' },
     { value: 'closedVacation', label: 'Vacaciones' },
     { value: 'closedOther', label: 'Cierre' },

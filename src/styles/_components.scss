@@ -482,7 +482,7 @@
 
 // ===== INPUTS Y FORMS =====
 .form-group {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 0;
 }
 
 .form-label {
@@ -496,14 +496,15 @@
 .form-input,
 .form-control {
   width: 100%;
-  padding: 10px 14px;
+  height: var(--input-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
+  border-radius: var(--input-border-radius);
+  font-size: var(--input-font-size);
   background: var(--surface-primary);
   color: var(--text-primary);
   transition: all var(--transition-base);
-  line-height: var(--line-height-normal);
+  line-height: var(--input-line-height);
   font-family: var(--font-family-base);
 
   &::placeholder {
@@ -537,6 +538,7 @@
 
 textarea.form-input,
 textarea.form-control {
+  height: auto;
   resize: vertical;
   min-height: 100px;
 }
@@ -1609,6 +1611,70 @@ textarea.form-control {
     color: var(--text-secondary);
     margin: 0 0 var(--spacing-sm) 0;
   }
+
+  // ===== Variante compacta — secciones con 1-2 campos o secciones opcionales =====
+  &.form-section--compact {
+    padding: var(--spacing-sm) 0;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    .section-title {
+      font-size: var(--font-size-base);
+      border-bottom: 1px solid var(--border-primary);
+      padding-bottom: var(--spacing-sm);
+      margin-bottom: var(--spacing-sm);
+    }
+  }
+
+  // ===== Variante colapsable — para secciones opcionales =====
+  &.form-section--collapsible {
+    .section-title {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+
+      .collapse-chevron {
+        margin-left: auto;
+        font-size: var(--font-size-xs);
+        color: var(--text-tertiary);
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+      }
+    }
+
+    .section-content {
+      overflow: hidden;
+      transition: max-height 0.3s ease, opacity 0.2s ease;
+      max-height: 2000px;
+      opacity: 1;
+    }
+
+    &.is-collapsed {
+      .collapse-chevron {
+        transform: rotate(-90deg);
+      }
+
+      .section-content {
+        max-height: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+// ===== STANDARD FORM — layout base para todos los formularios =====
+.standard-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 // ===== GRID LAYOUTS DE FORMULARIO =====
@@ -1616,7 +1682,7 @@ textarea.form-control {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
 
   &:last-child {
     margin-bottom: 0;
@@ -1624,8 +1690,43 @@ textarea.form-control {
 }
 
 .form-row-inline {
+  display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.form-row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
 }
 
 // ===== GRUPOS DE CAMPOS COMPLETOS =====
@@ -1635,10 +1736,11 @@ textarea.form-control {
   gap: var(--spacing-sm);
 
   .form-label {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--input-label-font-size);
+    font-weight: var(--input-label-font-weight);
     color: var(--text-primary);
     line-height: var(--line-height-tight);
+    margin-bottom: 0;
 
     .required {
       color: var(--error-500);
@@ -1664,8 +1766,8 @@ textarea.form-control {
 
   .form-textarea {
     resize: vertical;
-    min-height: 60px;
-    max-height: 60px;
+    min-height: 80px;
+    max-height: 300px;
   }
 
   .error-message {
@@ -2254,6 +2356,298 @@ button.link-primary {
 // ===== FORM GROUP FULL WIDTH =====
 .form-group-full {
   grid-column: 1 / -1;
+}
+
+// ===== SECTION HEADER ROW EN FORMULARIOS =====
+// Encabezado de sección con botón inline (formularios con listas dinámicas)
+// Estructura: <div class="section-header-row"><h3 class="section-title">…</h3><button>…</button></div>
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+
+  .section-title {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+}
+
+// Badge de conteo dentro de section-title
+.section-count {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  margin-left: var(--spacing-sm);
+}
+
+// Badge inline dentro de section-title (numero sin fondo)
+.items-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--spacing-xs);
+  background: var(--primary-100);
+  color: var(--primary-700);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  margin-left: var(--spacing-sm);
+}
+
+// ===== EMPTY ITEMS — estado vacío dentro de sección de lista en formulario =====
+.empty-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl) var(--spacing-xl);
+  border: 2px dashed var(--border-primary);
+  border-radius: var(--radius-lg);
+  background: var(--surface-secondary);
+  text-align: center;
+  gap: var(--spacing-md);
+
+  > i {
+    font-size: 2rem;
+    color: var(--text-tertiary);
+  }
+
+  > p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+  }
+}
+
+// ===== CHECKBOX LABEL (formularios) =====
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+  font-weight: var(--font-weight-normal);
+}
+
+.form-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-500);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+// ===== TOGGLE SWITCH (formularios) =====
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .toggle-slider {
+      background: var(--primary-500);
+
+      &::before {
+        transform: translateX(24px);
+      }
+    }
+
+    &:focus + .toggle-slider {
+      box-shadow: 0 0 0 2px var(--primary-100);
+    }
+  }
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--neutral-300);
+  border-radius: 24px;
+  transition: var(--transition-base);
+
+  &::before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.toggle-text,
+.toggle-label-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+// ===== TOGGLE LABEL PATTERN (checkbox + switch + text) =====
+// Alternativa: <label class="toggle-label"><input type="checkbox"><span class="toggle-switch"></span><span class="toggle-text">…</span></label>
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+
+  .toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+
+    &:checked + .toggle-switch {
+      background: var(--primary-500);
+
+      &::before {
+        transform: translateX(20px);
+      }
+    }
+
+    &:focus + .toggle-switch {
+      box-shadow: 0 0 0 2px var(--primary-100);
+    }
+  }
+
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+    background: var(--neutral-300);
+    border-radius: 22px;
+    transition: var(--transition-base);
+    flex-shrink: 0;
+
+    &::before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background: white;
+      border-radius: 50%;
+      transition: var(--transition-base);
+      box-shadow: var(--shadow-sm);
+    }
+  }
+}
+
+// ===== INPUT WITH ICON (formularios) =====
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  > i {
+    position: absolute;
+    left: var(--spacing-md);
+    color: var(--text-tertiary);
+    pointer-events: none;
+    z-index: 1;
+    font-size: var(--font-size-sm);
+  }
+
+  .form-input {
+    width: 100%;
+    padding-left: calc(var(--spacing-md) * 2 + 16px);
+  }
+}
+
+// ===== INPUT WITH PREFIX (moneda, unidades) =====
+.input-with-prefix {
+  display: flex;
+  align-items: stretch;
+
+  .input-prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 var(--spacing-md);
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-primary);
+    border-right: none;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+  }
+
+  .form-input {
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    flex: 1;
+  }
+}
+
+// ===== INFO BANNER (formularios — mensajes informativos inline) =====
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-md);
+  color: var(--primary-700);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-lg);
+
+  i {
+    font-size: var(--font-size-base);
+    color: var(--primary-500);
+    flex-shrink: 0;
+  }
+}
+
+// ===== LOCKED FIELD (campo no editable en formulario) =====
+.locked-field {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 10px 14px;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+
+  .locked-icon {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-xs);
+  }
 }
 
 // ===== DETAIL PAGE: SECTION HEADER WITH ACTION =====

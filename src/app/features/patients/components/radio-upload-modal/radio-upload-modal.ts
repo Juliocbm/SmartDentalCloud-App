@@ -6,6 +6,7 @@ import { ModalComponentBase, ModalRef, ModalConfig } from '../../../../shared/se
 import { RadiologicImagesService } from '../../services/radiologic-images.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 import { IMAGE_TYPES } from '../../models/radiologic-image.models';
 
 export interface RadioUploadModalData {
@@ -15,7 +16,7 @@ export interface RadioUploadModalData {
 @Component({
   selector: 'app-radio-upload-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, FormSelectComponent],
   templateUrl: './radio-upload-modal.html',
   styleUrl: './radio-upload-modal.scss'
 })

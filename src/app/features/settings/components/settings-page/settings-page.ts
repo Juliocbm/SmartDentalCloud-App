@@ -13,6 +13,7 @@ import { SettingsService } from '../../services/settings.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { NavigationStateService } from '../../../../core/services/navigation-state.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 import {
   TenantSettings,
   SmtpConfiguration,
@@ -27,7 +28,7 @@ type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | '
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent, ConsentTemplateListComponent, ImageUploadComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent, ConsentTemplateListComponent, ImageUploadComponent, FormSelectComponent],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss'
 })

@@ -14,6 +14,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-treatment-plan-form',
@@ -25,7 +26,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
     PatientAutocompleteComponent,
     ServiceSelectComponent,
     ModalComponent,
-    DatePickerComponent
+    DatePickerComponent,
+    FormSelectComponent
   ],
   templateUrl: './treatment-plan-form.html',
   styleUrl: './treatment-plan-form.scss'
@@ -57,7 +59,7 @@ export class TreatmentPlanFormComponent implements OnInit {
   procForm!: FormGroup;
 
   // Config
-  priorityOptions = Object.values(ItemPriority);
+  priorityOptions: SelectOption[] = Object.values(ItemPriority).map(p => ({ value: p, label: p }));
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     { label: 'Dashboard', route: '/dashboard' },

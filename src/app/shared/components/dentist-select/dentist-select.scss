@@ -6,9 +6,10 @@
 }
 
 .select-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--input-label-font-size);
+  font-weight: var(--input-label-font-weight);
   color: var(--text-primary);
+  line-height: var(--line-height-tight);
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -25,9 +26,11 @@
 
 .select-input {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
+  height: var(--input-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
   padding-right: var(--spacing-4xl);
-  font-size: var(--font-size-base);
+  font-size: var(--input-font-size);
+  line-height: var(--input-line-height);
   color: var(--text-primary);
   background-color: var(--surface-primary);
   border: 1px solid var(--border-primary);
@@ -86,12 +89,13 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
+  height: var(--input-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
   background-color: var(--surface-secondary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
   color: var(--text-secondary);
-  font-size: var(--font-size-base);
+  font-size: var(--input-font-size);
 
   i {
     font-size: var(--font-size-lg);

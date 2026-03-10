@@ -1,0 +1,59 @@
+<div class="select-container">
+  <div
+    class="select-trigger"
+    [class.is-open]="isOpen()"
+    [class.has-value]="selectedOption()"
+    [class.is-disabled]="disabled"
+    [class.error]="error"
+    (click)="toggle()"
+    role="combobox"
+    [attr.aria-expanded]="isOpen()"
+    tabindex="0"
+  >
+    <span class="select-value" [class.is-placeholder]="!selectedOption()">
+      {{ selectedOption()?.label || placeholder }}
+    </span>
+
+    @if (selectedOption() && !disabled) {
+      <button
+        type="button"
+        class="select-clear"
+        (click)="clearSelection($event)"
+        title="Limpiar selección"
+      >
+        <i class="fa-solid fa-times"></i>
+      </button>
+    } @else {
+      <i class="fa-solid fa-chevron-down select-chevron" [class.is-open]="isOpen()"></i>
+    }
+  </div>
+
+  @if (isOpen()) {
+    <div class="select-dropdown">
+      @for (option of options; track option.value; let i = $index) {
+        <button
+          type="button"
+          class="select-option"
+          [class.is-selected]="selectedOption()?.value === option.value"
+          [class.is-focused]="focusedIndex() === i"
+          (click)="selectOption(option)"
+        >
+          <span class="option-label">{{ option.label }}</span>
+          @if (selectedOption()?.value === option.value) {
+            <i class="fa-solid fa-check option-check"></i>
+          }
+        </button>
+      }
+
+      @if (options.length === 0) {
+        <div class="select-empty">
+          <span>Sin opciones disponibles</span>
+        </div>
+      }
+    </div>
+  }
+
+  @if (error) {
+    <span class="error-message">{{ error }}</span>
+  }
+</div>

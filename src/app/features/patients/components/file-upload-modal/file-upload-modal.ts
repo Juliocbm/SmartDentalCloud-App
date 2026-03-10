@@ -6,6 +6,7 @@ import { ModalComponentBase, ModalRef, ModalConfig } from '../../../../shared/se
 import { AttachedFilesService } from '../../services/attached-files.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 import { FILE_CATEGORIES, formatFileSize } from '../../models/attached-file.models';
 
 export interface FileUploadModalData {
@@ -15,7 +16,7 @@ export interface FileUploadModalData {
 @Component({
   selector: 'app-file-upload-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, FormSelectComponent],
   templateUrl: './file-upload-modal.html',
   styleUrl: './file-upload-modal.scss'
 })

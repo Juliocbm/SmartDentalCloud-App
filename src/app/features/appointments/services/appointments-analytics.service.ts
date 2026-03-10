@@ -27,19 +27,19 @@ export class AppointmentsAnalyticsService {
   /**
    * Obtiene las métricas principales del dashboard.
    */
-  getDashboardMetrics(locationId?: string | null): Observable<AppointmentDashboardMetrics> {
+  getDashboardMetrics(locationId?: string | null, rangeStart?: Date, rangeEnd?: Date): Observable<AppointmentDashboardMetrics> {
     const today = new Date();
     const startOfDay = this.startOfDay(today);
     const endOfDay = this.endOfDay(today);
     const startOfWeek = this.startOfWeek(today);
     const endOfWeek = this.endOfWeek(today);
-    const startOfMonth = this.startOfMonth(today);
-    const endOfMonth = this.endOfMonth(today);
+    const statsStart = rangeStart || this.startOfMonth(today);
+    const statsEnd = rangeEnd || this.endOfMonth(today);
 
     return forkJoin({
       todayAppointments: this.appointmentsService.getByRange(startOfDay, endOfDay, undefined, undefined, locationId),
       weekAppointments: this.appointmentsService.getByRange(startOfWeek, endOfWeek, undefined, undefined, locationId),
-      monthStats: this.appointmentsService.getStatistics(startOfMonth, endOfMonth)
+      monthStats: this.appointmentsService.getStatistics(statsStart, statsEnd)
     }).pipe(
       map(({ todayAppointments, weekAppointments, monthStats }) => {
         const todayCompleted = todayAppointments.filter(a => a.status === AppointmentStatus.Completed).length;

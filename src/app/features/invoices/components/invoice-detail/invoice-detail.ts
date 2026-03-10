@@ -17,11 +17,12 @@ import { SendEmailModalComponent } from '../../../../shared/components/send-emai
 import { PatientsService } from '../../../patients/services/patients.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, FormSelectComponent],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })

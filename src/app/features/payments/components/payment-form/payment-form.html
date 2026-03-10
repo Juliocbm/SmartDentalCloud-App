@@ -5,7 +5,8 @@
     icon="fa-money-bill-wave"
     [showBackButton]="true"
     backRoute="/payments"
-    [breadcrumbs]="breadcrumbItems">
+    [breadcrumbs]="breadcrumbItems"
+    [sticky]="true">
     <div actions class="header-form-actions">
       <button type="button" class="btn btn-outline" routerLink="/payments">
         <i class="fa-solid fa-times"></i>
@@ -27,7 +28,7 @@
     <form [formGroup]="form" class="standard-form">
 
       <!-- Invoice Selection -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-file-invoice section-icon"></i>
           Factura
@@ -41,24 +42,13 @@
               <span>Cargando facturas...</span>
             </div>
           } @else {
-            <select
-              class="form-input"
+            <app-form-select
               formControlName="invoiceId"
-              (change)="onInvoiceChange($any($event.target).value)"
-              [class.input-error]="isFieldInvalid('invoiceId')"
-            >
-              <option value="">Seleccionar factura pendiente...</option>
-              @for (inv of invoices(); track inv.id) {
-                <option [value]="inv.id">
-                  {{ inv.patientName }}
-                  @if (inv.serie && inv.folio) { — {{ inv.serie }}-{{ inv.folio }} }
-                  — Saldo: {{ formatCurrency(inv.balance) }}
-                </option>
-              }
-            </select>
-            @if (isFieldInvalid('invoiceId')) {
-              <span class="error-message">{{ getFieldError('invoiceId') }}</span>
-            }
+              [options]="invoiceSelectOptions()"
+              placeholder="Seleccionar factura pendiente..."
+              [required]="true"
+              [error]="isFieldInvalid('invoiceId') ? getFieldError('invoiceId') : null"
+            ></app-form-select>
           }
         </div>
 
@@ -86,7 +76,7 @@
       </div>
 
       <!-- Payment Details -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-credit-card section-icon"></i>
           Detalles del Pago

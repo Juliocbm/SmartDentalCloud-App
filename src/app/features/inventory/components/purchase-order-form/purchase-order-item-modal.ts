@@ -1,8 +1,9 @@
-import { Component, signal, computed, input, output } from '@angular/core';
+import { Component, signal, computed, input, output, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { Product } from '../../models/product.models';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { CreatePurchaseOrderItemRequest } from '../../models/purchase-order.models';
 
 export interface PurchaseOrderItemFormData extends CreatePurchaseOrderItemRequest {
@@ -14,7 +15,7 @@ export interface PurchaseOrderItemFormData extends CreatePurchaseOrderItemReques
 @Component({
   selector: 'app-purchase-order-item-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, FormSelectComponent],
   templateUrl: './purchase-order-item-modal.html',
   styleUrl: './purchase-order-item-modal.scss'
 })
@@ -27,6 +28,9 @@ export class PurchaseOrderItemModalComponent {
   closed = output<void>();
 
   itemForm = signal<PurchaseOrderItemFormData>(this.createEmptyItem());
+  productOptions = computed<SelectOption[]>(() =>
+    this.products().map(p => ({ value: p.id, label: `${p.code} - ${p.name}` }))
+  );
 
   itemSubtotal = computed(() => {
     const form = this.itemForm();

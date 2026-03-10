@@ -17,6 +17,12 @@ export interface Supplier {
   createdAt: Date;
 }
 
+export interface SupplierSummary {
+  id: string;
+  name: string;
+  contactName?: string;
+}
+
 export interface CreateSupplierRequest {
   code: string;
   name: string;

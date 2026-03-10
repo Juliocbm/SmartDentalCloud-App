@@ -8,6 +8,7 @@ import { SERVICE_CATEGORIES } from '../../models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-service-form',
@@ -15,7 +16,8 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    PageHeaderComponent
+    PageHeaderComponent,
+    FormSelectComponent
   ],
   templateUrl: './service-form.html',
   styleUrl: './service-form.scss'
@@ -35,7 +37,24 @@ export class ServiceFormComponent implements OnInit {
   serviceId = signal<string | null>(null);
 
   // Constants
-  categoryOptions = SERVICE_CATEGORIES;
+  categoryOptions: SelectOption[] = SERVICE_CATEGORIES;
+
+  // Collapsible sections
+  collapsedSections = signal<Set<string>>(new Set(['advanced']));
+
+  isSectionCollapsed(key: string): boolean {
+    return this.collapsedSections().has(key);
+  }
+
+  toggleSection(key: string): void {
+    const current = new Set(this.collapsedSections());
+    if (current.has(key)) {
+      current.delete(key);
+    } else {
+      current.add(key);
+    }
+    this.collapsedSections.set(current);
+  }
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },

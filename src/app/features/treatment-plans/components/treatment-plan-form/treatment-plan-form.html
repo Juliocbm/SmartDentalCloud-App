@@ -6,7 +6,8 @@
     [icon]="'fa-clipboard-list'"
     [showBackButton]="true"
     [backRoute]="isEditMode() ? '/treatment-plans/' + planId() : '/treatment-plans'"
-    [breadcrumbs]="breadcrumbItems()">
+    [breadcrumbs]="breadcrumbItems()"
+    [sticky]="true">
 
     <div actions class="header-form-actions">
       <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading()">
@@ -42,7 +43,7 @@
     <form [formGroup]="form" class="standard-form">
 
       <!-- Sección: Paciente -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-user section-icon"></i>
           Paciente
@@ -78,7 +79,7 @@
       </div>
 
       <!-- Sección: Información del Plan -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-file-medical section-icon"></i>
           Información del Plan
@@ -131,7 +132,7 @@
       </div>
 
       <!-- Sección: Fechas -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-calendar section-icon"></i>
           Fechas Estimadas
@@ -160,7 +161,7 @@
       </div>
 
       <!-- Sección: Procedimientos del Plan -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <div class="section-header-row">
           <h3 class="section-title">
             <i class="fa-solid fa-list-check section-icon"></i>
@@ -337,11 +338,11 @@
 
         <div class="form-group">
           <label class="form-label">Prioridad</label>
-          <select formControlName="priority" class="form-input">
-            @for (priority of priorityOptions; track priority) {
-              <option [value]="priority">{{ priority }}</option>
-            }
-          </select>
+          <app-form-select
+            formControlName="priority"
+            [options]="priorityOptions"
+            placeholder="Seleccionar prioridad"
+          ></app-form-select>
         </div>
       </div>
 

@@ -10,11 +10,12 @@ import { Category, CreateCategoryRequest, UpdateCategoryRequest } from '../../mo
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-category-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, FormSelectComponent],
   templateUrl: './category-form.html',
   styleUrls: ['./category-form.scss']
 })
@@ -33,6 +34,11 @@ export class CategoryFormComponent implements OnInit {
   isEditMode = computed(() => !!this.categoryId());
 
   categories = signal<Category[]>([]);
+  parentCategoryOptions = computed<SelectOption[]>(() =>
+    this.categories()
+      .filter(c => c.id !== this.categoryId())
+      .map(c => ({ value: c.id, label: c.name }))
+  );
   backRoute = computed(() => this.contextService.context().returnUrl);
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [

@@ -7,28 +7,6 @@
 // Table: usa .table-container, .table de _components.scss
 // ============================================
 
-// Section header con botón a la derecha
-.section-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
-
-  .section-title {
-    margin: 0;
-    padding: 0;
-    border: none;
-  }
-}
-
-.section-count {
-  background: var(--primary-100);
-  color: var(--primary-700);
-  padding: var(--spacing-xs) var(--spacing-md);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-}
-
 // Product table cells
 .product-name {
   display: block;
@@ -61,37 +39,12 @@
   font-weight: var(--font-weight-semibold);
 }
 
-// Empty items state
-.empty-items {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-3xl) var(--spacing-xl);
-  border: 2px dashed var(--border-primary);
-  border-radius: var(--radius-lg);
-  background-color: var(--surface-secondary);
-  text-align: center;
-  gap: var(--spacing-md);
-
-  > i {
-    font-size: 2rem;
-    color: var(--text-tertiary);
-  }
-
-  > p {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-  }
-}
-
 // Totals
 .totals-container {
   max-width: 400px;
   margin-left: auto;
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
 }
@@ -100,7 +53,7 @@
   display: flex;
   justify-content: space-between;
   padding: var(--spacing-sm) 0;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--border-primary);
 
   &:last-child {
     border-bottom: none;
@@ -110,26 +63,18 @@
 .total-row-final {
   padding-top: var(--spacing-md);
   margin-top: var(--spacing-sm);
-  border-top: 2px solid var(--gray-300);
+  border-top: 2px solid var(--border-medium);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-lg);
-  color: var(--gray-900);
+  color: var(--text-primary);
 }
 
 .total-label {
-  color: var(--gray-700);
+  color: var(--text-secondary);
 }
 
 .total-value {
-  color: var(--gray-900);
+  color: var(--text-primary);
   font-weight: var(--font-weight-semibold);
 }
 
-// Responsive
-@media (max-width: 768px) {
-  .section-header-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-md);
-  }
-}

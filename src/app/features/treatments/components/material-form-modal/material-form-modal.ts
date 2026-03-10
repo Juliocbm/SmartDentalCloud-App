@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
@@ -8,6 +8,7 @@ import { ProductsService } from '../../../inventory/services/products.service';
 import { Product } from '../../../inventory/models/product.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { LocationSummary } from '../../../settings/models/location.models';
@@ -19,7 +20,7 @@ export interface MaterialFormModalData {
 @Component({
   selector: 'app-material-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent, LocationAutocompleteComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, LocationAutocompleteComponent, FormSelectComponent],
   templateUrl: './material-form-modal.html',
   styleUrl: './material-form-modal.scss'
 })
@@ -39,6 +40,9 @@ export class MaterialFormModalComponent implements ModalComponentBase<MaterialFo
   form!: FormGroup;
   loading = signal(false);
   products = signal<Product[]>([]);
+  productSelectOptions = computed<SelectOption[]>(() =>
+    this.products().map(p => ({ value: p.id, label: `${p.code} — ${p.name}` }))
+  );
   loadingProducts = signal(false);
 
   ngOnInit(): void {
@@ -50,6 +54,13 @@ export class MaterialFormModalComponent implements ModalComponentBase<MaterialFo
     });
 
     this.loadProducts();
+
+    this.form.get('productId')?.valueChanges.subscribe(productId => {
+      const product = this.products().find(p => p.id === productId);
+      if (product) {
+        this.form.patchValue({ unitCost: product.unitCost || 0 }, { emitEvent: false });
+      }
+    });
   }
 
   private loadProducts(): void {

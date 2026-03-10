@@ -6,8 +6,8 @@
     [icon]="'fa-file-invoice'"
     [showBackButton]="true"
     [backRoute]="'/inventory/purchase-orders'"
-    [breadcrumbs]="breadcrumbItems()">
-    
+    [breadcrumbs]="breadcrumbItems()"
+    [sticky]="true">
     <!-- Botones de Acción en Header -->
     <div actions class="header-form-actions">
       <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="saving()">
@@ -41,7 +41,7 @@
     <form [formGroup]="orderForm" class="standard-form">
 
       <!-- Información General -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-info-circle section-icon"></i>
           Información General
@@ -50,23 +50,16 @@
 
         <div class="form-row">
           <!-- Proveedor -->
-          <div class="form-group">
-            <label for="supplierId" class="form-label">Proveedor <span class="required">*</span></label>
-            <select
-              id="supplierId"
-              class="form-select"
-              formControlName="supplierId"
-              [class.input-error]="hasError('supplierId', 'required')"
-            >
-              <option value="">Seleccionar proveedor...</option>
-              @for (supplier of suppliers(); track supplier.id) {
-                <option [value]="supplier.id">{{ supplier.name }}</option>
-              }
-            </select>
-            @if (hasError('supplierId', 'required')) {
-              <span class="error-message">El proveedor es requerido</span>
-            }
-          </div>
+          <app-supplier-autocomplete
+            [selectedSupplierId]="orderForm.get('supplierId')?.value"
+            [selectedSupplierName]="selectedSupplierName()"
+            [required]="true"
+            [error]="hasError('supplierId', 'required') ? 'El proveedor es requerido' : null"
+            placeholder="Buscar proveedor..."
+            (supplierSelected)="onSupplierSelected($event)"
+          >
+            Proveedor
+          </app-supplier-autocomplete>
 
           <!-- Fecha Esperada -->
           <div class="form-group">
@@ -92,7 +85,7 @@
           <label for="notes" class="form-label">Notas</label>
           <textarea
             id="notes"
-            class="form-textarea"
+            class="form-input form-textarea"
             formControlName="notes"
             placeholder="Notas adicionales sobre la orden"
             rows="3"
@@ -101,7 +94,7 @@
       </div>
 
       <!-- Productos -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <div class="section-header-row">
           <h3 class="section-title">
             <i class="fa-solid fa-box section-icon"></i>
@@ -189,7 +182,7 @@
 
       <!-- Resumen de Totales -->
       @if (items().length > 0) {
-        <div class="form-section">
+        <div class="form-section form-section--compact">
           <h3 class="section-title">
             <i class="fa-solid fa-calculator section-icon"></i>
             Resumen

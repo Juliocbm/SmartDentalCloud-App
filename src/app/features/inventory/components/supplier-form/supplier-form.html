@@ -6,7 +6,8 @@
     [icon]="'fa-truck'"
     [showBackButton]="true"
     [backRoute]="'/inventory/suppliers'"
-    [breadcrumbs]="breadcrumbItems()">
+    [breadcrumbs]="breadcrumbItems()"
+    [sticky]="true">
     
     <!-- Botones de Acción en Header -->
     <div actions class="header-form-actions">
@@ -48,17 +49,16 @@
 
     <!-- Form -->
     @if (!loading() || !isEditMode()) {
-      <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="supplier-form">
-      
-      <!-- Información Básica -->
-      <div class="form-section">
+      <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="standard-form">
+
+      <!-- Información del Proveedor (básica + contacto fusionadas) -->
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
-          <i class="fa-solid fa-info-circle section-icon"></i>
-          Información Básica
-          <span class="required">*</span>
+          <i class="fa-solid fa-truck section-icon"></i>
+          Información del Proveedor
         </h3>
 
-        <div class="form-row">
+        <div class="form-row-4">
           <!-- Código -->
           <div class="form-group">
             <label for="code" class="form-label">Código <span class="required">*</span></label>
@@ -112,28 +112,15 @@
           <!-- Condiciones de Pago -->
           <div class="form-group">
             <label for="paymentTerms" class="form-label">Condiciones de Pago</label>
-            <select
-              id="paymentTerms"
-              class="form-select"
+            <app-form-select
               formControlName="paymentTerms"
-            >
-              <option value="">Seleccionar...</option>
-              @for (term of paymentTerms; track term.value) {
-                <option [value]="term.value">{{ term.label }}</option>
-              }
-            </select>
+              [options]="paymentTerms"
+              placeholder="Seleccionar..."
+            ></app-form-select>
           </div>
         </div>
-      </div>
 
-      <!-- Información de Contacto -->
-      <div class="form-section">
-        <h3 class="section-title">
-          <i class="fa-solid fa-address-book section-icon"></i>
-          Información de Contacto
-        </h3>
-
-        <div class="form-row">
+        <div class="form-row-3">
           <!-- Persona de Contacto -->
           <div class="form-group">
             <label for="contactName" class="form-label">Persona de Contacto</label>
@@ -173,45 +160,48 @@
               placeholder="Teléfono del proveedor"
             />
           </div>
+        </div>
 
+        <div class="form-row">
           <!-- Dirección -->
           <div class="form-group form-group-full">
             <label for="address" class="form-label">Dirección</label>
             <textarea
               id="address"
-              class="form-textarea"
+              class="form-input form-textarea"
               formControlName="address"
               placeholder="Dirección completa"
-              rows="3"
+              rows="2"
             ></textarea>
           </div>
         </div>
       </div>
 
-      <!-- Notas Adicionales -->
-      <div class="form-section">
+      <!-- Notas y Estado -->
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-note-sticky section-icon"></i>
-          Notas Adicionales
+          Notas y Estado
         </h3>
 
-        <div class="form-row">
-          <div class="form-group form-group-full">
+        <div class="form-row-inline">
+          <div class="form-group">
             <label for="notes" class="form-label">Notas</label>
             <textarea
               id="notes"
-              class="form-textarea"
+              class="form-input form-textarea"
               formControlName="notes"
               placeholder="Notas adicionales sobre el proveedor"
-              rows="4"
+              rows="2"
             ></textarea>
           </div>
 
-          <!-- Estado -->
           <div class="form-group">
-            <label class="form-checkbox">
+            <label class="form-label">Estado</label>
+            <label class="checkbox-label">
               <input
                 type="checkbox"
+                class="form-checkbox"
                 formControlName="isActive"
               />
               <span>Proveedor Activo</span>

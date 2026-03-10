@@ -5,11 +5,12 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { OnboardingService } from '../../services/onboarding.service';
 import { RegisterTenantRequest, SubscriptionPlanDto } from '../../models/onboarding.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, FormSelectComponent],
   templateUrl: './register.html',
   styleUrl: './register.scss'
 })
@@ -29,6 +30,15 @@ export class RegisterComponent implements OnInit {
   tenantName = signal('');
   subdomain = signal('');
   timeZone = signal('America/Mexico_City');
+  registerTimezoneOptions: SelectOption[] = [
+    { value: 'America/Mexico_City', label: 'Ciudad de México (CST)' },
+    { value: 'America/Monterrey', label: 'Monterrey (CST)' },
+    { value: 'America/Cancun', label: 'Cancún (EST)' },
+    { value: 'America/Tijuana', label: 'Tijuana (PST)' },
+    { value: 'America/Hermosillo', label: 'Hermosillo (MST)' },
+    { value: 'America/Chihuahua', label: 'Chihuahua (MST)' },
+    { value: 'America/Mazatlan', label: 'Mazatlán (MST)' }
+  ];
   subdomainPreview = signal('');
 
   // Form fields - Step 2

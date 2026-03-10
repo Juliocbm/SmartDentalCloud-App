@@ -10,15 +10,13 @@
     <div class="form-group">
       <label class="form-label">Cargar desde plantilla</label>
       <div class="template-selector-row">
-        <select class="form-input"
-          [value]="selectedTemplateId()"
-          (change)="selectedTemplateId.set($any($event.target).value)"
-          (focus)="loadTemplates()">
-          <option [ngValue]="null">— Escribir manualmente —</option>
-          @for (tpl of templates(); track tpl.id) {
-            <option [value]="tpl.id">{{ tpl.title }} ({{ getConsentTypeLabel(tpl.consentType) }})</option>
-          }
-        </select>
+        <app-form-select
+          [ngModel]="selectedTemplateId()"
+          (ngModelChange)="selectedTemplateId.set($event)"
+          [ngModelOptions]="{standalone: true}"
+          [options]="templateOptions()"
+          placeholder="— Escribir manualmente —"
+        ></app-form-select>
         <button type="button" class="btn btn-outline btn-sm" [disabled]="!selectedTemplateId()"
           (click)="onTemplateSelected()">
           <i class="fa-solid fa-file-import"></i> Cargar
@@ -39,11 +37,12 @@
     <div class="form-row-2">
       <div class="form-group">
         <label class="form-label">Tipo <span class="required">*</span></label>
-        <select class="form-input" formControlName="consentType">
-          @for (t of CONSENT_TYPES; track t.value) {
-            <option [value]="t.value">{{ t.label }}</option>
-          }
-        </select>
+        <app-form-select
+          formControlName="consentType"
+          [options]="CONSENT_TYPES"
+          placeholder="Seleccionar tipo..."
+          [required]="true"
+        ></app-form-select>
       </div>
       <div class="form-group">
         <label class="form-label">Título <span class="required">*</span></label>

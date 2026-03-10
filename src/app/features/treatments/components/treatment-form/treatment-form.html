@@ -6,7 +6,8 @@
     [icon]="'fa-tooth'"
     [showBackButton]="true"
     [backRoute]="'/treatments'"
-    [breadcrumbs]="breadcrumbItems()">
+    [breadcrumbs]="breadcrumbItems()"
+    [sticky]="true">
 
     <div actions class="header-form-actions">
       <button type="button" class="btn btn-outline" (click)="cancel()" [disabled]="loading()">
@@ -50,11 +51,11 @@
     @if (!loading() || !isEditMode()) {
       <form [formGroup]="form" class="standard-form">
 
-        <!-- Sección: Paciente y Servicio -->
-        <div class="form-section">
+        <!-- Sección: Paciente, Servicio y Fechas -->
+        <div class="form-section form-section--compact">
           <h3 class="section-title">
-            <i class="fa-solid fa-user section-icon"></i>
-            Paciente y Servicio
+            <i class="fa-solid fa-tooth section-icon"></i>
+            Información del Tratamiento
           </h3>
 
           <div class="form-row">
@@ -88,17 +89,62 @@
               }
             </div>
           </div>
+
+          <div class="form-row-4">
+            <div class="form-group">
+              <app-date-picker
+                formControlName="startDate"
+                [required]="true"
+                [disabled]="loading()"
+                [error]="isFieldInvalid('startDate') ? 'La fecha de inicio es requerida' : null"
+                placeholder="Seleccionar fecha..."
+              >
+                Fecha de Inicio
+              </app-date-picker>
+            </div>
+
+            <div class="form-group">
+              <app-date-picker
+                formControlName="endDate"
+                [disabled]="loading()"
+                placeholder="Seleccionar fecha..."
+              >
+                Fecha de Fin
+              </app-date-picker>
+            </div>
+
+            <div class="form-group">
+              <label for="status" class="form-label">Estado</label>
+              <app-form-select
+                formControlName="status"
+                [options]="statusOptions"
+                placeholder="Seleccionar estado"
+              ></app-form-select>
+            </div>
+
+            <div class="form-group">
+              <label for="duration" class="form-label">Duración (min)</label>
+              <input
+                id="duration"
+                type="number"
+                formControlName="duration"
+                class="form-input"
+                placeholder="Ej: 60"
+                min="1"
+              />
+            </div>
+          </div>
         </div>
 
         <!-- Sección: Información Dental -->
-        <div class="form-section">
+        <div class="form-section form-section--compact">
           <h3 class="section-title">
-            <i class="fa-solid fa-tooth section-icon"></i>
+            <i class="fa-solid fa-teeth section-icon"></i>
             Información Dental
             <span class="optional-badge">Opcional</span>
           </h3>
 
-          <div class="form-row">
+          <div class="form-row-4">
             <div class="form-group">
               <label for="toothNumber" class="form-label">Número de Diente</label>
               <input
@@ -110,138 +156,64 @@
               />
               <p class="field-hint">
                 <i class="fa-solid fa-circle-info"></i>
-                Numeración FDI (sistema internacional)
+                Numeración FDI
               </p>
             </div>
 
             <div class="form-group">
               <label for="surface" class="form-label">Superficie</label>
-              <select id="surface" formControlName="surface" class="form-input">
-                <option value="">Seleccionar superficie</option>
-                @for (opt of surfaceOptions; track opt.value) {
-                  <option [value]="opt.value">{{ opt.label }}</option>
-                }
-              </select>
+              <app-form-select
+                formControlName="surface"
+                [options]="surfaceOptions"
+                placeholder="Seleccionar superficie"
+              ></app-form-select>
             </div>
-          </div>
 
-          <div class="form-row">
             <div class="form-group">
               <label for="quadrant" class="form-label">Cuadrante</label>
-              <select id="quadrant" formControlName="quadrant" class="form-input">
-                <option [ngValue]="null">Seleccionar cuadrante</option>
-                @for (opt of quadrantOptions; track opt.value) {
-                  <option [ngValue]="opt.value">{{ opt.label }}</option>
-                }
-              </select>
+              <app-form-select
+                formControlName="quadrant"
+                [options]="quadrantOptions"
+                placeholder="Seleccionar cuadrante"
+              ></app-form-select>
             </div>
 
             <div class="form-group">
               <label class="form-label">Múltiples Dientes</label>
               <div class="checkbox-wrapper">
                 <label class="checkbox-label">
-                  <input type="checkbox" formControlName="isMultipleTooth" />
-                  <span>Este tratamiento involucra múltiples dientes</span>
+                  <input type="checkbox" formControlName="isMultipleTooth" class="form-checkbox" />
+                  <span>Múltiples dientes</span>
                 </label>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Sección: Diagnóstico Asociado -->
-        @if (activeDiagnoses().length > 0) {
-          <div class="form-section">
-            <h3 class="section-title">
-              <i class="fa-solid fa-diagnoses section-icon"></i>
-              Diagnóstico Asociado
-              <span class="optional-badge">Opcional</span>
-            </h3>
+        <!-- Sección: Diagnóstico y Notas -->
+        <div class="form-section form-section--compact">
+          <h3 class="section-title">
+            <i class="fa-solid fa-notes-medical section-icon"></i>
+            Diagnóstico y Notas
+            <span class="optional-badge">Opcional</span>
+          </h3>
 
+          @if (activeDiagnoses().length > 0) {
             <div class="form-row">
               <div class="form-group form-group-full">
-                <label for="patientDiagnosisId" class="form-label">Diagnóstico del Paciente</label>
-                <select id="patientDiagnosisId" formControlName="patientDiagnosisId" class="form-input">
-                  <option [ngValue]="null">— Sin diagnóstico asociado —</option>
-                  @for (diagnosis of activeDiagnoses(); track diagnosis.id) {
-                    <option [ngValue]="diagnosis.id">
-                      {{ diagnosis.description }}
-                      @if (diagnosis.cie10Code) {
-                        ({{ diagnosis.cie10Code }})
-                      }
-                    </option>
-                  }
-                </select>
+                <label for="patientDiagnosisId" class="form-label">Diagnóstico Asociado</label>
+                <app-form-select
+                  formControlName="patientDiagnosisId"
+                  [options]="diagnosisOptions()"
+                  placeholder="— Sin diagnóstico asociado —"
+                ></app-form-select>
                 <p class="field-hint">
                   <i class="fa-solid fa-circle-info"></i>
-                  Vincular este tratamiento a un diagnóstico justifica clínicamente el procedimiento
+                  Vincular a un diagnóstico justifica clínicamente el procedimiento
                 </p>
               </div>
             </div>
-          </div>
-        }
-
-        <!-- Sección: Fechas y Estado -->
-        <div class="form-section">
-          <h3 class="section-title">
-            <i class="fa-solid fa-calendar section-icon"></i>
-            Fechas y Estado
-          </h3>
-
-          <div class="form-row">
-            <div class="form-group">
-              <app-date-picker
-                formControlName="startDate"
-                [required]="true"
-                [disabled]="loading()"
-                [error]="isFieldInvalid('startDate') ? 'La fecha de inicio es requerida' : null"
-                placeholder="Seleccionar fecha de inicio..."
-              >
-                Fecha de Inicio
-              </app-date-picker>
-            </div>
-
-            <div class="form-group">
-              <app-date-picker
-                formControlName="endDate"
-                [disabled]="loading()"
-                placeholder="Seleccionar fecha de fin..."
-              >
-                Fecha de Fin
-              </app-date-picker>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="status" class="form-label">Estado</label>
-              <select id="status" formControlName="status" class="form-input">
-                @for (status of statusOptions; track status) {
-                  <option [value]="status">{{ status }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="duration" class="form-label">Duración (minutos)</label>
-              <input
-                id="duration"
-                type="number"
-                formControlName="duration"
-                class="form-input"
-                placeholder="Ej: 30, 60, 90..."
-                min="1"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Sección: Notas -->
-        <div class="form-section">
-          <h3 class="section-title">
-            <i class="fa-solid fa-sticky-note section-icon"></i>
-            Notas
-            <span class="optional-badge">Opcional</span>
-          </h3>
+          }
 
           <div class="form-row">
             <div class="form-group form-group-full">
@@ -250,7 +222,7 @@
                 id="notes"
                 formControlName="notes"
                 class="form-input form-textarea"
-                rows="4"
+                rows="3"
                 placeholder="Observaciones, complicaciones, indicaciones especiales..."
               ></textarea>
             </div>

@@ -6,8 +6,8 @@
     [icon]="'fa-tags'"
     [showBackButton]="true"
     [backRoute]="backRoute()"
-    [breadcrumbs]="breadcrumbItems()">
-    
+    [breadcrumbs]="breadcrumbItems()"
+    [sticky]="true">
     <!-- Botones de Acción en Header -->
     <div actions class="header-form-actions">
       <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="loading()">
@@ -52,20 +52,17 @@
     @if (!loading() || !isEditMode()) {
       <form [formGroup]="categoryForm" class="standard-form">
         
-        <!-- Información Básica -->
-        <div class="form-section">
+        <!-- Información de la Categoría -->
+        <div class="form-section form-section--compact">
           <h3 class="section-title">
-            <i class="fa-solid fa-circle-info section-icon"></i>
-            Información Básica
-            <span class="required">*</span>
+            <i class="fa-solid fa-tags section-icon"></i>
+            Información de la Categoría
           </h3>
 
-          <div class="form-row">
+          <div class="form-row-inline">
             <!-- Nombre -->
             <div class="form-group">
-              <label for="name" class="form-label">
-                Nombre <span class="required">*</span>
-              </label>
+              <label for="name" class="form-label">Nombre <span class="required">*</span></label>
               <input
                 id="name"
                 type="text"
@@ -85,65 +82,57 @@
             <!-- Categoría Padre -->
             <div class="form-group">
               <label for="parentCategoryId" class="form-label">Categoría Padre</label>
-              <select id="parentCategoryId" class="form-input" formControlName="parentCategoryId">
-                <option [value]="null">Sin categoría padre</option>
-                @for (cat of categories(); track cat.id) {
-                  @if (cat.id !== categoryId()) {
-                    <option [value]="cat.id">{{ cat.name }}</option>
-                  }
-                }
-              </select>
+              <app-form-select
+                formControlName="parentCategoryId"
+                [options]="parentCategoryOptions()"
+                placeholder="Sin categoría padre"
+              ></app-form-select>
               <p class="field-hint">
                 <i class="fa-solid fa-circle-info"></i>
-                Opcional: selecciona una categoría padre para crear una subcategoría
+                Selecciona una categoría padre para crear una subcategoría
               </p>
             </div>
           </div>
 
-          <!-- Descripción -->
-          <div class="form-group">
-            <label for="description" class="form-label">Descripción</label>
-            <textarea
-              id="description"
-              class="form-input"
-              formControlName="description"
-              rows="3"
-              placeholder="Descripción de la categoría (opcional)"
-              [class.input-error]="hasError('description', 'maxlength')"
-            ></textarea>
-            @if (hasError('description', 'maxlength')) {
-              <span class="error-message">Máximo 500 caracteres</span>
+          <div class="form-row">
+            <!-- Descripción -->
+            <div class="form-group" [class.form-group-full]="!isEditMode()">
+              <label for="description" class="form-label">Descripción</label>
+              <textarea
+                id="description"
+                class="form-input form-textarea"
+                formControlName="description"
+                rows="2"
+                placeholder="Descripción de la categoría (opcional)"
+                [class.input-error]="hasError('description', 'maxlength')"
+              ></textarea>
+              @if (hasError('description', 'maxlength')) {
+                <span class="error-message">Máximo 500 caracteres</span>
+              }
+            </div>
+
+            @if (isEditMode()) {
+              <div class="form-group">
+                <label class="form-label">Estado</label>
+                <label class="toggle-label">
+                  <input
+                    type="checkbox"
+                    class="toggle-input"
+                    formControlName="isActive"
+                  />
+                  <span class="toggle-switch"></span>
+                  <span class="toggle-text">
+                    {{ categoryForm.get('isActive')?.value ? 'Activa' : 'Inactiva' }}
+                  </span>
+                </label>
+                <p class="field-hint">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Las categorías inactivas no aparecerán en los filtros
+                </p>
+              </div>
             }
           </div>
         </div>
-
-        <!-- Estado (solo en edición) -->
-        @if (isEditMode()) {
-          <div class="form-section">
-            <h3 class="section-title">
-              <i class="fa-solid fa-toggle-on section-icon"></i>
-              Estado
-            </h3>
-
-            <div class="form-group">
-              <label class="toggle-label">
-                <input
-                  type="checkbox"
-                  class="toggle-input"
-                  formControlName="isActive"
-                />
-                <span class="toggle-switch"></span>
-                <span class="toggle-text">
-                  {{ categoryForm.get('isActive')?.value ? 'Activa' : 'Inactiva' }}
-                </span>
-              </label>
-              <p class="field-hint">
-                <i class="fa-solid fa-circle-info"></i>
-                Las categorías inactivas no aparecerán en los filtros de productos
-              </p>
-            </div>
-          </div>
-        }
 
       </form>
     }

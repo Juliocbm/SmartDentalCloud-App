@@ -537,19 +537,15 @@
   background: var(--surface-primary);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  padding: var(--spacing-3xl);
+  padding: var(--spacing-xl);
   border: 1px solid var(--border-primary);
   
   // ===== Responsive =====
-  @media (max-width: 1024px) {
-    padding: var(--spacing-2xl);
-  }
-  
   @media (max-width: 768px) {
-    padding: var(--spacing-xl);
+    padding: var(--spacing-lg);
   }
   
   @media (max-width: 480px) {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
   }
 }

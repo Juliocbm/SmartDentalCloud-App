@@ -12,6 +12,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  height: var(--input-height);
   background: var(--surface-primary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
@@ -41,11 +42,11 @@
 .range-picker-input {
   width: 100%;
   min-width: 220px;
-  padding: 8px 14px;
+  padding: var(--input-padding-y) var(--input-padding-x);
   padding-left: calc(var(--spacing-sm) + 1rem + var(--spacing-xs));
   padding-right: var(--spacing-3xl);
-  font-size: var(--font-size-sm);
-  line-height: 1;
+  font-size: var(--input-font-size);
+  line-height: var(--input-line-height);
   color: var(--text-primary);
   background: transparent;
   border: none;

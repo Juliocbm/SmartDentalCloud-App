@@ -9,11 +9,12 @@
     <div class="form-row-2">
       <div class="form-group">
         <label class="form-label">Tipo de Consentimiento <span class="required">*</span></label>
-        <select class="form-input" formControlName="consentType">
-          @for (opt of CONSENT_TYPE_OPTIONS; track opt.value) {
-            <option [value]="opt.value">{{ opt.label }}</option>
-          }
-        </select>
+        <app-form-select
+          formControlName="consentType"
+          [options]="CONSENT_TYPE_OPTIONS"
+          placeholder="Seleccionar tipo..."
+          [required]="true"
+        ></app-form-select>
       </div>
       <div class="form-group">
         <label class="form-label">Título <span class="required">*</span></label>

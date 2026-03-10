@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
@@ -9,6 +9,7 @@ import { AppointmentListItem } from '../../../appointments/models/appointment.mo
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 export interface SessionFormModalData {
   treatmentId: string;
@@ -19,7 +20,7 @@ export interface SessionFormModalData {
 @Component({
   selector: 'app-session-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent, DatePickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, DatePickerComponent, FormSelectComponent],
   templateUrl: './session-form-modal.html',
   styleUrl: './session-form-modal.scss'
 })
@@ -36,6 +37,12 @@ export class SessionFormModalComponent implements ModalComponentBase<SessionForm
   form!: FormGroup;
   loading = signal(false);
   patientAppointments = signal<AppointmentListItem[]>([]);
+  appointmentOptions = computed<SelectOption[]>(() =>
+    this.patientAppointments().map(apt => ({
+      value: apt.id,
+      label: `${apt.displayDate} ${apt.displayTime} — ${apt.reason}`
+    }))
+  );
 
   ngOnInit(): void {
     const today = new Date().toISOString().split('T')[0];

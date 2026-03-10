@@ -9,11 +9,12 @@
     <div class="form-row-2">
       <div class="form-group">
         <label class="form-label">Tipo de Alérgeno <span class="required">*</span></label>
-        <select class="form-input" formControlName="allergenType">
-          @for (t of ALLERGEN_TYPES; track t.value) {
-            <option [value]="t.value">{{ t.label }}</option>
-          }
-        </select>
+        <app-form-select
+          formControlName="allergenType"
+          [options]="ALLERGEN_TYPES"
+          placeholder="Seleccionar tipo..."
+          [required]="true"
+        ></app-form-select>
       </div>
       <div class="form-group">
         <label class="form-label">Nombre del Alérgeno <span class="required">*</span></label>
@@ -24,11 +25,12 @@
     <div class="form-row-2">
       <div class="form-group">
         <label class="form-label">Severidad <span class="required">*</span></label>
-        <select class="form-input" formControlName="severity">
-          @for (s of ALLERGY_SEVERITIES; track s.value) {
-            <option [value]="s.value">{{ s.label }}</option>
-          }
-        </select>
+        <app-form-select
+          formControlName="severity"
+          [options]="ALLERGY_SEVERITIES"
+          placeholder="Seleccionar severidad..."
+          [required]="true"
+        ></app-form-select>
       </div>
       <div class="form-group">
         <label class="form-label">Fecha de Detección</label>

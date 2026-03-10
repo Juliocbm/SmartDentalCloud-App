@@ -7,11 +7,12 @@ import { SuppliersService } from '../../services/suppliers.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PAYMENT_TERMS } from '../../models/supplier.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-supplier-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, FormSelectComponent],
   templateUrl: './supplier-form.html',
   styleUrls: ['./supplier-form.scss']
 })
@@ -23,7 +24,7 @@ export class SupplierFormComponent implements OnInit {
   private logger = inject(LoggingService);
 
   supplierForm!: FormGroup;
-  paymentTerms = PAYMENT_TERMS;
+  paymentTerms = [...PAYMENT_TERMS];
   
   isEditMode = signal(false);
   supplierId = signal<string | null>(null);

@@ -9,12 +9,13 @@ import { Patient, CreatePatientRequest, UpdatePatientRequest, MaritalStatus, Gen
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { isFieldInvalid, getFieldError, markFormGroupTouched, applyServerErrors } from '../../../../core/utils/form-error.utils';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { CatalogsService, StateDto, MunicipalityDto } from '../../../../core/services/catalogs.service';
 
 @Component({
   selector: 'app-patient-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, DatePickerComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, DatePickerComponent, FormSelectComponent],
   templateUrl: './patient-form.html',
   styleUrl: './patient-form.scss'
 })
@@ -35,6 +36,28 @@ export class PatientFormComponent implements OnInit {
   states = signal<StateDto[]>([]);
   municipalities = signal<MunicipalityDto[]>([]);
   selectedStateId = signal<number | null>(null);
+  stateOptions = computed<SelectOption[]>(() =>
+    this.states().map(s => ({ value: s.name, label: s.name }))
+  );
+  municipalityOptions = computed<SelectOption[]>(() =>
+    this.municipalities().map(m => ({ value: m.name, label: m.name }))
+  );
+
+  collapsedSections = signal<Set<string>>(new Set(['additional']));
+
+  isSectionCollapsed(key: string): boolean {
+    return this.collapsedSections().has(key);
+  }
+
+  toggleSection(key: string): void {
+    const current = new Set(this.collapsedSections());
+    if (current.has(key)) {
+      current.delete(key);
+    } else {
+      current.add(key);
+    }
+    this.collapsedSections.set(current);
+  }
 
   breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -47,10 +70,11 @@ export class PatientFormComponent implements OnInit {
     this.loadStates();
     this.checkEditMode();
     this.setupAgeCalculation();
+    this.setupStateChange();
   }
 
-  genderOptions = Object.values(Gender);
-  maritalStatusOptions = Object.values(MaritalStatus);
+  genderOptions: SelectOption[] = Object.values(Gender).map(g => ({ value: g, label: g }));
+  maritalStatusOptions: SelectOption[] = Object.values(MaritalStatus).map(ms => ({ value: ms, label: ms }));
 
   private initForm(): void {
     this.patientForm = this.fb.group({
@@ -209,11 +233,14 @@ export class PatientFormComponent implements OnInit {
     });
   }
 
-  onStateChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const stateName = select.value;
-    this.patientForm.get('state')?.setValue(stateName);
-    this.patientForm.get('municipality')?.setValue('');
+  private setupStateChange(): void {
+    this.patientForm.get('state')?.valueChanges.subscribe(stateName => {
+      this.onStateChange(stateName);
+    });
+  }
+
+  onStateChange(stateName: string): void {
+    this.patientForm.get('municipality')?.setValue('', { emitEvent: false });
     this.municipalities.set([]);
     this.selectedStateId.set(null);
 
@@ -229,9 +256,8 @@ export class PatientFormComponent implements OnInit {
     }
   }
 
-  onMunicipalityChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.patientForm.get('municipality')?.setValue(select.value);
+  onMunicipalityChange(municipalityName: string): void {
+    this.patientForm.get('municipality')?.setValue(municipalityName);
   }
 
   onCancel(): void {

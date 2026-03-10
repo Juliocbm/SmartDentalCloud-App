@@ -68,15 +68,12 @@
           </div>
           <div class="form-group">
             <label class="form-label">Zona Horaria</label>
-            <select class="form-input" [ngModel]="timeZone()" (ngModelChange)="timeZone.set($event)">
-              <option value="America/Mexico_City">Ciudad de México (CST)</option>
-              <option value="America/Monterrey">Monterrey (CST)</option>
-              <option value="America/Cancun">Cancún (EST)</option>
-              <option value="America/Tijuana">Tijuana (PST)</option>
-              <option value="America/Hermosillo">Hermosillo (MST)</option>
-              <option value="America/Chihuahua">Chihuahua (MST)</option>
-              <option value="America/Mazatlan">Mazatlán (MST)</option>
-            </select>
+            <app-form-select
+              [ngModel]="timeZone()"
+              (ngModelChange)="timeZone.set($event)"
+              [options]="registerTimezoneOptions"
+              placeholder="Seleccionar zona horaria..."
+            ></app-form-select>
           </div>
           <div class="step-actions">
             <a routerLink="/login" class="btn btn-outline">Ya tengo cuenta</a>

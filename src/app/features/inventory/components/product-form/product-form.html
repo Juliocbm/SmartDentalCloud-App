@@ -6,7 +6,8 @@
     [icon]="'fa-box'"
     [showBackButton]="true"
     [backRoute]="'/inventory/products'"
-    [breadcrumbs]="breadcrumbItems()">
+    [breadcrumbs]="breadcrumbItems()"
+    [sticky]="true">
     
     <!-- Botones de Acción en Header -->
     <div actions class="header-form-actions">
@@ -48,17 +49,16 @@
 
     <!-- Form -->
     @if (!loading() || !isEditMode()) {
-      <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
-      
+      <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="standard-form">
+
       <!-- Información Básica -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
-          <i class="fa-solid fa-info-circle section-icon"></i>
-          Información Básica
-          <span class="required">*</span>
+          <i class="fa-solid fa-box section-icon"></i>
+          Información del Producto
         </h3>
 
-        <div class="form-row">
+        <div class="form-row-4">
           <!-- Código -->
           <div class="form-group">
             <label for="code" class="form-label">Código <span class="required">*</span></label>
@@ -101,56 +101,49 @@
           <!-- Categoría -->
           <div class="form-group">
             <label for="categoryId" class="form-label">Categoría</label>
-            <select
-              id="categoryId"
-              class="form-select"
+            <app-form-select
               formControlName="categoryId"
-            >
-              <option value="">Sin categoría</option>
-              @for (category of categories(); track category.id) {
-                <option [value]="category.id">{{ category.name }}</option>
-              }
-            </select>
+              [options]="categorySelectOptions()"
+              placeholder="Sin categoría"
+            ></app-form-select>
           </div>
 
           <!-- Unidad -->
           <div class="form-group">
             <label for="unit" class="form-label">Unidad de Medida <span class="required">*</span></label>
-            <select
-              id="unit"
-              class="form-select"
+            <app-form-select
               formControlName="unit"
-              [class.input-error]="unitControl?.invalid && unitControl?.touched"
-            >
-              @for (unit of units; track unit.value) {
-                <option [value]="unit.value">{{ unit.label }}</option>
-              }
-            </select>
+              [options]="units"
+              [required]="true"
+              [error]="unitControl?.invalid && unitControl?.touched ? 'La unidad es requerida' : null"
+              placeholder="Seleccionar unidad"
+            ></app-form-select>
           </div>
+        </div>
 
+        <div class="form-row">
           <!-- Descripción -->
           <div class="form-group form-group-full">
             <label for="description" class="form-label">Descripción</label>
             <textarea
               id="description"
-              class="form-textarea"
+              class="form-input form-textarea"
               formControlName="description"
               placeholder="Descripción del producto (opcional)"
-              rows="3"
+              rows="2"
             ></textarea>
           </div>
         </div>
       </div>
 
       <!-- Control de Inventario -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-warehouse section-icon"></i>
           Control de Inventario
-          <span class="required">*</span>
         </h3>
 
-        <div class="form-row">
+        <div class="form-row-4">
           <!-- Stock Mínimo -->
           <div class="form-group">
             <label for="minStock" class="form-label">Stock Mínimo <span class="required">*</span></label>
@@ -164,9 +157,9 @@
               [class.input-error]="minStockControl?.invalid && minStockControl?.touched"
             />
             @if (minStockControl?.invalid && minStockControl?.touched) {
-              <span class="error-message">Debe ser mayor o igual a 0</span>
+              <span class="error-message">Debe ser ≥ 0</span>
             }
-            <span class="field-hint">Cantidad mínima antes de alerta crítica</span>
+            <span class="field-hint">Umbral de alerta crítica</span>
           </div>
 
           <!-- Stock Máximo -->
@@ -180,7 +173,7 @@
               min="0"
               step="1"
             />
-            <span class="field-hint">Capacidad máxima de almacenamiento</span>
+            <span class="field-hint">Capacidad máxima</span>
           </div>
 
           <!-- Punto de Reorden -->
@@ -193,17 +186,17 @@
               formControlName="reorderPoint"
               min="0"
               step="1"
-              [class.invalid]="reorderPointControl?.invalid && reorderPointControl?.touched"
+              [class.input-error]="reorderPointControl?.invalid && reorderPointControl?.touched"
             />
             @if (reorderPointControl?.invalid && reorderPointControl?.touched) {
-              <span class="error-message">Debe ser mayor o igual a 0</span>
+              <span class="error-message">Debe ser ≥ 0</span>
             }
-            <span class="field-hint">Cantidad en la que se debe reordenar</span>
+            <span class="field-hint">Nivel para reordenar</span>
           </div>
 
           <!-- Cantidad a Reordenar -->
           <div class="form-group">
-            <label for="reorderQuantity" class="form-label">Cantidad a Reordenar <span class="required">*</span></label>
+            <label for="reorderQuantity" class="form-label">Cant. a Reordenar <span class="required">*</span></label>
             <input
               type="number"
               id="reorderQuantity"
@@ -214,11 +207,13 @@
               [class.input-error]="reorderQuantityControl?.invalid && reorderQuantityControl?.touched"
             />
             @if (reorderQuantityControl?.invalid && reorderQuantityControl?.touched) {
-              <span class="error-message">Debe ser mayor a 0</span>
+              <span class="error-message">Debe ser > 0</span>
             }
-            <span class="field-hint">Cantidad sugerida para nueva orden</span>
+            <span class="field-hint">Cantidad por nueva orden</span>
           </div>
+        </div>
 
+        <div class="form-row-inline">
           <!-- Costo Unitario -->
           <div class="form-group">
             <label for="unitCost" class="form-label">Costo Unitario <span class="required">*</span></label>
@@ -235,7 +230,7 @@
               />
             </div>
             @if (unitCostControl?.invalid && unitCostControl?.touched) {
-              <span class="error-message">Debe ser mayor o igual a 0</span>
+              <span class="error-message">Debe ser ≥ 0</span>
             }
           </div>
 
@@ -248,7 +243,7 @@
                   <input type="checkbox" formControlName="isActive" />
                   <span class="toggle-slider"></span>
                 </label>
-                <span class="toggle-label">
+                <span class="toggle-text">
                   {{ productForm.get('isActive')?.value ? 'Activo' : 'Inactivo' }}
                 </span>
               </div>
@@ -258,25 +253,24 @@
       </div>
 
       <!-- Notas Adicionales -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
-          <i class="fa-solid fa-sticky-note section-icon"></i>
+          <i class="fa-solid fa-note-sticky section-icon"></i>
           Notas Adicionales
         </h3>
 
         <div class="form-group">
           <textarea
             id="notes"
-            class="form-textarea"
+            class="form-input form-textarea"
             formControlName="notes"
             placeholder="Notas o información adicional sobre el producto..."
-            rows="4"
+            rows="2"
           ></textarea>
         </div>
       </div>
 
-      <!-- Actions -->
-    </form>
-  }
+      </form>
+    }
   </div>
 </div>

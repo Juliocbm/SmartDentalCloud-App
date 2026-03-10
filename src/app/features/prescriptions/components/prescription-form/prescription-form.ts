@@ -19,11 +19,12 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PatientAllergiesService } from '../../../patients/services/patient-allergies.service';
 import { AllergyAlert } from '../../../patients/models/patient-allergy.models';
 import { AllergyAlertBannerComponent } from '../../../../shared/components/allergy-alert-banner/allergy-alert-banner';
+import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-prescription-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent, AllergyAlertBannerComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent, AllergyAlertBannerComponent, FormSelectComponent],
   templateUrl: './prescription-form.html',
   styleUrl: './prescription-form.scss'
 })

@@ -35,7 +35,7 @@ Dashboards que muestran datos analíticos o históricos incluyen `<app-date-rang
 | **Dentistas** | `this_month` | Todas las métricas y rankings | — |
 | **Tratamientos** | `last_3_months` | KPIs, gráficos, listas de tratamientos | — |
 | **Facturación** | `last_3_months` | KPIs, gráficos, listas de facturas | — |
-| **Citas** | `this_month` | Distribución por estado, por día, pacientes frecuentes | Métricas del día, próximas citas, pendientes confirmación, actividad reciente |
+| **Citas** | `this_month` | Tasa completadas, no-shows, distribución por estado, por día, pacientes frecuentes | Citas de hoy, esta semana, próximas citas, pendientes confirmación, actividad reciente |
 
 **Patrón TypeScript:**
 ```typescript

@@ -6,7 +6,8 @@
     [icon]="isEditMode() ? 'fa-user-pen' : 'fa-user-plus'"
     [showBackButton]="true"
     [backRoute]="backRoute()"
-    [breadcrumbs]="breadcrumbItems()">
+    [breadcrumbs]="breadcrumbItems()"
+    [sticky]="true">
     <!-- Action Buttons -->
     <div actions class="header-form-actions">
       <button
@@ -55,16 +56,16 @@
 
     <!-- Form -->
     @if (!loading() || !isEditMode()) {
-      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="standard-form">
       
       <!-- Basic Information Section -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-id-card section-icon"></i>
-          Información Básica
+          Información del Usuario
         </h3>
 
-        <div class="form-row form-row-inline">
+        <div class="form-row-3">
           <div class="form-group">
             <label for="name" class="form-label">Nombre Completo <span class="required">*</span></label>
             <input
@@ -77,12 +78,8 @@
             />
             @if (nameControl?.invalid && nameControl?.touched) {
               <span class="error-message">
-                @if (nameControl?.errors?.['required']) {
-                  El nombre es requerido
-                }
-                @if (nameControl?.errors?.['minlength']) {
-                  Mínimo 3 caracteres
-                }
+                @if (nameControl?.errors?.['required']) { El nombre es requerido }
+                @if (nameControl?.errors?.['minlength']) { Mínimo 3 caracteres }
               </span>
             }
           </div>
@@ -99,12 +96,8 @@
             />
             @if (emailControl?.invalid && emailControl?.touched) {
               <span class="error-message">
-                @if (emailControl?.errors?.['required']) {
-                  El email es requerido
-                }
-                @if (emailControl?.errors?.['email']) {
-                  Email inválido
-                }
+                @if (emailControl?.errors?.['required']) { El email es requerido }
+                @if (emailControl?.errors?.['email']) { Email inválido }
               </span>
             }
           </div>
@@ -119,8 +112,10 @@
               placeholder="555-1234"
             />
           </div>
+        </div>
 
-          @if (!isEditMode()) {
+        @if (!isEditMode()) {
+          <div class="form-row">
             <div class="form-group">
               <label for="password" class="form-label">Contraseña Temporal <span class="required">*</span></label>
               <div class="password-input-wrapper">
@@ -143,12 +138,8 @@
               </div>
               @if (passwordControl?.invalid && passwordControl?.touched) {
                 <span class="error-message">
-                  @if (passwordControl?.errors?.['required']) {
-                    La contraseña es requerida
-                  }
-                  @if (passwordControl?.errors?.['minlength']) {
-                    Mínimo 8 caracteres
-                  }
+                  @if (passwordControl?.errors?.['required']) { La contraseña es requerida }
+                  @if (passwordControl?.errors?.['minlength']) { Mínimo 8 caracteres }
                 </span>
               }
               <p class="field-hint">
@@ -156,12 +147,12 @@
                 El usuario deberá cambiarla en su primer inicio de sesión
               </p>
             </div>
-          }
-        </div>
+          </div>
+        }
       </div>
 
       <!-- Roles Section -->
-      <div class="form-section">
+      <div class="form-section form-section--compact">
         <h3 class="section-title">
           <i class="fa-solid fa-user-shield section-icon"></i>
           Asignación de Roles
@@ -221,7 +212,7 @@
 
       <!-- Locations Section (Only when multi-location) -->
       @if (hasMultipleLocations()) {
-        <div class="form-section">
+        <div class="form-section form-section--compact">
           <h3 class="section-title">
             <i class="fa-solid fa-location-dot section-icon"></i>
             Sucursales Asignadas
@@ -268,14 +259,14 @@
 
       <!-- Professional Profile Section (Only for Doctors) -->
       @if (hasRoleDoctor()) {
-        <div class="form-section">
+        <div class="form-section form-section--compact">
           <h3 class="section-title">
-            <i class="fa-solid fa-briefcase section-icon"></i>
+            <i class="fa-solid fa-briefcase-medical section-icon"></i>
             Perfil Profesional
             <span class="optional-badge">Opcional</span>
           </h3>
 
-          <div class="form-row">
+          <div class="form-row-inline">
             <div class="form-group">
               <label for="specialty" class="form-label">Especialidad</label>
               <input

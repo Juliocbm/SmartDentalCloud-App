@@ -13,11 +13,12 @@ import { CreateInvoiceRequest, CreateInvoiceItemRequest, CFDI_USO_OPTIONS, CFDI_
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-invoice-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent, ServiceSelectComponent, ModalComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent, ServiceSelectComponent, ModalComponent, FormSelectComponent],
   templateUrl: './invoice-form.html',
   styleUrl: './invoice-form.scss'
 })

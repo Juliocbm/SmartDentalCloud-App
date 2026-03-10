@@ -37,11 +37,14 @@ El **Patrón de Input Autocomplete** reemplaza los `<select>` nativos con un com
 |---|---|---|---|
 | `PatientAutocompleteComponent` | `shared/components/patient-autocomplete/` | API search (server-side) | No muestra resultados hasta escribir |
 | `DentistAutocompleteComponent` | `shared/components/dentist-autocomplete/` | Precarga completa (client-side filter) | Muestra todos los dentistas |
+| `SupplierAutocompleteComponent` | `shared/components/supplier-autocomplete/` | Precarga completa (client-side filter) | Muestra todos los proveedores |
+| `LocationAutocompleteComponent` | `shared/components/location-autocomplete/` | Precarga completa (client-side filter) | Muestra todas las sucursales |
+| `ServiceAutocompleteComponent` | `shared/components/service-autocomplete/` | API search (server-side) | No muestra resultados hasta escribir |
 
 ### ¿Por qué la diferencia en Focus?
 
-- **Pacientes:** Pueden ser cientos/miles → buscar en servidor, mostrar solo al escribir
-- **Dentistas:** Lista pequeña (< 50 típicamente) → precargar todos, mostrar al hacer focus para selección rápida
+- **Pacientes/Servicios:** Pueden ser cientos/miles → buscar en servidor, mostrar solo al escribir
+- **Dentistas/Proveedores/Sucursales:** Lista pequeña (< 50 típicamente) → precargar todos, mostrar al hacer focus para selección rápida
 
 ---
 
@@ -278,7 +281,15 @@ export class DentistAutocompleteComponent implements OnChanges {
 
 ### SCSS (compartido)
 
-Los estilos son idénticos entre ambas variantes. Clases clave:
+Todos los autocompletes usan las **variables globales de input sizing** definidas en `_variables.scss`:
+
+```scss
+padding: var(--input-padding-y) var(--input-padding-x);  // 8px 14px
+font-size: var(--input-font-size);                        // 13px
+line-height: var(--input-line-height);                    // 1.2
+```
+
+Clases clave:
 
 | Clase | Propósito |
 |---|---|

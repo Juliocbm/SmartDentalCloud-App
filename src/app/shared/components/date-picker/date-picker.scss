@@ -11,9 +11,10 @@
 }
 
 .datepicker-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--input-label-font-size);
+  font-weight: var(--input-label-font-weight);
   color: var(--text-primary);
+  line-height: var(--line-height-tight);
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -30,9 +31,11 @@
 
 .datepicker-input {
   width: 100%;
-  padding: 10px 14px;
+  height: var(--input-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
   padding-right: var(--spacing-4xl);
-  font-size: var(--font-size-base);
+  font-size: var(--input-font-size);
+  line-height: var(--input-line-height);
   color: var(--text-primary);
   background-color: var(--surface-primary);
   border: 1px solid var(--border-primary);

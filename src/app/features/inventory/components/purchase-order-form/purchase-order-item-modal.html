@@ -9,17 +9,14 @@
     <!-- Producto -->
     <div class="form-group">
       <label class="form-label">Producto <span class="required">*</span></label>
-      <select
-        class="form-input"
+      <app-form-select
         [ngModel]="itemForm().productId"
         (ngModelChange)="onProductChange($event)"
         name="modal_productId"
-      >
-        <option value="">Seleccionar producto...</option>
-        @for (product of products(); track product.id) {
-          <option [value]="product.id">{{ product.code }} - {{ product.name }}</option>
-        }
-      </select>
+        [options]="productOptions()"
+        placeholder="Seleccionar producto..."
+        [required]="true"
+      ></app-form-select>
     </div>
 
     <!-- Cantidad + Costo Unitario -->

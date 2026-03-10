@@ -60,11 +60,12 @@ import { ConsentFormModalComponent, ConsentFormModalData } from '../consent-form
 import { DiagnosisFormModalComponent, DiagnosisFormModalData } from '../diagnosis-form-modal/diagnosis-form-modal';
 import { RadioUploadModalComponent, RadioUploadModalData } from '../radio-upload-modal/radio-upload-modal';
 import { FileUploadModalComponent, FileUploadModalData } from '../file-upload-modal/file-upload-modal';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, OdontogramHistoryListComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent, PatientClinicalSummaryComponent, SignaturePadComponent, SignatureModalComponent, SignaturePinSetupComponent, ConsentPrintViewComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OdontogramHistoryListComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent, PatientClinicalSummaryComponent, SignaturePadComponent, SignatureModalComponent, SignaturePinSetupComponent, ConsentPrintViewComponent, FormSelectComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
@@ -207,8 +208,8 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   medCurrentMedications = signal('');
   medSmokingStatus = signal('');
   medNotes = signal('');
-  bloodTypeOptions = Object.values(BloodType);
-  smokingStatusOptions = Object.values(SmokingStatus);
+  bloodTypeOptions: SelectOption[] = Object.values(BloodType).map(bt => ({ value: bt, label: bt }));
+  smokingStatusOptions: SelectOption[] = Object.values(SmokingStatus).map(ss => ({ value: ss, label: ss }));
 
   // Fiscal data state
   taxId = signal('');

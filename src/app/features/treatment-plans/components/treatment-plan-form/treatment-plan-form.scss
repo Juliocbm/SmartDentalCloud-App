@@ -7,29 +7,6 @@
 // Botones: usa clases globales .btn de _components.scss
 // ============================================
 
-// ===== Section Header Row =====
-.section-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
-
-  .section-title {
-    margin: 0;
-    padding: 0;
-    border: none;
-  }
-}
-
-.items-count {
-  margin-left: var(--spacing-sm);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-normal);
-  color: var(--primary-700);
-  background: var(--primary-100);
-  padding: 2px 10px;
-  border-radius: var(--radius-full);
-}
 
 // ===== Table Cells =====
 .proc-description {
@@ -73,37 +50,6 @@
   font-weight: var(--font-weight-semibold);
 }
 
-// ===== Empty Items State =====
-.empty-items {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-3xl) var(--spacing-xl);
-  border: 2px dashed var(--border-primary);
-  border-radius: var(--radius-lg);
-  background-color: var(--surface-secondary);
-  text-align: center;
-  gap: var(--spacing-md);
-
-  > i {
-    font-size: 2rem;
-    color: var(--text-tertiary);
-  }
-
-  > p {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-  }
-}
-
-// ===== 3-column row for costs (modal) =====
-.form-row-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-lg);
-}
 
 // ===== Modal Cost Preview =====
 .modal-cost-preview {
@@ -148,50 +94,9 @@
   }
 }
 
-// ===== Locked Field (read-only in edit mode) =====
-.locked-field {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--surface-secondary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  color: var(--text-primary);
-  font-weight: var(--font-weight-medium);
-
-  .locked-icon {
-    font-size: var(--font-size-xs);
-    color: var(--text-tertiary);
-  }
-}
-
-// ===== Info Banner =====
-.info-banner {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background-color: var(--primary-50);
-  border: 1px solid var(--primary-200);
-  border-radius: var(--radius-md);
-  color: var(--primary-700);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--spacing-lg);
-
-  > i {
-    font-size: var(--font-size-base);
-    flex-shrink: 0;
-  }
-}
 
 // ===== Responsive =====
 @media (max-width: 768px) {
-  .form-row-3 {
-    grid-template-columns: 1fr;
-  }
-
   .plan-item-card .item-body {
     padding: var(--spacing-md);
   }

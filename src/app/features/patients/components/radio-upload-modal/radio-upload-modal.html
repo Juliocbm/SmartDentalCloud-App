@@ -9,11 +9,12 @@
     <div class="form-row-2">
       <div class="form-group">
         <label class="form-label">Tipo de imagen <span class="required">*</span></label>
-        <select class="form-input" formControlName="imageType">
-          @for (type of IMAGE_TYPES; track type.value) {
-            <option [value]="type.value">{{ type.label }}</option>
-          }
-        </select>
+        <app-form-select
+          formControlName="imageType"
+          [options]="IMAGE_TYPES"
+          placeholder="Seleccionar tipo..."
+          [required]="true"
+        ></app-form-select>
       </div>
       <div class="form-group">
         <label class="form-label">Título <span class="required">*</span></label>

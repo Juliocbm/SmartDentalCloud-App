@@ -1,11 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { ModalComponentBase, ModalRef, ModalConfig } from '../../../../shared/services/modal.service';
 import { InformedConsentsService } from '../../services/informed-consents.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { CONSENT_TYPES, getConsentTypeLabel } from '../../models/informed-consent.models';
 import { ConsentTemplateService, ConsentTemplate } from '../../../settings/services/consent-template.service';
 
@@ -18,7 +19,7 @@ export interface ConsentFormModalData {
 @Component({
   selector: 'app-consent-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ModalComponent, FormSelectComponent],
   templateUrl: './consent-form-modal.html',
   styleUrl: './consent-form-modal.scss'
 })
@@ -36,6 +37,9 @@ export class ConsentFormModalComponent implements ModalComponentBase<ConsentForm
   loading = signal(false);
   templates = signal<ConsentTemplate[]>([]);
   selectedTemplateId = signal<string | null>(null);
+  templateOptions = computed<SelectOption[]>(() =>
+    this.templates().map(t => ({ value: t.id, label: `${t.title} (${getConsentTypeLabel(t.consentType)})` }))
+  );
 
   CONSENT_TYPES = CONSENT_TYPES;
   getConsentTypeLabel = getConsentTypeLabel;

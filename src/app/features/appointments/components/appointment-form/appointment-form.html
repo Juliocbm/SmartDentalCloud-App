@@ -5,8 +5,8 @@
     [icon]="'fa-calendar-plus'"
     [showBackButton]="true"
     [backRoute]="backRoute()"
-    [breadcrumbs]="breadcrumbItems()">
-    
+    [breadcrumbs]="breadcrumbItems()"
+    [sticky]="true">
     <!-- Botones de Acción en Header -->
     <div actions class="header-form-actions">
       <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="loading()">
@@ -36,74 +36,66 @@
       </div>
     }
 
-    <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="appointment-form">
-    
-    <div class="form-section">
+    <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="standard-form">
+
+    <!-- Participantes -->
+    <div class="form-section form-section--compact">
       <h3 class="section-title">
-        <i class="fa-solid fa-user section-icon"></i>
-        Información del Paciente
-        <span class="required">*</span>
+        <i class="fa-solid fa-calendar-plus section-icon"></i>
+        Información de la Cita
       </h3>
-      
-      <div class="form-group">
-        <app-patient-autocomplete
-          [selectedPatientId]="selectedPatient()?.id || null"
-          [selectedPatientName]="selectedPatient()?.name || null"
-          [required]="true"
-          [disabled]="loading()"
-          [error]="getFieldError('patientId')"
-          (patientSelected)="onPatientSelected($event)"
-        >
-          Buscar Paciente
-        </app-patient-autocomplete>
+
+      <div class="form-row">
+        <div class="form-group">
+          <app-patient-autocomplete
+            [selectedPatientId]="selectedPatient()?.id || null"
+            [selectedPatientName]="selectedPatient()?.name || null"
+            [required]="true"
+            [disabled]="loading()"
+            [error]="getFieldError('patientId')"
+            (patientSelected)="onPatientSelected($event)"
+          >
+            Paciente
+          </app-patient-autocomplete>
+        </div>
+
+        <div class="form-group">
+          <app-dentist-autocomplete
+            [selectedDentistId]="selectedDentist()?.id || null"
+            [selectedDentistName]="selectedDentist()?.name || null"
+            [required]="true"
+            [disabled]="loading()"
+            [error]="getFieldError('userId')"
+            (dentistSelected)="onDentistSelected($event)"
+          >
+            Dentista
+          </app-dentist-autocomplete>
+        </div>
       </div>
+
+      @if (locationsService.hasMultipleLocations()) {
+        <div class="form-row">
+          <div class="form-group">
+            <app-location-autocomplete
+              [selectedLocationId]="selectedLocationId()"
+              [selectedLocationName]="selectedLocationName()"
+              placeholder="Seleccionar sucursal..."
+              (locationSelected)="selectedLocationId.set($event?.id ?? null); selectedLocationName.set($event?.name ?? null); appointmentForm.patchValue({ locationId: $event?.id ?? null })"
+            >
+              Sucursal
+            </app-location-autocomplete>
+          </div>
+        </div>
+      }
     </div>
 
-    <div class="form-section">
-      <h3 class="section-title">
-        <i class="fa-solid fa-user-doctor section-icon"></i>
-        Información del Dentista
-        <span class="required">*</span>
-      </h3>
-      
-      <div class="form-group">
-        <app-dentist-autocomplete
-          [selectedDentistId]="selectedDentist()?.id || null"
-          [selectedDentistName]="selectedDentist()?.name || null"
-          [required]="true"
-          [disabled]="loading()"
-          [error]="getFieldError('userId')"
-          (dentistSelected)="onDentistSelected($event)"
-        >
-          Buscar Dentista
-        </app-dentist-autocomplete>
-      </div>
-    </div>
-
-    @if (locationsService.hasMultipleLocations()) {
-      <div class="form-section">
-        <h3 class="section-title">
-          <i class="fa-solid fa-location-dot section-icon"></i>
-          Sucursal
-        </h3>
-        <app-location-autocomplete
-          [selectedLocationId]="selectedLocationId()"
-          [selectedLocationName]="selectedLocationName()"
-          placeholder="Seleccionar sucursal..."
-          (locationSelected)="selectedLocationId.set($event?.id ?? null); selectedLocationName.set($event?.name ?? null); appointmentForm.patchValue({ locationId: $event?.id ?? null })"
-        >
-          Sucursal
-        </app-location-autocomplete>
-      </div>
-    }
-
-    <div class="form-section">
+    <!-- Fecha, Hora y Motivo -->
+    <div class="form-section form-section--compact">
       <h3 class="section-title">
         <i class="fa-solid fa-calendar-days section-icon"></i>
-        Fecha y Hora de la Cita
-        <span class="required">*</span>
+        Fecha, Hora y Motivo
       </h3>
-      
+
       <div class="form-row">
         <div class="form-group">
           <app-date-picker
@@ -114,7 +106,7 @@
             [error]="getFieldError('startAt')"
             placeholder="Seleccionar fecha y hora..."
           >
-            Fecha y Hora de Inicio
+            Inicio
           </app-date-picker>
         </div>
 
@@ -127,7 +119,7 @@
             [error]="getFieldError('endAt')"
             placeholder="Seleccionar fecha y hora..."
           >
-            Fecha y Hora de Fin
+            Fin
           </app-date-picker>
         </div>
       </div>
@@ -189,30 +181,22 @@
           </div>
         }
       </div>
-    </div>
 
-    <div class="form-section">
-      <h3 class="section-title">
-        <i class="fa-solid fa-notes-medical section-icon"></i>
-        Motivo de la Consulta
-        <span class="required">*</span>
-      </h3>
-      
-      <div class="form-group">
-        <label for="reason" class="form-label">
-          Motivo <span class="required">*</span>
-        </label>
-        <textarea 
-          id="reason"
-          formControlName="reason"
-          rows="4"
-          placeholder="Ej: Limpieza dental, Revisión general, Endodoncia..."
-          class="form-input"
-          [class.input-error]="getFieldError('reason')"
-        ></textarea>
-        @if (getFieldError('reason')) {
-          <span class="error-message">{{ getFieldError('reason') }}</span>
-        }
+      <div class="form-row">
+        <div class="form-group form-group-full">
+          <label for="reason" class="form-label">Motivo de la Consulta <span class="required">*</span></label>
+          <textarea
+            id="reason"
+            formControlName="reason"
+            rows="3"
+            placeholder="Ej: Limpieza dental, Revisión general, Endodoncia..."
+            class="form-input form-textarea"
+            [class.input-error]="getFieldError('reason')"
+          ></textarea>
+          @if (getFieldError('reason')) {
+            <span class="error-message">{{ getFieldError('reason') }}</span>
+          }
+        </div>
       </div>
     </div>
 

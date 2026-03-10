@@ -1,13 +1,11 @@
 :host {
   display: block;
-  width: 100%;
 }
 
 .autocomplete-container {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  width: 100%;
 }
 
 .autocomplete-label {
@@ -22,11 +20,14 @@
   .required {
     color: var(--error-500);
   }
+
+  &:empty {
+    display: none;
+  }
 }
 
 .autocomplete-input-wrapper {
   position: relative;
-  width: 100%;
 }
 
 .autocomplete-input {
@@ -75,10 +76,12 @@
 .autocomplete-icon {
   position: absolute;
   right: var(--spacing-md);
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
   color: var(--text-secondary);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-sm);
   pointer-events: none;
 }
 
@@ -90,7 +93,8 @@
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-sm);
+  line-height: 1;
   cursor: pointer;
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);
@@ -154,44 +158,31 @@
   }
 }
 
-.patient-info {
+.supplier-info {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
 }
 
-.patient-name {
+.supplier-name {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-}
-
-.patient-details {
-  display: flex;
-  gap: var(--spacing-md);
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
-
-.patient-email,
-.patient-phone {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-sm);
 
-  &::before {
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    font-size: var(--font-size-xs);
+  i {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
   }
 }
 
-.patient-email::before {
-  content: '\f0e0';
-}
-
-.patient-phone::before {
-  content: '\f095';
+.supplier-contact {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .autocomplete-empty {

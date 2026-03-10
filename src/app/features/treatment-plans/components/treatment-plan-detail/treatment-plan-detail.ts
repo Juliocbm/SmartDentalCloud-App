@@ -27,11 +27,12 @@ import { ServiceSelectComponent } from '../../../invoices/components/service-sel
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 
 @Component({
   selector: 'app-treatment-plan-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, AuditInfoComponent, ModalComponent, SendEmailModalComponent, ServiceSelectComponent, DatePickerComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, AuditInfoComponent, ModalComponent, SendEmailModalComponent, ServiceSelectComponent, DatePickerComponent, FormSelectComponent],
   templateUrl: './treatment-plan-detail.html',
   styleUrl: './treatment-plan-detail.scss'
 })
@@ -74,7 +75,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
   editingItem = signal<TreatmentPlanItem | null>(null);
   itemSaving = signal(false);
   procForm!: FormGroup;
-  priorityOptions = Object.values(ItemPriority);
+  priorityOptions: SelectOption[] = Object.values(ItemPriority).map(p => ({ value: p, label: p }));
 
   // Constants
   TreatmentPlanStatus = TreatmentPlanStatus;
