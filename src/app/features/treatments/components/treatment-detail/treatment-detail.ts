@@ -13,6 +13,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 import { FollowUpFormModalComponent, FollowUpFormModalData } from '../followup-form-modal/followup-form-modal';
 import { MaterialFormModalComponent, MaterialFormModalData } from '../material-form-modal/material-form-modal';
 import { SessionFormModalComponent, SessionFormModalData } from '../session-form-modal/session-form-modal';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PatientAllergiesService } from '../../../patients/services/patient-allergies.service';
@@ -357,12 +358,7 @@ export class TreatmentDetailComponent implements OnInit {
   }
 
   formatDateShort(date: Date | string): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   getStatusConfig(status: TreatmentStatus) {
@@ -370,23 +366,11 @@ export class TreatmentDetailComponent implements OnInit {
   }
 
   formatDate(date: Date | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.longDate(date);
   }
 
   formatDateTime(date: Date | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 
   formatCurrency(value: number | undefined): string {

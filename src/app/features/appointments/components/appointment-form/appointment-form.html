@@ -26,16 +26,6 @@
   </app-page-header>
 
   <div class="content-card">
-    @if (error()) {
-      <div class="alert alert-error">
-        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-        <span class="alert-message">{{ error() }}</span>
-        <button class="alert-close" (click)="error.set(null)">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    }
-
     <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="standard-form">
 
     <!-- Participantes -->

@@ -85,13 +85,18 @@
           <button 
             class="sidebar__menu-item sidebar__menu-item--parent"
             [class.sidebar__menu-item--active]="isExpanded(item.id)"
-            (click)="toggleMenu(item.id, $event)"
+            [class.sidebar__menu-item--locked]="isFeatureLocked(item)"
+            (click)="isFeatureLocked(item) ? navigateToRoute(item.route, item) : toggleMenu(item.id, $event)"
             [title]="collapsed() ? item.label : ''">
             <i [class]="item.icon" class="sidebar__menu-icon"></i>
             @if (!collapsed()) {
               <span class="sidebar__menu-label">{{ item.label }}</span>
-              <i class="fa-solid fa-chevron-down sidebar__chevron" 
-                 [class.sidebar__chevron--expanded]="isExpanded(item.id)"></i>
+              @if (isFeatureLocked(item)) {
+                <i class="fa-solid fa-lock sidebar__lock-icon"></i>
+              } @else {
+                <i class="fa-solid fa-chevron-down sidebar__chevron" 
+                   [class.sidebar__chevron--expanded]="isExpanded(item.id)"></i>
+              }
             }
           </button>
 
@@ -112,49 +117,73 @@
               }
               <!-- Hijos -->
               @for (child of item.children; track child.id) {
-                <a 
-                  [routerLink]="child.route" 
-                  routerLinkActive="sidebar__submenu-item--active"
-                  [routerLinkActiveOptions]="{exact: true}"
-                  class="sidebar__submenu-item"
-                  [title]="child.label">
-                  <i [class]="child.icon" class="sidebar__submenu-icon"></i>
-                  <span class="sidebar__submenu-label">{{ child.label }}</span>
-                  @if (child.badge !== undefined && child.badge > 0) {
-                    <span class="sidebar__badge sidebar__badge--warning">{{ child.badge }}</span>
-                  }
-                  <button class="sidebar__fav-btn" 
-                          [class.sidebar__fav-btn--active]="isFavorite(child.id)"
-                          (click)="toggleFavorite(child.id, $event)" 
-                          [title]="isFavorite(child.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
-                    <i class="fa-solid fa-star"></i>
+                @if (isFeatureLocked(child)) {
+                  <button
+                    class="sidebar__submenu-item sidebar__submenu-item--locked"
+                    (click)="navigateToRoute(child.route, child)"
+                    [title]="child.label">
+                    <i [class]="child.icon" class="sidebar__submenu-icon"></i>
+                    <span class="sidebar__submenu-label">{{ child.label }}</span>
+                    <i class="fa-solid fa-lock sidebar__lock-icon"></i>
                   </button>
-                </a>
+                } @else {
+                  <a 
+                    [routerLink]="child.route" 
+                    routerLinkActive="sidebar__submenu-item--active"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    class="sidebar__submenu-item"
+                    [title]="child.label">
+                    <i [class]="child.icon" class="sidebar__submenu-icon"></i>
+                    <span class="sidebar__submenu-label">{{ child.label }}</span>
+                    @if (child.badge !== undefined && child.badge > 0) {
+                      <span class="sidebar__badge sidebar__badge--warning">{{ child.badge }}</span>
+                    }
+                    <button class="sidebar__fav-btn" 
+                            [class.sidebar__fav-btn--active]="isFavorite(child.id)"
+                            (click)="toggleFavorite(child.id, $event)" 
+                            [title]="isFavorite(child.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
+                      <i class="fa-solid fa-star"></i>
+                    </button>
+                  </a>
+                }
               }
             </div>
           }
         </div>
       } @else {
         <!-- Menú simple -->
-        <a 
-          [routerLink]="item.route" 
-          routerLinkActive="sidebar__menu-item--active"
-          class="sidebar__menu-item"
-          [title]="collapsed() ? item.label : ''">
-          <i [class]="item.icon" class="sidebar__menu-icon"></i>
-          @if (!collapsed()) {
-            <span class="sidebar__menu-label">{{ item.label }}</span>
-            @if (item.badge) {
-              <span class="sidebar__badge sidebar__badge--primary">{{ item.badge }}</span>
+        @if (isFeatureLocked(item)) {
+          <button
+            class="sidebar__menu-item sidebar__menu-item--locked"
+            (click)="navigateToRoute(item.route, item)"
+            [title]="collapsed() ? item.label : ''">
+            <i [class]="item.icon" class="sidebar__menu-icon"></i>
+            @if (!collapsed()) {
+              <span class="sidebar__menu-label">{{ item.label }}</span>
+              <i class="fa-solid fa-lock sidebar__lock-icon"></i>
             }
-            <button class="sidebar__fav-btn" 
-                    [class.sidebar__fav-btn--active]="isFavorite(item.id)"
-                    (click)="toggleFavorite(item.id, $event)" 
-                    [title]="isFavorite(item.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
-              <i class="fa-solid fa-star"></i>
-            </button>
-          }
-        </a>
+          </button>
+        } @else {
+          <a 
+            [routerLink]="item.route" 
+            routerLinkActive="sidebar__menu-item--active"
+            class="sidebar__menu-item"
+            [title]="collapsed() ? item.label : ''">
+            <i [class]="item.icon" class="sidebar__menu-icon"></i>
+            @if (!collapsed()) {
+              <span class="sidebar__menu-label">{{ item.label }}</span>
+              @if (item.badge) {
+                <span class="sidebar__badge sidebar__badge--primary">{{ item.badge }}</span>
+              }
+              <button class="sidebar__fav-btn" 
+                      [class.sidebar__fav-btn--active]="isFavorite(item.id)"
+                      (click)="toggleFavorite(item.id, $event)" 
+                      [title]="isFavorite(item.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
+                <i class="fa-solid fa-star"></i>
+              </button>
+            }
+          </a>
+        }
       }
     }
 

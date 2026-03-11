@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PrescriptionsService } from '../../services/prescriptions.service';
@@ -8,6 +8,7 @@ import {
   PRESCRIPTION_STATUS_CONFIG
 } from '../../models/prescription.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { PatientsService } from '../../../patients/services/patients.service';
@@ -44,6 +45,9 @@ export class PrescriptionDetailComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   printLoading = signal(false);
+
+  // Tab navigation
+  activeTab = signal<'info' | 'medications'>('info');
 
   // Email Modal State
   showEmailModal = signal(false);
@@ -91,21 +95,15 @@ export class PrescriptionDetailComponent implements OnInit {
   }
 
   formatDate(date: Date | string): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.longDate(date);
   }
 
   formatDateShort(date: Date | string): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
+  }
+
+  setActiveTab(tab: 'info' | 'medications'): void {
+    this.activeTab.set(tab);
   }
 
   goBack(): void {

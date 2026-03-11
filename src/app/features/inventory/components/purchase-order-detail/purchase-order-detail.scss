@@ -1,9 +1,96 @@
 // ============================================
-// PurchaseOrderDetailComponent - Estilos Específicos
-// Base: .detail-container, .detail-body, .info-section, .info-card,
-//       .info-row, .info-two-col de _components.scss
-// Table: .table-container, .table de _components.scss
+// PurchaseOrderDetailComponent - Estilos
+// Usa clases globales de _components.scss:
+//   .detail-container, .info-section, .info-card, .info-row,
+//   .info-two-col, .section-header, .empty-items, .table
+// Layout con tabs siguiendo DETAIL_LAYOUT_PATTERN.md
 // ============================================
+
+// ===== Layout Grid =====
+.order-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--spacing-2xl);
+  align-items: stretch;
+}
+
+// ===== Sidebar Navigation =====
+.order-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-align: left;
+
+    i {
+      width: 20px;
+      text-align: center;
+      font-size: var(--font-size-base);
+    }
+
+    &:hover {
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+    }
+
+    &.active {
+      background: var(--primary-50);
+      color: var(--primary-700);
+      font-weight: var(--font-weight-semibold);
+
+      i { color: var(--primary-600); }
+    }
+
+    .nav-count {
+      margin-left: auto;
+      background: var(--primary-100);
+      color: var(--primary-700);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+}
+
+// ===== Content Area =====
+.order-content {
+  min-width: 0;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+
+  .info-section {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .info-card {
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+  }
+}
 
 // ===== Financial total row =====
 .total-row {
@@ -18,23 +105,7 @@
   }
 }
 
-// ===== Items count badge =====
-.items-count {
-  background: var(--primary-100);
-  color: var(--primary-700);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-normal);
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  margin-left: var(--spacing-sm);
-}
-
 // ===== Table cell styles =====
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-success { color: var(--success-600); }
-.text-warning { color: var(--warning-600); }
-
 .product-name {
   font-weight: var(--font-weight-medium);
   max-width: 200px;
@@ -70,6 +141,22 @@
     background: var(--success-500);
     border-radius: 2px;
     transition: width 0.3s ease;
+  }
+}
+
+// ===== Responsive =====
+@media (max-width: 768px) {
+  .order-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .order-nav {
+    flex-direction: row;
+    overflow-x: auto;
+
+    .nav-item span {
+      display: none;
+    }
   }
 }
 

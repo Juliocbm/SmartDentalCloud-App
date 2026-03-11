@@ -9,6 +9,8 @@ import { DashboardService } from './services/dashboard.service';
 import { DashboardData, QuickAction } from './models/dashboard.models';
 import { LoggingService } from '../../core/services/logging.service';
 import { PermissionService, PERMISSIONS } from '../../core/services/permission.service';
+import { DateFormatService } from '../../core/services/date-format.service';
+import { FeatureService } from '../../core/services/feature.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +23,7 @@ export class DashboardComponent implements OnInit {
   private dashboardService = inject(DashboardService);
   private logger = inject(LoggingService);
   permissionService = inject(PermissionService);
+  featureService = inject(FeatureService);
   PERMISSIONS = PERMISSIONS;
 
   loading = signal(true);
@@ -129,14 +132,7 @@ export class DashboardComponent implements OnInit {
   }
 
   formatDateTime(dateStr: string): string {
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('es-MX', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
+    return DateFormatService.dateTime(dateStr);
   }
 
   private getDefaultDateRange(): DateRange {

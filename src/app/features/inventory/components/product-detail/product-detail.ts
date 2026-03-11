@@ -48,6 +48,7 @@ export class ProductDetailComponent implements OnInit {
   error = signal<string | null>(null);
   stockByLocation = signal<Stock[]>([]);
   loadingStock = signal(false);
+  activeTab = signal<'info' | 'stock'>('info');
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -89,6 +90,10 @@ export class ProductDetailComponent implements OnInit {
         this.loadingStock.set(false);
       }
     });
+  }
+
+  setActiveTab(tab: 'info' | 'stock'): void {
+    this.activeTab.set(tab);
   }
 
   goBack(): void {

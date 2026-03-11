@@ -9,6 +9,7 @@ import { OdontogramEvaluation, OdontogramToothInput } from '../../models/odontog
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import {
   DentalChartTooth,
   DentalChartHistoryEntry,
@@ -462,12 +463,6 @@ export class OdontogramComponent implements OnInit, OnChanges {
   }
 
   formatDate(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return DateFormatService.dateTime(dateStr);
   }
 }

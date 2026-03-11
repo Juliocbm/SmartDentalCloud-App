@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { ApiService, QueryParams } from '../../../core/services/api.service';
+import { DateFormatService } from '../../../core/services/date-format.service';
 import {
   Appointment,
   CreateAppointmentRequest,
@@ -160,19 +161,11 @@ export class AppointmentsService {
   }
 
   private formatTime(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(date);
+    return DateFormatService.timeOnly(date);
   }
 
   private formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short'
-    }).format(date);
+    return DateFormatService.compactDate(date);
   }
 
   private toLocalDateTimeString(date: Date): string {

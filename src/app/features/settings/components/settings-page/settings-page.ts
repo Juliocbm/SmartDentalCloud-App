@@ -54,6 +54,7 @@ export class SettingsPageComponent implements OnInit {
   generalLegalName = signal('');
   generalTaxId = signal('');
   generalAddress = signal('');
+  generalPostalCode = signal('');
   generalPhone = signal('');
   generalEmail = signal('');
   generalWorkingHours = signal('');
@@ -146,6 +147,7 @@ export class SettingsPageComponent implements OnInit {
     this.generalLegalName.set(s.legalName || '');
     this.generalTaxId.set(s.taxId || '');
     this.generalAddress.set(s.address || '');
+    this.generalPostalCode.set(s.postalCode || '');
     this.generalPhone.set(s.phone || '');
     this.generalEmail.set(s.email || '');
     this.generalWorkingHours.set(s.workingHours || '');
@@ -175,6 +177,7 @@ export class SettingsPageComponent implements OnInit {
       legalName: this.generalLegalName().trim() || undefined,
       taxId: this.generalTaxId().trim() || undefined,
       address: this.generalAddress().trim() || undefined,
+      postalCode: this.generalPostalCode().trim() || undefined,
       phone: this.generalPhone().trim() || undefined,
       email: this.generalEmail().trim() || undefined,
       workingHours: this.generalWorkingHours().trim() || undefined,

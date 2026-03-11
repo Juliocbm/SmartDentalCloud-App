@@ -8,6 +8,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-payment-detail',
@@ -66,16 +67,11 @@ export class PaymentDetailComponent implements OnInit {
   }
 
   formatDate(date: Date | string): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: 'numeric', month: 'long', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.longDate(date);
   }
 
   formatDateTime(date: Date | string): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: 'numeric', month: 'long', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 
   goBack(): void {

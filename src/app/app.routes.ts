@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, permissionGuard } from './core/guards/auth.guard';
+import { featureGuard } from './core/guards/feature.guard';
 import { PERMISSIONS } from './core/services/permission.service';
 
 export const routes: Routes = [
@@ -34,6 +35,11 @@ export const routes: Routes = [
     path: 'subscription/limit-exceeded',
     loadComponent: () => import('./features/subscriptions/components/subscription-limit-exceeded/subscription-limit-exceeded').then(m => m.SubscriptionLimitExceededComponent),
     title: 'Límite de Plan Excedido'
+  },
+  {
+    path: 'subscription/feature-required',
+    loadComponent: () => import('./features/subscriptions/components/feature-required/feature-required').then(m => m.FeatureRequiredComponent),
+    title: 'Función No Disponible'
   },
   {
     path: 'unauthorized',
@@ -76,7 +82,7 @@ export const routes: Routes = [
       },
       {
         path: 'treatment-plans',
-        canActivate: [permissionGuard(PERMISSIONS.TreatmentPlansView)],
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentPlansView), featureGuard('TreatmentPlans')],
         loadChildren: () => import('./features/treatment-plans/treatment-plans.routes').then(m => m.TREATMENT_PLANS_ROUTES)
       },
       {
@@ -101,7 +107,7 @@ export const routes: Routes = [
       },
       {
         path: 'reports',
-        canActivate: [permissionGuard(PERMISSIONS.ReportsView)],
+        canActivate: [permissionGuard(PERMISSIONS.ReportsView), featureGuard('AdvancedReports')],
         loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORTS_ROUTES)
       },
       {
@@ -111,7 +117,7 @@ export const routes: Routes = [
       },
       {
         path: 'inventory',
-        canActivate: [permissionGuard(PERMISSIONS.InventoryView)],
+        canActivate: [permissionGuard(PERMISSIONS.InventoryView), featureGuard('Inventory')],
         loadChildren: () => import('./features/inventory/inventory.routes').then(m => m.INVENTORY_ROUTES)
       },
       {
@@ -141,6 +147,7 @@ export const routes: Routes = [
       },
       {
         path: 'audit-log',
+        canActivate: [featureGuard('AuditLog')],
         loadComponent: () => import('./features/audit-log/components/audit-log-list/audit-log-list').then(m => m.AuditLogListComponent),
         title: 'Auditoría'
       },

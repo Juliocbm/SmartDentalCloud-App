@@ -17,6 +17,7 @@ import { CephHistoryListComponent } from '../../../cephalometry/components/ceph-
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { PatientClinicalSummaryComponent } from '../../../../shared/components/patient-clinical-summary/patient-clinical-summary';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { PatientAllergiesService } from '../../services/patient-allergies.service';
 import {
@@ -61,6 +62,8 @@ import { DiagnosisFormModalComponent, DiagnosisFormModalData } from '../diagnosi
 import { RadioUploadModalComponent, RadioUploadModalData } from '../radio-upload-modal/radio-upload-modal';
 import { FileUploadModalComponent, FileUploadModalData } from '../file-upload-modal/file-upload-modal';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { FeatureService, PlanFeature } from '../../../../core/services/feature.service';
+import { FeatureUpgradeModalComponent, FeatureUpgradeModalData } from '../../../../shared/components/feature-upgrade-modal/feature-upgrade-modal';
 
 @Component({
   selector: 'app-patient-detail',
@@ -88,6 +91,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   private modalService = inject(ModalService);
   private navigationState = inject(NavigationStateService);
   permissionService = inject(PermissionService);
+  featureService = inject(FeatureService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -289,6 +293,27 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       }
     });
+  }
+
+  private readonly TAB_FEATURES: Partial<Record<string, PlanFeature>> = {
+    periodontogram: 'Periodontogram',
+    cephalometry: 'Cephalometry',
+  };
+
+  isTabLocked(tab: string): boolean {
+    const feature = this.TAB_FEATURES[tab];
+    return !!feature && !this.featureService.hasFeature(feature);
+  }
+
+  onTabClick(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'): void {
+    const feature = this.TAB_FEATURES[tab];
+    if (feature && !this.featureService.hasFeature(feature)) {
+      this.modalService.open<FeatureUpgradeModalData>(FeatureUpgradeModalComponent, {
+        data: { feature }
+      });
+      return;
+    }
+    this.setActiveTab(tab);
   }
 
   setActiveTab(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'): void {
@@ -578,13 +603,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   }
 
   formatChangeDate(date: string): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 
   formatJson(json: string | null): string {
@@ -768,10 +787,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   }
 
   formatRadioDate(date: string | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: 'short', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.mediumDate(date);
   }
 
   // === Attached Files ===
@@ -837,12 +853,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   }
 
   formatDateFile(date: Date | string): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   async toggleActive(): Promise<void> {
@@ -1033,9 +1044,6 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   }
 
   formatDateShort(date: Date | string | null): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 }

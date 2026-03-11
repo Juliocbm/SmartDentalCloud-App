@@ -342,6 +342,28 @@
 .kpi-card--error .kpi-card__icon   { background: var(--kpi-error-bg); color: var(--kpi-error-color); }
 .kpi-card--info .kpi-card__icon    { background: var(--kpi-info-bg); color: var(--kpi-info-color); }
 
+/// Locked variant (feature gating)
+.kpi-card--locked {
+  opacity: 0.7;
+  cursor: default;
+  &:hover { transform: none; box-shadow: var(--kpi-card-shadow); }
+  .kpi-card__icon { background: var(--neutral-100); color: var(--text-muted); }
+}
+.kpi-card__value--locked {
+  font-size: var(--font-size-sm) !important;
+  color: var(--text-muted) !important;
+  font-weight: var(--font-weight-medium) !important;
+}
+.kpi-card__upgrade-link {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  color: var(--primary-600);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  margin-top: var(--spacing-xs);
+  &:hover { text-decoration: underline; }
+}
+
 /// Responsive
 @media (max-width: 768px) {
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }

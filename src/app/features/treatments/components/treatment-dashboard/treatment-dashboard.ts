@@ -8,6 +8,7 @@ import { TreatmentsService } from '../../services/treatments.service';
 import { Treatment, TreatmentStatus, TREATMENT_STATUS_CONFIG } from '../../models/treatment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-treatment-dashboard',
@@ -138,9 +139,7 @@ export class TreatmentDashboardComponent implements OnInit {
   }
 
   formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: 'numeric', month: 'short', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.mediumDate(date);
   }
 
   private getDefaultDateRange(): DateRange {

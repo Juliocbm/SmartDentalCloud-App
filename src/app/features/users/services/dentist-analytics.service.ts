@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, forkJoin, map } from 'rxjs';
+import { Observable, forkJoin, map, catchError, of } from 'rxjs';
 import { UsersService } from './users.service';
 import { ReportsService } from '../../reports/services/reports.service';
 import { User } from '../models/user.models';
@@ -28,7 +28,9 @@ export class DentistAnalyticsService {
   loadDashboardData(startDate: string, endDate: string): Observable<{ dentists: User[]; productivity: DentistProductivity[] }> {
     return forkJoin({
       users: this.usersService.getAll(),
-      productivity: this.reportsService.getDentistProductivity(startDate, endDate)
+      productivity: this.reportsService.getDentistProductivity(startDate, endDate).pipe(
+        catchError(() => of([] as DentistProductivity[]))
+      )
     }).pipe(
       map(({ users, productivity }) => {
         const dentists = users.filter(user =>

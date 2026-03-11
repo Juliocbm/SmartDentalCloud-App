@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +18,7 @@ import {
 import { DentalService } from '../../../invoices/models/service.models';
 import { PatientsService } from '../../../patients/services/patients.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
@@ -76,6 +77,9 @@ export class TreatmentPlanDetailComponent implements OnInit {
   itemSaving = signal(false);
   procForm!: FormGroup;
   priorityOptions: SelectOption[] = Object.values(ItemPriority).map(p => ({ value: p, label: p }));
+
+  // Tab navigation
+  activeTab = signal<'info' | 'procedures'>('info');
 
   // Constants
   TreatmentPlanStatus = TreatmentPlanStatus;
@@ -261,23 +265,11 @@ export class TreatmentPlanDetailComponent implements OnInit {
   }
 
   formatDate(date: Date | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.longDate(date);
   }
 
   formatDateTime(date: Date | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 
   formatCurrency(value: number | undefined): string {
@@ -559,6 +551,10 @@ export class TreatmentPlanDetailComponent implements OnInit {
         this.printLoading.set(false);
       }
     });
+  }
+
+  setActiveTab(tab: 'info' | 'procedures'): void {
+    this.activeTab.set(tab);
   }
 
   goBack(): void {

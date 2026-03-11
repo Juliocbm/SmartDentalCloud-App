@@ -1,7 +1,109 @@
 // ============================================
-// ProductDetailComponent - Estilos Específicos
-// Base: .detail-container, .detail-body, .info-section, .info-card,
-//       .info-row, .info-two-col, .info-empty de _components.scss
+// ProductDetailComponent - Estilos
+// Usa clases globales de _components.scss:
+//   .detail-container, .info-section, .info-card, .info-row,
+//   .info-two-col, .section-header, .empty-items, .table
+// Layout con tabs siguiendo DETAIL_LAYOUT_PATTERN.md
 // ============================================
 
-// No se necesitan estilos adicionales — usa 100% clases globales
+// ===== Layout Grid =====
+.product-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--spacing-2xl);
+  align-items: stretch;
+}
+
+// ===== Sidebar Navigation =====
+.product-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-align: left;
+
+    i {
+      width: 20px;
+      text-align: center;
+      font-size: var(--font-size-base);
+    }
+
+    &:hover {
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+    }
+
+    &.active {
+      background: var(--primary-50);
+      color: var(--primary-700);
+      font-weight: var(--font-weight-semibold);
+
+      i { color: var(--primary-600); }
+    }
+
+    .nav-count {
+      margin-left: auto;
+      background: var(--primary-100);
+      color: var(--primary-700);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+}
+
+// ===== Content Area =====
+.product-content {
+  min-width: 0;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+
+  .info-section {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .info-card {
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+  }
+}
+
+// ===== Responsive =====
+@media (max-width: 768px) {
+  .product-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .product-nav {
+    flex-direction: row;
+    overflow-x: auto;
+
+    .nav-item span {
+      display: none;
+    }
+  }
+}

@@ -35,6 +35,24 @@ export class ToastComponent {
     return icons[type] || 'fa-circle-info';
   }
 
+  getConfirmIcon(type: string): string {
+    const icons: Record<string, string> = {
+      info: 'fa-circle-question',
+      warning: 'fa-triangle-exclamation',
+      error: 'fa-circle-xmark'
+    };
+    return icons[type] || 'fa-circle-question';
+  }
+
+  getConfirmBtnClass(type: string): string {
+    const classes: Record<string, string> = {
+      info: 'btn-success',
+      warning: 'btn-warning',
+      error: 'btn-error'
+    };
+    return classes[type] || 'btn-success';
+  }
+
   onConfirm(): void {
     this.notificationService.resolveConfirm(true);
   }

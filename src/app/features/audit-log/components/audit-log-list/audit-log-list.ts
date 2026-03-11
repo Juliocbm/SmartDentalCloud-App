@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditLogService } from '../../services/audit-log.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import {
   AuditLogEntry,
   AUDIT_ACTION_CONFIG,
@@ -135,10 +136,7 @@ export class AuditLogListComponent implements OnInit {
 
   // Formato de fecha
   formatDateTime(date: string): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit', hour12: false
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 
   // Paginación

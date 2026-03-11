@@ -7,6 +7,7 @@ import { PeriodontogramService } from '../../services/periodontogram.service';
 import { PerioCalculationService } from '../../services/perio-calculation.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import {
   Periodontogram,
   PeriodontogramStatus,
@@ -258,8 +259,6 @@ export class PeriodontogramFormComponent implements OnInit, OnChanges {
 
   formatTime(date: Date | null): string {
     if (!date) return '';
-    return new Intl.DateTimeFormat('es-MX', {
-      hour: '2-digit', minute: '2-digit', second: '2-digit'
-    }).format(date);
+    return DateFormatService.timeOnly(date);
   }
 }

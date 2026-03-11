@@ -9,6 +9,7 @@ import { PatientsService } from '../../services/patients.service';
 import { Patient } from '../../models/patient.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
 import { AppointmentFormContextService } from '../../../appointments/services/appointment-form-context.service';
 import { PATIENT_APPOINTMENT_CONTEXT } from '../../../appointments/models/appointment-form-context.model';
@@ -162,12 +163,7 @@ export class PatientListComponent implements OnInit, OnDestroy {
 
   formatDate(date: Date | null): string {
     if (!date) return 'N/A';
-    const d = new Date(date);
-    return d.toLocaleDateString('es-MX', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+    return DateFormatService.mediumDate(date);
   }
 
   hasMedicalHistory(patient: Patient): boolean {

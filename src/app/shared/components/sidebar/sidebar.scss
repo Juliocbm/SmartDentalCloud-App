@@ -273,6 +273,29 @@ $sidebar-indent: 24px;
   &--expanded { transform: rotate(180deg); }
 }
 
+// === Lock Icon (Feature Gating) ===
+.sidebar__lock-icon {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  margin-left: auto;
+  opacity: 0.7;
+}
+
+.sidebar__menu-item--locked,
+.sidebar__submenu-item--locked {
+  opacity: 0.6;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+
+  &:hover {
+    opacity: 0.85;
+    background: var(--surface-hover);
+  }
+}
+
 // === Menu Group ===
 .sidebar__menu-group {
   margin-bottom: 0.25rem;

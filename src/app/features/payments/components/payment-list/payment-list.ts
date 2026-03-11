@@ -11,6 +11,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-payment-list',
@@ -172,13 +173,6 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 }

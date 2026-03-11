@@ -9,6 +9,7 @@ import { ConsultationNotesService } from '../../services/consultation-notes.serv
 import { Appointment } from '../../../appointments/models/appointment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-consultation-note-list',
@@ -133,18 +134,10 @@ export class ConsultationNoteListComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   formatTime(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(new Date(date));
+    return DateFormatService.timeOnly(date);
   }
 }

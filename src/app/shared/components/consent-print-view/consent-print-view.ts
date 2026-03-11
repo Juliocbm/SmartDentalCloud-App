@@ -4,6 +4,7 @@ import { ModalComponent } from '../modal/modal';
 import { ElectronicSignatureService, SignatureResult } from '../../../core/services/electronic-signature.service';
 import { InformedConsent } from '../../../features/patients/models/informed-consent.models';
 import { getConsentTypeLabel, getConsentStatusLabel } from '../../../features/patients/models/informed-consent.models';
+import { DateFormatService } from '../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-consent-print-view',
@@ -44,13 +45,6 @@ export class ConsentPrintViewComponent implements OnInit {
   }
 
   formatDate(date: string | null): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 }

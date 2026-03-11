@@ -1,9 +1,100 @@
 // ============================================
 // TreatmentPlanDetailComponent - Estilos
-// Base: usa .detail-container, .detail-header, .detail-body,
-//       .info-section, .info-card, .link-primary de _components.scss
-// Solo overrides específicos de este componente.
+// Usa clases globales de _components.scss:
+//   .detail-container, .info-section, .info-card, .info-row,
+//   .link-primary, .status-banner, .info-two-col,
+//   .section-header, .empty-items, .table, .table-container
+// Layout con tabs siguiendo patrón de DETAIL_LAYOUT_PATTERN.md
 // ============================================
+
+// ===== Layout Grid =====
+.plan-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--spacing-2xl);
+  align-items: stretch;
+}
+
+// ===== Sidebar Navigation =====
+.plan-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-align: left;
+
+    i {
+      width: 20px;
+      text-align: center;
+      font-size: var(--font-size-base);
+    }
+
+    &:hover {
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+    }
+
+    &.active {
+      background: var(--primary-50);
+      color: var(--primary-700);
+      font-weight: var(--font-weight-semibold);
+
+      i {
+        color: var(--primary-600);
+      }
+    }
+
+    .nav-count {
+      margin-left: auto;
+      background: var(--primary-100);
+      color: var(--primary-700);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+}
+
+// ===== Content Area =====
+.plan-content {
+  min-width: 0;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+
+  // Flatten inner sections — no card-in-card nesting
+  .info-section {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .info-card {
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+  }
+}
 
 // ===== Progress Overview =====
 
@@ -82,16 +173,6 @@
 
 // ===== Items Table =====
 
-.items-badge {
-  margin-left: auto;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-normal);
-  color: var(--text-tertiary);
-  background: var(--surface-secondary);
-  padding: 2px 10px;
-  border-radius: var(--radius-full);
-}
-
 .item-desc {
   display: flex;
   flex-direction: column;
@@ -156,15 +237,6 @@
   }
 }
 
-// ===== Section Header Row =====
-
-.section-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
 // ===== Item Modal =====
 
 .modal-cost-preview {
@@ -214,5 +286,18 @@
   margin-left: var(--spacing-sm);
 }
 
-// Responsive: .detail-container, .info-section, .info-card, .table
-// manejados globalmente en _components.scss
+// ===== Responsive =====
+@media (max-width: 768px) {
+  .plan-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-nav {
+    flex-direction: row;
+    overflow-x: auto;
+
+    .nav-item span {
+      display: none;
+    }
+  }
+}

@@ -71,6 +71,20 @@
         color: var(--danger-700);
       }
     }
+
+    &--locked {
+      opacity: 0.6;
+
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+
+    .nav-lock-icon {
+      margin-left: auto;
+      font-size: 0.625rem;
+      color: var(--text-muted);
+    }
   }
 }
 

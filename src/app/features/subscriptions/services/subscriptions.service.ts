@@ -26,6 +26,22 @@ export interface UpdatePaymentMethodRequest {
   newStripePaymentMethodId: string;
 }
 
+export interface ChangePlanRequest {
+  newPlanId: string;
+}
+
+export interface ChangePlanResult {
+  success: boolean;
+  newPlanName: string;
+  newMonthlyPrice: number;
+  message: string;
+}
+
+export interface SubscriptionFeaturesDto {
+  planName: string;
+  features: string[];
+}
+
 export interface PaymentProviderOption {
   id: PaymentProviderType;
   name: string;
@@ -57,5 +73,13 @@ export class SubscriptionsService {
 
   updatePaymentMethod(request: UpdatePaymentMethodRequest): Observable<boolean> {
     return this.api.put<boolean>('/subscriptions/payment-method', request);
+  }
+
+  changePlan(request: ChangePlanRequest): Observable<ChangePlanResult> {
+    return this.api.put<ChangePlanResult>('/subscriptions/plan', request);
+  }
+
+  getFeatures(): Observable<SubscriptionFeaturesDto> {
+    return this.api.get<SubscriptionFeaturesDto>('/subscriptions/features');
   }
 }

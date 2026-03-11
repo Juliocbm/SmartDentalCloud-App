@@ -10,6 +10,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 import { PaymentFormModalComponent, PaymentFormModalData } from '../payment-form-modal/payment-form-modal';
 import { PaymentsService } from '../../services/payments.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
@@ -53,6 +54,7 @@ export class InvoiceDetailComponent implements OnInit {
   loading = signal(false);
   loadingPayments = signal(false);
   error = signal<string | null>(null);
+  activeTab = signal<'info' | 'items' | 'payments'>('info');
 
   // CFDI State
   cfdi = signal<Cfdi | null>(null);
@@ -134,6 +136,10 @@ export class InvoiceDetailComponent implements OnInit {
     }).format(value);
   }
 
+  setActiveTab(tab: 'info' | 'items' | 'payments'): void {
+    this.activeTab.set(tab);
+  }
+
   goBack(): void {
     this.location.back();
   }
@@ -186,12 +192,7 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   formatDate(date: Date | string): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   // === CFDI ===
@@ -399,14 +400,6 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   formatDateTime(date: Date | string): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 }

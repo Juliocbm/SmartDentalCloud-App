@@ -16,8 +16,8 @@
 <!-- Confirm dialog -->
 @if (pendingConfirm(); as confirm) {
   <app-modal
-    title="Confirmar Acción"
-    icon="fa-circle-question"
+    [title]="confirm.title"
+    [icon]="getConfirmIcon(confirm.type)"
     size="sm"
     (closed)="onCancel()">
 
@@ -26,11 +26,11 @@
     <div modal-footer>
       <button class="btn btn-outline" (click)="onCancel()">
         <i class="fa-solid fa-times"></i>
-        Cancelar
+        {{ confirm.cancelText }}
       </button>
-      <button class="btn btn-outline btn-success" (click)="onConfirm()">
+      <button class="btn btn-outline" [ngClass]="getConfirmBtnClass(confirm.type)" (click)="onConfirm()">
         <i class="fa-solid fa-check"></i>
-        Confirmar
+        {{ confirm.confirmText }}
       </button>
     </div>
   </app-modal>

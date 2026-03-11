@@ -9,6 +9,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-purchase-order-detail',
@@ -31,6 +32,7 @@ export class PurchaseOrderDetailComponent implements OnInit {
   order = signal<PurchaseOrder | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+  activeTab = signal<'info' | 'items'>('info');
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -78,15 +80,16 @@ export class PurchaseOrderDetailComponent implements OnInit {
   }
 
   formatDate(date: Date | string | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   getReceivedPercentage(item: { quantity: number; receivedQuantity: number }): number {
     if (item.quantity === 0) return 0;
     return Math.round((item.receivedQuantity / item.quantity) * 100);
+  }
+
+  setActiveTab(tab: 'info' | 'items'): void {
+    this.activeTab.set(tab);
   }
 
   goBack(): void {

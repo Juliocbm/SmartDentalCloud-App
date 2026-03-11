@@ -2,6 +2,13 @@ import { Injectable, signal, computed } from '@angular/core';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
+export interface ConfirmOptions {
+  title?: string;
+  confirmText?: string;
+  cancelText?: string;
+  type?: 'info' | 'warning' | 'error';
+}
+
 export interface Notification {
   id: number;
   message: string;
@@ -59,14 +66,28 @@ export class NotificationService {
    * Reemplaza el uso de confirm() nativo del browser.
    * Retorna true si el usuario confirma, false si cancela.
    */
-  confirm(message: string): Promise<boolean> {
+  confirm(message: string, options?: ConfirmOptions): Promise<boolean> {
     return new Promise(resolve => {
-      this._pendingConfirm.set({ message, resolve });
+      this._pendingConfirm.set({
+        message,
+        title: options?.title || 'Confirmar Acción',
+        confirmText: options?.confirmText || 'Confirmar',
+        cancelText: options?.cancelText || 'Cancelar',
+        type: options?.type || 'info',
+        resolve
+      });
     });
   }
 
   // Estado interno para el modal de confirmación
-  private _pendingConfirm = signal<{ message: string; resolve: (value: boolean) => void } | null>(null);
+  private _pendingConfirm = signal<{
+    message: string;
+    title: string;
+    confirmText: string;
+    cancelText: string;
+    type: 'info' | 'warning' | 'error';
+    resolve: (value: boolean) => void;
+  } | null>(null);
   pendingConfirm = this._pendingConfirm.asReadonly();
 
   resolveConfirm(result: boolean): void {

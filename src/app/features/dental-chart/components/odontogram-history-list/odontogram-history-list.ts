@@ -7,6 +7,7 @@ import {
   ODONTOGRAM_STATUS_CONFIG
 } from '../../models/odontogram-evaluation.models';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import {
   OdontogramComparisonModalComponent,
@@ -120,9 +121,6 @@ export class OdontogramHistoryListComponent implements OnInit {
   }
 
   formatDate(date: string | null): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 }

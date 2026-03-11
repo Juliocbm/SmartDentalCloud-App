@@ -62,119 +62,156 @@
   }
 
   @if (!loading() && !error() && prescription(); as rx) {
-    <div class="detail-body">
-
-      <!-- Row 1: Información General + Diagnóstico -->
-      <div class="info-two-col">
-        <!-- Información General -->
-        <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-info-circle"></i>
-            Información General
-          </h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Paciente:</span>
-              <span class="info-value">
-                <a [routerLink]="['/patients', rx.patientId]" class="link-primary">
-                  {{ rx.patientName }}
-                </a>
-              </span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Prescrito por:</span>
-              <span class="info-value">
-                <a [routerLink]="['/users', rx.prescribedById]" class="link-primary">
-                  {{ rx.prescribedByName }}
-                </a>
-              </span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Fecha de Emisión:</span>
-              <span class="info-value">{{ formatDate(rx.issuedAt) }}</span>
-            </div>
-            @if (rx.expiresAt) {
-              <div class="info-row" [class.alert-row]="isExpired()">
-                <span class="info-label">Vigencia:</span>
-                <span class="info-value">{{ formatDate(rx.expiresAt) }}</span>
-              </div>
-            }
-          </div>
-        </div>
-
-        <!-- Diagnóstico y Notas -->
-        <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-stethoscope"></i>
-            Diagnóstico y Notas
-          </h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Diagnóstico:</span>
-              <span class="info-value">{{ rx.diagnosis || '—' }}</span>
-            </div>
-            @if (rx.notes) {
-              <div class="info-row">
-                <span class="info-label">Notas:</span>
-                <span class="info-value">{{ rx.notes }}</span>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-
-      <!-- Medicamentos -->
-      <div class="info-section">
-        <h3>
+    <div class="prescription-layout">
+      <!-- Sidebar Navigation -->
+      <nav class="prescription-nav">
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'info'"
+          (click)="setActiveTab('info')">
+          <i class="fa-solid fa-info-circle"></i>
+          <span>Información</span>
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'medications'"
+          (click)="setActiveTab('medications')">
           <i class="fa-solid fa-pills"></i>
-          Medicamentos
-          <span class="section-count">{{ rx.items.length }}</span>
-        </h3>
+          <span>Medicamentos</span>
+          @if (rx.items.length > 0) {
+            <span class="nav-count">{{ rx.items.length }}</span>
+          }
+        </button>
+      </nav>
 
-        @if (rx.items.length > 0) {
-          <div class="table-container">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Medicamento</th>
-                  <th>Dosis</th>
-                  <th>Frecuencia</th>
-                  <th>Duración</th>
-                  <th>Cantidad</th>
-                  <th>Vía</th>
-                  <th>Indicaciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (item of rx.items; track item.id; let i = $index) {
-                  <tr>
-                    <td>{{ i + 1 }}</td>
-                    <td>
-                      <div class="med-name">{{ item.medicationName }}</div>
-                      @if (item.activeIngredient) {
-                        <div class="med-ingredient">{{ item.activeIngredient }}</div>
-                      }
-                      @if (item.presentation) {
-                        <div class="med-presentation">{{ item.presentation }}</div>
-                      }
-                    </td>
-                    <td>{{ item.dosage }}</td>
-                    <td>{{ item.frequency }}</td>
-                    <td>{{ item.duration }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.route || '—' }}</td>
-                    <td>{{ item.instructions || '—' }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+      <!-- Content -->
+      <div class="prescription-content">
+
+        <!-- Info Tab -->
+        @if (activeTab() === 'info') {
+          <div class="info-section">
+            <div class="section-header">
+              <h3 class="section-header__title">
+                <i class="fa-solid fa-prescription"></i>
+                Información de la Receta
+              </h3>
+            </div>
+            <hr>
+
+            <div class="info-two-col">
+              <div class="info-group">
+                <h4 class="info-group__title">
+                  <i class="fa-solid fa-info-circle"></i>
+                  Información General
+                </h4>
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Paciente:</span>
+                    <span class="info-value">
+                      <a [routerLink]="['/patients', rx.patientId]" class="link-primary">
+                        {{ rx.patientName }}
+                      </a>
+                    </span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Prescrito por:</span>
+                    <span class="info-value">
+                      <a [routerLink]="['/users', rx.prescribedById]" class="link-primary">
+                        {{ rx.prescribedByName }}
+                      </a>
+                    </span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Fecha de Emisión:</span>
+                    <span class="info-value">{{ formatDate(rx.issuedAt) }}</span>
+                  </div>
+                  @if (rx.expiresAt) {
+                    <div class="info-row" [class.alert-row]="isExpired()">
+                      <span class="info-label">Vigencia:</span>
+                      <span class="info-value">{{ formatDate(rx.expiresAt) }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="info-group">
+                <h4 class="info-group__title">
+                  <i class="fa-solid fa-stethoscope"></i>
+                  Diagnóstico y Notas
+                </h4>
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Diagnóstico:</span>
+                    <span class="info-value">{{ rx.diagnosis || '—' }}</span>
+                  </div>
+                  @if (rx.notes) {
+                    <div class="info-row">
+                      <span class="info-label">Notas:</span>
+                      <span class="info-value notes-text">{{ rx.notes }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
           </div>
-        } @else {
-          <div class="empty-state empty-state-sm">
-            <i class="fa-solid fa-pills"></i>
-            <h3>Sin medicamentos</h3>
-            <p>No hay medicamentos registrados en esta receta</p>
+        }
+
+        <!-- Medications Tab -->
+        @if (activeTab() === 'medications') {
+          <div class="info-section">
+            <div class="section-header">
+              <h3 class="section-header__title">
+                <i class="fa-solid fa-pills"></i>
+                Medicamentos
+              </h3>
+            </div>
+            <hr>
+
+            @if (rx.items.length > 0) {
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Medicamento</th>
+                      <th>Dosis</th>
+                      <th>Frecuencia</th>
+                      <th>Duración</th>
+                      <th>Cantidad</th>
+                      <th>Vía</th>
+                      <th>Indicaciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of rx.items; track item.id; let i = $index) {
+                      <tr>
+                        <td>{{ i + 1 }}</td>
+                        <td>
+                          <div class="med-name">{{ item.medicationName }}</div>
+                          @if (item.activeIngredient) {
+                            <div class="med-ingredient">{{ item.activeIngredient }}</div>
+                          }
+                          @if (item.presentation) {
+                            <div class="med-presentation">{{ item.presentation }}</div>
+                          }
+                        </td>
+                        <td>{{ item.dosage }}</td>
+                        <td>{{ item.frequency }}</td>
+                        <td>{{ item.duration }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.route || '—' }}</td>
+                        <td>{{ item.instructions || '—' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              <div class="empty-items">
+                <i class="fa-solid fa-pills"></i>
+                <p>No hay medicamentos registrados en esta receta</p>
+              </div>
+            }
           </div>
         }
       </div>

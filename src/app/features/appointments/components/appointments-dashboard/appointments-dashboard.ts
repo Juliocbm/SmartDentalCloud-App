@@ -7,6 +7,7 @@ import { DateRangePickerComponent, DateRange } from '../../../../shared/componen
 import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentsAnalyticsService } from '../../services/appointments-analytics.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { LocationAutocompleteComponent } from '../../../../shared/components/location-autocomplete/location-autocomplete';
 import { LocationSummary } from '../../../settings/models/location.models';
@@ -249,18 +250,11 @@ export class AppointmentsDashboardComponent implements OnInit {
   }
 
   formatTime(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(new Date(date));
+    return DateFormatService.timeOnly(date);
   }
 
   formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: 'numeric',
-      month: 'short'
-    }).format(new Date(date));
+    return DateFormatService.compactDate(date);
   }
 
   formatRelativeTime(date: Date): string {

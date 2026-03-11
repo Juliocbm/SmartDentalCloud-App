@@ -8,6 +8,7 @@ import { Patient, MergeResultDto } from '../../models/patient.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-patient-merge',
@@ -163,9 +164,6 @@ export class PatientMergeComponent implements OnInit {
   }
 
   formatDate(date: Date | null): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: 'short', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.mediumDate(date);
   }
 }

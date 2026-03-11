@@ -27,72 +27,80 @@
       </button>
     </div>
   } @else if (payment(); as pay) {
-
-    <!-- Amount Card -->
-    <div class="amount-card">
-      <div class="amount-icon">
-        <i class="fa-solid" [class]="getMethodConfig(pay.paymentMethod).icon"></i>
-      </div>
-      <div class="amount-info">
-        <span class="amount-label">Monto del Pago</span>
-        <span class="amount-value">{{ formatCurrency(pay.amount) }}</span>
-        <span class="amount-method">{{ getMethodConfig(pay.paymentMethod).label }}</span>
-      </div>
-    </div>
-
-    <!-- Info Cards -->
-    <div class="info-grid">
-      <div class="info-card">
-        <h3 class="card-title">
-          <i class="fa-solid fa-calendar"></i>
-          Información del Pago
-        </h3>
-        <div class="card-content">
-          <div class="info-row">
-            <span class="info-label">Fecha de Pago</span>
-            <span class="info-value">{{ formatDate(pay.paidAt) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Método</span>
-            <span class="info-value">
-              <i class="fa-solid" [class]="getMethodConfig(pay.paymentMethod).icon"></i>
-              {{ getMethodConfig(pay.paymentMethod).label }}
-            </span>
-          </div>
-          @if (pay.reference) {
-            <div class="info-row">
-              <span class="info-label">Referencia</span>
-              <span class="info-value mono">{{ pay.reference }}</span>
-            </div>
-          }
+    <div class="detail-body">
+      <div class="info-section">
+        <div class="section-header">
+          <h3 class="section-header__title">
+            <i class="fa-solid fa-money-bill-wave"></i>
+            Detalle del Pago
+          </h3>
         </div>
-      </div>
+        <hr>
 
-      <div class="info-card">
-        <h3 class="card-title">
-          <i class="fa-solid fa-link"></i>
-          Referencias
-        </h3>
-        <div class="card-content">
-          <div class="info-row">
-            <span class="info-label">Factura</span>
-            <span class="info-value">
-              <a [routerLink]="['/invoices', pay.invoiceId]" class="link-primary">
-                Ver Factura
-              </a>
-            </span>
+        <!-- Monto destacado -->
+        <div class="payment-highlight">
+          <div class="payment-highlight__icon">
+            <i class="fa-solid" [class]="getMethodConfig(pay.paymentMethod).icon"></i>
           </div>
-          <div class="info-row">
-            <span class="info-label">Paciente</span>
-            <span class="info-value">
-              <a [routerLink]="['/patients', pay.patientId]" class="link-primary">
-                Ver Paciente
-              </a>
-            </span>
+          <div class="payment-highlight__info">
+            <span class="payment-highlight__label">Monto del Pago</span>
+            <span class="payment-highlight__amount">{{ formatCurrency(pay.amount) }}</span>
+            <span class="payment-highlight__method">{{ getMethodConfig(pay.paymentMethod).label }}</span>
           </div>
-          <div class="info-row">
-            <span class="info-label">ID Pago</span>
-            <span class="info-value mono small">{{ pay.id }}</span>
+        </div>
+
+        <hr class="info-divider">
+
+        <div class="info-two-col">
+          <div class="info-group">
+            <h4 class="info-group__title">
+              <i class="fa-solid fa-calendar"></i>
+              Información del Pago
+            </h4>
+            <div class="info-card">
+              <div class="info-row">
+                <span class="info-label">Fecha de Pago:</span>
+                <span class="info-value">{{ formatDate(pay.paidAt) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Método:</span>
+                <span class="info-value">
+                  <i class="fa-solid" [class]="getMethodConfig(pay.paymentMethod).icon"></i>
+                  {{ getMethodConfig(pay.paymentMethod).label }}
+                </span>
+              </div>
+              @if (pay.reference) {
+                <div class="info-row">
+                  <span class="info-label">Referencia:</span>
+                  <span class="info-value">{{ pay.reference }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="info-group">
+            <h4 class="info-group__title">
+              <i class="fa-solid fa-link"></i>
+              Referencias
+            </h4>
+            <div class="info-card">
+              <div class="info-row">
+                <span class="info-label">Factura:</span>
+                <span class="info-value">
+                  <a [routerLink]="['/invoices', pay.invoiceId]" class="link-primary">
+                    Ver Factura
+                  </a>
+                </span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Paciente:</span>
+                <span class="info-value">
+                  <a [routerLink]="['/patients', pay.patientId]" class="link-primary">
+                    Ver Paciente
+                  </a>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

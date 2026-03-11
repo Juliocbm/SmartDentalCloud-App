@@ -8,6 +8,7 @@ import {
   RISK_LEVEL_CONFIG
 } from '../../models/periodontogram.models';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { PerioComparisonModalComponent, PerioComparisonModalData } from '../perio-comparison-modal/perio-comparison-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -86,10 +87,7 @@ export class PerioHistoryListComponent implements OnInit {
   }
 
   formatDate(date: string | null): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   async duplicatePeriodontogram(item: PeriodontogramListItem): Promise<void> {

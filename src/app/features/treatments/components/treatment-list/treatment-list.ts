@@ -8,6 +8,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { TreatmentsService } from '../../services/treatments.service';
 import { Treatment, TreatmentStatus, TREATMENT_STATUS_CONFIG } from '../../models/treatment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -170,11 +171,7 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   exportToCsv(): void {

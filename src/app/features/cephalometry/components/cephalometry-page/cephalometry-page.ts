@@ -10,6 +10,7 @@ import {
   CreateCephalometricAnalysisRequest
 } from '../../models/cephalometric-analysis.models';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
 @Component({
@@ -115,10 +116,7 @@ export class CephalometryPageComponent implements OnInit {
   }
 
   formatDate(date: string | null): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   goBack(): void {

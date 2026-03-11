@@ -15,6 +15,7 @@ import {
 } from '../../models/dentist-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FeatureService } from '../../../../core/services/feature.service';
 
 @Component({
   selector: 'app-dentist-dashboard',
@@ -26,6 +27,7 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 export class DentistDashboardComponent implements OnInit {
   private analyticsService = inject(DentistAnalyticsService);
   private logger = inject(LoggingService);
+  featureService = inject(FeatureService);
 
   // Date range
   dateRange = signal<DateRange>(this.getDefaultDateRange());

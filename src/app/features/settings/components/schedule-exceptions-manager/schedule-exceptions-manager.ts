@@ -8,6 +8,7 @@ import { DentistAutocompleteComponent } from '../../../../shared/components/dent
 import { SettingsService } from '../../services/settings.service';
 import { LocationsService } from '../../services/locations.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { DentistListItem } from '../../../../core/models/user.models';
 import {
   ScheduleException,
@@ -206,8 +207,7 @@ export class ScheduleExceptionsManagerComponent implements OnInit {
   // === Helpers ===
 
   formatDate(dateStr: string): string {
-    const [year, month, day] = dateStr.split('-');
-    return `${day}/${month}/${year}`;
+    return DateFormatService.shortDate(dateStr);
   }
 
   getAppliesTo(exception: ScheduleException): string {

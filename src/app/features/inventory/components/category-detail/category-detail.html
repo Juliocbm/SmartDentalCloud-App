@@ -49,10 +49,13 @@
   @if (!loading() && !error() && category(); as cat) {
     <div class="detail-body">
       <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-tag"></i>
-          Información de la Categoría
-        </h3>
+        <div class="section-header">
+          <h3 class="section-header__title">
+            <i class="fa-solid fa-tag"></i>
+            Información de la Categoría
+          </h3>
+        </div>
+        <hr>
         <div class="info-card">
           <div class="info-row">
             <span class="info-label">Nombre:</span>

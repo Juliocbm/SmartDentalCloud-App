@@ -26,7 +26,8 @@ const EXCLUDED_ROUTES = [
   '/unauthorized',
   '/onboarding',
   '/subscription/expired',
-  '/subscription/limit-exceeded'
+  '/subscription/limit-exceeded',
+  '/subscription/feature-required'
 ];
 
 @Injectable({

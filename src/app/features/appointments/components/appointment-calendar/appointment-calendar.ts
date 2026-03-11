@@ -52,6 +52,8 @@ export class AppointmentCalendarComponent implements OnInit {
   private selectedLocationObj = signal<LocationSummary | null>(null);
   scheduleExceptions = signal<ScheduleException[]>([]);
   visibleRange = signal<{ start: string; end: string } | null>(null);
+  private workScheduleSlotMin = signal('08:00:00');
+  private workScheduleSlotMax = signal('19:00:00');
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -276,15 +278,20 @@ export class AppointmentCalendarComponent implements OnInit {
     const slotMinTime = allStarts[0] + ':00';
     const slotMaxTime = allEnds[allEnds.length - 1] + ':00';
 
+    this.workScheduleSlotMin.set(slotMinTime);
+    this.workScheduleSlotMax.set(slotMaxTime);
+
     const weekends = openDays.some(d =>
       d.dayOfWeek === 'saturday' || d.dayOfWeek === 'sunday'
     );
 
+    const expanded = this.expandSlotRange(slotMinTime, slotMaxTime, this.appointments());
+
     this.calendarOptions.update(options => ({
       ...options,
       businessHours,
-      slotMinTime,
-      slotMaxTime,
+      slotMinTime: expanded.min,
+      slotMaxTime: expanded.max,
       weekends
     }));
   }
@@ -332,8 +339,16 @@ export class AppointmentCalendarComponent implements OnInit {
       };
     });
 
+    const expanded = this.expandSlotRange(
+      this.workScheduleSlotMin(),
+      this.workScheduleSlotMax(),
+      appointments
+    );
+
     this.calendarOptions.update(options => ({
       ...options,
+      slotMinTime: expanded.min,
+      slotMaxTime: expanded.max,
       events: [
         ...events,
         ...(Array.isArray(options.events) ? options.events.filter(
@@ -446,6 +461,43 @@ export class AppointmentCalendarComponent implements OnInit {
       filtered = filtered.filter(apt => apt.locationId === locationId);
     }
     this.updateCalendarEvents(filtered);
+  }
+
+  /**
+   * Expands slotMinTime/slotMaxTime if any appointment falls outside the work schedule range.
+   * Adds 1-hour padding before/after the earliest/latest appointment.
+   */
+  private expandSlotRange(
+    baseMin: string,
+    baseMax: string,
+    appointments: Appointment[]
+  ): { min: string; max: string } {
+    let resultMin = baseMin;
+    let resultMax = baseMax;
+
+    for (const apt of appointments) {
+      if (apt.status === 'Cancelled' || apt.status === 'NoShow') continue;
+
+      const start = new Date(apt.startAt);
+      const end = new Date(apt.endAt);
+      const startHH = String(start.getHours()).padStart(2, '0');
+      const startMM = String(start.getMinutes()).padStart(2, '0');
+      const endHH = String(end.getHours()).padStart(2, '0');
+      const endMM = String(end.getMinutes()).padStart(2, '0');
+      const aptStart = `${startHH}:${startMM}:00`;
+      const aptEnd = `${endHH}:${endMM}:00`;
+
+      if (aptStart < resultMin) {
+        const paddedHour = Math.max(0, start.getHours() - 1);
+        resultMin = `${String(paddedHour).padStart(2, '0')}:00:00`;
+      }
+      if (aptEnd > resultMax) {
+        const paddedHour = Math.min(24, end.getHours() + 1);
+        resultMax = paddedHour === 24 ? '24:00:00' : `${String(paddedHour).padStart(2, '0')}:00:00`;
+      }
+    }
+
+    return { min: resultMin, max: resultMax };
   }
 
   onDentistSelected(dentist: DentistListItem | null): void {

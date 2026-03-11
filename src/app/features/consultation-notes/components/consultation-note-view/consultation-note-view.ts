@@ -8,6 +8,7 @@ import { ConsultationNote } from '../../models/consultation-note.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { AppointmentsService } from '../../../appointments/services/appointments.service';
 import { PatientDiagnosesService } from '../../../patients/services/patient-diagnoses.service';
 import { Cie10AutocompleteComponent } from '../../../../shared/components/cie10-autocomplete/cie10-autocomplete';
@@ -242,13 +243,6 @@ export class ConsultationNoteViewComponent implements OnInit {
   }
 
   formatDateTime(date: Date | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 }

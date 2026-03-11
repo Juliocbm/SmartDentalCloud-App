@@ -18,6 +18,7 @@ import { PatientClinicalSummaryComponent } from '../../../../shared/components/p
 import { InformedConsentsService, ConsentCheck } from '../../../patients/services/informed-consents.service';
 import { InformedConsent } from '../../../patients/models/informed-consent.models';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -67,11 +68,26 @@ export class AppointmentDetailComponent implements OnInit {
   AppointmentStatus = AppointmentStatus;
   statusConfig = AppointmentStatusConfig;
 
+  // Tab navigation
+  activeTab = signal<'info' | 'consents' | 'note'>('info');
+
+  visibleTabs = computed(() => {
+    const tabs: ('info' | 'consents' | 'note')[] = ['info'];
+    const status = this.appointment()?.status;
+    if (status === AppointmentStatus.Confirmed || status === AppointmentStatus.Completed) {
+      tabs.push('consents');
+    }
+    if (status === AppointmentStatus.Completed) {
+      tabs.push('note');
+    }
+    return tabs;
+  });
+
   appointmentSubtitle = computed(() => {
     const apt = this.appointment();
     if (!apt) return '';
-    const date = new Date(apt.startAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
-    const time = new Date(apt.startAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    const date = DateFormatService.mediumDate(apt.startAt);
+    const time = DateFormatService.timeOnly(apt.startAt);
     return `${date}, ${time}`;
   });
 
@@ -123,19 +139,11 @@ export class AppointmentDetailComponent implements OnInit {
   }
 
   formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('es-MX', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    return DateFormatService.fullDate(date);
   }
 
   formatTime(date: Date): string {
-    return new Date(date).toLocaleTimeString('es-MX', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return DateFormatService.timeOnly(date);
   }
 
   canConfirm(): boolean {
@@ -248,6 +256,11 @@ export class AppointmentDetailComponent implements OnInit {
     });
   }
 
+  setActiveTab(tab: 'info' | 'consents' | 'note'): void {
+    if (!this.visibleTabs().includes(tab)) return;
+    this.activeTab.set(tab);
+  }
+
   onEdit(): void {
     const apt = this.appointment();
     if (!apt) return;
@@ -308,13 +321,6 @@ export class AppointmentDetailComponent implements OnInit {
   }
 
   formatNoteDateTime(date: Date | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date(date));
+    return DateFormatService.dateTime(date);
   }
 }

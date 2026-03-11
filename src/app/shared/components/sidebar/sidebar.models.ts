@@ -12,6 +12,7 @@ export interface MenuItem {
   readonly badge?: number;
   readonly hasDashboard?: boolean;
   readonly requiredPermission?: string;
+  readonly requiredFeature?: string;
   readonly children?: readonly MenuItem[];
 }
 

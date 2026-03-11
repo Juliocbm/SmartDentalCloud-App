@@ -33,6 +33,25 @@
       color: var(--text-tertiary);
     }
   }
+
+  .out-of-hours-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+    padding: 2px 6px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--warning-700);
+    background-color: var(--warning-50);
+    border: 1px solid var(--warning-200);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+
+    i {
+      font-size: 0.65rem;
+    }
+  }
 }
 
 .patient-cell {

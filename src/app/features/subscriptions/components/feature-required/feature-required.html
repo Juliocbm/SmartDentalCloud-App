@@ -1,0 +1,30 @@
+<div class="blocking-page">
+  <div class="blocking-card">
+    <div class="blocking-icon upgrade">
+      <i class="fa-solid fa-lock"></i>
+    </div>
+
+    <h1>Función no disponible en tu plan</h1>
+    <p class="blocking-message">
+      {{ featureLabel() || 'Esta función' }} requiere el plan
+      <strong>{{ minimumPlan() || 'Profesional' }}</strong> o superior.
+      @if (currentPlan()) {
+        Tu plan actual es <strong>{{ currentPlan() }}</strong>.
+      }
+    </p>
+
+    <div class="blocking-info">
+      <i class="fa-solid fa-arrow-up-right-dots"></i>
+      <span>Mejora tu plan para desbloquear esta y más funcionalidades avanzadas.</span>
+    </div>
+
+    <div class="blocking-actions">
+      <button class="btn btn-primary btn-lg" (click)="goToSubscription()">
+        <i class="fa-solid fa-crown"></i> Mejorar Plan
+      </button>
+      <button class="btn btn-outline" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+      </button>
+    </div>
+  </div>
+</div>

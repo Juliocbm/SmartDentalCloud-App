@@ -13,6 +13,7 @@ import { LocationsService } from '../../../settings/services/locations.service';
 import { PatientSearchResult } from '../../../patients/models/patient.models';
 import { DentistListItem } from '../../../../core/models/user.models';
 import { TimeSlot } from '../../models/appointment.models';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { DaySchedule, DAY_ORDER } from '../../../settings/models/work-schedule.models';
 import { ScheduleException, EXCEPTION_TYPE_LABELS } from '../../../settings/models/schedule-exception.models';
@@ -253,7 +254,8 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
           userId: appointment.userId || '',
           startAt: this.formatDateTimeLocal(appointment.startAt),
           endAt: this.formatDateTimeLocal(appointment.endAt),
-          reason: appointment.reason
+          reason: appointment.reason,
+          locationId: appointment.locationId || null
         });
         
         this.selectedPatient.set({
@@ -270,6 +272,11 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
             specialization: undefined
           });
         }
+
+        if (appointment.locationId && appointment.locationName) {
+          this.selectedLocationId.set(appointment.locationId);
+          this.selectedLocationName.set(appointment.locationName);
+        }
         this.loading.set(false);
       },
       error: (err) => {
@@ -280,10 +287,24 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.appointmentForm.invalid) {
       this.appointmentForm.markAllAsTouched();
       return;
+    }
+
+    // Confirmación si la cita está fuera de horario laboral o en día con excepción
+    const outsideSchedule = this.isOutsideWorkSchedule();
+    const activeException = this.getActiveException();
+    if (outsideSchedule || activeException) {
+      const confirmMessage = this.buildOutOfHoursConfirmMessage(activeException);
+      const confirmed = await this.notifications.confirm(confirmMessage, {
+        title: 'Cita fuera de horario',
+        confirmText: 'Crear de todas formas',
+        cancelText: 'Cancelar',
+        type: 'warning'
+      });
+      if (!confirmed) return;
     }
 
     this.loading.set(true);
@@ -299,11 +320,12 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
         newEndAt: endAt
       }).subscribe({
         next: () => {
+          this.notifications.success('Cita reagendada correctamente.');
           this.router.navigate(['/appointments']);
         },
         error: (err) => {
           this.logger.error('Error updating appointment:', err);
-          this.error.set(getApiErrorMessage(err));
+          this.notifications.error(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });
@@ -317,17 +339,26 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
         reason: formValue.reason
       }).subscribe({
         next: () => {
+          this.notifications.success('Cita creada correctamente.');
           const returnUrl = this.contextService.getCurrentContext().returnUrl;
           this.contextService.resetContext();
           this.router.navigate([returnUrl]);
         },
         error: (err) => {
           this.logger.error('Error creating appointment:', err);
-          this.error.set(getApiErrorMessage(err));
+          this.notifications.error(getApiErrorMessage(err));
           this.loading.set(false);
         }
       });
     }
+  }
+
+  private buildOutOfHoursConfirmMessage(exception: ScheduleException | null): string {
+    if (exception) {
+      const warningMsg = this.getExceptionWarningMessage();
+      return `${warningMsg}\n\nLa cita se creará de forma excepcional y funcionará con normalidad, pero estará fuera de la programación regular.`;
+    }
+    return 'Esta cita está fuera del horario laboral configurado.\n\nLa cita se creará de forma excepcional y funcionará con normalidad, pero estará fuera de la programación regular.';
   }
 
   onCancel(): void {
@@ -416,8 +447,6 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
   }
 
   formatSlotTime(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      hour: '2-digit', minute: '2-digit', hour12: false
-    }).format(date);
+    return DateFormatService.timeOnly(date);
   }
 }

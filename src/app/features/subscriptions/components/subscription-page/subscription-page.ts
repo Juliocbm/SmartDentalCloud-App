@@ -4,12 +4,14 @@ import { RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { SubscriptionsService, PAYMENT_PROVIDERS, PaymentProviderType } from '../../services/subscriptions.service';
+import { SubscriptionsService, PAYMENT_PROVIDERS, PaymentProviderType, ChangePlanResult } from '../../services/subscriptions.service';
+import { FeatureService } from '../../../../core/services/feature.service';
 import {
   SubscriptionInfo,
   SUBSCRIPTION_STATUS_CONFIG,
   SubscriptionPlan
 } from '../../models/subscription.models';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { OnboardingService } from '../../../onboarding/services/onboarding.service';
 import { environment } from '../../../../../environments/environment';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -29,10 +31,17 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
   private logger = inject(LoggingService);
   private notifications = inject(NotificationService);
 
+  private featureService = inject(FeatureService);
+
   loading = signal(true);
   subscription = signal<SubscriptionInfo | null>(null);
   showCancelConfirm = signal(false);
   cancelling = signal(false);
+
+  // Change plan state
+  showChangePlanConfirm = signal(false);
+  changePlanTarget = signal<SubscriptionPlan | null>(null);
+  changingPlan = signal(false);
 
   // Checkout state
   showCheckoutModal = signal(false);
@@ -158,6 +167,43 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
 
   isCurrentPlan(plan: SubscriptionPlan): boolean {
     return this.subscription()?.planName === plan.name;
+  }
+
+  hasActiveSubscription(): boolean {
+    const sub = this.subscription();
+    return !!sub && (sub.status === 'Active' || sub.status === 'Trial');
+  }
+
+  // === Change Plan Flow ===
+
+  openChangePlanConfirm(plan: SubscriptionPlan): void {
+    this.changePlanTarget.set(plan);
+    this.showChangePlanConfirm.set(true);
+  }
+
+  closeChangePlanConfirm(): void {
+    this.showChangePlanConfirm.set(false);
+    this.changePlanTarget.set(null);
+  }
+
+  confirmChangePlan(): void {
+    const plan = this.changePlanTarget();
+    if (!plan) return;
+
+    this.changingPlan.set(true);
+    this.subscriptionsService.changePlan({ newPlanId: plan.id }).subscribe({
+      next: (result) => {
+        this.changingPlan.set(false);
+        this.closeChangePlanConfirm();
+        this.notifications.success(result.message);
+        this.featureService.loadFromPlanName(result.newPlanName);
+        this.loadSubscription();
+      },
+      error: (err) => {
+        this.changingPlan.set(false);
+        this.notifications.error(getApiErrorMessage(err));
+      }
+    });
   }
 
   // === Checkout Flow ===
@@ -294,8 +340,6 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: string): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: 'numeric', month: 'long', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.longDate(date);
   }
 }

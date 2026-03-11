@@ -13,6 +13,7 @@ import {
   TREATMENT_PLAN_STATUS_CONFIG
 } from '../../models/treatment-plan.models';
 import { PatientsService } from '../../../patients/services/patients.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -198,12 +199,7 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: Date | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   // ===== Print & Email from list =====

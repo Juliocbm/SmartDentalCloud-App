@@ -130,18 +130,26 @@
         <button
           class="nav-item"
           [class.active]="activeTab() === 'periodontogram'"
-          (click)="setActiveTab('periodontogram')">
+          [class.nav-item--locked]="isTabLocked('periodontogram')"
+          (click)="onTabClick('periodontogram')">
           <i class="fa-solid fa-chart-line"></i>
           <span>Periodontograma</span>
+          @if (isTabLocked('periodontogram')) {
+            <i class="fa-solid fa-lock nav-lock-icon"></i>
+          }
         </button>
         }
         @if (visibleTabs().includes('cephalometry')) {
         <button
           class="nav-item"
           [class.active]="activeTab() === 'cephalometry'"
-          (click)="setActiveTab('cephalometry')">
+          [class.nav-item--locked]="isTabLocked('cephalometry')"
+          (click)="onTabClick('cephalometry')">
           <i class="fa-solid fa-x-ray"></i>
           <span>Cefalometría</span>
+          @if (isTabLocked('cephalometry')) {
+            <i class="fa-solid fa-lock nav-lock-icon"></i>
+          }
         </button>
         }
         @if (visibleTabs().includes('radiographs')) {

@@ -14,15 +14,17 @@
         <i class="fa-solid fa-list"></i>
         Ver Todos
       </a>
-      <a routerLink="/reports/dentist-productivity" class="btn btn-outline">
-        <i class="fa-solid fa-chart-bar"></i>
-        Reporte Productividad
-      </a>
+      @if (featureService.hasFeature('AdvancedReports')) {
+        <a routerLink="/reports/dentist-productivity" class="btn btn-outline">
+          <i class="fa-solid fa-chart-bar"></i>
+          Reporte Productividad
+        </a>
+      }
     </div>
   </app-page-header>
 
   <!-- Alert Banner: Dentistas sin actividad -->
-  @if (!loading() && !error() && inactiveDentistsCount() > 0) {
+  @if (!loading() && !error() && featureService.hasFeature('AdvancedReports') && inactiveDentistsCount() > 0) {
     <div class="alert-banner alert-banner--warning">
       <i class="fa-solid fa-exclamation-triangle"></i>
       <span>
@@ -73,58 +75,93 @@
           </svg>
         </div>
       </div>
-      <div class="kpi-card kpi-card--info">
-        <div class="kpi-card__header">
-          <span class="kpi-card__label">Citas Completadas (mes)</span>
-          <div class="kpi-card__icon"><i class="fa-solid fa-calendar-check"></i></div>
+      @if (featureService.hasFeature('AdvancedReports')) {
+        <div class="kpi-card kpi-card--info">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Citas Completadas (mes)</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-calendar-check"></i></div>
+          </div>
+          <div class="kpi-card__value">{{ metrics()?.appointmentsCompleted || 0 }}</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--up">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
+            </svg>
+          </div>
         </div>
-        <div class="kpi-card__value">{{ metrics()?.appointmentsCompleted || 0 }}</div>
-        <div class="kpi-card__sparkline kpi-card__sparkline--up">
-          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-            <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
-            <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
-          </svg>
+        <div class="kpi-card kpi-card--success">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Ingresos Generados (mes)</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-dollar-sign"></i></div>
+          </div>
+          <div class="kpi-card__value">{{ formatCurrency(metrics()?.totalRevenue || 0) }}</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--up">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8"/>
+            </svg>
+          </div>
         </div>
-      </div>
-      <div class="kpi-card kpi-card--success">
-        <div class="kpi-card__header">
-          <span class="kpi-card__label">Ingresos Generados (mes)</span>
-          <div class="kpi-card__icon"><i class="fa-solid fa-dollar-sign"></i></div>
+        <div class="kpi-card kpi-card--info">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Tasa Completación</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-chart-line"></i></div>
+          </div>
+          <div class="kpi-card__value">{{ metrics()?.completionRate || 0 }}%</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--up">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,34 Q30,30 60,28 T120,22 T180,16 T200,10 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,34 Q30,30 60,28 T120,22 T180,16 T200,10"/>
+            </svg>
+          </div>
         </div>
-        <div class="kpi-card__value">{{ formatCurrency(metrics()?.totalRevenue || 0) }}</div>
-        <div class="kpi-card__sparkline kpi-card__sparkline--up">
-          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-            <path class="sparkline-fill" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8 L200,40 L0,40Z"/>
-            <path class="sparkline-line" d="M0,34 Q30,30 60,26 T120,20 T180,14 T200,8"/>
-          </svg>
+        <div class="kpi-card kpi-card--success">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Prom. Ingresos/Dentista</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-scale-balanced"></i></div>
+          </div>
+          <div class="kpi-card__value">{{ formatCurrency(metrics()?.avgRevenuePerDentist || 0) }}</div>
+          <div class="kpi-card__sparkline kpi-card__sparkline--up">
+            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+              <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
+              <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
+            </svg>
+          </div>
         </div>
-      </div>
-      <div class="kpi-card kpi-card--info">
-        <div class="kpi-card__header">
-          <span class="kpi-card__label">Tasa Completación</span>
-          <div class="kpi-card__icon"><i class="fa-solid fa-chart-line"></i></div>
+      } @else {
+        <div class="kpi-card kpi-card--locked">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Citas Completadas</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-lock"></i></div>
+          </div>
+          <div class="kpi-card__value kpi-card__value--locked">Plan Profesional</div>
+          <a routerLink="/subscription" class="kpi-card__upgrade-link">Desbloquear</a>
         </div>
-        <div class="kpi-card__value">{{ metrics()?.completionRate || 0 }}%</div>
-        <div class="kpi-card__sparkline kpi-card__sparkline--up">
-          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-            <path class="sparkline-fill" d="M0,34 Q30,30 60,28 T120,22 T180,16 T200,10 L200,40 L0,40Z"/>
-            <path class="sparkline-line" d="M0,34 Q30,30 60,28 T120,22 T180,16 T200,10"/>
-          </svg>
+        <div class="kpi-card kpi-card--locked">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Ingresos Generados</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-lock"></i></div>
+          </div>
+          <div class="kpi-card__value kpi-card__value--locked">Plan Profesional</div>
+          <a routerLink="/subscription" class="kpi-card__upgrade-link">Desbloquear</a>
         </div>
-      </div>
-      <div class="kpi-card kpi-card--success">
-        <div class="kpi-card__header">
-          <span class="kpi-card__label">Prom. Ingresos/Dentista</span>
-          <div class="kpi-card__icon"><i class="fa-solid fa-scale-balanced"></i></div>
+        <div class="kpi-card kpi-card--locked">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Tasa Completación</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-lock"></i></div>
+          </div>
+          <div class="kpi-card__value kpi-card__value--locked">Plan Profesional</div>
+          <a routerLink="/subscription" class="kpi-card__upgrade-link">Desbloquear</a>
         </div>
-        <div class="kpi-card__value">{{ formatCurrency(metrics()?.avgRevenuePerDentist || 0) }}</div>
-        <div class="kpi-card__sparkline kpi-card__sparkline--up">
-          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-            <path class="sparkline-fill" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10 L200,40 L0,40Z"/>
-            <path class="sparkline-line" d="M0,30 Q30,26 60,28 T120,20 T180,14 T200,10"/>
-          </svg>
+        <div class="kpi-card kpi-card--locked">
+          <div class="kpi-card__header">
+            <span class="kpi-card__label">Prom. Ingresos/Dentista</span>
+            <div class="kpi-card__icon"><i class="fa-solid fa-lock"></i></div>
+          </div>
+          <div class="kpi-card__value kpi-card__value--locked">Plan Profesional</div>
+          <a routerLink="/subscription" class="kpi-card__upgrade-link">Desbloquear</a>
         </div>
-      </div>
+      }
     </div>
 
     <!-- Charts Grid (2 columnas) -->
@@ -138,7 +175,13 @@
           </h2>
         </div>
 
-        @if (revenueChartData().length === 0) {
+        @if (!featureService.hasFeature('AdvancedReports')) {
+          <div class="empty-state upgrade">
+            <i class="fa-solid fa-lock"></i>
+            <p>Reportes Avanzados requiere el plan <strong>Profesional</strong></p>
+            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
+          </div>
+        } @else if (revenueChartData().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-chart-bar"></i>
             <p>No hay datos de ingresos este mes</p>
@@ -161,7 +204,13 @@
           </h2>
         </div>
 
-        @if (appointmentsChartData().length === 0) {
+        @if (!featureService.hasFeature('AdvancedReports')) {
+          <div class="empty-state upgrade">
+            <i class="fa-solid fa-lock"></i>
+            <p>Reportes Avanzados requiere el plan <strong>Profesional</strong></p>
+            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
+          </div>
+        } @else if (appointmentsChartData().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-calendar-check"></i>
             <p>No hay datos de citas este mes</p>
@@ -185,12 +234,18 @@
             <i class="fa-solid fa-ranking-star"></i>
             Top por Ingresos
           </h2>
-          @if (topByRevenue().length > 0) {
+          @if (featureService.hasFeature('AdvancedReports') && topByRevenue().length > 0) {
             <span class="dash-section-header__badge">{{ topByRevenue().length }}</span>
           }
         </div>
 
-        @if (topByRevenue().length === 0) {
+        @if (!featureService.hasFeature('AdvancedReports')) {
+          <div class="empty-state upgrade">
+            <i class="fa-solid fa-lock"></i>
+            <p>Reportes Avanzados requiere el plan <strong>Profesional</strong></p>
+            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
+          </div>
+        } @else if (topByRevenue().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-dollar-sign"></i>
             <p>No hay datos de ingresos este mes</p>
@@ -220,12 +275,18 @@
             <i class="fa-solid fa-trophy"></i>
             Top por Tratamientos
           </h2>
-          @if (topByTreatments().length > 0) {
+          @if (featureService.hasFeature('AdvancedReports') && topByTreatments().length > 0) {
             <span class="dash-section-header__badge">{{ topByTreatments().length }}</span>
           }
         </div>
 
-        @if (topByTreatments().length === 0) {
+        @if (!featureService.hasFeature('AdvancedReports')) {
+          <div class="empty-state upgrade">
+            <i class="fa-solid fa-lock"></i>
+            <p>Reportes Avanzados requiere el plan <strong>Profesional</strong></p>
+            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
+          </div>
+        } @else if (topByTreatments().length === 0) {
           <div class="empty-state">
             <i class="fa-solid fa-tooth"></i>
             <p>No hay datos de tratamientos este mes</p>

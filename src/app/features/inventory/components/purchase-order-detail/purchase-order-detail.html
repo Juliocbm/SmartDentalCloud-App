@@ -40,128 +40,167 @@
   }
 
   @if (!loading() && !error() && order(); as po) {
-    <div class="detail-body">
-      <div class="info-two-col">
-        <!-- Información General -->
-        <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-info-circle"></i>
-            Información General
-          </h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Número de Orden:</span>
-              <span class="info-value">{{ po.orderNumber }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Proveedor:</span>
-              <span class="info-value">
-                <a [routerLink]="['/inventory/suppliers', po.supplierId]" class="link-primary">
-                  {{ po.supplierName }}
-                </a>
-              </span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Fecha de Orden:</span>
-              <span class="info-value">{{ formatDate(po.orderDate) }}</span>
-            </div>
-            @if (po.expectedDate) {
-              <div class="info-row">
-                <span class="info-label">Fecha Esperada:</span>
-                <span class="info-value">{{ formatDate(po.expectedDate) }}</span>
-              </div>
-            }
-            @if (po.receivedDate) {
-              <div class="info-row">
-                <span class="info-label">Fecha de Recepción:</span>
-                <span class="info-value">{{ formatDate(po.receivedDate) }}</span>
-              </div>
-            }
-            @if (po.notes) {
-              <div class="info-row">
-                <span class="info-label">Notas:</span>
-                <span class="info-value">{{ po.notes }}</span>
-              </div>
-            }
-          </div>
-        </div>
-
-        <!-- Resumen Financiero -->
-        <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-calculator"></i>
-            Resumen Financiero
-          </h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Subtotal:</span>
-              <span class="info-value">{{ formatCurrency(po.subtotal) }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">IVA:</span>
-              <span class="info-value">{{ formatCurrency(po.tax) }}</span>
-            </div>
-            <div class="info-row total-row">
-              <span class="info-label">Total:</span>
-              <span class="info-value">{{ formatCurrency(po.total) }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Items Table -->
-      <div class="info-section">
-        <h3>
+    <div class="order-layout">
+      <!-- Sidebar Navigation -->
+      <nav class="order-nav">
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'info'"
+          (click)="setActiveTab('info')">
+          <i class="fa-solid fa-file-invoice"></i>
+          <span>Información</span>
+        </button>
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'items'"
+          (click)="setActiveTab('items')">
           <i class="fa-solid fa-boxes-stacked"></i>
-          Items de la Orden
-          <span class="items-count">{{ po.items.length }}</span>
-        </h3>
+          <span>Items</span>
+          @if (po.items.length > 0) {
+            <span class="nav-count">{{ po.items.length }}</span>
+          }
+        </button>
+      </nav>
 
-        @if (po.items.length > 0) {
-          <div class="table-container">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Producto</th>
-                  <th>Código</th>
-                  <th class="text-center">Cantidad</th>
-                  <th class="text-right">Costo Unit.</th>
-                  <th class="text-right">Subtotal</th>
-                  <th class="text-center">Recibido</th>
-                  <th>Notas</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (item of po.items; track item.id; let i = $index) {
-                  <tr>
-                    <td>{{ i + 1 }}</td>
-                    <td class="product-name">{{ item.productName || '—' }}</td>
-                    <td class="code-cell">{{ item.productCode || '—' }}</td>
-                    <td class="text-center">{{ item.quantity }} {{ item.unit || '' }}</td>
-                    <td class="amount-cell text-right">{{ formatCurrency(item.unitCost) }}</td>
-                    <td class="amount-cell text-right">{{ formatCurrency(item.subtotal) }}</td>
-                    <td class="text-center">
-                      <div class="received-cell">
-                        <span [class]="item.receivedQuantity >= item.quantity ? 'text-success' : 'text-warning'">
-                          {{ item.receivedQuantity }}/{{ item.quantity }}
-                        </span>
-                        <div class="mini-progress">
-                          <div class="mini-progress-fill" [style.width.%]="getReceivedPercentage(item)"></div>
-                        </div>
-                      </div>
-                    </td>
-                    <td><span class="text-muted">{{ item.notes || '—' }}</span></td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+      <!-- Content -->
+      <div class="order-content">
+
+        <!-- Info Tab -->
+        @if (activeTab() === 'info') {
+          <div class="info-section">
+            <div class="section-header">
+              <h3 class="section-header__title">
+                <i class="fa-solid fa-file-invoice"></i>
+                Información de la Orden
+              </h3>
+            </div>
+            <hr>
+
+            <div class="info-two-col">
+              <div class="info-group">
+                <h4 class="info-group__title">
+                  <i class="fa-solid fa-info-circle"></i>
+                  Información General
+                </h4>
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Número de Orden:</span>
+                    <span class="info-value">{{ po.orderNumber }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Proveedor:</span>
+                    <span class="info-value">
+                      <a [routerLink]="['/inventory/suppliers', po.supplierId]" class="link-primary">
+                        {{ po.supplierName }}
+                      </a>
+                    </span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Fecha de Orden:</span>
+                    <span class="info-value">{{ formatDate(po.orderDate) }}</span>
+                  </div>
+                  @if (po.expectedDate) {
+                    <div class="info-row">
+                      <span class="info-label">Fecha Esperada:</span>
+                      <span class="info-value">{{ formatDate(po.expectedDate) }}</span>
+                    </div>
+                  }
+                  @if (po.receivedDate) {
+                    <div class="info-row">
+                      <span class="info-label">Fecha de Recepción:</span>
+                      <span class="info-value">{{ formatDate(po.receivedDate) }}</span>
+                    </div>
+                  }
+                  @if (po.notes) {
+                    <div class="info-row">
+                      <span class="info-label">Notas:</span>
+                      <span class="info-value">{{ po.notes }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="info-group">
+                <h4 class="info-group__title">
+                  <i class="fa-solid fa-calculator"></i>
+                  Resumen Financiero
+                </h4>
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Subtotal:</span>
+                    <span class="info-value">{{ formatCurrency(po.subtotal) }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">IVA:</span>
+                    <span class="info-value">{{ formatCurrency(po.tax) }}</span>
+                  </div>
+                  <div class="info-row total-row">
+                    <span class="info-label">Total:</span>
+                    <span class="info-value">{{ formatCurrency(po.total) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        } @else {
-          <div class="empty-state empty-state-sm">
-            <i class="fa-solid fa-boxes-stacked"></i>
-            <h3>Sin items</h3>
-            <p>Esta orden no tiene items registrados</p>
+        }
+
+        <!-- Items Tab -->
+        @if (activeTab() === 'items') {
+          <div class="info-section">
+            <div class="section-header">
+              <h3 class="section-header__title">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                Items de la Orden
+              </h3>
+            </div>
+            <hr>
+
+            @if (po.items.length > 0) {
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Producto</th>
+                      <th>Código</th>
+                      <th class="text-center">Cantidad</th>
+                      <th class="text-right">Costo Unit.</th>
+                      <th class="text-right">Subtotal</th>
+                      <th class="text-center">Recibido</th>
+                      <th>Notas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of po.items; track item.id; let i = $index) {
+                      <tr>
+                        <td>{{ i + 1 }}</td>
+                        <td class="product-name">{{ item.productName || '—' }}</td>
+                        <td class="code-cell">{{ item.productCode || '—' }}</td>
+                        <td class="text-center">{{ item.quantity }} {{ item.unit || '' }}</td>
+                        <td class="amount-cell text-right">{{ formatCurrency(item.unitCost) }}</td>
+                        <td class="amount-cell text-right">{{ formatCurrency(item.subtotal) }}</td>
+                        <td class="text-center">
+                          <div class="received-cell">
+                            <span [class]="item.receivedQuantity >= item.quantity ? 'text-success' : 'text-warning'">
+                              {{ item.receivedQuantity }}/{{ item.quantity }}
+                            </span>
+                            <div class="mini-progress">
+                              <div class="mini-progress-fill" [style.width.%]="getReceivedPercentage(item)"></div>
+                            </div>
+                          </div>
+                        </td>
+                        <td><span class="text-muted">{{ item.notes || '—' }}</span></td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              <div class="empty-items">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <p>Esta orden no tiene items registrados</p>
+              </div>
+            }
           </div>
         }
       </div>

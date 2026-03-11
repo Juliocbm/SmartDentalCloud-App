@@ -111,6 +111,11 @@
                     <span class="time">{{ appointment.displayTime }}</span>
                     <span class="duration">{{ appointment.durationMinutes }} min</span>
                   </div>
+                  @if (isOutsideWorkSchedule(appointment)) {
+                    <span class="out-of-hours-indicator" title="Fuera de horario laboral">
+                      <i class="fa-solid fa-clock"></i> Fuera de horario
+                    </span>
+                  }
                 </td>
                 <td>
                   <div class="info-cell">

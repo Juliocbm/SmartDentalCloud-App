@@ -6,6 +6,14 @@
     [showBackButton]="true"
     [defaultBackRoute]="'/appointments'"
     [breadcrumbs]="breadcrumbItems">
+    <div title-extra>
+      @if (appointment(); as apt) {
+        <span class="badge" [ngClass]="getStatusConfig(apt.status).bgColor">
+          <i class="fa-solid" [ngClass]="getStatusConfig(apt.status).icon"></i>
+          {{ getStatusConfig(apt.status).label }}
+        </span>
+      }
+    </div>
     <div actions>
       <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
         <i class="fa-solid fa-clock-rotate-left"></i>
@@ -14,6 +22,26 @@
         <button (click)="onEdit()" class="btn btn-outline" [disabled]="actionLoading()">
           <i class="fa-solid fa-calendar-pen"></i>
           Reagendar
+        </button>
+      }
+      @if (canConfirm()) {
+        <button (click)="onConfirm()" class="btn btn-outline btn-success" [disabled]="actionLoading()">
+          <i class="fa-solid fa-check-circle"></i> Confirmar
+        </button>
+      }
+      @if (canComplete()) {
+        <button (click)="onComplete()" class="btn btn-outline btn-success" [disabled]="actionLoading()">
+          <i class="fa-solid fa-check"></i> Completar
+        </button>
+      }
+      @if (canMarkNoShow()) {
+        <button (click)="onMarkNoShow()" class="btn btn-outline btn-warning" [disabled]="actionLoading()">
+          <i class="fa-solid fa-user-slash"></i> No Show
+        </button>
+      }
+      @if (canCancel()) {
+        <button (click)="onCancel()" class="btn btn-outline btn-danger" [disabled]="actionLoading()">
+          <i class="fa-solid fa-times-circle"></i> Cancelar
         </button>
       }
     </div>
@@ -35,72 +63,6 @@
       </button>
     </div>
   } @else if (appointment(); as apt) {
-
-    <!-- Header: Status + Date/Time + Action Buttons -->
-    <div class="detail-header">
-      <div class="header-content">
-        <div class="title-section">
-          <span class="status-badge" [ngClass]="getStatusConfig(apt.status).bgColor">
-            <i class="fa-solid" [ngClass]="getStatusConfig(apt.status).icon"></i>
-            {{ getStatusConfig(apt.status).label }}
-          </span>
-        </div>
-        <div class="header-info">
-          <div class="info-item">
-            <i class="fa-solid fa-calendar"></i>
-            <span class="label">Fecha:</span>
-            <span class="value">{{ formatDate(apt.startAt) }}</span>
-          </div>
-          <div class="info-item">
-            <i class="fa-solid fa-clock"></i>
-            <span class="label">Hora:</span>
-            <span class="value">{{ formatTime(apt.startAt) }} - {{ formatTime(apt.endAt) }}</span>
-          </div>
-          <div class="info-item">
-            <i class="fa-solid fa-hourglass-half"></i>
-            <span class="label">Duración:</span>
-            <span class="value">{{ getDuration() }} minutos</span>
-          </div>
-          @if (locationsService.hasMultipleLocations() && apt.locationName) {
-            <div class="info-item">
-              <i class="fa-solid fa-location-dot"></i>
-              <span class="label">Sucursal:</span>
-              <span class="value">
-                @if (apt.locationId) {
-                  <a [routerLink]="['/settings/locations', apt.locationId]" class="link-primary">
-                    {{ apt.locationName }}
-                  </a>
-                } @else {
-                  {{ apt.locationName }}
-                }
-              </span>
-            </div>
-          }
-        </div>
-      </div>
-      <div class="header-action-bar">
-        @if (canConfirm()) {
-          <button (click)="onConfirm()" class="btn btn-success" [disabled]="actionLoading()">
-            <i class="fa-solid fa-check-circle"></i> Confirmar
-          </button>
-        }
-        @if (canComplete()) {
-          <button (click)="onComplete()" class="btn btn-outline btn-success" [disabled]="actionLoading()">
-            <i class="fa-solid fa-check"></i> Completar
-          </button>
-        }
-        @if (canMarkNoShow()) {
-          <button (click)="onMarkNoShow()" class="btn btn-warning" [disabled]="actionLoading()">
-            <i class="fa-solid fa-exclamation-triangle"></i> No Show
-          </button>
-        }
-        @if (canCancel()) {
-          <button (click)="onCancel()" class="btn btn-danger" [disabled]="actionLoading()">
-            <i class="fa-solid fa-times-circle"></i> Cancelar
-          </button>
-        }
-      </div>
-    </div>
 
     <!-- Terminal status banner -->
     @if (apt.status === AppointmentStatus.Completed) {
@@ -134,216 +96,299 @@
       [compact]="true"
     />
 
-    <div class="detail-body">
-      <!-- Patient & Doctor -->
-      <div class="info-two-col">
-        <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-user"></i>
-            Paciente
-          </h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Nombre:</span>
-              <span class="info-value">
-                <a [routerLink]="['/patients', apt.patientId]" class="link-primary">
-                  {{ apt.patientName }}
-                </a>
-              </span>
-            </div>
-          </div>
-        </div>
+    <div class="appointment-layout">
+      <!-- Sidebar Navigation -->
+      <nav class="appointment-nav">
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'info'"
+          (click)="setActiveTab('info')">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Información</span>
+        </button>
+        @if (visibleTabs().includes('consents')) {
+          <button
+            class="nav-item"
+            [class.active]="activeTab() === 'consents'"
+            (click)="setActiveTab('consents')">
+            <i class="fa-solid fa-file-signature"></i>
+            <span>Consentimientos</span>
+            @if (appointmentConsents().length > 0) {
+              <span class="nav-count">{{ appointmentConsents().length }}</span>
+            }
+          </button>
+        }
+        @if (visibleTabs().includes('note')) {
+          <button
+            class="nav-item"
+            [class.active]="activeTab() === 'note'"
+            (click)="setActiveTab('note')">
+            <i class="fa-solid fa-notes-medical"></i>
+            <span>Nota Clínica</span>
+            @if (noteExists()) {
+              <span class="nav-count">1</span>
+            }
+          </button>
+        }
+      </nav>
 
-        <div class="info-section">
-          <h3>
-            <i class="fa-solid fa-user-md"></i>
-            Doctor
-          </h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Nombre:</span>
-              <span class="info-value">
-                @if (apt.userId) {
-                  <a [routerLink]="['/users', apt.userId]" class="link-primary">
-                    {{ apt.doctorName }}
-                  </a>
-                } @else {
-                  {{ apt.doctorName || 'No asignado' }}
-                }
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Content -->
+      <div class="appointment-content">
 
-      <!-- Appointment Details -->
-      <div class="info-section">
-        <h3>
-          <i class="fa-solid fa-notes-medical"></i>
-          Detalles de la Cita
-        </h3>
-        <div class="info-card">
-          <div class="info-row">
-            <span class="info-label">Motivo:</span>
-            <span class="info-value">{{ apt.reason || '—' }}</span>
-          </div>
-          @if (apt.notes) {
-            <div class="info-row">
-              <span class="info-label">Notas:</span>
-              <span class="info-value notes-text">{{ apt.notes }}</span>
+        <!-- Info Tab -->
+        @if (activeTab() === 'info') {
+          <div class="info-section">
+            <div class="section-header">
+              <h3 class="section-header__title">
+                <i class="fa-solid fa-calendar-check"></i>
+                Información de la Cita
+              </h3>
             </div>
-          }
-          @if (apt.cancellationReason) {
-            <div class="info-row alert-row">
-              <span class="info-label">Motivo de cancelación:</span>
-              <span class="info-value">{{ apt.cancellationReason }}</span>
-            </div>
-          }
-        </div>
-      </div>
+            <hr>
 
-      <app-audit-info
-        [visible]="showAuditModal()"
-        [createdAt]="apt.createdAt"
-        (closed)="showAuditModal.set(false)"
-      />
-
-      <!-- Consents Section (Confirmed/Completed) -->
-      @if (apt.status === AppointmentStatus.Confirmed || apt.status === AppointmentStatus.Completed) {
-        <div class="info-section">
-          <div class="section-header-with-action">
-            <h3>
-              <i class="fa-solid fa-file-signature"></i>
-              Consentimientos
-            </h3>
-            <a class="btn btn-outline btn-sm"
-              [routerLink]="['/patients', apt.patientId]"
-              [queryParams]="{ tab: 'consents', appointmentId: apt.id }">
-              <i class="fa-solid fa-plus"></i>
-              Solicitar Consentimiento
-            </a>
-          </div>
-
-          @if (consentsLoading()) {
-            <div class="note-loading">
-              <i class="fa-solid fa-spinner fa-spin"></i>
-              <span>Cargando consentimientos...</span>
-            </div>
-          } @else if (appointmentConsents().length === 0) {
-            <div class="consent-empty">
-              <i class="fa-solid fa-info-circle"></i>
-              <span>No hay consentimientos vinculados a esta cita.</span>
-            </div>
-          } @else {
-            <div class="consents-list">
-              @for (consent of appointmentConsents(); track consent.id) {
-                <div class="consent-item">
-                  <div class="consent-info">
-                    <span class="consent-title">{{ consent.title }}</span>
-                    <span class="badge" [ngClass]="{
-                      'badge-warning': consent.status === 'Pending',
-                      'badge-success': consent.status === 'Signed',
-                      'badge-danger': consent.status === 'Revoked',
-                      'badge-secondary': consent.status === 'Expired'
-                    }">
-                      {{ consent.status === 'Pending' ? 'Pendiente' :
-                         consent.status === 'Signed' ? 'Firmado' :
-                         consent.status === 'Revoked' ? 'Revocado' : 'Expirado' }}
-                    </span>
+            <!-- Programación + Participantes (dos columnas) -->
+            <div class="info-two-col">
+              <div class="info-group">
+                <h4 class="info-group__title">
+                  <i class="fa-solid fa-clock"></i>
+                  Programación
+                </h4>
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Fecha:</span>
+                    <span class="info-value capitalize">{{ formatDate(apt.startAt) }}</span>
                   </div>
-                  @if (consent.signedAt) {
-                    <span class="consent-date text-muted">
-                      <i class="fa-solid fa-check-circle"></i>
-                      Firmado: {{ consent.signedAt | date:'dd/MM/yyyy HH:mm' }}
-                    </span>
+                  <div class="info-row">
+                    <span class="info-label">Hora:</span>
+                    <span class="info-value">{{ formatTime(apt.startAt) }} - {{ formatTime(apt.endAt) }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Duración:</span>
+                    <span class="info-value">{{ getDuration() }} minutos</span>
+                  </div>
+                  @if (locationsService.hasMultipleLocations() && apt.locationName) {
+                    <div class="info-row">
+                      <span class="info-label">Sucursal:</span>
+                      <span class="info-value">
+                        @if (apt.locationId) {
+                          <a [routerLink]="['/settings/locations', apt.locationId]" class="link-primary">
+                            {{ apt.locationName }}
+                          </a>
+                        } @else {
+                          {{ apt.locationName }}
+                        }
+                      </span>
+                    </div>
                   }
                 </div>
+              </div>
+
+              <div class="info-group">
+                <h4 class="info-group__title">
+                  <i class="fa-solid fa-users"></i>
+                  Participantes
+                </h4>
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Paciente:</span>
+                    <span class="info-value">
+                      <a [routerLink]="['/patients', apt.patientId]" class="link-primary">
+                        {{ apt.patientName }}
+                      </a>
+                    </span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Dentista:</span>
+                    <span class="info-value">
+                      @if (apt.userId) {
+                        <a [routerLink]="['/users', apt.userId]" class="link-primary">
+                          {{ apt.doctorName }}
+                        </a>
+                      } @else {
+                        {{ apt.doctorName || 'No asignado' }}
+                      }
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Detalles -->
+            <hr class="info-divider">
+            <div class="info-group">
+              <h4 class="info-group__title">
+                <i class="fa-solid fa-notes-medical"></i>
+                Detalles
+              </h4>
+              <div class="info-card">
+                <div class="info-row">
+                  <span class="info-label">Motivo:</span>
+                  <span class="info-value">{{ apt.reason || '—' }}</span>
+                </div>
+                @if (apt.notes) {
+                  <div class="info-row">
+                    <span class="info-label">Notas:</span>
+                    <span class="info-value notes-text">{{ apt.notes }}</span>
+                  </div>
+                }
+                @if (apt.cancellationReason) {
+                  <div class="info-row alert-row">
+                    <span class="info-label">Motivo de cancelación:</span>
+                    <span class="info-value">{{ apt.cancellationReason }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Consents Tab -->
+        @if (activeTab() === 'consents') {
+          <div class="info-section">
+            <div class="section-header">
+              <h3 class="section-header__title">
+                <i class="fa-solid fa-file-signature"></i>
+                Consentimientos
+              </h3>
+              <a class="btn btn-outline btn-sm"
+                [routerLink]="['/patients', apt.patientId]"
+                [queryParams]="{ tab: 'consents', appointmentId: apt.id }">
+                <i class="fa-solid fa-plus"></i>
+                Solicitar Consentimiento
+              </a>
+            </div>
+            <hr>
+
+            @if (consentsLoading()) {
+              <div class="empty-items">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Cargando consentimientos...</p>
+              </div>
+            } @else if (appointmentConsents().length === 0) {
+              <div class="empty-items">
+                <i class="fa-solid fa-file-signature"></i>
+                <p>No hay consentimientos vinculados a esta cita</p>
+                <a class="btn btn-outline btn-sm"
+                  [routerLink]="['/patients', apt.patientId]"
+                  [queryParams]="{ tab: 'consents', appointmentId: apt.id }">
+                  <i class="fa-solid fa-plus"></i>
+                  Solicitar primer consentimiento
+                </a>
+              </div>
+            } @else {
+              <div class="consents-list">
+                @for (consent of appointmentConsents(); track consent.id) {
+                  <div class="consent-item">
+                    <div class="consent-info">
+                      <span class="consent-title">{{ consent.title }}</span>
+                      <span class="badge" [ngClass]="{
+                        'badge-warning': consent.status === 'Pending',
+                        'badge-success': consent.status === 'Signed',
+                        'badge-error': consent.status === 'Revoked',
+                        'badge-neutral': consent.status === 'Expired'
+                      }">
+                        {{ consent.status === 'Pending' ? 'Pendiente' :
+                           consent.status === 'Signed' ? 'Firmado' :
+                           consent.status === 'Revoked' ? 'Revocado' : 'Expirado' }}
+                      </span>
+                    </div>
+                    @if (consent.signedAt) {
+                      <span class="consent-date">
+                        <i class="fa-solid fa-check-circle"></i>
+                        Firmado: {{ consent.signedAt | date:'dd/MM/yyyy HH:mm' }}
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Consultation Note Tab -->
+        @if (activeTab() === 'note') {
+          <div class="info-section">
+            <div class="section-header">
+              <h3 class="section-header__title">
+                <i class="fa-solid fa-notes-medical"></i>
+                Nota Clínica
+              </h3>
+              @if (noteExists()) {
+                <a class="btn btn-outline btn-sm" [routerLink]="['/appointments', apt.id, 'note']">
+                  <i class="fa-solid fa-pen"></i>
+                  Editar Nota
+                </a>
               }
             </div>
-          }
-        </div>
-      }
+            <hr>
 
-      <!-- Consultation Note Section (only for Completed appointments) -->
-      @if (apt.status === AppointmentStatus.Completed) {
-        <div class="info-section consultation-note-section">
-          <h3>
-            <i class="fa-solid fa-notes-medical"></i>
-            Nota Clínica
-          </h3>
+            @if (noteLoading()) {
+              <div class="empty-items">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Cargando nota clínica...</p>
+              </div>
+            }
 
-          @if (noteLoading()) {
-            <div class="note-loading">
-              <i class="fa-solid fa-spinner fa-spin"></i>
-              <span>Cargando nota...</span>
-            </div>
-          }
-
-          @if (!noteLoading() && noteExists() && consultationNote(); as note) {
-            <div class="note-summary">
-              @if (note.chiefComplaint) {
-                <div class="note-field">
-                  <span class="note-field-label">Motivo de Consulta:</span>
-                  <span class="note-field-value">{{ note.chiefComplaint }}</span>
-                </div>
-              }
-              @if (note.diagnosis) {
-                <div class="note-field">
-                  <span class="note-field-label">Diagnóstico:</span>
-                  <span class="note-field-value">{{ note.diagnosis }}</span>
-                </div>
-              }
-              @if (note.clinicalFindings) {
-                <div class="note-field">
-                  <span class="note-field-label">Hallazgos Clínicos:</span>
-                  <span class="note-field-value">{{ note.clinicalFindings }}</span>
-                </div>
-              }
-              @if (note.treatmentPlan) {
-                <div class="note-field">
-                  <span class="note-field-label">Plan de Tratamiento:</span>
-                  <span class="note-field-value">{{ note.treatmentPlan }}</span>
-                </div>
-              }
-              @if (note.notes) {
-                <div class="note-field">
-                  <span class="note-field-label">Notas Adicionales:</span>
-                  <span class="note-field-value">{{ note.notes }}</span>
-                </div>
-              }
+            @if (!noteLoading() && noteExists() && consultationNote(); as note) {
+              <div class="info-card">
+                @if (note.chiefComplaint) {
+                  <div class="info-row">
+                    <span class="info-label">Motivo de Consulta:</span>
+                    <span class="info-value">{{ note.chiefComplaint }}</span>
+                  </div>
+                }
+                @if (note.diagnosis) {
+                  <div class="info-row">
+                    <span class="info-label">Diagnóstico:</span>
+                    <span class="info-value">{{ note.diagnosis }}</span>
+                  </div>
+                }
+                @if (note.clinicalFindings) {
+                  <div class="info-row">
+                    <span class="info-label">Hallazgos Clínicos:</span>
+                    <span class="info-value">{{ note.clinicalFindings }}</span>
+                  </div>
+                }
+                @if (note.treatmentPlan) {
+                  <div class="info-row">
+                    <span class="info-label">Plan de Tratamiento:</span>
+                    <span class="info-value">{{ note.treatmentPlan }}</span>
+                  </div>
+                }
+                @if (note.notes) {
+                  <div class="info-row">
+                    <span class="info-label">Notas Adicionales:</span>
+                    <span class="info-value">{{ note.notes }}</span>
+                  </div>
+                }
+              </div>
               <div class="note-meta">
                 <span>Creada: {{ formatNoteDateTime(note.createdAt) }}</span>
                 @if (note.createdByName) {
                   <span>Por: {{ note.createdByName }}</span>
                 }
               </div>
-              <div class="note-actions">
-                <a
-                  class="btn btn-outline"
-                  [routerLink]="['/appointments', apt.id, 'note']"
-                >
-                  <i class="fa-solid fa-pen"></i>
-                  Editar Nota Completa
+            }
+
+            @if (!noteLoading() && !noteExists()) {
+              <div class="empty-items">
+                <i class="fa-solid fa-file-medical"></i>
+                <p>No se ha documentado la nota clínica de esta cita</p>
+                <a class="btn btn-outline btn-sm" [routerLink]="['/appointments', apt.id, 'note']">
+                  <i class="fa-solid fa-plus"></i>
+                  Crear Nota Clínica
                 </a>
               </div>
-            </div>
-          }
-
-          @if (!noteLoading() && !noteExists()) {
-            <div class="note-empty">
-              <i class="fa-solid fa-file-medical"></i>
-              <p>No se ha documentado la nota clínica de esta cita</p>
-              <a
-                class="btn btn-outline btn-success"
-                [routerLink]="['/appointments', apt.id, 'note']"
-              >
-                <i class="fa-solid fa-plus"></i>
-                Crear Nota Clínica
-              </a>
-            </div>
-          }
-        </div>
-      }
+            }
+          </div>
+        }
+      </div>
     </div>
+
+    <app-audit-info
+      [visible]="showAuditModal()"
+      [createdAt]="apt.createdAt"
+      (closed)="showAuditModal.set(false)"
+    />
   }
 </div>

@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ReportsService } from '../../services/reports.service';
 import { AccountsReceivableItem, AccountsReceivableSummary } from '../../models/report.models';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 
@@ -110,11 +111,6 @@ export class AccountsReceivableComponent implements OnInit {
   }
 
   formatDate(date: Date | string | undefined): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 }

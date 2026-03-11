@@ -10,6 +10,7 @@ export interface TenantSettings {
   taxId?: string;
   logoUrl?: string;
   address?: string;
+  postalCode?: string;
   phone?: string;
   email?: string;
   workingHours?: string;
@@ -27,6 +28,7 @@ export interface UpdateTenantSettingsRequest {
   legalName?: string;
   taxId?: string;
   address?: string;
+  postalCode?: string;
   phone?: string;
   email?: string;
   workingHours?: string;

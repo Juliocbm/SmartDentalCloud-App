@@ -8,6 +8,9 @@ import { AuthService } from '../../../core/services/auth.service';
 import { UserProfileCacheService } from '../../../core/services/user-profile-cache.service';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { PermissionService, PERMISSIONS } from '../../../core/services/permission.service';
+import { FeatureService, PlanFeature } from '../../../core/services/feature.service';
+import { ModalService } from '../../services/modal.service';
+import { FeatureUpgradeModalComponent, FeatureUpgradeModalData } from '../feature-upgrade-modal/feature-upgrade-modal';
 import { MenuItem } from './sidebar.models';
 
 /**
@@ -28,6 +31,8 @@ export class SidebarComponent implements OnInit {
   private router = inject(Router);
   private permissionService = inject(PermissionService);
   favoritesService = inject(FavoritesService);
+  private featureService = inject(FeatureService);
+  private modalService = inject(ModalService);
 
   currentUser = this.authService.currentUser;
   sidebarUserName = computed(() => this.currentUser()?.name || 'Usuario');
@@ -80,8 +85,8 @@ export class SidebarComponent implements OnInit {
       children: [
         { id: 'treatments-list', icon: 'fa-solid fa-list', label: 'Ejecutados', route: '/treatments', requiredPermission: PERMISSIONS.TreatmentsView },
         { id: 'treatments-new', icon: 'fa-solid fa-plus', label: 'Nuevo Tratamiento', route: '/treatments/new', requiredPermission: PERMISSIONS.TreatmentsCreate },
-        { id: 'treatment-plans-list', icon: 'fa-solid fa-clipboard-list', label: 'Planes de Tratamiento', route: '/treatment-plans', requiredPermission: PERMISSIONS.TreatmentPlansView },
-        { id: 'treatment-plans-new', icon: 'fa-solid fa-file-circle-plus', label: 'Nuevo Plan', route: '/treatment-plans/new', requiredPermission: PERMISSIONS.TreatmentPlansCreate }
+        { id: 'treatment-plans-list', icon: 'fa-solid fa-clipboard-list', label: 'Planes de Tratamiento', route: '/treatment-plans', requiredPermission: PERMISSIONS.TreatmentPlansView, requiredFeature: 'TreatmentPlans' },
+        { id: 'treatment-plans-new', icon: 'fa-solid fa-file-circle-plus', label: 'Nuevo Plan', route: '/treatment-plans/new', requiredPermission: PERMISSIONS.TreatmentPlansCreate, requiredFeature: 'TreatmentPlans' }
       ]
     },
     { 
@@ -126,6 +131,7 @@ export class SidebarComponent implements OnInit {
       route: '/inventory',
       hasDashboard: true,
       requiredPermission: PERMISSIONS.InventoryView,
+      requiredFeature: 'Inventory',
       children: [
         { id: 'inventory-products', icon: 'fa-solid fa-box', label: 'Productos', route: '/inventory/products', requiredPermission: PERMISSIONS.InventoryView },
         { id: 'inventory-categories', icon: 'fa-solid fa-tags', label: 'Categorías', route: '/inventory/categories', requiredPermission: PERMISSIONS.InventoryView },
@@ -160,6 +166,7 @@ export class SidebarComponent implements OnInit {
       route: '/reports',
       hasDashboard: true,
       requiredPermission: PERMISSIONS.ReportsView,
+      requiredFeature: 'AdvancedReports',
       children: [
         { id: 'reports-income', icon: 'fa-solid fa-coins', label: 'Ingresos', route: '/reports/income', requiredPermission: PERMISSIONS.ReportsView },
         { id: 'reports-treatments', icon: 'fa-solid fa-tooth', label: 'Tratamientos', route: '/reports/treatments', requiredPermission: PERMISSIONS.ReportsView },
@@ -181,7 +188,7 @@ export class SidebarComponent implements OnInit {
         { id: 'settings-subscription', icon: 'fa-solid fa-crown', label: 'Suscripción', route: '/subscription' }
       ]
     },
-    { id: 'audit-log', icon: 'fa-solid fa-shield-halved', label: 'Auditoría', route: '/audit-log', requiredPermission: PERMISSIONS.SettingsView },
+    { id: 'audit-log', icon: 'fa-solid fa-shield-halved', label: 'Auditoría', route: '/audit-log', requiredPermission: PERMISSIONS.SettingsView, requiredFeature: 'AuditLog' },
   ]);
 
   // Menús filtrados por permisos del usuario
@@ -273,8 +280,18 @@ export class SidebarComponent implements OnInit {
     return !!item.children && item.children.length > 0;
   }
 
-  navigateToRoute(route: string): void {
+  navigateToRoute(route: string, item?: MenuItem): void {
+    if (item?.requiredFeature && !this.featureService.hasFeature(item.requiredFeature as PlanFeature)) {
+      this.modalService.open<FeatureUpgradeModalData>(FeatureUpgradeModalComponent, {
+        data: { feature: item.requiredFeature as PlanFeature }
+      });
+      return;
+    }
     this.router.navigate([route]);
+  }
+
+  isFeatureLocked(item: MenuItem): boolean {
+    return !!item.requiredFeature && !this.featureService.hasFeature(item.requiredFeature as PlanFeature);
   }
 
   onSearchChange(term: string): void {

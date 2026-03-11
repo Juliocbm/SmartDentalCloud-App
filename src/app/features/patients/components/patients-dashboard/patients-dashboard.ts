@@ -7,6 +7,7 @@ import { PatientsAnalyticsService } from '../../services/patients-analytics.serv
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import {
   PatientsAnalytics,
   PatientsStatistics,
@@ -231,10 +232,7 @@ export class PatientsDashboardComponent implements OnInit {
 
   formatDate(date: Date | null): string {
     if (!date) return 'N/A';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'short'
-    }).format(new Date(date));
+    return DateFormatService.compactDate(date);
   }
 
   getBirthdayLabel(days: number): string {

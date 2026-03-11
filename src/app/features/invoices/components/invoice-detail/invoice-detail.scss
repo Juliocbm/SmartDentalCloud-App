@@ -1,44 +1,95 @@
 // ============================================
 // InvoiceDetailComponent - Estilos
-// Base: usa .detail-container, .detail-body, .info-two-col,
-//       .info-section, .info-card, .info-row de _components.scss
+// Usa clases globales de _components.scss:
+//   .detail-container, .info-section, .info-card, .info-row,
+//   .info-two-col, .section-header, .empty-items, .table
+// Layout con tabs siguiendo DETAIL_LAYOUT_PATTERN.md
 // ============================================
 
-.section-header-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
-  padding-bottom: var(--spacing-lg);
-  border-bottom: 2px solid var(--border-primary);
+// ===== Layout Grid =====
+.invoice-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--spacing-2xl);
+  align-items: stretch;
+}
 
-  h3 {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
+// ===== Sidebar Navigation =====
+.invoice-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-align: left;
+
+    i {
+      width: 20px;
+      text-align: center;
+      font-size: var(--font-size-base);
+    }
+
+    &:hover {
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+    }
+
+    &.active {
+      background: var(--primary-50);
+      color: var(--primary-700);
+      font-weight: var(--font-weight-semibold);
+
+      i { color: var(--primary-600); }
+    }
+
+    .nav-count {
+      margin-left: auto;
+      background: var(--primary-100);
+      color: var(--primary-700);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
   }
 }
 
-.section-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-  height: 28px;
-  padding: 0 var(--spacing-sm);
-  background: var(--primary-100);
-  color: var(--primary-700);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-}
+// ===== Content Area =====
+.invoice-content {
+  min-width: 0;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
 
-// Override específico de info-card
-.info-card .info-row .info-value.uuid-value {
-  font-family: monospace;
-  font-size: var(--font-size-sm);
-  word-break: break-all;
+  .info-section {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .info-card {
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+  }
 }
 
 // ===== Payment Progress =====
@@ -310,9 +361,21 @@
   }
 }
 
-// Responsive: .detail-container, .info-section, .info-card
-// manejados globalmente en _components.scss
+// ===== Responsive =====
 @media (max-width: 768px) {
+  .invoice-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .invoice-nav {
+    flex-direction: row;
+    overflow-x: auto;
+
+    .nav-item span {
+      display: none;
+    }
+  }
+
   .payment-progress .progress-amounts {
     grid-template-columns: 1fr;
   }

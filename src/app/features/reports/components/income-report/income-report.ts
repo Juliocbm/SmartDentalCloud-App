@@ -5,6 +5,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ReportsService } from '../../services/reports.service';
 import { IncomeReport } from '../../models/report.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
 
 @Component({
@@ -55,7 +56,7 @@ export class IncomeReportComponent implements OnInit {
   }
 
   formatDate(date: string): string {
-    return new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'short' }).format(new Date(date));
+    return DateFormatService.compactDate(date);
   }
 
   getMaxAmount(): number {

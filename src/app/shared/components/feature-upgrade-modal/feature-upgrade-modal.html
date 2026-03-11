@@ -1,0 +1,30 @@
+<app-modal
+  title="Función Premium"
+  icon="fa-lock"
+  size="sm"
+  (closed)="close()">
+
+  <div class="upgrade-modal-content">
+    <div class="upgrade-modal__feature-name">{{ featureLabel }}</div>
+
+    <p class="upgrade-modal__message">
+      Esta función requiere el plan
+      <strong>{{ minimumPlan }}</strong> o superior.
+      Tu plan actual es <strong>{{ currentPlan }}</strong>.
+    </p>
+
+    <div class="upgrade-modal__info">
+      <i class="fa-solid fa-arrow-up-right-dots"></i>
+      <span>Mejora tu plan para desbloquear esta y más funcionalidades avanzadas.</span>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <div class="upgrade-modal__actions">
+      <button class="btn btn-outline" (click)="close()">Cerrar</button>
+      <button class="btn btn-primary" (click)="goToSubscription()">
+        <i class="fa-solid fa-crown"></i> Mejorar Plan
+      </button>
+    </div>
+  </div>
+</app-modal>

@@ -56,19 +56,30 @@
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.ReportsView)) {
-        <a class="kpi-card kpi-card--success" routerLink="/reports/income">
-          <div class="kpi-card__header">
-            <span class="kpi-card__label">Ingresos</span>
-            <div class="kpi-card__icon"><i class="fa-solid fa-dollar-sign"></i></div>
+        @if (featureService.hasFeature('AdvancedReports')) {
+          <a class="kpi-card kpi-card--success" routerLink="/reports/income">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Ingresos</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-dollar-sign"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ formatCurrency(monthlyIncome()) }}</div>
+            <div class="kpi-card__sparkline kpi-card__sparkline--up">
+              <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+                <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
+                <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
+              </svg>
+            </div>
+          </a>
+        } @else {
+          <div class="kpi-card kpi-card--locked">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Ingresos</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-lock"></i></div>
+            </div>
+            <div class="kpi-card__value kpi-card__value--locked">Plan Profesional</div>
+            <a routerLink="/subscription" class="kpi-card__upgrade-link">Desbloquear</a>
           </div>
-          <div class="kpi-card__value">{{ formatCurrency(monthlyIncome()) }}</div>
-          <div class="kpi-card__sparkline kpi-card__sparkline--up">
-            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-              <path class="sparkline-fill" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12 L200,40 L0,40Z"/>
-              <path class="sparkline-line" d="M0,32 Q25,28 50,30 T100,24 T150,18 T200,12"/>
-            </svg>
-          </div>
-        </a>
+        }
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.TreatmentsView)) {
@@ -88,51 +99,84 @@
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.TreatmentPlansView)) {
-        <a class="kpi-card kpi-card--warning" routerLink="/treatment-plans">
-          <div class="kpi-card__header">
-            <span class="kpi-card__label">Planes por Aprobar</span>
-            <div class="kpi-card__icon"><i class="fa-solid fa-clipboard-list"></i></div>
+        @if (featureService.hasFeature('TreatmentPlans')) {
+          <a class="kpi-card kpi-card--warning" routerLink="/treatment-plans">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Planes por Aprobar</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-clipboard-list"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ pendingApprovalCount() }}</div>
+            <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
+              <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+                <path class="sparkline-fill" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22 L200,40 L0,40Z"/>
+                <path class="sparkline-line" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22"/>
+              </svg>
+            </div>
+          </a>
+        } @else {
+          <div class="kpi-card kpi-card--locked">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Planes por Aprobar</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-lock"></i></div>
+            </div>
+            <div class="kpi-card__value kpi-card__value--locked">Plan Profesional</div>
+            <a routerLink="/subscription" class="kpi-card__upgrade-link">Desbloquear</a>
           </div>
-          <div class="kpi-card__value">{{ pendingApprovalCount() }}</div>
-          <div class="kpi-card__sparkline kpi-card__sparkline--neutral">
-            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-              <path class="sparkline-fill" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22 L200,40 L0,40Z"/>
-              <path class="sparkline-line" d="M0,22 Q30,26 60,20 T120,24 T180,18 T200,22"/>
-            </svg>
-          </div>
-        </a>
+        }
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.InventoryView)) {
-        <a class="kpi-card kpi-card--error" routerLink="/inventory/alerts">
-          <div class="kpi-card__header">
-            <span class="kpi-card__label">Productos Stock Bajo</span>
-            <div class="kpi-card__icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        @if (featureService.hasFeature('Inventory')) {
+          <a class="kpi-card kpi-card--error" routerLink="/inventory/alerts">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Productos Stock Bajo</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ lowStockCount() }}</div>
+            <div class="kpi-card__sparkline kpi-card__sparkline--down">
+              <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+                <path class="sparkline-fill" d="M0,12 Q30,16 60,14 T120,22 T180,28 T200,32 L200,40 L0,40Z"/>
+                <path class="sparkline-line" d="M0,12 Q30,16 60,14 T120,22 T180,28 T200,32"/>
+              </svg>
+            </div>
+          </a>
+        } @else {
+          <div class="kpi-card kpi-card--locked">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Productos Stock Bajo</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-lock"></i></div>
+            </div>
+            <div class="kpi-card__value kpi-card__value--locked">Plan Profesional</div>
+            <a routerLink="/subscription" class="kpi-card__upgrade-link">Desbloquear</a>
           </div>
-          <div class="kpi-card__value">{{ lowStockCount() }}</div>
-          <div class="kpi-card__sparkline kpi-card__sparkline--down">
-            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-              <path class="sparkline-fill" d="M0,12 Q30,16 60,14 T120,22 T180,28 T200,32 L200,40 L0,40Z"/>
-              <path class="sparkline-line" d="M0,12 Q30,16 60,14 T120,22 T180,28 T200,32"/>
-            </svg>
-          </div>
-        </a>
+        }
       }
 
       @if (permissionService.hasPermission(PERMISSIONS.ReportsView)) {
-        <a class="kpi-card kpi-card--warning" routerLink="/reports/accounts-receivable">
-          <div class="kpi-card__header">
-            <span class="kpi-card__label">Pendiente de Cobro</span>
-            <div class="kpi-card__icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+        @if (featureService.hasFeature('AdvancedReports')) {
+          <a class="kpi-card kpi-card--warning" routerLink="/reports/accounts-receivable">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Pendiente de Cobro</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ formatCurrency(pendingBalance()) }}</div>
+            <div class="kpi-card__sparkline kpi-card__sparkline--down">
+              <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+                <path class="sparkline-fill" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34 L200,40 L0,40Z"/>
+                <path class="sparkline-line" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34"/>
+              </svg>
+            </div>
+          </a>
+        } @else {
+          <div class="kpi-card kpi-card--locked">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Pendiente de Cobro</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-lock"></i></div>
+            </div>
+            <div class="kpi-card__value kpi-card__value--locked">Plan Profesional</div>
+            <a routerLink="/subscription" class="kpi-card__upgrade-link">Desbloquear</a>
           </div>
-          <div class="kpi-card__value">{{ formatCurrency(pendingBalance()) }}</div>
-          <div class="kpi-card__sparkline kpi-card__sparkline--down">
-            <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-              <path class="sparkline-fill" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34 L200,40 L0,40Z"/>
-              <path class="sparkline-line" d="M0,14 Q30,18 60,16 T120,24 T180,30 T200,34"/>
-            </svg>
-          </div>
-        </a>
+        }
       }
     </div>
 
@@ -211,12 +255,18 @@
             <i class="fa-solid fa-clipboard-list"></i>
             Planes por Aprobar
           </h2>
-          @if (pendingPlans().length > 0) {
+          @if (featureService.hasFeature('TreatmentPlans') && pendingPlans().length > 0) {
             <span class="dash-section-header__badge">{{ pendingPlans().length }}</span>
           }
         </div>
 
-        @if (pendingPlans().length === 0) {
+        @if (!featureService.hasFeature('TreatmentPlans')) {
+          <div class="empty-state upgrade">
+            <i class="fa-solid fa-lock"></i>
+            <p>Planes de Tratamiento requiere el plan <strong>Profesional</strong></p>
+            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
+          </div>
+        } @else if (pendingPlans().length === 0) {
           <div class="empty-state success">
             <i class="fa-solid fa-circle-check"></i>
             <p>No hay planes pendientes de aprobación</p>
@@ -241,15 +291,30 @@
       }
 
       <!-- Alertas de Inventario -->
-      @if (permissionService.hasPermission(PERMISSIONS.InventoryView) && lowStockItems().length > 0) {
+      @if (permissionService.hasPermission(PERMISSIONS.InventoryView)) {
       <div class="section-card">
         <div class="dash-section-header">
           <h2 class="dash-section-header__title">
             <i class="fa-solid fa-triangle-exclamation"></i>
             Alertas de Inventario
           </h2>
-          <span class="dash-section-header__badge">{{ lowStockItems().length }}</span>
+          @if (featureService.hasFeature('Inventory')) {
+            <span class="dash-section-header__badge">{{ lowStockItems().length }}</span>
+          }
         </div>
+
+        @if (!featureService.hasFeature('Inventory')) {
+          <div class="empty-state upgrade">
+            <i class="fa-solid fa-lock"></i>
+            <p>Inventario requiere el plan <strong>Profesional</strong></p>
+            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
+          </div>
+        } @else if (lowStockItems().length === 0) {
+          <div class="empty-state success">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>No hay alertas de inventario</p>
+          </div>
+        } @else {
         <div class="dash-list">
           @for (item of lowStockItems().slice(0, 5); track item.productId) {
             <div class="dash-item">
@@ -270,6 +335,7 @@
             </div>
           }
         </div>
+        }
       </div>
       }
     </div>

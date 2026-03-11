@@ -6,54 +6,65 @@ Patrón estándar para todas las pantallas de tipo "Ver Detalle" (citas, pacient
 
 1. **Consistencia visual** — Todas las pantallas "ver" usan las mismas clases globales de `_components.scss`
 2. **No duplicar datos** — Eliminar secciones de resumen que repitan info ya visible en tabs
-3. **Secciones con identidad** — Cada bloque de datos usa `info-section` con su `h3` + icono
-4. **Compacto pero claro** — Grid multi-columna para datos relacionados, sin desperdiciar espacio
-5. **Status visible** — Badge de estado en el page-header; banners solo para estados terminales
-6. **Tabs para entidades complejas** — Cuando una entidad tiene muchos datos, usar tabs (segmented control)
-7. **Empty states consistentes** — Usar `.empty-state` global para estados vacíos
+3. **Una sola sección de contenido** — Consolidar datos relacionados en una `info-section` con `info-group` sub-secciones
+4. **Section headers BEM** — Títulos de sección con `.section-header` > `.section-header__title` + `<hr>`
+5. **Compacto pero claro** — Grid multi-columna para datos relacionados, sin desperdiciar espacio
+6. **Status visible** — Badge de estado en el page-header; banners solo para estados terminales
+7. **Sidebar nav para tabs** — Entidades con 2+ categorías de datos usan sidebar nav vertical con content area
+8. **Empty states consistentes** — `.empty-items` (dashed) para listas vacías, `.empty-state` para tabs vacíos
 
 ---
 
 ## Variantes de Detalle
 
-### A) Detalle Simple (sin tabs)
-Para entidades con pocos datos (ej: cita, factura).
+### A) Detalle con Sidebar Nav (estándar)
+Para entidades con 2+ categorías de datos (ej: cita, receta, paciente). Es el patrón preferido.
 
 ```
 .detail-container
-├── app-page-header           ← Breadcrumbs + título + [actions] slot
+├── app-page-header              ← Breadcrumbs + título + [badge] title-extra + [botones] actions
 │
-├── .detail-header            ← Card oscuro con status + datos clave + acciones
-│   ├── .header-content
-│   │   ├── .title-section    ← Badge de estado
-│   │   └── .header-info      ← Grid de datos clave
-│   └── .header-action-bar    ← Botones de acción de estado
+├── .status-banner               ← (Condicional) Banner de estado terminal
 │
-├── .status-banner            ← (Condicional) Banner de estado terminal
-│
-└── .detail-body
-    ├── .info-two-col         ← Grid 2 columnas
-    │   ├── .info-section
-    │   └── .info-section
-    └── .info-section         ← Secciones full-width
+└── .{entity}-layout             ← Grid: sidebar 200px + content 1fr
+    ├── nav.{entity}-nav         ← Sidebar vertical con tabs
+    │   └── button.nav-item      ← Cada tab (icono + texto + .nav-count opcional)
+    │
+    └── .{entity}-content        ← Área de contenido (flatten info-section/info-card)
+        └── (contenido del tab activo)
+            ├── .info-section > .section-header + <hr>
+            │   ├── .info-two-col > .info-group (columnas)
+            │   │   └── .info-group__title + .info-card > .info-row
+            │   └── .info-group (full-width)
+            ├── .table-container > .table (para listas tabulares)
+            ├── .empty-items (lista vacía — dashed border)
+            └── .empty-state (tab completamente vacío)
 ```
 
-### B) Detalle con Tabs (entidad compleja)
-Para entidades con muchos datos organizados en categorías (ej: paciente).
+### B) Detalle con Sidebar Nav Grande (muchas categorías)
+Para entidades con 7+ categorías (ej: paciente). Sidebar de 220px con más tabs.
 
 ```
 .detail-container
-├── app-page-header           ← Breadcrumbs + título + [badge + acciones] en slot
+├── app-page-header
+├── .clinical-summary-bar        ← (Opcional) Resumen clínico compacto
 │
-├── .tabs-bar                 ← Barra de navegación por tabs (segmented control)
-│   └── .tabs-nav
-│       └── .tab-button       ← Cada tab (con icono + texto)
-│
+└── .patient-layout              ← Grid: sidebar 220px + content 1fr
+    ├── nav.patient-nav          ← Sidebar con muchos tabs + nav-count badges
+    └── .patient-content         ← Contenido del tab activo (flatten)
+```
+
+### C) Detalle Simple (sin tabs)
+Para entidades con muy pocos datos donde tabs no aportan valor.
+
+```
+.detail-container
+├── app-page-header
+├── .status-banner               ← (Condicional)
 └── .detail-body
-    └── (contenido del tab activo)
-        ├── .info-two-col > .info-section (datos en columnas)
-        ├── .info-section > .info-card > .info-row (lista de datos)
-        └── .empty-state (cuando no hay datos)
+    └── .info-section > .section-header + <hr>
+        ├── .info-two-col > .info-group
+        └── .info-group
 ```
 
 ---
@@ -65,30 +76,22 @@ Para entidades con muchos datos organizados en categorías (ej: paciente).
 | Clase | Propósito |
 |-------|-----------|
 | `.detail-container` | Wrapper con max-width y padding |
-| `.detail-header` | Card principal oscuro (`--surface-primary`, `--shadow-sm`) |
-| `.detail-body` | Grid de secciones con `gap: --spacing-2xl` |
-
-### Header
-
-| Clase | Propósito |
-|-------|-----------|
-| `.header-content` | Contenedor del contenido del header |
-| `.title-section` | Flex con badge de estado (y opcionalmente h1) |
-| `.status-badge` | Badge con icono + texto (`border-radius: full`) |
-| `.header-info` | Grid responsive de items informativos |
-| `.info-item` | Item con icono + label + value |
-| `.header-action-bar` | Barra de acciones separada por `border-top` |
+| `.detail-body` | Grid de secciones con `gap: --spacing-2xl` (solo para variante C sin tabs) |
 
 ### Secciones
 
 | Clase | Propósito |
 |-------|-----------|
-| `.info-section` | Card de sección (`--surface-primary`, `--shadow-sm`) con `h3` |
-| `.info-card` | Contenedor de filas dentro de una sección |
+| `.info-section` | Card de sección (`--surface-primary`, `--shadow-sm`) |
+| `.section-header` | Contenedor flex del título de sección (con espacio para botón inline) |
+| `.section-header__title` | `h3` con icono — título principal de la sección |
+| `<hr>` | Separador visual después del `.section-header` |
+| `.info-group` | Sub-sección dentro de un `info-section` |
+| `.info-group__title` | `h4` con icono — subtítulo de grupo (uppercase, smaller) |
+| `.info-card` | Contenedor de filas dentro de una sección o grupo |
 | `.info-row` | Fila con `.info-label` (min-width 180px) + `.info-value` |
 | `.info-row.alert-row` | Fila destacada con fondo de error |
-| `.section-header-with-action` | Encabezado de sección con botón inline (ej: "Editar") |
-| `.info-empty` | Empty state compacto dentro de un `info-card` |
+| `.info-empty` | Empty state compacto inline dentro de un `info-card` (solo icono + texto) |
 
 ### Layouts Multi-Columna
 
@@ -101,8 +104,9 @@ Para entidades con muchos datos organizados en categorías (ej: paciente).
 
 | Clase | Propósito |
 |-------|-----------|
-| `.empty-state` | Empty state completo para sección o tab sin datos (icono en círculo, título, descripción, botón) |
-| `.empty-state-sm` | Variante compacta de empty-state para dentro de cards/secciones |
+| `.empty-state` | Empty state completo para página o tab sin datos (icono grande, título, descripción, botón) |
+| `.empty-state-sm` | Variante compacta para dentro de cards/secciones |
+| `.empty-items` | Empty state con **borde dashed** para listas/colecciones vacías (ej: medicamentos, consentimientos) |
 | `.info-empty` | Empty state inline mínimo dentro de un `info-card` (solo icono + texto) |
 
 ### Banners de Estado
@@ -129,126 +133,204 @@ Para entidades con muchos datos organizados en categorías (ej: paciente).
 
 ---
 
-## Tabs — Patrón "Segmented Control"
+## Sidebar Nav — Patrón de Tabs
 
-Para entidades complejas con muchas categorías de datos (ej: paciente con 7+ secciones), usar tabs tipo segmented control.
+Para entidades con 2+ categorías de datos, usar sidebar nav vertical con content area. Los estilos se definen en el SCSS del componente (no son globales).
 
-### Estilos (componente local)
-
-Los tabs se definen en el SCSS del componente (no son globales porque no todas las pantallas usan tabs):
+### Layout (SCSS del componente)
 
 ```scss
-.tabs-bar {
-  background: var(--surface-secondary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xs);
-  margin-bottom: var(--spacing-xl);
+// Grid: sidebar + content
+.{entity}-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;  // 220px para entidades con muchos tabs
+  gap: var(--spacing-2xl);
+  align-items: stretch;
 }
 
-.tabs-nav {
+// Sidebar navigation
+.{entity}-nav {
   display: flex;
+  flex-direction: column;
   gap: var(--spacing-xs);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
 
-  .tab-button {
-    flex: 1;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: transparent;
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
     border: none;
     border-radius: var(--radius-md);
-    color: var(--text-tertiary);
+    background: transparent;
+    color: var(--text-secondary);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
     cursor: pointer;
-    transition: all var(--transition-base);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xs);
-    white-space: nowrap;
+    transition: var(--transition-base);
+    text-align: left;
 
-    &:hover {
-      color: var(--text-primary);
-      background: var(--surface-tertiary);
-    }
+    i { width: 20px; text-align: center; font-size: var(--font-size-base); }
+
+    &:hover { background: var(--surface-secondary); color: var(--text-primary); }
 
     &.active {
-      color: var(--primary-400);
-      background: var(--surface-primary);
-      box-shadow: var(--shadow-sm);
+      background: var(--primary-50);
+      color: var(--primary-700);
       font-weight: var(--font-weight-semibold);
+      i { color: var(--primary-600); }
     }
 
-    i { font-size: var(--font-size-xs); }
+    .nav-count {
+      margin-left: auto;
+      background: var(--primary-100);
+      color: var(--primary-700);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+    }
   }
+}
+
+// Content area — flatten inner cards
+.{entity}-content {
+  min-width: 0;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+
+  .info-section { background: none; box-shadow: none; padding: 0; border-radius: 0; }
+  .info-card { border: none; background: none; box-shadow: none; padding: 0; }
 }
 ```
 
 ### HTML
 
 ```html
-<div class="tabs-bar">
-  <div class="tabs-nav">
-    <button class="tab-button" [class.active]="activeTab() === 'info'" (click)="setActiveTab('info')">
-      <i class="fa-solid fa-user"></i> Información General
+<div class="{entity}-layout">
+  <nav class="{entity}-nav">
+    <button class="nav-item" [class.active]="activeTab() === 'info'" (click)="setActiveTab('info')">
+      <i class="fa-solid fa-info-circle"></i>
+      <span>Información</span>
     </button>
-    <button class="tab-button" [class.active]="activeTab() === 'medical'" (click)="setActiveTab('medical')">
-      <i class="fa-solid fa-heartbeat"></i> Historia Médica
+    <button class="nav-item" [class.active]="activeTab() === 'items'" (click)="setActiveTab('items')">
+      <i class="fa-solid fa-list"></i>
+      <span>Items</span>
+      @if (items().length > 0) {
+        <span class="nav-count">{{ items().length }}</span>
+      }
     </button>
-    <!-- más tabs -->
+  </nav>
+
+  <div class="{entity}-content">
+    @if (activeTab() === 'info') {
+      <!-- contenido del tab -->
+    }
+    @if (activeTab() === 'items') {
+      <!-- contenido del tab -->
+    }
   </div>
 </div>
+```
+
+### TypeScript
+
+```typescript
+// Tab navigation
+activeTab = signal<'info' | 'items'>('info');
+
+setActiveTab(tab: 'info' | 'items'): void {
+  this.activeTab.set(tab);
+}
+
+// Para tabs condicionales:
+visibleTabs = computed(() => {
+  const tabs: string[] = ['info'];
+  if (someCondition()) tabs.push('items');
+  return tabs;
+});
 ```
 
 ### Responsive (mobile)
 
 ```scss
 @media (max-width: 768px) {
-  .tabs-nav {
-    flex-direction: column;
-    .tab-button { justify-content: flex-start; }
+  .{entity}-layout { grid-template-columns: 1fr; }
+  .{entity}-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    .nav-item span { display: none; }  // solo iconos en mobile
   }
 }
 ```
 
 ---
 
-## Secciones Consolidadas
+## Secciones Consolidadas con info-group
 
-Cuando una sección tiene pocos campos relacionados (ej: Historia Médica, Datos Fiscales), **usar una sola `info-section` con `info-rows`** en lugar de múltiples secciones separadas.
+Usar **una sola `info-section`** con múltiples `info-group` sub-secciones en lugar de varias `info-section` separadas. Cada `info-group` tiene un subtítulo `h4` con icono.
 
-### ✅ Correcto — Una sola card con filas
+### ✅ Correcto — Una sección con info-groups
 
 ```html
 <div class="info-section">
-  <h3><i class="fa-solid fa-heartbeat"></i> Historia Médica</h3>
-  <div class="info-card">
-    <div class="info-row">
-      <span class="info-label">Tipo de Sangre:</span>
-      <span class="info-value">A+</span>
+  <div class="section-header">
+    <h3 class="section-header__title">
+      <i class="fa-solid fa-calendar-check"></i>
+      Información de la Cita
+    </h3>
+  </div>
+  <hr>
+
+  <div class="info-two-col">
+    <div class="info-group">
+      <h4 class="info-group__title">
+        <i class="fa-solid fa-clock"></i>
+        Programación
+      </h4>
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Fecha:</span>
+          <span class="info-value">21 de febrero de 2026</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Hora:</span>
+          <span class="info-value">10:00 - 10:30</span>
+        </div>
+      </div>
     </div>
-    <div class="info-row">
-      <span class="info-label">Alergias:</span>
-      <span class="info-value">Penicilina</span>
-    </div>
-    <div class="info-row">
-      <span class="info-label">Enfermedades Crónicas:</span>
-      <span class="info-value">Diabetes tipo 2</span>
+
+    <div class="info-group">
+      <h4 class="info-group__title">
+        <i class="fa-solid fa-users"></i>
+        Participantes
+      </h4>
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Paciente:</span>
+          <span class="info-value"><a class="link-primary">Juan Pérez</a></span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 ```
 
-### ❌ Incorrecto — Múltiples cards para campos simples
+### ❌ Incorrecto — Múltiples info-section separadas
 
 ```html
-<!-- NO HACER: una sección por cada campo -->
+<!-- NO HACER: secciones separadas para datos relacionados -->
 <div class="info-two-col">
   <div class="info-section">
-    <h3>Tipo de Sangre</h3>
-    <div class="blood-type-badge">A+</div>  <!-- clase custom innecesaria -->
+    <h3>Programación</h3>
+    <div class="info-card">...</div>
   </div>
   <div class="info-section">
-    <h3>Enfermedades Crónicas</h3>
+    <h3>Participantes</h3>
     <div class="info-card">...</div>
   </div>
 </div>
@@ -256,19 +338,21 @@ Cuando una sección tiene pocos campos relacionados (ej: Historia Médica, Datos
 
 ### Sección con Acción Inline
 
-Para secciones con un botón de edición (ej: Datos Fiscales):
+Para secciones con un botón de acción (ej: Consentimientos con "Solicitar"):
 
 ```html
 <div class="info-section">
-  <div class="section-header-with-action">
-    <h3><i class="fa-solid fa-file-invoice"></i> Datos Fiscales</h3>
-    <button class="btn btn-outline btn-sm" (click)="toggleEdit()">
-      <i class="fa-solid fa-pen"></i> Editar
+  <div class="section-header">
+    <h3 class="section-header__title">
+      <i class="fa-solid fa-file-signature"></i>
+      Consentimientos
+    </h3>
+    <button class="btn btn-outline btn-sm" (click)="addConsent()">
+      <i class="fa-solid fa-plus"></i> Solicitar
     </button>
   </div>
-  <div class="info-card">
-    <div class="info-row">...</div>
-  </div>
+  <hr>
+  <!-- contenido -->
 </div>
 ```
 
@@ -276,7 +360,24 @@ Para secciones con un botón de edición (ej: Datos Fiscales):
 
 ## Empty States
 
+### Lista/colección vacía → `.empty-items` (borde dashed)
+
+Para listas de items que están vacías (medicamentos, consentimientos, notas clínicas). Es el **patrón preferido** para empty states dentro de tabs.
+
+```html
+<div class="empty-items">
+  <i class="fa-solid fa-file-signature"></i>
+  <p>No hay consentimientos vinculados a esta cita</p>
+  <button class="btn btn-outline btn-sm" (click)="addConsent()">
+    <i class="fa-solid fa-plus"></i>
+    Solicitar primer consentimiento
+  </button>
+</div>
+```
+
 ### Tab completo vacío → `.empty-state`
+
+Para un tab sin ningún dato (menos común, usar solo si no hay `.empty-items` apropiado):
 
 ```html
 <div class="empty-state">
@@ -289,18 +390,9 @@ Para secciones con un botón de edición (ej: Datos Fiscales):
 </div>
 ```
 
-### Sección vacía dentro de tab → `.empty-state-sm`
-
-```html
-<div class="empty-state empty-state-sm">
-  <i class="fa-solid fa-folder-open"></i>
-  <h3>Sin Archivos</h3>
-  <p>Este paciente no tiene archivos adjuntos</p>
-  <button class="btn btn-primary">Subir Primer Archivo</button>
-</div>
-```
-
 ### Campo vacío inline dentro de info-card → `.info-empty`
+
+Para un dato faltante dentro de una card que ya tiene otros datos:
 
 ```html
 <div class="info-card">
@@ -310,6 +402,14 @@ Para secciones con un botón de edición (ej: Datos Fiscales):
   </div>
 </div>
 ```
+
+### Jerarquía de empty states
+
+| Contexto | Clase | Ejemplo |
+|----------|-------|---------|
+| Lista vacía dentro de tab (medicamentos, consentimientos) | `.empty-items` | Borde dashed, icono, texto, botón de acción |
+| Tab completamente vacío | `.empty-state` | Centrado full, icono grande, título, descripción |
+| Dato faltante dentro de card con otros datos | `.info-empty` | Inline, solo icono + texto |
 
 ---
 
@@ -422,7 +522,7 @@ El badge de estado va en el slot `[title-extra]` y los botones de acción en el 
 - Editar → `btn btn-outline` (neutro)
 - Desactivar → `btn btn-outline btn-danger` (destructivo, outline)
 - Activar → `btn btn-outline btn-success` (positivo, outline)
-- Acciones de estado (Confirmar, Completar) → dentro de `header-action-bar` en `detail-header`
+- Acciones de estado (Confirmar, Completar, Cancelar) → también en `[actions]` con variantes outline (`btn-success`, `btn-warning`, `btn-danger`)
 
 **Reglas de badge de estado:**
 - Badges van en `<div title-extra>`, **NUNCA** en `<div actions>`
@@ -438,17 +538,19 @@ El badge de estado va en el slot `[title-extra]` y los botones de acción en el 
 3. **Identificador de entidad** → en `[subtitle]` del `app-page-header` (no en `detail-header`)
 4. **No duplicar datos** — si un dato ya está en una sección, no repetirlo en el header
 5. **Badge de estado** → en el slot `[title-extra]` del `app-page-header`
-6. **Acciones de edición/desactivación** → en `app-page-header` `[actions]` con estilo outline
-7. **Acciones de estado (confirmar, completar)** → en `header-action-bar` dentro de `detail-header`
-8. **Usar `info-two-col` / `info-three-col`** para agrupar secciones relacionadas
-9. **Usar `status-banner`** para estados terminales (entre header y body)
-10. **Usar `alert-row`** para filas que requieren atención (errores, cancelaciones)
-11. **Consolidar campos simples** en una sola `info-section` con `info-rows` (no múltiples cards)
-12. **Tabs** para entidades con 3+ categorías de datos (copiar patrón segmented control)
-13. **Empty states**: `.empty-state` para tabs vacíos, `.empty-state-sm` para secciones, `.info-empty` para inline
-14. **SCSS del componente solo contiene overrides específicos** — NO redefinir clases globales
-15. **Usar siempre variables CSS** — nunca hard-codear colores, spacing o font-sizes
-16. **Responsive ya está resuelto globalmente** — no repetir media queries (excepto tabs)
+6. **Todas las acciones** → en `app-page-header` `[actions]` con estilo outline
+7. **Sidebar nav para tabs** → para entidades con 2+ categorías de datos
+8. **Una sola `info-section`** por tab con `info-group` sub-secciones (no múltiples `info-section`)
+9. **Section headers BEM** → `.section-header` > `.section-header__title` + `<hr>` (no `h3` suelto)
+10. **Info groups** → `h4.info-group__title` con icono para sub-secciones dentro de `info-section`
+11. **Usar `info-two-col`** para `info-group` en columnas dentro de la sección
+12. **Usar `status-banner`** para estados terminales (entre header y layout)
+13. **Usar `alert-row`** para filas que requieren atención (errores, cancelaciones)
+14. **Empty states**: `.empty-items` para listas vacías (dashed), `.empty-state` para tabs vacíos, `.info-empty` para inline
+15. **Content area flatten** → dentro de `{entity}-content`, resetear `info-section` y `info-card` (sin borde/fondo/shadow)
+16. **SCSS del componente** contiene layout grid + sidebar nav + content flatten + overrides específicos
+17. **Usar siempre variables CSS** — nunca hard-codear colores, spacing o font-sizes
+18. **Responsive** → media query solo para el layout grid y nav (ya está en el template SCSS)
 
 ---
 
@@ -460,9 +562,12 @@ Antes de dar por terminado un componente de detalle, verificar:
 - [ ] No usa colores hex/rgb directos — solo variables CSS (`--primary-500`, `--text-secondary`, etc.)
 - [ ] No usa spacing en px — solo variables (`--spacing-md`, `--spacing-lg`, etc.)
 - [ ] No usa font-sizes hard-coded — solo variables (`--font-size-sm`, `--font-size-xl`, etc.)
-- [ ] Usa `.empty-state` / `.empty-state-sm` para vacíos (no clases custom `.empty-*`)
-- [ ] Usa `.info-section` > `.info-card` > `.info-row` para datos (no custom cards)
-- [ ] Usa `.section-header-with-action` para headers con botón (no layout custom)
+- [ ] Usa `.empty-items` para listas vacías (no custom empty classes)
+- [ ] Usa `.info-section` > `.section-header` > `.section-header__title` + `<hr>` para títulos
+- [ ] Usa `.info-group` > `.info-group__title` para sub-secciones
+- [ ] Usa `.info-card` > `.info-row` para datos (no custom cards)
+- [ ] Content area hace flatten de `.info-section` y `.info-card` (sin borde/fondo)
+- [ ] Sidebar nav tiene responsive con iconos-only en mobile
 
 ---
 
@@ -470,5 +575,6 @@ Antes de dar por terminado un componente de detalle, verificar:
 
 - **Design system global:** `src/styles/_components.scss` (sección DETAIL PAGE COMPONENTS)
 - **Variables CSS:** `src/styles/_variables.scss`
-- **Implementación simple (sin tabs):** `src/app/features/appointments/components/appointment-detail/`
-- **Implementación con tabs:** `src/app/features/patients/components/patient-detail/`
+- **Sidebar nav (2-3 tabs):** `src/app/features/appointments/components/appointment-detail/`
+- **Sidebar nav (2 tabs):** `src/app/features/prescriptions/components/prescription-detail/`
+- **Sidebar nav grande (7+ tabs):** `src/app/features/patients/components/patient-detail/`

@@ -54,6 +54,11 @@
             </div>
             <hr>
 
+            <div class="alert alert-warning" style="margin-bottom: 1rem;">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <span>Los datos fiscales (Razón Social, RFC, Domicilio Fiscal y C.P.) se utilizan en la emisión de CFDI. Asegúrate de que coincidan con tu Constancia de Situación Fiscal vigente.</span>
+            </div>
+
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Nombre del Consultorio <span class="required">*</span></label>
@@ -86,17 +91,32 @@
                 />
               </div>
               <div class="form-group form-group--full">
-                <label class="form-label">Domicilio</label>
+                <label class="form-label">Domicilio Fiscal</label>
                 <input
                   type="text"
                   class="form-input"
-                  placeholder="Calle, Número, Colonia, Ciudad, Estado, C.P."
+                  placeholder="Calle, Número, Colonia, Ciudad, Estado"
                   [ngModel]="generalAddress()"
                   (ngModelChange)="generalAddress.set($event)"
                 />
                 <span class="field-hint">
                   <i class="fa-solid fa-circle-info"></i>
-                  Aparecerá en recetas médicas, facturas y documentos impresos
+                  Domicilio registrado en tu Constancia de Situación Fiscal
+                </span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">C.P. Fiscal</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Ej: 64000"
+                  maxlength="5"
+                  [ngModel]="generalPostalCode()"
+                  (ngModelChange)="generalPostalCode.set($event)"
+                />
+                <span class="field-hint">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Código postal de tu Constancia de Situación Fiscal. Se usará como Lugar de Expedición en CFDI.
                 </span>
               </div>
               <div class="form-group">

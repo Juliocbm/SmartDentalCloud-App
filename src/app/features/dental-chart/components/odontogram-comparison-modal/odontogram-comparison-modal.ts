@@ -5,6 +5,7 @@ import { ModalComponentBase, ModalRef, ModalConfig } from '../../../../shared/se
 import { OdontogramEvaluationService } from '../../services/odontogram-evaluation.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 import {
   OdontogramComparison,
   OdontogramListItem
@@ -89,10 +90,7 @@ export class OdontogramComparisonModalComponent implements ModalComponentBase<Od
   }
 
   formatDate(date: string | null): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   getTrendIcon(trend: string): string {

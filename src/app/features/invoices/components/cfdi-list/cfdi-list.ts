@@ -8,6 +8,7 @@ import { Cfdi, CFDI_STATUS_CONFIG } from '../../models/cfdi.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-cfdi-list',
@@ -96,10 +97,7 @@ export class CfdiListComponent implements OnInit {
   }
 
   formatDate(date: Date | string): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   onDownloadXml(cfdi: Cfdi): void {

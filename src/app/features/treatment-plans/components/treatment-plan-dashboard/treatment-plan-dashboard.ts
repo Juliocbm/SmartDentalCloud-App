@@ -10,6 +10,7 @@ import {
 } from '../../models/treatment-plan.models';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-treatment-plan-dashboard',
@@ -102,8 +103,6 @@ export class TreatmentPlanDashboardComponent implements OnInit {
   }
 
   formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: 'numeric', month: 'short', year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.mediumDate(date);
   }
 }

@@ -1,0 +1,23 @@
+<div class="feature-locked">
+  <div class="feature-locked__card">
+    <div class="feature-locked__icon">
+      <i class="fa-solid fa-lock"></i>
+    </div>
+
+    <h3 class="feature-locked__title">Función no disponible en tu plan</h3>
+    <p class="feature-locked__message">
+      <strong>{{ featureLabel }}</strong> requiere el plan
+      <strong>{{ minimumPlan }}</strong> o superior.
+      Tu plan actual es <strong>{{ currentPlan }}</strong>.
+    </p>
+
+    <div class="feature-locked__info">
+      <i class="fa-solid fa-arrow-up-right-dots"></i>
+      <span>Mejora tu plan para desbloquear esta y más funcionalidades avanzadas.</span>
+    </div>
+
+    <button class="btn btn-primary" (click)="goToSubscription()">
+      <i class="fa-solid fa-crown"></i> Mejorar Plan
+    </button>
+  </div>
+</div>

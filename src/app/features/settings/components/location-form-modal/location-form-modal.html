@@ -31,6 +31,32 @@
 
   <div class="form-row-2">
     <div class="form-group">
+      <label class="form-label">C.P.</label>
+      <input
+        type="text"
+        class="form-input"
+        placeholder="Ej: 64000"
+        maxlength="5"
+        [ngModel]="formPostalCode()"
+        (ngModelChange)="formPostalCode.set($event)"
+      />
+    </div>
+    <div class="form-group">
+      <label class="form-label">&nbsp;</label>
+      <label class="toggle-label">
+        <input
+          type="checkbox"
+          [ngModel]="formIsFiscalEstablishment()"
+          (ngModelChange)="formIsFiscalEstablishment.set($event)"
+        />
+        <span class="toggle-text">Establecimiento registrado ante el SAT</span>
+      </label>
+      <span class="form-hint">Marca esta casilla si la sucursal está dada de alta ante el SAT. El C.P. se usará como Lugar de Expedición en CFDI.</span>
+    </div>
+  </div>
+
+  <div class="form-row-2">
+    <div class="form-group">
       <label class="form-label">Teléfono</label>
       <input
         type="tel"
@@ -51,6 +77,7 @@
       />
     </div>
   </div>
+  <span class="form-hint">La dirección, teléfono y email aparecerán en recetas, planes de tratamiento y documentos clínicos.</span>
 
   <div class="form-row-2">
     <div class="form-group">

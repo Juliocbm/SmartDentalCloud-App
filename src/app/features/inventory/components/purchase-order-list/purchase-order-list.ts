@@ -10,6 +10,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { PurchaseOrder, PurchaseOrderStatus, PURCHASE_ORDER_STATUS_LABELS } from '../../models/purchase-order.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -145,10 +146,6 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    }).format(new Date(date));
+    return DateFormatService.mediumDate(date);
   }
 }

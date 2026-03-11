@@ -15,6 +15,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 @Component({
   selector: 'app-prescription-list',
@@ -175,12 +176,7 @@ export class PrescriptionListComponent implements OnInit {
   }
 
   formatDate(date: Date | string): string {
-    if (!date) return '—';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.shortDate(date);
   }
 
   getMedicationsSummary(prescription: Prescription): string {

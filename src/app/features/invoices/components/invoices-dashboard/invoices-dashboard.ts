@@ -9,6 +9,7 @@ import { Invoice, InvoiceStatus, INVOICE_STATUS_CONFIG } from '../../models/invo
 import { LoggingService } from '../../../../core/services/logging.service';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { DateFormatService } from '../../../../core/services/date-format.service';
 
 interface AgingBucket {
   label: string;
@@ -141,11 +142,7 @@ export class InvoicesDashboardComponent implements OnInit {
   }
 
   formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('es-MX', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    }).format(new Date(date));
+    return DateFormatService.mediumDate(date);
   }
 
   private getDefaultDateRange(): DateRange {

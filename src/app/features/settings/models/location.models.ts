@@ -7,6 +7,8 @@ export interface Location {
   id: string;
   name: string;
   address: string;
+  postalCode: string | null;
+  isFiscalEstablishment: boolean;
   phone: string | null;
   email: string | null;
   isActive: boolean;
@@ -33,6 +35,8 @@ export interface LocationUser {
 export interface CreateLocationRequest {
   name: string;
   address: string;
+  postalCode?: string | null;
+  isFiscalEstablishment: boolean;
   phone?: string | null;
   email?: string | null;
   isDefault: boolean;
@@ -44,6 +48,8 @@ export interface UpdateLocationRequest {
   id: string;
   name: string;
   address: string;
+  postalCode?: string | null;
+  isFiscalEstablishment: boolean;
   phone?: string | null;
   email?: string | null;
   isDefault: boolean;

@@ -178,6 +178,19 @@
       color: var(--success-600);
     }
   }
+
+  /// Variante de upgrade (feature gating)
+  &.upgrade {
+    color: var(--text-tertiary);
+
+    i {
+      color: var(--primary-500);
+    }
+
+    p {
+      font-size: var(--font-size-sm);
+    }
+  }
 }
 
 // ===== Loading States =====

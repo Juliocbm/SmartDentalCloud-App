@@ -23,8 +23,7 @@
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md);
-  position: sticky;
-  top: var(--spacing-2xl);
+  align-self: stretch;
 
   .nav-item {
     display: flex;
@@ -65,7 +64,14 @@
 
 // ===== Content =====
 
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .settings-section {
+  flex: 1;
   background: var(--surface-primary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);

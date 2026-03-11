@@ -13,6 +13,9 @@ import { LocationsService } from '../../../settings/services/locations.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { DateFormatService } from '../../../../core/services/date-format.service';
+import { SettingsService } from '../../../settings/services/settings.service';
+import { DaySchedule } from '../../../settings/models/work-schedule.models';
 
 @Component({
   selector: 'app-appointment-list',
@@ -28,6 +31,7 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   locationsService = inject(LocationsService);
   permissionService = inject(PermissionService);
+  private settingsService = inject(SettingsService);
   PERMISSIONS = PERMISSIONS;
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -38,6 +42,7 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
   appointments = signal<AppointmentListItem[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
+  private workScheduleDays = signal<DaySchedule[]>([]);
   
   startDate = signal(this.formatDate(new Date()));
   endDate = signal(this.formatDate(this.addDays(new Date(), 7)));
@@ -76,6 +81,7 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadAppointments();
+    this.loadWorkSchedule();
     
     // Setup debounce for search with 300ms delay
     this.searchSubject.pipe(
@@ -167,6 +173,34 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
     });
   }
 
+  private loadWorkSchedule(): void {
+    this.settingsService.getWorkSchedule().subscribe({
+      next: (schedule) => this.workScheduleDays.set(schedule.days),
+      error: () => {} // Silent — use empty (no indicators shown)
+    });
+  }
+
+  isOutsideWorkSchedule(appointment: AppointmentListItem): boolean {
+    const days = this.workScheduleDays();
+    if (days.length === 0) return false;
+
+    const start = new Date(appointment.startAt);
+    if (isNaN(start.getTime())) return false;
+
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = dayNames[start.getDay()];
+
+    const daySchedule = days.find(d => d.dayOfWeek === dayName);
+    if (!daySchedule) return false;
+    if (!daySchedule.isOpen) return true;
+
+    const hours = String(start.getHours()).padStart(2, '0');
+    const minutes = String(start.getMinutes()).padStart(2, '0');
+    const timeStr = `${hours}:${minutes}`;
+
+    return timeStr < daySchedule.startTime! || timeStr >= daySchedule.endTime!;
+  }
+
   private addDays(date: Date, days: number): Date {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -174,10 +208,7 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
   }
 
   private formatDate(date: Date): string {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+    return DateFormatService.dateForApi(date);
   }
 
   getStatusConfig(status: AppointmentStatus) {

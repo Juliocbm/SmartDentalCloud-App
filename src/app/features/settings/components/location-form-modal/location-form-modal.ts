@@ -50,6 +50,8 @@ export class LocationFormModalComponent implements OnInit {
   // Form fields
   formName = signal('');
   formAddress = signal('');
+  formPostalCode = signal('');
+  formIsFiscalEstablishment = signal(false);
   formPhone = signal('');
   formEmail = signal('');
   formIsDefault = signal(false);
@@ -81,6 +83,8 @@ export class LocationFormModalComponent implements OnInit {
     if (loc) {
       this.formName.set(loc.name);
       this.formAddress.set(loc.address);
+      this.formPostalCode.set(loc.postalCode || '');
+      this.formIsFiscalEstablishment.set(loc.isFiscalEstablishment);
       this.formPhone.set(loc.phone || '');
       this.formEmail.set(loc.email || '');
       this.formIsDefault.set(loc.isDefault);
@@ -130,6 +134,8 @@ export class LocationFormModalComponent implements OnInit {
         id: this.modalData.location!.id,
         name: this.formName().trim(),
         address: this.formAddress().trim(),
+        postalCode: this.formPostalCode().trim() || null,
+        isFiscalEstablishment: this.formIsFiscalEstablishment(),
         phone: this.formPhone().trim() || null,
         email: this.formEmail().trim() || null,
         isDefault: this.formIsDefault(),
@@ -150,6 +156,8 @@ export class LocationFormModalComponent implements OnInit {
       const data: CreateLocationRequest = {
         name: this.formName().trim(),
         address: this.formAddress().trim(),
+        postalCode: this.formPostalCode().trim() || null,
+        isFiscalEstablishment: this.formIsFiscalEstablishment(),
         phone: this.formPhone().trim() || null,
         email: this.formEmail().trim() || null,
         isDefault: this.formIsDefault(),

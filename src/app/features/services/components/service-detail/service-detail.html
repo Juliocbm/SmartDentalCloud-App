@@ -55,84 +55,96 @@
 
   @if (!loading() && !error() && service(); as svc) {
     <div class="detail-body">
-
-      <!-- Row 1: Info General + Clínica -->
-      <div class="info-two-col">
-        <!-- Información General -->
-        <div class="info-section">
-          <h3><i class="fa-solid fa-info-circle"></i> Información General</h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Precio:</span>
-              <span class="info-value price-value">{{ formatCurrency(svc.cost) }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Duración:</span>
-              <span class="info-value">{{ svc.durationMinutes ? svc.durationMinutes + ' min' : '—' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Categoría:</span>
-              <span class="info-value">{{ getCategoryLabel(svc.category) }}</span>
-            </div>
-            @if (svc.description) {
-              <div class="info-row">
-                <span class="info-label">Descripción:</span>
-                <span class="info-value">{{ svc.description }}</span>
-              </div>
-            }
-            @if (svc.claveProdServ) {
-              <div class="info-row">
-                <span class="info-label">Clave Prod/Serv SAT:</span>
-                <span class="info-value mono-value">{{ svc.claveProdServ }}</span>
-              </div>
-            }
-            @if (svc.claveUnidad) {
-              <div class="info-row">
-                <span class="info-label">Clave Unidad SAT:</span>
-                <span class="info-value mono-value">{{ svc.claveUnidad }}</span>
-              </div>
-            }
-          </div>
+      <div class="info-section">
+        <div class="section-header">
+          <h3 class="section-header__title">
+            <i class="fa-solid fa-briefcase-medical"></i>
+            Información del Servicio
+          </h3>
         </div>
+        <hr>
 
-        <!-- Información Clínica -->
-        <div class="info-section">
-          <h3><i class="fa-solid fa-stethoscope"></i> Información Clínica</h3>
-          <div class="info-card">
-            <div class="info-row">
-              <span class="info-label">Seguimiento:</span>
-              <span class="info-value">
-                @if (svc.requiresFollowUp) {
-                  <span class="badge badge-info">Sí — {{ svc.followUpDays }} días</span>
-                } @else {
-                  <span class="badge badge-neutral">No</span>
-                }
-              </span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Anestesia:</span>
-              <span class="info-value">
-                <span class="badge" [ngClass]="svc.requiresAnesthesia ? 'badge-warning' : 'badge-neutral'">
-                  {{ svc.requiresAnesthesia ? 'Sí' : 'No' }}
-                </span>
-              </span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Multi-Sesión:</span>
-              <span class="info-value">
-                @if (svc.isMultiSession) {
-                  <span class="badge badge-info">Sí — {{ svc.estimatedSessions }} sesiones</span>
-                } @else {
-                  <span class="badge badge-neutral">No</span>
-                }
-              </span>
-            </div>
-            @if (svc.notes) {
+        <div class="info-two-col">
+          <div class="info-group">
+            <h4 class="info-group__title">
+              <i class="fa-solid fa-info-circle"></i>
+              Información General
+            </h4>
+            <div class="info-card">
               <div class="info-row">
-                <span class="info-label">Notas:</span>
-                <span class="info-value">{{ svc.notes }}</span>
+                <span class="info-label">Precio:</span>
+                <span class="info-value price-value">{{ formatCurrency(svc.cost) }}</span>
               </div>
-            }
+              <div class="info-row">
+                <span class="info-label">Duración:</span>
+                <span class="info-value">{{ svc.durationMinutes ? svc.durationMinutes + ' min' : '—' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Categoría:</span>
+                <span class="info-value">{{ getCategoryLabel(svc.category) }}</span>
+              </div>
+              @if (svc.description) {
+                <div class="info-row">
+                  <span class="info-label">Descripción:</span>
+                  <span class="info-value">{{ svc.description }}</span>
+                </div>
+              }
+              @if (svc.claveProdServ) {
+                <div class="info-row">
+                  <span class="info-label">Clave Prod/Serv SAT:</span>
+                  <span class="info-value mono-value">{{ svc.claveProdServ }}</span>
+                </div>
+              }
+              @if (svc.claveUnidad) {
+                <div class="info-row">
+                  <span class="info-label">Clave Unidad SAT:</span>
+                  <span class="info-value mono-value">{{ svc.claveUnidad }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="info-group">
+            <h4 class="info-group__title">
+              <i class="fa-solid fa-stethoscope"></i>
+              Información Clínica
+            </h4>
+            <div class="info-card">
+              <div class="info-row">
+                <span class="info-label">Seguimiento:</span>
+                <span class="info-value">
+                  @if (svc.requiresFollowUp) {
+                    <span class="badge badge-info">Sí — {{ svc.followUpDays }} días</span>
+                  } @else {
+                    <span class="badge badge-neutral">No</span>
+                  }
+                </span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Anestesia:</span>
+                <span class="info-value">
+                  <span class="badge" [ngClass]="svc.requiresAnesthesia ? 'badge-warning' : 'badge-neutral'">
+                    {{ svc.requiresAnesthesia ? 'Sí' : 'No' }}
+                  </span>
+                </span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Multi-Sesión:</span>
+                <span class="info-value">
+                  @if (svc.isMultiSession) {
+                    <span class="badge badge-info">Sí — {{ svc.estimatedSessions }} sesiones</span>
+                  } @else {
+                    <span class="badge badge-neutral">No</span>
+                  }
+                </span>
+              </div>
+              @if (svc.notes) {
+                <div class="info-row">
+                  <span class="info-label">Notas:</span>
+                  <span class="info-value">{{ svc.notes }}</span>
+                </div>
+              }
+            </div>
           </div>
         </div>
       </div>

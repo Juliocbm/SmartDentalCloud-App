@@ -1,0 +1,47 @@
+.upgrade-modal-content {
+  text-align: center;
+  padding: var(--spacing-md) 0;
+}
+
+.upgrade-modal__feature-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.upgrade-modal__message {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.upgrade-modal__info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-lg);
+  text-align: left;
+
+  i {
+    color: var(--primary-500);
+    font-size: var(--font-size-base);
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: var(--font-size-xs);
+    color: var(--primary-700);
+  }
+}
+
+.upgrade-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  width: 100%;
+}
