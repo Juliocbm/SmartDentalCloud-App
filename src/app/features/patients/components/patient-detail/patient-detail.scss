@@ -1195,3 +1195,15 @@
     margin-left: var(--spacing-sm);
   }
 }
+
+// ===== WhatsApp Button =====
+
+.btn-whatsapp {
+  border-color: #25d366 !important;
+  color: #25d366 !important;
+
+  &:hover {
+    background: #25d366 !important;
+    color: #fff !important;
+  }
+}

@@ -90,19 +90,64 @@ export interface CfdiSatStatus {
   estatusCancelacion: string;
 }
 
-export interface PacConfiguration {
-  pacProvider: string;
-  pacUsername?: string;
-  pacPassword?: string;
-  pacApiUrl?: string;
-  environment: string;
-  configured?: boolean;
-}
-
 export interface SendCfdiEmailRequest {
   email: string;
   includeXml?: boolean;
   includePdf?: boolean;
+}
+
+export interface CatalogoSatItem {
+  clave: string;
+  descripcion: string;
+}
+
+export interface CatalogosSat {
+  usoCfdi: CatalogoSatItem[];
+  formaPago: CatalogoSatItem[];
+  metodoPago: CatalogoSatItem[];
+  regimenFiscal: CatalogoSatItem[];
+  claveProdServ: CatalogoSatItem[];
+  claveUnidad: CatalogoSatItem[];
+  motivoCancelacion: CatalogoSatItem[];
+}
+
+// ===== CSD (Certificado de Sello Digital) =====
+
+export interface CsdCertificate {
+  id: string;
+  tenantId: string;
+  noCertificado: string;
+  rfcEmisor: string;
+  fechaInicio: Date;
+  fechaFin: Date;
+  isActive: boolean;
+  isExpired: boolean;
+  isNotYetValid: boolean;
+  daysUntilExpiration: number;
+  createdAt: Date;
+  revokedAt?: Date;
+  revokedReason?: string;
+}
+
+export interface CsdValidationResult {
+  isValid: boolean;
+  errorMessage?: string;
+  metadata?: CsdCertificateMetadata;
+}
+
+export interface CsdCertificateMetadata {
+  noCertificado: string;
+  rfcEmisor: string;
+  nombreEmisor: string;
+  fechaInicio: Date;
+  fechaFin: Date;
+  isExpired: boolean;
+}
+
+export interface CsdStatus {
+  hasCsd: boolean;
+  certificate?: CsdCertificate;
+  warnings: string[];
 }
 
 export const MOTIVO_CANCELACION_OPTIONS = [

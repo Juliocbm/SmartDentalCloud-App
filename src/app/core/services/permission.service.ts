@@ -166,6 +166,10 @@ export const PERMISSIONS = {
   // Auditoría
   AuditLogsView: 'audit_logs.view',
 
+  // Mensajería WhatsApp
+  MessagingSend: 'messaging.send',
+  MessagingView: 'messaging.view',
+
   // Suscripciones
   SubscriptionsView: 'subscriptions.view',
   SubscriptionsManage: 'subscriptions.manage',

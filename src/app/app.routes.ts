@@ -146,6 +146,11 @@ export const routes: Routes = [
         title: 'Notificaciones'
       },
       {
+        path: 'messaging',
+        canActivate: [permissionGuard(PERMISSIONS.MessagingView)],
+        loadChildren: () => import('./features/messaging/messaging.routes').then(m => m.MESSAGING_ROUTES)
+      },
+      {
         path: 'audit-log',
         canActivate: [featureGuard('AuditLog')],
         loadComponent: () => import('./features/audit-log/components/audit-log-list/audit-log-list').then(m => m.AuditLogListComponent),

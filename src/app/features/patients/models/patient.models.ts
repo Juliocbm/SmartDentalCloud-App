@@ -34,6 +34,11 @@ export interface Patient {
   taxId: string | null;
   legalName: string | null;
   fiscalAddress: string | null;
+  regimenFiscal: string | null;
+  postalCode: string | null;
+
+  // Preferencias de comunicación
+  whatsAppOptIn: boolean;
 
   // Control
   isActive: boolean;
@@ -93,6 +98,8 @@ export interface UpdateTaxInfoRequest {
   taxId: string;
   legalName: string;
   fiscalAddress: string;
+  regimenFiscal?: string;
+  postalCode?: string;
 }
 
 export interface PatientSearchFilters {

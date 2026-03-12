@@ -10,8 +10,11 @@ import {
   CancelarCfdiRequest,
   CancelarCfdiResult,
   CfdiSatStatus,
-  PacConfiguration,
-  SendCfdiEmailRequest
+  SendCfdiEmailRequest,
+  CatalogosSat,
+  CsdCertificate,
+  CsdValidationResult,
+  CsdStatus
 } from '../models/cfdi.models';
 
 @Injectable({ providedIn: 'root' })
@@ -54,16 +57,8 @@ export class CfdiService {
     return this.api.get<CfdiSatStatus>(`/cfdi/${cfdiId}/status-sat`);
   }
 
-  testConnection(): Observable<{ pacConnected: boolean; message: string }> {
-    return this.api.get<{ pacConnected: boolean; message: string }>('/cfdi/test-connection');
-  }
-
-  getConfiguration(): Observable<PacConfiguration> {
-    return this.api.get<PacConfiguration>('/cfdi/configuration');
-  }
-
-  updateConfiguration(config: PacConfiguration): Observable<{ message: string }> {
-    return this.api.put<{ message: string }>('/cfdi/configuration', config);
+  getCatalogos(): Observable<CatalogosSat> {
+    return this.api.get<CatalogosSat>('/cfdi/catalogos');
   }
 
   getAll(params?: { patientId?: string; estado?: string }): Observable<Cfdi[]> {
@@ -71,5 +66,37 @@ export class CfdiService {
     if (params?.patientId) queryParams['patientId'] = params.patientId;
     if (params?.estado) queryParams['estado'] = params.estado;
     return this.api.get<Cfdi[]>('/cfdi', queryParams);
+  }
+
+  // ===== CSD (Certificado de Sello Digital) =====
+
+  uploadCsd(cerFile: File, keyFile: File, keyPassword: string): Observable<CsdCertificate> {
+    const formData = new FormData();
+    formData.append('cerFile', cerFile);
+    formData.append('keyFile', keyFile);
+    formData.append('keyPassword', keyPassword);
+    return this.api.postFormData<CsdCertificate>('/csd/upload', formData);
+  }
+
+  getActiveCsd(): Observable<CsdCertificate> {
+    return this.api.get<CsdCertificate>('/csd/active');
+  }
+
+  validateCsd(cerFile: File, keyFile: File, keyPassword: string): Observable<CsdValidationResult> {
+    const formData = new FormData();
+    formData.append('cerFile', cerFile);
+    formData.append('keyFile', keyFile);
+    formData.append('keyPassword', keyPassword);
+    return this.api.postFormData<CsdValidationResult>('/csd/validate', formData);
+  }
+
+  revokeCsd(id: string, reason?: string): Observable<void> {
+    const params: QueryParams = {};
+    if (reason) params['reason'] = reason;
+    return this.api.delete<void>(`/csd/${id}`, params);
+  }
+
+  getCsdStatus(): Observable<CsdStatus> {
+    return this.api.get<CsdStatus>('/csd/status');
   }
 }

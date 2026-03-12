@@ -188,6 +188,7 @@ export class SidebarComponent implements OnInit {
         { id: 'settings-subscription', icon: 'fa-solid fa-crown', label: 'Suscripción', route: '/subscription' }
       ]
     },
+    { id: 'messaging', icon: 'fa-brands fa-whatsapp', label: 'Mensajería', route: '/messaging', requiredPermission: PERMISSIONS.MessagingView },
     { id: 'audit-log', icon: 'fa-solid fa-shield-halved', label: 'Auditoría', route: '/audit-log', requiredPermission: PERMISSIONS.SettingsView, requiredFeature: 'AuditLog' },
   ]);
 

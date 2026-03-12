@@ -64,6 +64,7 @@ import { FileUploadModalComponent, FileUploadModalData } from '../file-upload-mo
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { FeatureService, PlanFeature } from '../../../../core/services/feature.service';
 import { FeatureUpgradeModalComponent, FeatureUpgradeModalData } from '../../../../shared/components/feature-upgrade-modal/feature-upgrade-modal';
+import { SendWhatsAppModalComponent, SendWhatsAppModalData } from '../../../messaging/components/send-whatsapp-modal/send-whatsapp-modal';
 
 @Component({
   selector: 'app-patient-detail',
@@ -219,6 +220,8 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   taxId = signal('');
   legalName = signal('');
   fiscalAddress = signal('');
+  regimenFiscal = signal('');
+  postalCodeFiscal = signal('');
   savingTax = signal(false);
   editingTax = signal(false);
 
@@ -880,6 +883,23 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  openSendWhatsAppModal(): void {
+    const pat = this.patient();
+    if (!pat || !pat.phoneNumber) return;
+
+    const ref = this.modalService.open<SendWhatsAppModalData, boolean>(
+      SendWhatsAppModalComponent,
+      {
+        data: {
+          patientId: pat.id,
+          patientName: `${pat.firstName} ${pat.lastName}`.trim(),
+          phoneNumber: pat.phoneNumber
+        }
+      }
+    );
+    ref.afterClosed().subscribe(() => {});
+  }
+
   editPatient(): void {
     const patient = this.patient();
     if (patient) {
@@ -967,6 +987,8 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     this.taxId.set(pat.taxId || '');
     this.legalName.set(pat.legalName || '');
     this.fiscalAddress.set(pat.fiscalAddress || '');
+    this.regimenFiscal.set(pat.regimenFiscal || '');
+    this.postalCodeFiscal.set(pat.postalCode || '');
   }
 
   toggleEditTax(): void {
@@ -983,7 +1005,9 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
       patientId: pat.id,
       taxId: this.taxId().trim(),
       legalName: this.legalName().trim(),
-      fiscalAddress: this.fiscalAddress().trim()
+      fiscalAddress: this.fiscalAddress().trim(),
+      regimenFiscal: this.regimenFiscal().trim() || undefined,
+      postalCode: this.postalCodeFiscal().trim() || undefined
     };
 
     this.patientsService.updateTaxInfo(pat.id, data).subscribe({

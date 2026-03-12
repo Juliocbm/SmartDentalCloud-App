@@ -32,12 +32,24 @@ export class ApiService {
     return this.http.put<T>(`${this.apiUrl}${endpoint}`, body);
   }
 
-  delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.apiUrl}${endpoint}`);
+  delete<T>(endpoint: string, params?: QueryParams): Observable<T> {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.keys(params).forEach(key => {
+        if (params[key] != null) {
+          httpParams = httpParams.set(key, String(params[key]));
+        }
+      });
+    }
+    return this.http.delete<T>(`${this.apiUrl}${endpoint}`, { params: httpParams });
   }
 
   patch<T>(endpoint: string, body: unknown): Observable<T> {
     return this.http.patch<T>(`${this.apiUrl}${endpoint}`, body);
+  }
+
+  postFormData<T>(endpoint: string, formData: FormData): Observable<T> {
+    return this.http.post<T>(`${this.apiUrl}${endpoint}`, formData);
   }
 
   getBlob(endpoint: string): Observable<Blob> {

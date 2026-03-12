@@ -332,7 +332,7 @@ export class InvoiceDetailComponent implements OnInit {
   canGenerateCfdi(): boolean {
     const inv = this.invoice();
     const cfdi = this.cfdi();
-    return !!inv && inv.status !== InvoiceStatus.Cancelled && !cfdi;
+    return !!inv && inv.status === InvoiceStatus.Paid && !cfdi;
   }
 
   canTimbrarCfdi(): boolean {

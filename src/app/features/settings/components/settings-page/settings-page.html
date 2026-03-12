@@ -120,6 +120,29 @@
                 </span>
               </div>
               <div class="form-group">
+                <label class="form-label">Régimen Fiscal</label>
+                <select
+                  class="form-input"
+                  [ngModel]="generalRegimenFiscal()"
+                  (ngModelChange)="generalRegimenFiscal.set($event)"
+                >
+                  <option value="">Seleccionar...</option>
+                  <option value="601">601 - General de Ley Personas Morales</option>
+                  <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
+                  <option value="605">605 - Sueldos y Salarios</option>
+                  <option value="606">606 - Arrendamiento</option>
+                  <option value="608">608 - Demás ingresos</option>
+                  <option value="612">612 - Personas Físicas con Actividades Empresariales</option>
+                  <option value="616">616 - Sin obligaciones fiscales</option>
+                  <option value="625">625 - Plataformas Tecnológicas</option>
+                  <option value="626">626 - Régimen Simplificado de Confianza</option>
+                </select>
+                <span class="field-hint">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Régimen fiscal de tu Constancia de Situación Fiscal. Requerido para emitir CFDI.
+                </span>
+              </div>
+              <div class="form-group">
                 <label class="form-label">Teléfono</label>
                 <input
                   type="tel"
@@ -213,6 +236,183 @@
         @if (activeTab() === 'consent-templates') {
           <div class="settings-section">
             <app-consent-template-list />
+          </div>
+        }
+
+        <!-- Facturación Tab -->
+        @if (activeTab() === 'facturacion') {
+          <div class="settings-section">
+
+            <!-- CSD Section -->
+            <div class="section-header">
+              <div class="section-header__info">
+                <h3 class="section-header__title">
+                  <i class="fa-solid fa-certificate"></i>
+                  Certificado de Sello Digital (CSD)
+                </h3>
+                <p class="section-header__description">Sube tu certificado (.cer) y llave privada (.key) emitidos por el SAT para firmar CFDI</p>
+              </div>
+            </div>
+            <hr>
+
+            @if (csdLoading()) {
+              <div class="loading-inline">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Cargando estado del CSD...
+              </div>
+            } @else {
+
+              <!-- CSD Active Status -->
+              @if (csdStatus()?.hasCsd) {
+                @if (csdStatus()?.certificate; as cert) {
+                  <div class="csd-status-card" [class.csd-expired]="cert.isExpired" [class.csd-warning]="!cert.isExpired && cert.daysUntilExpiration <= 30">
+                    <div class="csd-status-indicator">
+                      @if (cert.isExpired) {
+                        <i class="fa-solid fa-circle-xmark"></i>
+                        <span>Expirado</span>
+                      } @else if (cert.daysUntilExpiration <= 30) {
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Por expirar</span>
+                      } @else {
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Activo</span>
+                      }
+                    </div>
+                    <div class="csd-details">
+                      <div class="csd-detail-row">
+                        <span class="csd-label">No. Certificado</span>
+                        <span class="csd-value mono">{{ cert.noCertificado }}</span>
+                      </div>
+                      <div class="csd-detail-row">
+                        <span class="csd-label">RFC</span>
+                        <span class="csd-value mono">{{ cert.rfcEmisor }}</span>
+                      </div>
+                      <div class="csd-detail-row">
+                        <span class="csd-label">Vigencia</span>
+                        <span class="csd-value">{{ cert.fechaInicio | date:'dd/MM/yyyy' }} — {{ cert.fechaFin | date:'dd/MM/yyyy' }}</span>
+                      </div>
+                      @if (!cert.isExpired) {
+                        <div class="csd-detail-row">
+                          <span class="csd-label">Expira en</span>
+                          <span class="csd-value" [class.text-warning]="cert.daysUntilExpiration <= 30">{{ cert.daysUntilExpiration }} días</span>
+                        </div>
+                      }
+                    </div>
+                    <div class="csd-actions">
+                      <button class="btn btn-outline btn-sm btn-danger" (click)="revokeCsd()">
+                        <i class="fa-solid fa-ban"></i>
+                        Revocar
+                      </button>
+                    </div>
+                  </div>
+                }
+
+                @if (csdStatus()?.warnings?.length) {
+                  @for (warning of csdStatus()!.warnings; track warning) {
+                    <div class="alert alert-warning">
+                      <i class="fa-solid fa-triangle-exclamation"></i>
+                      {{ warning }}
+                    </div>
+                  }
+                }
+              } @else {
+                <div class="csd-empty-state">
+                  <i class="fa-solid fa-shield-halved"></i>
+                  <p>No hay certificado CSD configurado</p>
+                  <span>Sube tu certificado para poder firmar y timbrar CFDI</span>
+                </div>
+              }
+
+              <!-- CSD Upload Form -->
+              <div class="csd-upload-section">
+                <h4 class="subsection-title">
+                  <i class="fa-solid fa-upload"></i>
+                  {{ csdStatus()?.hasCsd ? 'Reemplazar Certificado' : 'Cargar Certificado' }}
+                </h4>
+
+                <div class="csd-upload-grid">
+                  <div class="form-group">
+                    <label class="form-label">Archivo .cer <span class="required">*</span></label>
+                    <div class="file-input-wrapper">
+                      <input
+                        type="file"
+                        accept=".cer"
+                        (change)="onCerFileSelected($event)"
+                        #cerInput
+                      />
+                      <button class="btn btn-outline btn-sm file-btn" (click)="cerInput.click()">
+                        <i class="fa-solid fa-file-certificate"></i>
+                        {{ csdCerFile() ? csdCerFile()!.name : 'Seleccionar .cer' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Archivo .key <span class="required">*</span></label>
+                    <div class="file-input-wrapper">
+                      <input
+                        type="file"
+                        accept=".key"
+                        (change)="onKeyFileSelected($event)"
+                        #keyInput
+                      />
+                      <button class="btn btn-outline btn-sm file-btn" (click)="keyInput.click()">
+                        <i class="fa-solid fa-key"></i>
+                        {{ csdKeyFile() ? csdKeyFile()!.name : 'Seleccionar .key' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Contraseña de la llave <span class="required">*</span></label>
+                    <input
+                      type="password"
+                      class="form-input"
+                      placeholder="Contraseña del archivo .key"
+                      [ngModel]="csdKeyPassword()"
+                      (ngModelChange)="csdKeyPassword.set($event)"
+                    />
+                  </div>
+                </div>
+
+                <div class="csd-upload-actions">
+                  <button
+                    class="btn btn-outline btn-sm"
+                    [disabled]="!csdCerFile() || !csdKeyFile() || !csdKeyPassword() || csdValidating()"
+                    (click)="validateCsd()"
+                  >
+                    @if (csdValidating()) {
+                      <span class="btn-spinner"></span>
+                      Validando...
+                    } @else {
+                      <i class="fa-solid fa-check-double"></i>
+                      Validar
+                    }
+                  </button>
+                  <button
+                    class="btn btn-outline btn-sm"
+                    [disabled]="!csdCerFile() || !csdKeyFile() || !csdKeyPassword() || csdUploading()"
+                    (click)="uploadCsd()"
+                  >
+                    @if (csdUploading()) {
+                      <span class="btn-spinner"></span>
+                      Cargando...
+                    } @else {
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                      Cargar CSD
+                    }
+                  </button>
+                </div>
+
+                @if (csdValidationMessage(); as msg) {
+                  <div class="alert" [class.alert-success]="msg.success" [class.alert-error]="!msg.success">
+                    <i [class]="msg.success ? 'fa-solid fa-check-circle' : 'fa-solid fa-exclamation-circle'"></i>
+                    {{ msg.message }}
+                  </div>
+                }
+              </div>
+            }
+
           </div>
         }
 
@@ -384,6 +584,117 @@
               </div>
             }
 
+          </div>
+        }
+
+        <!-- WhatsApp Tab -->
+        @if (activeTab() === 'whatsapp') {
+          <div class="settings-section">
+            <div class="section-header">
+              <div class="section-header__info">
+                <h3 class="section-header__title">
+                  <i class="fa-brands fa-whatsapp"></i>
+                  Configuración de WhatsApp
+                </h3>
+                <p class="section-header__description">Configura el envío de mensajes y recordatorios automáticos por WhatsApp</p>
+              </div>
+              <div class="section-header__actions">
+                <button class="btn btn-outline btn-sm" [disabled]="waSaving()" (click)="saveWhatsAppConfig()">
+                  @if (waSaving()) {
+                    <span class="btn-spinner"></span>
+                    Guardando...
+                  } @else {
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Guardar
+                  }
+                </button>
+              </div>
+            </div>
+            <hr>
+
+            <div class="wa-config-grid">
+              <!-- Activación -->
+              <div class="wa-config-card">
+                <div class="wa-config-card__header">
+                  <i class="fa-solid fa-power-off"></i>
+                  <h4>Activación</h4>
+                </div>
+                <label class="toggle-label">
+                  <input
+                    type="checkbox"
+                    [ngModel]="waEnabled()"
+                    (ngModelChange)="waEnabled.set($event)"
+                  />
+                  <span class="toggle-text">WhatsApp habilitado para este consultorio</span>
+                </label>
+                <p class="field-hint">Al activar, se podrán enviar mensajes manuales y automáticos a pacientes con teléfono registrado.</p>
+              </div>
+
+              <!-- Recordatorios automáticos -->
+              <div class="wa-config-card">
+                <div class="wa-config-card__header">
+                  <i class="fa-solid fa-bell"></i>
+                  <h4>Recordatorios Automáticos</h4>
+                </div>
+                <label class="toggle-label">
+                  <input
+                    type="checkbox"
+                    [ngModel]="waAutoReminders()"
+                    (ngModelChange)="waAutoReminders.set($event)"
+                  />
+                  <span class="toggle-text">Enviar recordatorios automáticos de citas</span>
+                </label>
+                <div class="form-group" style="margin-top: var(--spacing-sm)">
+                  <label class="form-label">Horas antes de la cita</label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    min="1"
+                    max="72"
+                    [ngModel]="waReminderHours()"
+                    (ngModelChange)="waReminderHours.set($event)"
+                  />
+                  <span class="field-hint">Se enviará un recordatorio X horas antes de cada cita programada</span>
+                </div>
+              </div>
+
+              <!-- Saludo personalizado -->
+              <div class="wa-config-card">
+                <div class="wa-config-card__header">
+                  <i class="fa-solid fa-comment-dots"></i>
+                  <h4>Personalización</h4>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Saludo personalizado</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    placeholder="Ej: Hola desde Dental Sonrisa"
+                    maxlength="200"
+                    [ngModel]="waCustomGreeting()"
+                    (ngModelChange)="waCustomGreeting.set($event)"
+                  />
+                  <span class="field-hint">Opcional. Se usará como prefijo en los mensajes enviados.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Info card -->
+            <div class="wa-info-card">
+              <div class="wa-info-card__icon">
+                <i class="fa-solid fa-circle-info"></i>
+              </div>
+              <div class="wa-info-card__content">
+                <h4>¿Cómo funciona?</h4>
+                <ul>
+                  <li>Los mensajes se envían desde el número de WhatsApp Business de SmartDental Cloud</li>
+                  <li>El nombre de tu consultorio se incluye automáticamente en cada mensaje</li>
+                  <li>Los pacientes deben tener un número de teléfono registrado y WhatsApp opt-in activado</li>
+                  <li>Puedes enviar mensajes manuales desde la ficha de cada paciente</li>
+                  <li>El historial completo está disponible en <strong>Mensajería</strong> del menú lateral</li>
+                </ul>
+              </div>
+            </div>
           </div>
         }
 

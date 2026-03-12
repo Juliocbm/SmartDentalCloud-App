@@ -1,0 +1,103 @@
+<app-modal
+  [title]="selectedTemplate() ? 'Enviar WhatsApp' : 'Seleccionar Template'"
+  [subtitle]="modalData?.patientName + ' — ' + modalData?.phoneNumber"
+  [icon]="'fa-brands fa-whatsapp'"
+  [size]="'md'"
+  (closed)="onClose()"
+>
+  @if (templatesLoading()) {
+    <div class="loading-center">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <span>Cargando templates...</span>
+    </div>
+  } @else if (!selectedTemplate()) {
+    <!-- Step 1: Template Selection -->
+    <div class="template-list">
+      @for (tpl of templates(); track tpl.name) {
+        <button class="template-card" (click)="selectTemplate(tpl)">
+          <div class="template-card__header">
+            <span class="template-card__category">{{ tpl.category }}</span>
+          </div>
+          <h4 class="template-card__name">{{ tpl.displayName }}</h4>
+          <p class="template-card__preview">{{ tpl.preview }}</p>
+        </button>
+      } @empty {
+        <div class="empty-state-small">
+          <i class="fa-solid fa-inbox"></i>
+          <p>No hay templates disponibles</p>
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- Step 2: Fill params + preview -->
+    <div class="send-form">
+      <button class="btn-back" (click)="goBack()">
+        <i class="fa-solid fa-arrow-left"></i>
+        Cambiar template
+      </button>
+
+      <div class="selected-template-badge">
+        <i class="fa-solid fa-file-lines"></i>
+        {{ selectedTemplate()!.displayName }}
+      </div>
+
+      <!-- Parameter fields -->
+      @if (selectedTemplate()!.parameters.length > 0) {
+        <div class="params-section">
+          <h4 class="params-title">Parámetros del mensaje</h4>
+          @for (param of selectedTemplate()!.parameters; track param) {
+            <div class="form-group">
+              <label class="form-label">{{ getParamLabel(param) }}</label>
+              <input
+                type="text"
+                class="form-input"
+                [value]="templateParams()[param] || ''"
+                (input)="onParamChange(param, $any($event.target).value)"
+                [placeholder]="'Ingrese ' + getParamLabel(param).toLowerCase() + '...'"
+              />
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Preview -->
+      @if (previewMessage()) {
+        <div class="preview-section">
+          <h4 class="preview-title">
+            <i class="fa-solid fa-eye"></i>
+            Vista previa
+          </h4>
+          <div class="preview-bubble">
+            <p>{{ previewMessage() }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <div modal-footer>
+    @if (selectedTemplate()) {
+      <button type="button" class="btn btn-outline" (click)="onClose()" [disabled]="sending()">
+        <i class="fa-solid fa-times"></i>
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-whatsapp"
+        (click)="onSend()"
+        [disabled]="sending() || !canSend()">
+        @if (sending()) {
+          <span class="btn-spinner"></span>
+          Enviando...
+        } @else {
+          <i class="fa-brands fa-whatsapp"></i>
+          Enviar WhatsApp
+        }
+      </button>
+    } @else {
+      <button type="button" class="btn btn-outline" (click)="onClose()">
+        Cerrar
+      </button>
+    }
+  </div>
+</app-modal>

@@ -501,7 +501,12 @@
               }
             } @else {
               <div class="cfdi-empty">
-                @if (inv.usoCFDI || inv.metodoPago || inv.formaPago) {
+                @if (inv.status !== 'Paid') {
+                  <div class="alert alert-info" style="margin: 0;">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>La factura debe estar <strong>pagada</strong> para poder generar un CFDI. Estado actual: <strong>{{ INVOICE_STATUS_CONFIG[inv.status]?.label || inv.status }}</strong></span>
+                  </div>
+                } @else if (inv.usoCFDI || inv.metodoPago || inv.formaPago) {
                   <div class="info-card">
                     @if (inv.usoCFDI) {
                       <div class="info-row">
@@ -522,10 +527,17 @@
                       </div>
                     }
                   </div>
+                  <p style="margin-top: var(--spacing-sm); color: var(--text-secondary); font-size: var(--font-size-sm);">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Factura lista para generar CFDI. Verifique que los datos fiscales del consultorio y del paciente estén completos en Ajustes y en el perfil del paciente.
+                  </p>
                 } @else {
                   <div class="empty-items">
                     <i class="fa-solid fa-file-signature"></i>
                     <p>No se ha generado CFDI para esta factura</p>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+                      Verifique que los datos fiscales del consultorio y del paciente estén completos antes de generar.
+                    </p>
                   </div>
                 }
               </div>

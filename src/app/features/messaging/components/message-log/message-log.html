@@ -1,0 +1,138 @@
+<div class="detail-container">
+  <app-page-header
+    [title]="'Historial de Mensajes'"
+    [icon]="'fa-paper-plane'"
+    [showBackButton]="true"
+    [defaultBackRoute]="'/dashboard'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label class="form-label">Canal</label>
+      <select class="form-input form-input-sm" [ngModel]="filterChannel()" (ngModelChange)="filterChannel.set($event); onFilterChange()">
+        <option value="">Todos</option>
+        <option value="WhatsApp">WhatsApp</option>
+        <option value="SMS">SMS</option>
+        <option value="Email">Email</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label class="form-label">Estado</label>
+      <select class="form-input form-input-sm" [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event); onFilterChange()">
+        <option value="">Todos</option>
+        <option value="Queued">En cola</option>
+        <option value="Sent">Enviado</option>
+        <option value="Delivered">Entregado</option>
+        <option value="Read">Leído</option>
+        <option value="Failed">Fallido</option>
+      </select>
+    </div>
+    @if (totalCount() > 0) {
+      <div class="filter-count">
+        {{ totalCount() }} mensaje{{ totalCount() !== 1 ? 's' : '' }}
+      </div>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando mensajes...</p>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h2>Error</h2>
+      <p>{{ error() }}</p>
+    </div>
+  } @else if (messages().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-paper-plane"></i>
+      <h2>Sin mensajes</h2>
+      <p>No se han enviado mensajes aún.</p>
+    </div>
+  } @else {
+    <!-- Message table -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Canal</th>
+            <th>Paciente</th>
+            <th>Destinatario</th>
+            <th>Mensaje</th>
+            <th>Estado</th>
+            <th>Enviado por</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (msg of messages(); track msg.id) {
+            <tr>
+              <td>
+                <span class="channel-badge" [ngClass]="getChannelClass(msg.channel)">
+                  <i [ngClass]="getChannelIcon(msg.channel)"></i>
+                  {{ msg.channel }}
+                </span>
+              </td>
+              <td>
+                @if (msg.patientName) {
+                  <span class="patient-link">{{ msg.patientName }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td>
+                <span class="phone-number">{{ msg.recipientPhone }}</span>
+              </td>
+              <td>
+                <span class="message-preview" [title]="msg.messageBody">
+                  @if (msg.templateName) {
+                    <span class="template-tag">{{ msg.templateName }}</span>
+                  }
+                  {{ truncateMessage(msg.messageBody) }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="getStatusConfig(msg.status).cssClass">
+                  <i class="fa-solid" [ngClass]="getStatusConfig(msg.status).icon"></i>
+                  {{ getStatusConfig(msg.status).label }}
+                </span>
+              </td>
+              <td>
+                @if (msg.createdByName) {
+                  <span>{{ msg.createdByName }}</span>
+                } @else {
+                  <span class="text-muted auto-label">
+                    <i class="fa-solid fa-robot"></i>
+                    Automático
+                  </span>
+                }
+              </td>
+              <td>
+                <span class="date-cell">{{ formatDate(msg.createdAt) }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="pagination-bar">
+        <button class="btn btn-outline btn-sm" [disabled]="!hasPreviousPage()" (click)="goToPage(pageNumber() - 1)">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <span class="pagination-info">
+          Página {{ pageNumber() }} de {{ totalPages() }}
+        </span>
+        <button class="btn btn-outline btn-sm" [disabled]="!hasNextPage()" (click)="goToPage(pageNumber() + 1)">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    }
+  }
+</div>
