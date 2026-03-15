@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
@@ -34,11 +34,19 @@ export class SendWhatsAppModalComponent implements ModalComponentBase<SendWhatsA
   selectedTemplate = signal<WhatsAppTemplate | null>(null);
   sending = signal(false);
 
-  // Template params filled by the user
+  // Solo parámetros editables por el usuario (sin los de sistema)
   templateParams = signal<Record<string, string>>({});
 
-  // Preview with replaced params
+  // Vista previa completa con parámetros de sistema resueltos
   previewMessage = signal('');
+
+  // Parámetros que el usuario debe completar (excluye los de sistema)
+  userParameters = computed(() => {
+    const tpl = this.selectedTemplate();
+    if (!tpl) return [];
+    const systemSet = new Set(tpl.systemParameters ?? []);
+    return tpl.parameters.filter(p => !systemSet.has(p));
+  });
 
   ngOnInit(): void {
     this.loadTemplates();
@@ -61,12 +69,11 @@ export class SendWhatsAppModalComponent implements ModalComponentBase<SendWhatsA
   selectTemplate(template: WhatsAppTemplate): void {
     this.selectedTemplate.set(template);
 
-    // Pre-fill known params
+    // Pre-llenar solo parámetros de usuario (los de sistema los resuelve el backend)
+    const systemSet = new Set(template.systemParameters ?? []);
     const params: Record<string, string> = {};
     for (const p of template.parameters) {
-      if (p === 'patientName') {
-        params[p] = this.modalData?.patientName || '';
-      } else {
+      if (!systemSet.has(p)) {
         params[p] = '';
       }
     }
@@ -85,16 +92,29 @@ export class SendWhatsAppModalComponent implements ModalComponentBase<SendWhatsA
 
     let preview = tpl.preview;
     const params = this.templateParams();
+
+    // Resolver parámetros de sistema con valores reales para la vista previa
+    // clinicName se resuelve en el backend; aquí usamos un placeholder descriptivo
+    const systemValues: Record<string, string> = {
+      patientName: this.modalData?.patientName ?? '',
+      clinicName: '[Nombre del consultorio]',
+    };
+
+    // Primero reemplazar parámetros de sistema
+    for (const [key, value] of Object.entries(systemValues)) {
+      preview = preview.replace(new RegExp(`\\{${key}\\}`, 'g'), value || `{${key}}`);
+    }
+
+    // Luego reemplazar parámetros de usuario
     for (const [key, value] of Object.entries(params)) {
       preview = preview.replace(new RegExp(`\\{${key}\\}`, 'g'), value || `{${key}}`);
     }
+
     this.previewMessage.set(preview);
   }
 
   getParamLabel(param: string): string {
     const labels: Record<string, string> = {
-      patientName: 'Nombre del paciente',
-      clinicName: 'Nombre del consultorio',
       date: 'Fecha',
       time: 'Hora',
       amount: 'Monto',
@@ -106,7 +126,8 @@ export class SendWhatsAppModalComponent implements ModalComponentBase<SendWhatsA
     const tpl = this.selectedTemplate();
     if (!tpl) return false;
     const params = this.templateParams();
-    return tpl.parameters.every(p => !!params[p]?.trim());
+    // Solo validar parámetros de usuario
+    return this.userParameters().every(p => !!params[p]?.trim());
   }
 
   onSend(): void {

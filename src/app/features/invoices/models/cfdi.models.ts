@@ -106,9 +106,8 @@ export interface CatalogosSat {
   formaPago: CatalogoSatItem[];
   metodoPago: CatalogoSatItem[];
   regimenFiscal: CatalogoSatItem[];
-  claveProdServ: CatalogoSatItem[];
-  claveUnidad: CatalogoSatItem[];
   motivoCancelacion: CatalogoSatItem[];
+  // claveProdServ y claveUnidad ahora se sirven desde /api/sat-catalogos (búsqueda en BD)
 }
 
 // ===== CSD (Certificado de Sello Digital) =====

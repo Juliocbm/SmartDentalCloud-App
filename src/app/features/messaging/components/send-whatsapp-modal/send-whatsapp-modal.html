@@ -41,11 +41,11 @@
         {{ selectedTemplate()!.displayName }}
       </div>
 
-      <!-- Parameter fields -->
-      @if (selectedTemplate()!.parameters.length > 0) {
+      <!-- Campos editables por el usuario (parámetros de sistema se resuelven automáticamente) -->
+      @if (userParameters().length > 0) {
         <div class="params-section">
           <h4 class="params-title">Parámetros del mensaje</h4>
-          @for (param of selectedTemplate()!.parameters; track param) {
+          @for (param of userParameters(); track param) {
             <div class="form-group">
               <label class="form-label">{{ getParamLabel(param) }}</label>
               <input
@@ -57,6 +57,11 @@
               />
             </div>
           }
+        </div>
+      } @else {
+        <div class="params-auto-note">
+          <i class="fa-solid fa-circle-check"></i>
+          Este mensaje se enviará automáticamente con los datos del paciente y del consultorio.
         </div>
       }
 

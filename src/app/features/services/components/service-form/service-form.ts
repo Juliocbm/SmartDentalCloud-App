@@ -9,6 +9,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { SatClaveAutocompleteComponent, SatClaveItem } from '../../../../shared/components/sat-clave-autocomplete/sat-clave-autocomplete';
 
 @Component({
   selector: 'app-service-form',
@@ -17,7 +18,8 @@ import { FormSelectComponent, SelectOption } from '../../../../shared/components
     CommonModule,
     ReactiveFormsModule,
     PageHeaderComponent,
-    FormSelectComponent
+    FormSelectComponent,
+    SatClaveAutocompleteComponent
   ],
   templateUrl: './service-form.html',
   styleUrl: './service-form.scss'
@@ -38,6 +40,10 @@ export class ServiceFormComponent implements OnInit {
 
   // Constants
   categoryOptions: SelectOption[] = SERVICE_CATEGORIES;
+
+  // SAT catalog selections
+  selectedClaveProdServ = signal<string | null>(null);
+  selectedClaveUnidad = signal<string | null>(null);
 
   // Collapsible sections
   collapsedSections = signal<Set<string>>(new Set(['advanced']));
@@ -115,6 +121,13 @@ export class ServiceFormComponent implements OnInit {
           claveProdServ: service.claveProdServ || '',
           claveUnidad: service.claveUnidad || ''
         });
+        // Set signals for autocomplete display
+        if (service.claveProdServ) {
+          this.selectedClaveProdServ.set(service.claveProdServ);
+        }
+        if (service.claveUnidad) {
+          this.selectedClaveUnidad.set(service.claveUnidad);
+        }
         this.loading.set(false);
       },
       error: (err) => {
@@ -178,6 +191,16 @@ export class ServiceFormComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/services']);
+  }
+
+  onClaveProdServSelected(item: SatClaveItem | null): void {
+    this.form.patchValue({ claveProdServ: item?.clave || '' });
+    this.selectedClaveProdServ.set(item?.clave || null);
+  }
+
+  onClaveUnidadSelected(item: SatClaveItem | null): void {
+    this.form.patchValue({ claveUnidad: item?.clave || '' });
+    this.selectedClaveUnidad.set(item?.clave || null);
   }
 
   isFieldInvalid(field: string): boolean {

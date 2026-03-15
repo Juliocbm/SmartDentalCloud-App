@@ -14,11 +14,12 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
+import { SatClaveAutocompleteComponent, SatClaveItem } from '../../../../shared/components/sat-clave-autocomplete/sat-clave-autocomplete';
 
 @Component({
   selector: 'app-invoice-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent, ServiceSelectComponent, ModalComponent, FormSelectComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent, ServiceSelectComponent, ModalComponent, FormSelectComponent, SatClaveAutocompleteComponent],
   templateUrl: './invoice-form.html',
   styleUrl: './invoice-form.scss'
 })
@@ -39,6 +40,8 @@ export class InvoiceFormComponent implements OnInit {
   showItemModal = signal(false);
   editingItemIndex = signal<number | null>(null);
   itemForm!: FormGroup;
+  modalClaveProdServ = signal<string | null>(null);
+  modalClaveUnidad = signal<string | null>(null);
 
   // Constants
   cfdiUsoOptions = CFDI_USO_OPTIONS;
@@ -74,7 +77,7 @@ export class InvoiceFormComponent implements OnInit {
       unitPrice: [0, [Validators.required, Validators.min(0)]],
       discountPercentage: [0, [Validators.min(0), Validators.max(100)]],
       taxRate: [16, [Validators.min(0), Validators.max(100)]],
-      claveProdServ: ['85121800'],
+      claveProdServ: ['85122001'],
       claveUnidad: ['E48'],
       noIdentificacion: ['']
     });
@@ -88,7 +91,7 @@ export class InvoiceFormComponent implements OnInit {
       unitPrice: [0, [Validators.required, Validators.min(0)]],
       discountPercentage: [0, [Validators.min(0), Validators.max(100)]],
       taxRate: [16, [Validators.min(0), Validators.max(100)]],
-      claveProdServ: ['85121800'],
+      claveProdServ: ['85122001'],
       claveUnidad: ['E48'],
       noIdentificacion: ['']
     });
@@ -101,6 +104,8 @@ export class InvoiceFormComponent implements OnInit {
   openAddItemModal(): void {
     this.editingItemIndex.set(null);
     this.initItemForm();
+    this.modalClaveProdServ.set(null);
+    this.modalClaveUnidad.set(null);
     this.showItemModal.set(true);
   }
 
@@ -109,6 +114,8 @@ export class InvoiceFormComponent implements OnInit {
     const itemValue = this.items.at(index).value;
     this.initItemForm();
     this.itemForm.patchValue(itemValue);
+    this.modalClaveProdServ.set(itemValue.claveProdServ || null);
+    this.modalClaveUnidad.set(itemValue.claveUnidad || null);
     this.showItemModal.set(true);
   }
 
@@ -227,10 +234,22 @@ export class InvoiceFormComponent implements OnInit {
       this.itemForm.patchValue({
         description: service.name,
         unitPrice: service.cost,
-        claveProdServ: service.claveProdServ || '85121800',
+        claveProdServ: service.claveProdServ || '85122001',
         claveUnidad: service.claveUnidad || 'E48'
       });
+      this.modalClaveProdServ.set(service.claveProdServ || '85122001');
+      this.modalClaveUnidad.set(service.claveUnidad || 'E48');
     }
+  }
+
+  onModalClaveProdServSelected(item: SatClaveItem | null): void {
+    this.itemForm.patchValue({ claveProdServ: item?.clave || '85122001' });
+    this.modalClaveProdServ.set(item?.clave || null);
+  }
+
+  onModalClaveUnidadSelected(item: SatClaveItem | null): void {
+    this.itemForm.patchValue({ claveUnidad: item?.clave || 'E48' });
+    this.modalClaveUnidad.set(item?.clave || null);
   }
 
   onPatientSelected(patient: PatientSearchResult | null): void {

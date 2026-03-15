@@ -198,24 +198,23 @@
             <!-- CFDI -->
             <div class="form-row-inline">
               <div class="form-group">
-                <label for="claveProdServ" class="form-label">Clave Producto/Servicio SAT</label>
-                <input
-                  id="claveProdServ"
-                  type="text"
-                  formControlName="claveProdServ"
-                  class="form-input"
-                  placeholder="Ej: 85121800"
+                <label class="form-label">Clave Producto/Servicio SAT</label>
+                <app-sat-clave-autocomplete
+                  catalogType="claveProdServ"
+                  [selectedCode]="selectedClaveProdServ()"
+                  [dentalOnly]="true"
+                  placeholder="Buscar clave SAT (ej: dental, ortodoncia...)"
+                  (codeSelected)="onClaveProdServSelected($event)"
                 />
               </div>
 
               <div class="form-group">
-                <label for="claveUnidad" class="form-label">Clave Unidad SAT</label>
-                <input
-                  id="claveUnidad"
-                  type="text"
-                  formControlName="claveUnidad"
-                  class="form-input"
-                  placeholder="Ej: E48"
+                <label class="form-label">Clave Unidad SAT</label>
+                <app-sat-clave-autocomplete
+                  catalogType="claveUnidad"
+                  [selectedCode]="selectedClaveUnidad()"
+                  placeholder="Buscar unidad SAT (ej: servicio, pieza...)"
+                  (codeSelected)="onClaveUnidadSelected($event)"
                 />
               </div>
             </div>

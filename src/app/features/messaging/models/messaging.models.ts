@@ -17,6 +17,7 @@ export interface WhatsAppTemplate {
   displayName: string;
   category: string;
   parameters: string[];
+  systemParameters: string[];
   preview: string;
 }
 

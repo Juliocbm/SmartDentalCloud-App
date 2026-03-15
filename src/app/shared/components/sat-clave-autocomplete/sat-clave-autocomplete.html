@@ -1,0 +1,39 @@
+<div class="sat-clave-autocomplete">
+  <!-- Selected code display -->
+  @if (selectedDisplay()) {
+    <div class="selected-code">
+      <span class="selected-code-text">{{ selectedDisplay() }}</span>
+      <button type="button" class="btn-clear" (click)="clearSelection()" title="Limpiar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  } @else {
+    <!-- Search input -->
+    <div class="search-wrapper">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="form-input search-input"
+        [placeholder]="placeholder()"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="onSearchInput($event)"
+        (focus)="onFocus()"
+        autocomplete="off" />
+      @if (loading()) {
+        <i class="fa-solid fa-spinner fa-spin loading-icon"></i>
+      }
+    </div>
+  }
+
+  <!-- Dropdown results -->
+  @if (showDropdown()) {
+    <div class="dropdown">
+      @for (item of results(); track item.clave) {
+        <button type="button" class="dropdown-item" (click)="selectCode(item)">
+          <span class="code-badge" [class.dental]="item.isDental">{{ item.clave }}</span>
+          <span class="code-desc">{{ item.descripcion }}</span>
+        </button>
+      }
+    </div>
+  }
+</div>

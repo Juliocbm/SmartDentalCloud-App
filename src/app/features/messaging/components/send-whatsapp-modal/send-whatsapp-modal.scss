@@ -116,6 +116,23 @@
   align-self: flex-start;
 }
 
+.params-auto-note {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--success-50, #f0fdf4);
+  border: 1px solid var(--success-200, #bbf7d0);
+  border-radius: var(--radius-md);
+  color: var(--success-700, #15803d);
+  font-size: var(--font-size-sm);
+
+  i {
+    flex-shrink: 0;
+    color: var(--success-500, #22c55e);
+  }
+}
+
 .params-section {
   display: flex;
   flex-direction: column;
