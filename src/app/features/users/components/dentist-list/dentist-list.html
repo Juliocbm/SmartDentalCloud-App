@@ -90,6 +90,7 @@
   <!-- Dentists Table -->
   @if (!loading() && !error() && filteredDentists().length > 0) {
     <div class="table-container">
+      <div class="table-scroll">
       <table class="table">
         <thead>
           <tr>
@@ -188,6 +189,7 @@
           }
         </tbody>
       </table>
+      </div>
 
       <!-- Table Footer with Pagination -->
       <div class="table-footer">

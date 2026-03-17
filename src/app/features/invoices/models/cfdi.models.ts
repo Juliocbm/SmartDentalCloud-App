@@ -77,7 +77,7 @@ export interface CfdiStatusConfig {
 
 export const CFDI_STATUS_CONFIG: Record<string, CfdiStatusConfig> = {
   PendienteTimbrado: { label: 'Pendiente Timbrado', class: 'badge-warning', icon: 'fa-clock' },
-  Timbrado: { label: 'Timbrado', class: 'badge-success', icon: 'fa-check-circle' },
+  Vigente: { label: 'Vigente', class: 'badge-success', icon: 'fa-check-circle' },
   Cancelado: { label: 'Cancelado', class: 'badge-error', icon: 'fa-ban' },
   ErrorTimbrado: { label: 'Error Timbrado', class: 'badge-error', icon: 'fa-exclamation-triangle' },
   ErrorValidacion: { label: 'Error Validación', class: 'badge-error', icon: 'fa-exclamation-triangle' }

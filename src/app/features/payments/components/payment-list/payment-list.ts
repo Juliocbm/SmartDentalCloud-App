@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PaymentsService } from '../../services/payments.service';
-import { Payment, PaymentMethod, PAYMENT_METHOD_CONFIG, PaymentFilters } from '../../models/payment.models';
+import { Payment, PaymentMethod, PAYMENT_METHOD_CONFIG, PAYMENT_METHOD_BADGE_CONFIG, PaymentFilters } from '../../models/payment.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -40,13 +40,9 @@ export class PaymentListComponent implements OnInit, OnDestroy {
 
   // Pagination
   currentPage = signal(1);
-  pageSize = signal(15);
+  pageSize = signal(10);
 
   // Computed
-  totalAmount = computed(() => {
-    return this.paymentsService.calculateTotal(this.filteredPayments());
-  });
-
   totalPages = computed(() => Math.ceil(this.filteredPayments().length / this.pageSize()));
 
   paginatedPayments = computed(() => {
@@ -163,6 +159,10 @@ export class PaymentListComponent implements OnInit, OnDestroy {
 
   getMethodConfig(method: string) {
     return PAYMENT_METHOD_CONFIG[method as PaymentMethod] || PAYMENT_METHOD_CONFIG[PaymentMethod.Other];
+  }
+
+  getMethodBadgeConfig(method: string) {
+    return PAYMENT_METHOD_BADGE_CONFIG[method as PaymentMethod] || PAYMENT_METHOD_BADGE_CONFIG[PaymentMethod.Other];
   }
 
   formatCurrency(value: number): string {

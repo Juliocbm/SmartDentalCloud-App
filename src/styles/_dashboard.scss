@@ -40,6 +40,8 @@
   padding: var(--section-card-padding);
   box-shadow: var(--shadow-xs);
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /// Título de sección
@@ -159,6 +161,7 @@
   padding: var(--empty-state-padding);
   gap: var(--empty-state-gap);
   color: var(--text-secondary);
+  flex: 1; // Ocupa espacio disponible en section-card
 
   i {
     font-size: var(--empty-state-icon-size);
@@ -190,6 +193,13 @@
     p {
       font-size: var(--font-size-sm);
     }
+  }
+}
+
+/// Cuando empty-state está dentro de section-card, asegurar que ocupe el espacio
+.section-card {
+  .empty-state {
+    min-height: 200px; // Altura mínima para que no se vea comprimido
   }
 }
 

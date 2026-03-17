@@ -400,12 +400,18 @@ Siempre implementar los **4 estados** antes de la tabla, **nunca** anidar con `@
 | Estado | Ícono | Título | Descripción | CTA |
 |--------|-------|--------|-------------|-----|
 | **Vacío** (sin datos) | Ícono de la entidad (`fa-{entity}`) | "No hay {entidad plural}" | "Comienza creando {tu primer/la primera} {entidad}" | ✅ Botón "Nueva/o {Entidad}" |
-| **Sin resultados** (filtros) | `fa-filter-circle-xmark` | "Sin resultados" | "No se encontraron {entidad} con los filtros aplicados" | ✅ Botón "Nueva/o {Entidad}" (donde aplica) |
-| **Error** | `fa-exclamation-triangle` | (opcional) "Error al cargar" | `{{ error() }}` | ✅ Botón "Reintentar" |
+| **Sin resultados** (filtros) | `fa-filter-circle-xmark` | "Sin resultados" | "No se encontraron {entidad} con los filtros aplicados" | ❌ Sin CTA (solo mensaje) |
+| **Error** | `fa-exclamation-triangle` | (opcional) "Error al cargar" | `{{ error() }}` | ✅ Botón "Reintentar" (`btn-secondary` + `fa-arrows-rotate`) |
 
-> **Nota**: Entidades dependientes (pagos, notas de consulta, alertas de stock) **no** incluyen CTA en el estado vacío ni en sin resultados, ya que se generan desde otro módulo.
+> **Notas importantes:**
+> - Entidades dependientes (pagos, notas de consulta, alertas de stock) **no** incluyen CTA en el estado vacío ni en sin resultados, ya que se generan desde otro módulo.
+> - **NUNCA** usar `fa-exclamation-circle` — siempre `fa-exclamation-triangle` para errores.
+> - **NUNCA** usar `fa-refresh` o `fa-rotate-right` — siempre `fa-arrows-rotate` para reintentar.
+> - El botón de retry usa `btn-secondary` (NEVER `btn-outline`).
 
-### HTML estándar
+### HTML estándar (estados independientes)
+
+**REGLA CRÍTICA:** Usar bloques `@if` **INDEPENDIENTES**. **NUNCA** anidar con `@else if`.
 
 ```html
 <!-- Loading State -->
@@ -447,10 +453,6 @@ Siempre implementar los **4 estados** antes de la tabla, **nunca** anidar con `@
     <i class="fa-solid fa-filter-circle-xmark"></i>
     <h3>Sin resultados</h3>
     <p>No se encontraron {entidad plural} con los filtros aplicados</p>
-    <a routerLink="/{entity}/new" class="btn btn-primary">
-      <i class="fa-solid fa-plus"></i>
-      {Nuevo/Nueva} {Entidad}
-    </a>
   </div>
 }
 

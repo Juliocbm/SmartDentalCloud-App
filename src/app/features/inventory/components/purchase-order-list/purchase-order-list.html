@@ -46,7 +46,7 @@
   <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando órdenes...</p>
     </div>
   }
@@ -54,10 +54,10 @@
   <!-- Error State -->
   @if (error()) {
     <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
+      <i class="fa-solid fa-exclamation-triangle"></i>
       <p>{{ error() }}</p>
       <button class="btn btn-secondary" (click)="loadData()">
-        <i class="fa-solid fa-refresh"></i>
+        <i class="fa-solid fa-arrows-rotate"></i>
         Reintentar
       </button>
     </div>
@@ -92,6 +92,7 @@
   <!-- Orders Table -->
   @if (!loading() && !error() && filteredOrders().length > 0) {
     <div class="table-container">
+      <div class="table-scroll">
       <table class="table">
         <thead>
           <tr>
@@ -179,6 +180,7 @@
           }
         </tbody>
       </table>
+      </div>
 
       <!-- Table Footer with Pagination -->
       <div class="table-footer">

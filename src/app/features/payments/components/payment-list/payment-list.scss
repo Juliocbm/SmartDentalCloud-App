@@ -2,12 +2,12 @@
 // PaymentListComponent - Estilos Específicos
 // Container: usa .page-container.container-wide de _layout.scss
 // Header: usa PageHeaderComponent compartido
-// Metrics: usa .metrics-grid, .metric-card de _dashboard.scss
+// KPIs: usa .kpi-grid, .kpi-card de _components.scss (KPI_CARD_GUIDELINES_PATTERN)
 // Filters: usa .filters-section de _components.scss
 // Loading: usa .loading-container de _components.scss
 // Empty: usa .empty-state de _dashboard.scss
-// Table: usa .table-container, .table de _components.scss
-// Botones: usa clases globales .btn de _components.scss
+// Table: usa .table-container, .table de _components.scss (TABLE_BASE_PATTERN)
+// Botones: usa clases globales .btn de _components.scss (BUTTON_GUIDELINES_PATTERN)
 // ============================================
 
 // ===== Table Cell Content =====
@@ -23,16 +23,6 @@
 
   &.amount-success {
     color: var(--success-600);
-  }
-}
-
-.payment-method-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-
-  i {
-    font-size: var(--font-size-lg);
   }
 }
 

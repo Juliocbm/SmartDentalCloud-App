@@ -51,7 +51,6 @@ export interface Invoice {
   id: string;
   patientId: string;
   patientName: string;
-  uuid: string | null;
   issuedAt: Date;
   totalAmount: number;
   paidAmount: number;

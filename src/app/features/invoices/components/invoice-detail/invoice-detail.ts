@@ -19,11 +19,12 @@ import { PatientsService } from '../../../patients/services/patients.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, FormSelectComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, FormSelectComponent, ModalComponent],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })
@@ -54,13 +55,15 @@ export class InvoiceDetailComponent implements OnInit {
   loading = signal(false);
   loadingPayments = signal(false);
   error = signal<string | null>(null);
-  activeTab = signal<'info' | 'items' | 'payments'>('info');
 
   // CFDI State
   cfdi = signal<Cfdi | null>(null);
   cfdiLoading = signal(false);
   cfdiActionLoading = signal(false);
-  showCancelForm = signal(false);
+  showCancelCfdiModal = signal(false);
+  showSatStatusModal = signal(false);
+  satLoading = signal(false);
+  satError = signal<string | null>(null);
   cancelMotivo = signal('');
   cancelObservaciones = signal('');
   satStatus = signal<CfdiSatStatus | null>(null);
@@ -134,10 +137,6 @@ export class InvoiceDetailComponent implements OnInit {
       style: 'currency',
       currency: 'MXN'
     }).format(value);
-  }
-
-  setActiveTab(tab: 'info' | 'items' | 'payments'): void {
-    this.activeTab.set(tab);
   }
 
   goBack(): void {
@@ -263,12 +262,10 @@ export class InvoiceDetailComponent implements OnInit {
     });
   }
 
-  toggleCancelForm(): void {
-    this.showCancelForm.update(v => !v);
-    if (this.showCancelForm()) {
-      this.cancelMotivo.set('');
-      this.cancelObservaciones.set('');
-    }
+  openSatModal(): void {
+    this.satError.set(null);
+    this.showSatStatusModal.set(true);
+    this.consultarSat();
   }
 
   cancelarCfdi(): void {
@@ -284,7 +281,7 @@ export class InvoiceDetailComponent implements OnInit {
       next: (result) => {
         if (result.exitoso) {
           this.notifications.success('CFDI cancelado exitosamente');
-          this.showCancelForm.set(false);
+          this.showCancelCfdiModal.set(false);
           this.loadCfdi(inv.id);
         } else {
           this.notifications.error('Error al cancelar: ' + (result.mensajeError || 'Error desconocido'));
@@ -342,7 +339,22 @@ export class InvoiceDetailComponent implements OnInit {
 
   canCancelarCfdi(): boolean {
     const cfdi = this.cfdi();
-    return !!cfdi && cfdi.estado === 'Timbrado';
+    return !!cfdi && cfdi.estado === 'Vigente';
+  }
+
+  canRetimbrarCfdi(): boolean {
+    const cfdi = this.cfdi();
+    return !!cfdi && cfdi.estado === 'ErrorTimbrado';
+  }
+
+  canDownloadCfdi(): boolean {
+    const cfdi = this.cfdi();
+    return !!cfdi && !!cfdi.uuid && (cfdi.estado === 'Vigente' || cfdi.estado === 'Cancelado');
+  }
+
+  canConsultarSat(): boolean {
+    const cfdi = this.cfdi();
+    return !!cfdi && !!cfdi.uuid && (cfdi.estado === 'Vigente' || cfdi.estado === 'ErrorTimbrado');
   }
 
   private loadPatientEmail(patientId: string): void {
@@ -384,17 +396,18 @@ export class InvoiceDetailComponent implements OnInit {
 
   consultarSat(): void {
     const cfdi = this.cfdi();
-    if (!cfdi || this.cfdiActionLoading()) return;
+    if (!cfdi || this.satLoading()) return;
 
-    this.cfdiActionLoading.set(true);
+    this.satLoading.set(true);
+    this.satError.set(null);
     this.cfdiService.getStatusSat(cfdi.id).subscribe({
       next: (status) => {
         this.satStatus.set(status);
-        this.cfdiActionLoading.set(false);
+        this.satLoading.set(false);
       },
       error: (err) => {
-        this.notifications.error(getApiErrorMessage(err));
-        this.cfdiActionLoading.set(false);
+        this.satError.set(getApiErrorMessage(err));
+        this.satLoading.set(false);
       }
     });
   }

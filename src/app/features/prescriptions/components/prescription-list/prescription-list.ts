@@ -1,7 +1,6 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { PrescriptionsService } from '../../services/prescriptions.service';
 import {
@@ -20,7 +19,7 @@ import { DateFormatService } from '../../../../core/services/date-format.service
 @Component({
   selector: 'app-prescription-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, SendEmailModalComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, SendEmailModalComponent],
   templateUrl: './prescription-list.html',
   styleUrl: './prescription-list.scss'
 })
@@ -92,11 +91,6 @@ export class PrescriptionListComponent implements OnInit {
     const start = (this.currentPage() - 1) * this.pageSize();
     return this.filteredPrescriptions().slice(start, start + this.pageSize());
   });
-
-  // KPIs
-  totalCount = computed(() => this.prescriptions().length);
-  activeCount = computed(() => this.prescriptions().filter(p => p.status === PrescriptionStatus.Active).length);
-  completedCount = computed(() => this.prescriptions().filter(p => p.status === PrescriptionStatus.Completed).length);
 
   ngOnInit(): void {
     this.loadPrescriptions();

@@ -62,7 +62,7 @@
       <i class="fa-solid fa-exclamation-triangle"></i>
       <p>{{ error() }}</p>
       <button class="btn btn-secondary" (click)="loadInvoices()">
-        <i class="fa-solid fa-refresh"></i>
+        <i class="fa-solid fa-arrows-rotate"></i>
         Reintentar
       </button>
     </div>
@@ -97,6 +97,7 @@
   <!-- Invoices Table -->
   @if (!loading() && !error() && filteredInvoices().length > 0) {
     <div class="table-container">
+      <div class="table-scroll">
       <table class="table">
         <thead>
           <tr>
@@ -159,10 +160,18 @@
 
               <!-- Estado -->
               <td>
-                <span [class]="'badge ' + getStatusConfig(invoice.status).class">
-                  <i [class]="'fa-solid ' + getStatusConfig(invoice.status).icon"></i>
-                  {{ getStatusConfig(invoice.status).label }}
-                </span>
+                <div class="status-badges">
+                  <span [class]="'badge ' + getStatusConfig(invoice.status).class">
+                    <i [class]="'fa-solid ' + getStatusConfig(invoice.status).icon"></i>
+                    {{ getStatusConfig(invoice.status).label }}
+                  </span>
+                  @if (invoice.cfdiUUID) {
+                    <span class="badge badge-info">
+                      <i class="fa-solid fa-stamp"></i>
+                      Timbrada
+                    </span>
+                  }
+                </div>
               </td>
 
               <!-- Acciones -->
@@ -194,6 +203,7 @@
           }
         </tbody>
       </table>
+      </div>
 
       <!-- Table Footer with Pagination -->
       <div class="table-footer">

@@ -101,6 +101,7 @@
   <!-- Table -->
   @if (!loading() && !error() && filteredServices().length > 0) {
     <div class="table-container">
+      <div class="table-scroll">
       <table class="table">
         <thead>
           <tr>
@@ -123,7 +124,7 @@
                     <i class="fa-solid fa-briefcase-medical"></i>
                   </div>
                   <div class="info-content">
-                    <div class="info-title">{{ service.name }}</div>
+                    <a class="info-title link-primary" [routerLink]="['/services', service.id]">{{ service.name }}</a>
                     @if (service.description) {
                       <div class="info-subtitle">{{ service.description }}</div>
                     }
@@ -210,6 +211,7 @@
           }
         </tbody>
       </table>
+      </div>
 
       <!-- Table Footer with Pagination -->
       <div class="table-footer">
@@ -218,33 +220,33 @@
           {{ Math.min(currentPage() * pageSize(), totalItems()) }}</strong> de <strong>{{ totalItems() }}</strong> servicios
         </span>
 
-        <div class="pagination-controls">
-          <button
-            class="btn-page"
-            (click)="onPageChange(currentPage() - 1)"
-            [disabled]="currentPage() === 1"
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-
-          @for (page of getPaginationPages(); track page) {
-            <button
-              class="btn-page"
-              [class.active]="page === currentPage()"
-              (click)="onPageChange(page)"
-            >
-              {{ page }}
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(1)">
+              <i class="fa-solid fa-angles-left"></i>
             </button>
-          }
+            <button class="btn-page" [disabled]="currentPage() === 1" (click)="onPageChange(currentPage() - 1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
 
-          <button
-            class="btn-page"
-            (click)="onPageChange(currentPage() + 1)"
-            [disabled]="currentPage() === totalPages()"
-          >
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
-        </div>
+            @for (page of getPaginationPages(); track page) {
+              <button
+                class="btn-page"
+                [class.active]="page === currentPage()"
+                (click)="onPageChange(page)"
+              >
+                {{ page }}
+              </button>
+            }
+
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(currentPage() + 1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button class="btn-page" [disabled]="currentPage() === totalPages()" (click)="onPageChange(totalPages())">
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
       </div>
     </div>
   }

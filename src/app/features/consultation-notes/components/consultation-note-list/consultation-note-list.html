@@ -35,8 +35,8 @@
       <i class="fa-solid fa-exclamation-triangle"></i>
       <h3>Error al cargar</h3>
       <p>{{ error() }}</p>
-      <button class="btn btn-outline" (click)="loadAppointments()">
-        <i class="fa-solid fa-rotate-right"></i>
+      <button class="btn btn-secondary" (click)="loadAppointments()">
+        <i class="fa-solid fa-arrows-rotate"></i>
         Reintentar
       </button>
     </div>
@@ -67,6 +67,7 @@
   <!-- Appointments Table -->
   @if (!loading() && !error() && filteredAppointments().length > 0) {
     <div class="table-container">
+      <div class="table-scroll">
       <table class="table">
         <thead>
           <tr>
@@ -129,6 +130,7 @@
           }
         </tbody>
       </table>
+      </div>
 
       <!-- Table Footer with Pagination -->
       <div class="table-footer">

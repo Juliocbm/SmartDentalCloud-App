@@ -140,7 +140,7 @@
   <!-- Loading State -->
   @if (loading()) {
     <div class="loading-container">
-      <i class="fa-solid fa-spinner fa-spin"></i>
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
       <p>Cargando alertas...</p>
     </div>
   }
@@ -148,10 +148,10 @@
   <!-- Error State -->
   @if (error()) {
     <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
+      <i class="fa-solid fa-exclamation-triangle"></i>
       <p>{{ error() }}</p>
       <button class="btn btn-secondary" (click)="loadData()">
-        <i class="fa-solid fa-refresh"></i>
+        <i class="fa-solid fa-arrows-rotate"></i>
         Reintentar
       </button>
     </div>
@@ -182,6 +182,7 @@
   <!-- Alerts Table -->
   @if (!loading() && !error() && filteredAlerts().length > 0) {
     <div class="table-container">
+      <div class="table-scroll">
       <table class="table">
         <thead>
           <tr>
@@ -290,28 +291,27 @@
               </td>
 
               <!-- Acciones -->
-              <td class="actions-column">
-                <div class="action-buttons">
-                  <button
-                    class="btn btn-sm btn-outline"
-                    [routerLink]="['/inventory/products', alert.productId, 'edit']"
-                  >
-                    <i class="fa-solid fa-pen"></i>
-                    Editar
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline btn-success"
-                    (click)="openAdjustmentModal(alert)"
-                  >
-                    <i class="fa-solid fa-boxes-stacked"></i>
-                    Ajustar Stock
-                  </button>
-                </div>
+              <td class="actions-cell">
+                <button
+                  class="btn-icon btn-icon-edit"
+                  title="Editar producto"
+                  [routerLink]="['/inventory/products', alert.productId, 'edit']"
+                >
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button
+                  class="btn-icon btn-icon-success"
+                  title="Ajustar stock"
+                  (click)="openAdjustmentModal(alert)"
+                >
+                  <i class="fa-solid fa-boxes-stacked"></i>
+                </button>
               </td>
             </tr>
           }
         </tbody>
       </table>
+      </div>
 
       <!-- Table Footer with Pagination -->
       <div class="table-footer">

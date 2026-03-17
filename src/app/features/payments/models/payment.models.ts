@@ -70,6 +70,37 @@ export const PAYMENT_METHOD_CONFIG = {
 };
 
 /**
+ * Configuración de badges para métodos de pago (TABLE_BASE_PATTERN)
+ */
+export const PAYMENT_METHOD_BADGE_CONFIG = {
+  [PaymentMethod.Cash]: {
+    label: 'Efectivo',
+    icon: 'fa-money-bill-wave',
+    class: 'badge-success'
+  },
+  [PaymentMethod.Card]: {
+    label: 'Tarjeta',
+    icon: 'fa-credit-card',
+    class: 'badge-primary'
+  },
+  [PaymentMethod.Transfer]: {
+    label: 'Transferencia',
+    icon: 'fa-building-columns',
+    class: 'badge-info'
+  },
+  [PaymentMethod.Check]: {
+    label: 'Cheque',
+    icon: 'fa-money-check',
+    class: 'badge-warning'
+  },
+  [PaymentMethod.Other]: {
+    label: 'Otro',
+    icon: 'fa-ellipsis',
+    class: 'badge-neutral'
+  }
+};
+
+/**
  * Filtros para lista de pagos
  */
 export interface PaymentFilters {

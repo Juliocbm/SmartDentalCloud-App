@@ -49,6 +49,10 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
   filterStatus = signal<AppointmentStatus | ''>('');
   searchTerm = signal('');
 
+  // Pagination
+  currentPage = signal(1);
+  pageSize = signal(10);
+
   filteredAppointments = computed(() => {
     let result = this.appointments();
     
@@ -66,6 +70,14 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
     }
     
     return result.sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+  });
+
+  totalItems = computed(() => this.filteredAppointments().length);
+  totalPages = computed(() => Math.ceil(this.totalItems() / this.pageSize()) || 1);
+
+  paginatedAppointments = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredAppointments().slice(start, start + this.pageSize());
   });
 
   statusOptions = [
@@ -137,10 +149,34 @@ export class AppointmentListComponent implements OnInit, OnDestroy {
   onStatusFilterChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.filterStatus.set(select.value as AppointmentStatus | '');
+    this.currentPage.set(1);
   }
 
   onSearchChange(value: string): void {
     this.searchSubject.next(value);
+    this.currentPage.set(1);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  getPaginationPages(): number[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   async completeAppointment(appointment: AppointmentListItem): Promise<void> {

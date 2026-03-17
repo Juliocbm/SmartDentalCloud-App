@@ -14,33 +14,6 @@
     </div>
   </app-page-header>
 
-  <!-- KPI Cards -->
-  @if (!loading() && !error()) {
-    <div class="kpi-grid">
-      <div class="kpi-card kpi-card--primary">
-        <div class="kpi-card__header">
-          <span class="kpi-card__label">Total Recetas</span>
-          <div class="kpi-card__icon"><i class="fa-solid fa-prescription"></i></div>
-        </div>
-        <div class="kpi-card__value">{{ totalCount() }}</div>
-      </div>
-      <div class="kpi-card kpi-card--success">
-        <div class="kpi-card__header">
-          <span class="kpi-card__label">Activas</span>
-          <div class="kpi-card__icon"><i class="fa-solid fa-check-circle"></i></div>
-        </div>
-        <div class="kpi-card__value">{{ activeCount() }}</div>
-      </div>
-      <div class="kpi-card kpi-card--info">
-        <div class="kpi-card__header">
-          <span class="kpi-card__label">Dispensadas</span>
-          <div class="kpi-card__icon"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
-        </div>
-        <div class="kpi-card__value">{{ completedCount() }}</div>
-      </div>
-    </div>
-  }
-
   <!-- Filters -->
   <div class="filters-section">
     <div class="search-box">
@@ -49,16 +22,16 @@
         type="text"
         class="search-input"
         placeholder="Buscar por paciente, médico, diagnóstico o medicamento..."
-        [ngModel]="searchTerm()"
-        (ngModelChange)="onSearchChange($event)"
+        [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)"
       />
     </div>
 
     <div class="filter-actions">
       <select
         class="filter-select"
-        [ngModel]="statusFilter()"
-        (ngModelChange)="onStatusFilterChange($event)"
+        [value]="statusFilter()"
+        (change)="onStatusFilterChange($any($event.target).value)"
       >
         <option value="all">Todos los estados</option>
         <option [value]="PrescriptionStatus.Active">Activas</option>
@@ -114,6 +87,7 @@
   <!-- Table -->
   @if (!loading() && !error() && filteredPrescriptions().length > 0) {
     <div class="table-container">
+      <div class="table-scroll">
       <table class="table">
         <thead>
           <tr>
@@ -199,6 +173,7 @@
           }
         </tbody>
       </table>
+      </div>
 
       <!-- Pagination -->
       <div class="table-footer">

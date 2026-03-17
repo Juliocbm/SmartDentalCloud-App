@@ -107,6 +107,7 @@
   <!-- Users Table -->
   @if (!loading() && !error() && filteredUsers().length > 0) {
     <div class="table-container">
+      <div class="table-scroll">
       <table class="table">
         <thead>
           <tr>
@@ -212,6 +213,7 @@
           }
         </tbody>
       </table>
+      </div>
 
       <!-- Table Footer with Pagination -->
       <div class="table-footer">
