@@ -88,21 +88,21 @@
           <span class="info-label">Sitios medidos</span>
           <span class="info-value">{{ s.totalMeasured }} / {{ s.totalSites }}</span>
         </div>
-        @if (classification) {
+        @if (classification()) {
           <div class="info-row">
             <span class="info-label">Clasificación</span>
             <span class="info-value">
-              {{ classification }}
-              @if (grade) { — Grado {{ grade }} }
+              {{ classification() }}
+              @if (grade()) { — Grado {{ grade() }} }
             </span>
           </div>
-          @if (riskLevel) {
+          @if (riskLevel()) {
             <div class="info-row">
               <span class="info-label">Nivel de Riesgo</span>
               <span class="info-value">
                 <span class="badge badge-sm"
-                  [ngClass]="(RISK_LEVEL_CONFIG[riskLevel] || RISK_LEVEL_CONFIG['Desconocido']).cssClass">
-                  {{ riskLevel }}
+                  [ngClass]="(RISK_LEVEL_CONFIG[riskLevel()!] || RISK_LEVEL_CONFIG['Desconocido']).cssClass">
+                  {{ riskLevel() }}
                 </span>
               </span>
             </div>

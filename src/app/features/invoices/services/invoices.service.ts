@@ -7,6 +7,7 @@ import {
   Payment,
   CreatePaymentRequest,
   AccountsReceivable,
+  PendingBillingItem,
   InvoiceFilters
 } from '../models/invoice.models';
 
@@ -62,6 +63,15 @@ export class InvoicesService {
    */
   getAccountsReceivable(): Observable<AccountsReceivable> {
     return this.api.get<AccountsReceivable>(`${this.baseUrl}/accounts-receivable`);
+  }
+
+  /**
+   * Obtiene tratamientos completados pendientes de facturar
+   */
+  getPendingBilling(patientId?: string): Observable<PendingBillingItem[]> {
+    const params: Record<string, string> = {};
+    if (patientId) params['patientId'] = patientId;
+    return this.api.get<PendingBillingItem[]>(`${this.baseUrl}/pending-billing`, params);
   }
 
   /**

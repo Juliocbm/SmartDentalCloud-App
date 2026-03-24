@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiService, QueryParams } from '../../../core/services/api.service';
+import { PaginatedList } from '../../../core/models/pagination.models';
 import { environment } from '../../../../environments/environment';
 import {
   Cfdi,
@@ -22,7 +24,8 @@ export class CfdiService {
   private api = inject(ApiService);
 
   getByInvoice(invoiceId: string): Observable<Cfdi[]> {
-    return this.api.get<Cfdi[]>('/cfdi', { invoiceId });
+    return this.api.get<PaginatedList<Cfdi>>('/cfdi', { invoiceId })
+      .pipe(map(result => result?.items ?? []));
   }
 
   getById(id: string): Observable<Cfdi> {
@@ -39,6 +42,10 @@ export class CfdiService {
 
   cancelar(cfdiId: string, request: CancelarCfdiRequest): Observable<CancelarCfdiResult> {
     return this.api.post<CancelarCfdiResult>(`/cfdi/${cfdiId}/cancelar`, request);
+  }
+
+  deleteCfdi(cfdiId: string): Observable<void> {
+    return this.api.delete<void>(`/cfdi/${cfdiId}`);
   }
 
   downloadXml(cfdiId: string): Observable<Blob> {
@@ -59,6 +66,20 @@ export class CfdiService {
 
   getCatalogos(): Observable<CatalogosSat> {
     return this.api.get<CatalogosSat>('/cfdi/catalogos');
+  }
+
+  getCfdisForLookup(params?: {
+    estado?: string;
+    excludeCfdiId?: string;
+    pageNumber?: number;
+    pageSize?: number;
+  }): Observable<PaginatedList<Cfdi>> {
+    const queryParams: QueryParams = {};
+    if (params?.estado) queryParams['estado'] = params.estado;
+    if (params?.excludeCfdiId) queryParams['excludeCfdiId'] = params.excludeCfdiId;
+    if (params?.pageNumber) queryParams['pageNumber'] = String(params.pageNumber);
+    if (params?.pageSize) queryParams['pageSize'] = String(params.pageSize ?? 50);
+    return this.api.get<PaginatedList<Cfdi>>('/cfdi/lookup', queryParams);
   }
 
   getAll(params?: { patientId?: string; estado?: string }): Observable<Cfdi[]> {

@@ -23,6 +23,12 @@
             WhatsApp
           </button>
         }
+        @if (pat.isActive && permissionService.hasPermission('appointments.create')) {
+          <button class="btn btn-primary" (click)="onNewAppointment()">
+            <i class="fa-solid fa-calendar-plus"></i>
+            Nueva Cita
+          </button>
+        }
         @if (permissionService.hasPermission('patients.edit')) {
           <button class="btn btn-outline" (click)="editPatient()">
             <i class="fa-solid fa-pen"></i>
@@ -181,6 +187,15 @@
           (click)="setActiveTab('financial')">
           <i class="fa-solid fa-wallet"></i>
           <span>Resumen Financiero</span>
+        </button>
+        }
+        @if (visibleTabs().includes('ledger')) {
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'ledger'"
+          (click)="setActiveTab('ledger')">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Libro Mayor</span>
         </button>
         }
         @if (visibleTabs().includes('history')) {
@@ -1331,6 +1346,22 @@
               <h3>Sin información financiera</h3>
               <p>No se encontró resumen financiero para este paciente</p>
             </div>
+          }
+        </div>
+      }
+
+      <!-- Ledger Tab -->
+      @if (activeTab() === 'ledger') {
+        <div class="info-section">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-book-open"></i>
+              Libro Mayor
+            </h3>
+          </div>
+          <hr>
+          @if (patient(); as pat) {
+            <app-patient-ledger [patientId]="pat.id"></app-patient-ledger>
           }
         </div>
       }

@@ -1,0 +1,152 @@
+// === Report Sections ===
+
+.report-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 0.5rem);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+
+    i {
+      color: var(--primary);
+    }
+  }
+}
+
+// === KPI Row ===
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-secondary, #f8fafc);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 0.5rem);
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-md, 0.5rem);
+    flex-shrink: 0;
+
+    i {
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    &--primary { background: var(--primary); }
+    &--success { background: var(--success); }
+    &--warning { background: var(--warning); }
+    &--danger { background: var(--danger); }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  &__value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  &__label {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+}
+
+// === Conversion Amounts ===
+
+.conversion-amounts {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.conversion-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  &--billed {
+    color: var(--success);
+  }
+
+  &--unbilled {
+    color: var(--warning);
+  }
+}
+
+// === Production Summary ===
+
+.production-summary {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+// === Table Bars ===
+
+.bar-cell {
+  width: 100px;
+  height: 0.5rem;
+  background: var(--border-color);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 0.25rem;
+  transition: width 0.3s ease;
+
+  &--info {
+    background: var(--info, #3b82f6);
+  }
+}
+
+.dentist-name, .service-name {
+  font-weight: 500;
+  font-size: 0.875rem;
+
+  i {
+    color: var(--text-secondary);
+    margin-right: 0.375rem;
+  }
+}
+
+.amount {
+  font-weight: 600;
+  white-space: nowrap;
+}

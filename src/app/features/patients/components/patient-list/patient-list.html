@@ -89,10 +89,16 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Paciente</th>
+          <th class="sortable" (click)="onSortChange('lastName')" style="cursor:pointer" title="Ordenar por apellido">
+            Paciente <i class="fa-solid {{ getSortIcon('lastName') }}" style="margin-left:4px;font-size:0.75rem;opacity:0.7"></i>
+          </th>
           <th>Contacto</th>
-          <th>Edad</th>
-          <th>Última Visita</th>
+          <th class="sortable" (click)="onSortChange('age')" style="cursor:pointer" title="Ordenar por edad">
+            Edad <i class="fa-solid {{ getSortIcon('age') }}" style="margin-left:4px;font-size:0.75rem;opacity:0.7"></i>
+          </th>
+          <th class="sortable" (click)="onSortChange('createdAt')" style="cursor:pointer" title="Ordenar por fecha de registro">
+            Última Visita <i class="fa-solid {{ getSortIcon('createdAt') }}" style="margin-left:4px;font-size:0.75rem;opacity:0.7"></i>
+          </th>
           <th>Estado</th>
           <th>Indicadores</th>
           <th class="actions-column">Acciones</th>

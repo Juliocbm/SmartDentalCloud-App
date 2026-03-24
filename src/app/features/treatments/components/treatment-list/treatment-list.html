@@ -102,11 +102,22 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Paciente</th>
-            <th>Servicio</th>
+            <th class="sortable" (click)="onSort('patient')">
+              Paciente <i class="fa-solid" [ngClass]="getSortIcon('patient')"></i>
+            </th>
+            <th class="sortable" (click)="onSort('service')">
+              Servicio <i class="fa-solid" [ngClass]="getSortIcon('service')"></i>
+            </th>
             <th>Diente</th>
-            <th>Fecha Inicio</th>
-            <th>Estado</th>
+            <th class="sortable" (click)="onSort('date')">
+              Fecha Inicio <i class="fa-solid" [ngClass]="getSortIcon('date')"></i>
+            </th>
+            <th class="sortable" (click)="onSort('cost')">
+              Costo <i class="fa-solid" [ngClass]="getSortIcon('cost')"></i>
+            </th>
+            <th class="sortable" (click)="onSort('status')">
+              Estado <i class="fa-solid" [ngClass]="getSortIcon('status')"></i>
+            </th>
             <th>Tipo</th>
             <th class="actions-column">Acciones</th>
           </tr>
@@ -130,14 +141,7 @@
 
               <!-- Servicio -->
               <td>
-                <div class="info-content">
-                  <div class="info-title">
-                    <a [routerLink]="['/services', treatment.serviceId]" class="link-primary">{{ treatment.serviceName || 'Sin servicio' }}</a>
-                  </div>
-                  @if (treatment.serviceCost) {
-                    <div class="info-subtitle">${{ treatment.serviceCost | number:'1.2-2' }}</div>
-                  }
-                </div>
+                <a [routerLink]="['/services', treatment.serviceId]" class="link-primary">{{ treatment.serviceName || 'Sin servicio' }}</a>
               </td>
 
               <!-- Diente -->
@@ -155,6 +159,11 @@
               <!-- Fecha -->
               <td class="date-cell">
                 {{ formatDate(treatment.startDate) }}
+              </td>
+
+              <!-- Costo -->
+              <td>
+                <span class="text-primary fw-semibold">${{ treatment.cost | number:'1.2-2' }}</span>
               </td>
 
               <!-- Estado -->

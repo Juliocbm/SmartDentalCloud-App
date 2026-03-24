@@ -2,11 +2,12 @@ import { Routes } from '@angular/router';
 import { permissionGuard } from '../../core/guards/auth.guard';
 import { PERMISSIONS } from '../../core/services/permission.service';
 import { InvoicesService } from './services/invoices.service';
+import { TreatmentPlansService } from '../treatment-plans/services/treatment-plans.service';
 
 export const INVOICES_ROUTES: Routes = [
   {
     path: '',
-    providers: [InvoicesService],
+    providers: [InvoicesService, TreatmentPlansService],
     children: [
       {
         path: '',
@@ -25,6 +26,12 @@ export const INVOICES_ROUTES: Routes = [
         loadComponent: () =>
           import('./components/cfdi-list/cfdi-list').then(m => m.CfdiListComponent),
         title: 'Comprobantes CFDI'
+      },
+      {
+        path: 'pending-billing',
+        loadComponent: () =>
+          import('./components/pending-billing/pending-billing').then(m => m.PendingBillingComponent),
+        title: 'Pendientes de Facturar'
       },
       {
         path: 'new',

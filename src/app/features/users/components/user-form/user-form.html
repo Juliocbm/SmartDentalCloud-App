@@ -22,7 +22,7 @@
         type="button"
         class="btn btn-outline btn-success"
         (click)="onSubmit()"
-        [disabled]="loading() || loadingRoles()">
+        [disabled]="loading() || loadingRoles() || selectedRoles().size === 0">
         @if (loading()) {
           <span class="btn-spinner"></span>
           Guardando...
@@ -201,12 +201,12 @@
             }
           </div>
 
-       <!--    @if (selectedRoles().size === 0) {
+          @if (selectedRoles().size === 0) {
             <p class="warning-message">
               <i class="fa-solid fa-triangle-exclamation"></i>
               Debes seleccionar al menos un rol
             </p>
-          } -->
+          }
         }
       </div>
 

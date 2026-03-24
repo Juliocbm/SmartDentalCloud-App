@@ -1,0 +1,154 @@
+<div class="page-container">
+  <app-page-header
+    [title]="'Pendientes de Facturar'"
+    [subtitle]="'Tratamientos completados sin factura'"
+    [icon]="'fa-file-circle-exclamation'"
+    [showBackButton]="true"
+    [backRoute]="'/invoices'"
+    [breadcrumbs]="breadcrumbItems"
+    [sticky]="true">
+    <div actions>
+      @if (items().length > 0) {
+        <div class="header-summary">
+          <span class="summary-badge">
+            <i class="fa-solid fa-receipt"></i>
+            {{ items().length }} tratamiento{{ items().length !== 1 ? 's' : '' }}
+          </span>
+          <span class="summary-total">
+            Total: {{ formatCurrency(totalPending()) }}
+          </span>
+        </div>
+      }
+    </div>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando tratamientos pendientes...</p>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h3>Error al cargar datos</h3>
+      <p>{{ error() }}</p>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-check-circle empty-state__icon--success"></i>
+      <h3>Todo facturado</h3>
+      <p>No hay tratamientos completados pendientes de facturar.</p>
+    </div>
+  } @else {
+    <!-- KPI Cards -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-card__icon kpi-card__icon--primary">
+          <i class="fa-solid fa-dollar-sign"></i>
+        </div>
+        <div class="kpi-card__content">
+          <span class="kpi-card__value">{{ formatCurrency(totalPending()) }}</span>
+          <span class="kpi-card__label">Total por Facturar</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__icon kpi-card__icon--info">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="kpi-card__content">
+          <span class="kpi-card__value">{{ patientCount() }}</span>
+          <span class="kpi-card__label">Pacientes Pendientes</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__icon kpi-card__icon--warning">
+          <i class="fa-solid fa-receipt"></i>
+        </div>
+        <div class="kpi-card__content">
+          <span class="kpi-card__value">{{ items().length }}</span>
+          <span class="kpi-card__label">Tratamientos</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__icon kpi-card__icon--danger">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <div class="kpi-card__content">
+          <span class="kpi-card__value">{{ averageAgeDays() }} días</span>
+          <span class="kpi-card__label">Antigüedad Promedio</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="patient-groups">
+      @for (group of groupedByPatient(); track group.patientId) {
+        <div class="content-card patient-card">
+          <div class="patient-card__header">
+            <div class="patient-card__info">
+              <a [routerLink]="['/patients', group.patientId]" class="patient-card__name">
+                <i class="fa-solid fa-user"></i>
+                {{ group.patientName }}
+              </a>
+              <span class="patient-card__count">
+                {{ group.items.length }} tratamiento{{ group.items.length !== 1 ? 's' : '' }}
+              </span>
+            </div>
+            <div class="patient-card__actions">
+              <span class="patient-card__total">{{ formatCurrency(group.total) }}</span>
+              @if (permissionService.hasPermission('invoices.create')) {
+                <button class="btn btn-outline btn-sm btn-primary" (click)="onGenerateInvoice(group.patientId)">
+                  <i class="fa-solid fa-file-invoice-dollar"></i>
+                  Generar Factura
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Servicio</th>
+                  <th>Diente</th>
+                  <th>Fecha</th>
+                  <th class="text-right">Costo</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of group.items; track item.treatmentId) {
+                  <tr>
+                    <td>
+                      <span class="service-name">{{ item.serviceName || 'Servicio' }}</span>
+                    </td>
+                    <td>
+                      @if (item.toothNumber) {
+                        <span class="badge badge-neutral badge-sm">
+                          <i class="fa-solid fa-tooth"></i>
+                          #{{ item.toothNumber }}
+                        </span>
+                      } @else {
+                        —
+                      }
+                    </td>
+                    <td>{{ formatDate(item.startDate) }}</td>
+                    <td class="text-right">{{ formatCurrency(item.cost) }}</td>
+                    <td>
+                      <a
+                        class="btn btn-sm btn-outline btn-icon"
+                        [routerLink]="['/treatments', item.treatmentId]"
+                        title="Ver tratamiento"
+                      >
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -48,6 +48,7 @@ export class PerioMeasurementGridComponent {
   @Output() teethChange = new EventEmitter<EditableTooth[]>();
   @Output() dataChanged = new EventEmitter<void>();
   @Output() toothSelected = new EventEmitter<string>();
+  @Output() rangeWarning = new EventEmitter<string>();
 
   private el = inject(ElementRef);
 
@@ -63,6 +64,15 @@ export class PerioMeasurementGridComponent {
   TOOTH_NAMES = TOOTH_NAMES;
   ROW_LABELS = ROW_LABELS;
   ALL_ROWS = ALL_ROWS;
+
+  // Molar teeth (furcation only applies to these)
+  private readonly MOLAR_TEETH = new Set([
+    '16','17','18','26','27','28','36','37','38','46','47','48'
+  ]);
+
+  isMolar(toothNumber: string): boolean {
+    return this.MOLAR_TEETH.has(toothNumber);
+  }
 
   // Computed: upper and lower teeth arrays
   upperTeeth = computed(() => {
@@ -147,16 +157,24 @@ export class PerioMeasurementGridComponent {
   onNumericInput(event: Event, tooth: EditableTooth, surface: 'buccal' | 'lingual', siteIdx: number, row: 'pd' | 'gm'): void {
     if (this.readonly) return;
     const input = event.target as HTMLInputElement;
-    const val = input.value === '' ? null : parseInt(input.value, 10);
+    const raw = input.value === '' ? null : parseInt(input.value, 10);
 
     const sites = surface === 'buccal' ? tooth.buccalSites : tooth.lingualSites;
     const site = sites[siteIdx];
     if (!site) return;
 
     if (row === 'pd') {
-      site.pd = val != null ? Math.max(0, Math.min(15, val)) : null;
+      const clamped = raw != null ? Math.max(0, Math.min(15, raw)) : null;
+      if (raw != null && raw !== clamped) {
+        this.rangeWarning.emit(`PD ajustado a ${clamped}mm (rango válido: 0–15)`);
+      }
+      site.pd = clamped;
     } else {
-      site.gm = val != null ? Math.max(-10, Math.min(10, val)) : null;
+      const clamped = raw != null ? Math.max(-10, Math.min(10, raw)) : null;
+      if (raw != null && raw !== clamped) {
+        this.rangeWarning.emit(`Margen ajustado a ${clamped}mm (rango válido: -10 a +10)`);
+      }
+      site.gm = clamped;
     }
 
     // Auto-calculate CAL

@@ -24,7 +24,7 @@ export class ClinicalExportComponent implements OnInit {
 
   // Options
   includeAllergies = signal(true);
-  includeProblems = signal(true);
+  includeDiagnoses = signal(true);
   includeTreatments = signal(true);
   includePrescriptions = signal(true);
   fromDate = signal('');
@@ -50,7 +50,7 @@ export class ClinicalExportComponent implements OnInit {
 
     this.patientsService.downloadClinicalExportPdf(this.patientId, {
       includeAllergies: this.includeAllergies(),
-      includeProblems: this.includeProblems(),
+      includeDiagnoses: this.includeDiagnoses(),
       includeTreatments: this.includeTreatments(),
       includePrescriptions: this.includePrescriptions(),
       fromDate: this.fromDate() || undefined,

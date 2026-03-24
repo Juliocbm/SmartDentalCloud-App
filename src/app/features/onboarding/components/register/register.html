@@ -112,6 +112,21 @@
               <span class="form-error">Las contraseñas no coinciden</span>
             }
           </div>
+          <!-- F-ON-001: Términos y condiciones — requerimiento legal SaaS -->
+          <div class="form-group terms-group">
+            <label class="checkbox-label">
+              <input type="checkbox"
+                [ngModel]="termsAccepted()"
+                (ngModelChange)="termsAccepted.set($event)" />
+              <span>
+                He leído y acepto los
+                <a href="/terms" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a>
+                y la
+                <a href="/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>
+                <span class="required">*</span>
+              </span>
+            </label>
+          </div>
           <div class="step-actions">
             <button class="btn btn-outline" (click)="prevStep()">
               <i class="fa-solid fa-arrow-left"></i> Anterior

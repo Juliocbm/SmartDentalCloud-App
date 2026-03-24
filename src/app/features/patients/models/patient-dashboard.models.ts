@@ -103,3 +103,32 @@ export interface PaymentDetail {
   paidAt: Date;
   reference: string | null;
 }
+
+// === Patient Ledger ===
+
+export interface PatientLedger {
+  patientId: string;
+  patientName: string;
+  totalCharges: number;
+  totalBilled: number;
+  totalPaid: number;
+  currentBalance: number;
+  entries: LedgerEntry[];
+}
+
+export interface LedgerEntry {
+  id: string;
+  date: Date;
+  type: 'Charge' | 'Invoice' | 'Payment';
+  description: string;
+  amount: number;
+  runningBalance: number;
+  treatmentId?: string;
+  serviceName?: string;
+  invoiceId?: string;
+  invoiceNumber?: string;
+  invoiceStatus?: string;
+  paymentId?: string;
+  paymentMethod?: string;
+  reference?: string;
+}

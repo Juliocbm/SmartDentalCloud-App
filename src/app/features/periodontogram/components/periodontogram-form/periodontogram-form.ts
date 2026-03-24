@@ -150,6 +150,10 @@ export class PeriodontogramFormComponent implements OnInit, OnChanges {
     this.hasChanges.set(true);
   }
 
+  onRangeWarning(message: string): void {
+    this.notifications.warning(message);
+  }
+
   // === Save ===
   save(): void {
     if (!this.periodontogram || this.saving() || this.isReadonly()) return;

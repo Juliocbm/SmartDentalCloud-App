@@ -10,6 +10,29 @@
 
 // Empty: usa .empty-state de _components.scss
 
+// ===== Sortable Table Headers =====
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: var(--transition-base);
+
+  i {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    margin-left: var(--spacing-xs);
+  }
+
+  &:hover {
+    background: var(--surface-secondary);
+    color: var(--primary-600);
+
+    i {
+      color: var(--primary-500);
+    }
+  }
+}
+
 // ===== Table Cell Content =====
 
 // Código de producto

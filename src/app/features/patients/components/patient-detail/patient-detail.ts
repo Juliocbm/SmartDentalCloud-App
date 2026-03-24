@@ -64,12 +64,15 @@ import { FileUploadModalComponent, FileUploadModalData } from '../file-upload-mo
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { FeatureService, PlanFeature } from '../../../../core/services/feature.service';
 import { FeatureUpgradeModalComponent, FeatureUpgradeModalData } from '../../../../shared/components/feature-upgrade-modal/feature-upgrade-modal';
+import { PatientLedgerComponent } from '../patient-ledger/patient-ledger';
 import { SendWhatsAppModalComponent, SendWhatsAppModalData } from '../../../messaging/components/send-whatsapp-modal/send-whatsapp-modal';
+import { AppointmentFormContextService } from '../../../appointments/services/appointment-form-context.service';
+import { PATIENT_APPOINTMENT_CONTEXT } from '../../../appointments/models/appointment-form-context.model';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, OdontogramHistoryListComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent, PatientClinicalSummaryComponent, SignaturePadComponent, SignatureModalComponent, SignaturePinSetupComponent, ConsentPrintViewComponent, FormSelectComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OdontogramHistoryListComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent, PatientClinicalSummaryComponent, SignaturePadComponent, SignatureModalComponent, SignaturePinSetupComponent, ConsentPrintViewComponent, FormSelectComponent, PatientLedgerComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })
@@ -93,6 +96,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   private navigationState = inject(NavigationStateService);
   permissionService = inject(PermissionService);
   featureService = inject(FeatureService);
+  private appointmentContextService = inject(AppointmentFormContextService);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -113,6 +117,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     radiographs: PERMISSIONS.AttachedFilesView,
     fiscal: null,
     financial: PERMISSIONS.PatientsViewFinancial,
+    ledger: PERMISSIONS.PatientsViewFinancial,
     history: PERMISSIONS.PatientsViewHistory,
     changes: PERMISSIONS.AuditLogsView,
     files: PERMISSIONS.AttachedFilesView,
@@ -127,7 +132,8 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
   patient = signal<Patient | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
-  activeTab = signal<'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'>('info');
+  activeTab = signal<'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'ledger' | 'history' | 'changes' | 'files'>('info');
+  private ledgerLoaded = false;
 
   // Pagination loaded flags
   private allergiesLoaded = false;
@@ -308,7 +314,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     return !!feature && !this.featureService.hasFeature(feature);
   }
 
-  onTabClick(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'): void {
+  onTabClick(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'ledger' | 'history' | 'changes' | 'files'): void {
     const feature = this.TAB_FEATURES[tab];
     if (feature && !this.featureService.hasFeature(feature)) {
       this.modalService.open<FeatureUpgradeModalData>(FeatureUpgradeModalComponent, {
@@ -319,7 +325,7 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     this.setActiveTab(tab);
   }
 
-  setActiveTab(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'history' | 'changes' | 'files'): void {
+  setActiveTab(tab: 'info' | 'medical' | 'allergies' | 'consents' | 'problems' | 'odontogram' | 'periodontogram' | 'cephalometry' | 'radiographs' | 'fiscal' | 'financial' | 'ledger' | 'history' | 'changes' | 'files'): void {
     if (!this.visibleTabs().includes(tab)) return;
     this.activeTab.set(tab);
     this.navigationState.saveState(this.router.url, tab);
@@ -343,6 +349,9 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
     }
     if (tab === 'financial' && !this.financialSummary() && !this.financialLoading()) {
       this.loadFinancialSummary();
+    }
+    if (tab === 'ledger') {
+      this.ledgerLoaded = true;
     }
     if (tab === 'history' && !this.patientHistory() && !this.historyLoading()) {
       this.loadHistory();
@@ -898,6 +907,15 @@ export class PatientDetailComponent implements OnInit, OnDestroy {
       }
     );
     ref.afterClosed().subscribe(() => {});
+  }
+
+  onNewAppointment(): void {
+    const pat = this.patient();
+    if (!pat) return;
+    this.appointmentContextService.setContext(
+      PATIENT_APPOINTMENT_CONTEXT(pat.id, `${pat.firstName} ${pat.lastName}`.trim())
+    );
+    this.router.navigate(['/appointments', 'new']);
   }
 
   editPatient(): void {

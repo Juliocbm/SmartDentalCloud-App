@@ -22,6 +22,21 @@
     </div>
     <div actions>
       @if (prescription(); as rx) {
+        @if (rx.status === PrescriptionStatus.Active && permissionService.hasPermission(PERMISSIONS.PrescriptionsEdit)) {
+          <button class="btn btn-outline btn-success" (click)="completePrescription()" [disabled]="completing()">
+            @if (completing()) {
+              <span class="btn-spinner"></span>
+              Procesando...
+            } @else {
+              <i class="fa-solid fa-prescription-bottle-medical"></i>
+              Dispensar
+            }
+          </button>
+          <button class="btn btn-outline btn-danger" (click)="openCancelModal()">
+            <i class="fa-solid fa-times-circle"></i>
+            Cancelar Receta
+          </button>
+        }
         <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
@@ -51,13 +66,19 @@
 
   @if (error()) {
     <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
+      <i class="fa-solid fa-exclamation-triangle"></i>
       <h3>Error al cargar la receta</h3>
       <p>{{ error() }}</p>
-      <button (click)="goBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver
-      </button>
+      <div class="empty-state__actions">
+        <button (click)="goBack()" class="btn btn-secondary">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver
+        </button>
+        <button (click)="retryLoad()" class="btn btn-primary">
+          <i class="fa-solid fa-rotate-right"></i>
+          Reintentar
+        </button>
+      </div>
     </div>
   }
 
@@ -121,6 +142,12 @@
                       </a>
                     </span>
                   </div>
+                  @if (rx.prescribedByLicense) {
+                    <div class="info-row">
+                      <span class="info-label">Cédula Profesional:</span>
+                      <span class="info-value">{{ rx.prescribedByLicense }}</span>
+                    </div>
+                  }
                   <div class="info-row">
                     <span class="info-label">Fecha de Emisión:</span>
                     <span class="info-value">{{ formatDate(rx.issuedAt) }}</span>
@@ -129,6 +156,17 @@
                     <div class="info-row" [class.alert-row]="isExpired()">
                       <span class="info-label">Vigencia:</span>
                       <span class="info-value">{{ formatDate(rx.expiresAt) }}</span>
+                    </div>
+                  }
+                  @if (rx.appointmentId) {
+                    <div class="info-row">
+                      <span class="info-label">Cita Vinculada:</span>
+                      <span class="info-value">
+                        <a [routerLink]="['/appointments', rx.appointmentId]" class="link-primary">
+                          <i class="fa-solid fa-calendar-check"></i>
+                          Ver Cita
+                        </a>
+                      </span>
                     </div>
                   }
                 </div>
@@ -237,5 +275,41 @@
       (send)="onSendEmail($event)"
       (closed)="closeEmailModal()"
     />
+  }
+
+  <!-- Cancel Modal -->
+  @if (showCancelModal()) {
+    <app-modal
+      title="Cancelar Receta"
+      subtitle="Esta acción no se puede deshacer"
+      icon="fa-times-circle"
+      (closed)="closeCancelModal()">
+      <div class="form-group">
+        <label class="form-label">Motivo de cancelación <span class="required">*</span></label>
+        <textarea
+          class="form-input form-textarea"
+          placeholder="Indique el motivo de la cancelación..."
+          rows="3"
+          [ngModel]="cancelReason()"
+          (ngModelChange)="cancelReason.set($event)"
+          name="cancelReason"
+        ></textarea>
+      </div>
+      <div modal-footer>
+        <button type="button" class="btn btn-outline" (click)="closeCancelModal()">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver
+        </button>
+        <button type="button" class="btn btn-outline btn-danger" (click)="confirmCancel()" [disabled]="!cancelReason().trim() || cancelling()">
+          @if (cancelling()) {
+            <span class="btn-spinner"></span>
+            Cancelando...
+          } @else {
+            <i class="fa-solid fa-times-circle"></i>
+            Cancelar Receta
+          }
+        </button>
+      </div>
+    </app-modal>
   }
 </div>

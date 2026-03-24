@@ -94,9 +94,78 @@
         </div>
       </div>
 
+      <!-- Appointment Linking -->
+      @if (selectedPatient() && patientAppointments().length > 0) {
+        <div class="form-section form-section--compact">
+          <h3 class="section-title">
+            <i class="fa-solid fa-calendar-check section-icon"></i>
+            Vincular a Cita
+            <span class="optional-badge">Opcional</span>
+          </h3>
+
+          <div class="form-group">
+            <label class="form-label">Cita</label>
+            @if (loadingAppointments()) {
+              <div class="loading-inline">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Cargando citas...</span>
+              </div>
+            } @else {
+              <select
+                class="form-input"
+                [ngModel]="selectedAppointmentId()"
+                (ngModelChange)="onAppointmentChange($event)"
+                name="appointmentId"
+              >
+                <option [ngValue]="null">Sin vincular</option>
+                @for (apt of patientAppointments(); track apt.id) {
+                  <option [ngValue]="apt.id">
+                    {{ apt.displayDate }} {{ apt.displayTime }} — {{ apt.reason }} ({{ apt.statusLabel }})
+                  </option>
+                }
+              </select>
+            }
+            @if (loadingNote()) {
+              <div class="loading-inline">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Buscando nota de consulta...</span>
+              </div>
+            }
+            @if (linkedNote(); as note) {
+              <div class="linked-note-info">
+                <i class="fa-solid fa-file-medical"></i>
+                <div>
+                  <span class="linked-note-label">Nota de consulta vinculada</span>
+                  @if (note.diagnosis) {
+                    <span class="linked-note-detail">Dx: {{ note.diagnosis }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
       <!-- Allergy Alerts -->
       @if (allergyAlerts().length > 0) {
         <app-allergy-alert-banner [alerts]="allergyAlerts()" />
+      }
+
+      <!-- Prescriber Info (read-only) -->
+      @if (currentUserName()) {
+        <div class="form-section form-section--compact">
+          <h3 class="section-title">
+            <i class="fa-solid fa-user-doctor section-icon"></i>
+            Prescriptor
+          </h3>
+          <div class="form-group">
+            <div class="readonly-field">
+              <i class="fa-solid fa-user-doctor"></i>
+              <span>{{ currentUserName() }}</span>
+              <span class="readonly-hint">(asignado automáticamente)</span>
+            </div>
+          </div>
+        </div>
       }
 
       <!-- Diagnosis -->

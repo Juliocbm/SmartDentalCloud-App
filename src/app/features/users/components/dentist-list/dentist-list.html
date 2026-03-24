@@ -38,6 +38,19 @@
         <option value="active">Activos</option>
         <option value="inactive">Inactivos</option>
       </select>
+
+      @if (specialties().length > 0) {
+        <select
+          class="filter-select"
+          [value]="selectedSpecialty()"
+          (change)="onSpecialtyFilterChange($any($event.target).value)"
+        >
+          <option value="">Todas las especialidades</option>
+          @for (specialty of specialties(); track specialty) {
+            <option [value]="specialty">{{ specialty }}</option>
+          }
+        </select>
+      }
     </div>
   </div>
 

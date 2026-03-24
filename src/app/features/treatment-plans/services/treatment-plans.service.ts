@@ -43,6 +43,10 @@ export class TreatmentPlansService {
     return this.api.put<TreatmentPlan>(`/treatment-plans/${id}`, request);
   }
 
+  submitForApproval(id: string): Observable<TreatmentPlan> {
+    return this.api.post<TreatmentPlan>(`/treatment-plans/${id}/submit-for-approval`, {});
+  }
+
   approve(id: string): Observable<TreatmentPlan> {
     return this.api.post<TreatmentPlan>(`/treatment-plans/${id}/approve`, {});
   }
@@ -58,6 +62,10 @@ export class TreatmentPlansService {
 
   complete(id: string): Observable<TreatmentPlan> {
     return this.api.post<TreatmentPlan>(`/treatment-plans/${id}/complete`, {});
+  }
+
+  cancel(id: string, reason: string): Observable<TreatmentPlan> {
+    return this.api.post<TreatmentPlan>(`/treatment-plans/${id}/cancel`, { planId: id, reason });
   }
 
   updateItemProgress(planId: string, itemId: string, request: UpdateItemProgressRequest): Observable<TreatmentPlanItem> {

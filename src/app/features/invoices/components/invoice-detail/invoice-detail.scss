@@ -687,3 +687,55 @@
     }
   }
 }
+
+// ===== Cfdi Selected Card (Cancel Modal) =====
+
+.cfdi-selected-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-md);
+}
+
+.cfdi-selected-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.cfdi-selected-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.cfdi-selected-folio {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-family: monospace;
+}
+
+.cfdi-selected-patient {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.cfdi-selected-uuid {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-family: monospace;
+
+  i {
+    color: var(--primary-400);
+    flex-shrink: 0;
+  }
+}

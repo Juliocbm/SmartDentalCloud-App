@@ -12,10 +12,15 @@ import {
 } from '../../models/prescription.models';
 import { PatientsService } from '../../../patients/services/patients.service';
 import { Patient } from '../../../patients/models/patient.models';
+import { AppointmentsService } from '../../../appointments/services/appointments.service';
+import { AppointmentListItem, AppointmentStatus } from '../../../appointments/models/appointment.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ConsultationNotesService } from '../../../consultation-notes/services/consultation-notes.service';
+import { ConsultationNote } from '../../../consultation-notes/models/consultation-note.models';
 import { PatientAllergiesService } from '../../../patients/services/patient-allergies.service';
 import { AllergyAlert } from '../../../patients/models/patient-allergy.models';
 import { AllergyAlertBannerComponent } from '../../../../shared/components/allergy-alert-banner/allergy-alert-banner';
@@ -36,6 +41,11 @@ export class PrescriptionFormComponent implements OnInit {
   private patientsService = inject(PatientsService);
   private notifications = inject(NotificationService);
   private allergiesService = inject(PatientAllergiesService);
+  private appointmentsService = inject(AppointmentsService);
+  private authService = inject(AuthService);
+  private notesService = inject(ConsultationNotesService);
+
+  currentUserName = signal<string>('');
 
   // Allergy alerts
   allergyAlerts = signal<AllergyAlert[]>([]);
@@ -59,16 +69,29 @@ export class PrescriptionFormComponent implements OnInit {
   notes = signal('');
   items = signal<CreatePrescriptionItemRequest[]>([]);
 
+  // Appointment linking
+  patientAppointments = signal<AppointmentListItem[]>([]);
+  selectedAppointmentId = signal<string | null>(null);
+  loadingAppointments = signal(false);
+
+  // Consultation note linking
+  linkedNote = signal<ConsultationNote | null>(null);
+  selectedConsultationNoteId = signal<string | null>(null);
+  loadingNote = signal(false);
+
   // Medication Modal State
   showMedModal = signal(false);
   editingMedIndex = signal<number | null>(null);
   medForm = signal<CreatePrescriptionItemRequest>(this.createEmptyItem());
 
-  // Pre-selected patient from query params
+  // Pre-selected from query params
   private preselectedPatientId: string | null = null;
+  private preselectedAppointmentId: string | null = null;
 
   ngOnInit(): void {
     this.preselectedPatientId = this.route.snapshot.queryParamMap.get('patientId');
+    this.preselectedAppointmentId = this.route.snapshot.queryParamMap.get('appointmentId');
+    this.currentUserName.set(this.authService.getCurrentUser()?.name || '');
     this.loadPatients();
   }
 
@@ -116,12 +139,69 @@ export class PrescriptionFormComponent implements OnInit {
     this.patientSearch.set(`${patient.firstName} ${patient.lastName}`);
     this.showPatientDropdown.set(false);
     this.loadAllergyAlerts(patient.id);
+    this.loadPatientAppointments(patient.id);
   }
 
   clearPatient(): void {
     this.selectedPatient.set(null);
     this.patientSearch.set('');
     this.allergyAlerts.set([]);
+    this.patientAppointments.set([]);
+    this.selectedAppointmentId.set(null);
+    this.linkedNote.set(null);
+    this.selectedConsultationNoteId.set(null);
+  }
+
+  onAppointmentChange(appointmentId: string | null): void {
+    this.selectedAppointmentId.set(appointmentId);
+    this.linkedNote.set(null);
+    this.selectedConsultationNoteId.set(null);
+
+    if (appointmentId) {
+      this.loadConsultationNote(appointmentId);
+    }
+  }
+
+  private loadConsultationNote(appointmentId: string): void {
+    this.loadingNote.set(true);
+    this.notesService.getByAppointment(appointmentId).subscribe({
+      next: (note) => {
+        this.linkedNote.set(note);
+        this.selectedConsultationNoteId.set(note.id);
+        if (note.diagnosis && !this.diagnosis().trim()) {
+          this.diagnosis.set(note.diagnosis);
+        }
+        this.loadingNote.set(false);
+      },
+      error: () => {
+        this.linkedNote.set(null);
+        this.loadingNote.set(false);
+      }
+    });
+  }
+
+  private loadPatientAppointments(patientId: string): void {
+    this.loadingAppointments.set(true);
+    this.appointmentsService.getByPatient(patientId).subscribe({
+      next: (appointments) => {
+        const eligible = appointments.filter(
+          a => a.status === AppointmentStatus.Completed || a.status === AppointmentStatus.Confirmed
+        );
+        this.patientAppointments.set(eligible);
+        this.loadingAppointments.set(false);
+
+        if (this.preselectedAppointmentId) {
+          const exists = eligible.find(a => a.id === this.preselectedAppointmentId);
+          if (exists) {
+            this.selectedAppointmentId.set(this.preselectedAppointmentId);
+          }
+          this.preselectedAppointmentId = null;
+        }
+      },
+      error: () => {
+        this.loadingAppointments.set(false);
+      }
+    });
   }
 
   private loadAllergyAlerts(patientId: string): void {
@@ -225,6 +305,8 @@ export class PrescriptionFormComponent implements OnInit {
 
     const request: CreatePrescriptionRequest = {
       patientId: this.selectedPatient()!.id,
+      appointmentId: this.selectedAppointmentId() || undefined,
+      consultationNoteId: this.selectedConsultationNoteId() || undefined,
       issuedAt: new Date().toISOString(),
       diagnosis: this.diagnosis().trim() || undefined,
       notes: this.notes().trim() || undefined,

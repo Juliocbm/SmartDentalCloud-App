@@ -170,6 +170,7 @@ export class PurchaseOrderReceiveComponent implements OnInit {
     const map: Record<string, string> = {
       Draft: 'badge-neutral',
       Sent: 'badge-info',
+      PartialReceived: 'badge-info',
       Received: 'badge-success',
       Cancelled: 'badge-error'
     };

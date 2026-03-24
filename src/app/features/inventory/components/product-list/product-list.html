@@ -55,6 +55,15 @@
         <option value="active">Activos</option>
         <option value="inactive">Inactivos</option>
       </select>
+
+      <select
+        class="filter-select"
+        [value]="filterStock()"
+        (change)="onStockFilterChange($any($event.target).value)"
+      >
+        <option value="all">Todo el stock</option>
+        <option value="low">Stock Bajo</option>
+      </select>
     </div>
   </div>
 
@@ -111,13 +120,27 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Código</th>
-            <th>Producto</th>
-            <th>Categoría</th>
-            <th>Stock</th>
-            <th>Pto. Reorden</th>
-            <th>Costo Unit.</th>
-            <th>Estado</th>
+            <th class="sortable-header" (click)="sortBy('code')">
+              Código <i class="fa-solid" [ngClass]="getSortIcon('code')"></i>
+            </th>
+            <th class="sortable-header" (click)="sortBy('name')">
+              Producto <i class="fa-solid" [ngClass]="getSortIcon('name')"></i>
+            </th>
+            <th class="sortable-header" (click)="sortBy('categoryName')">
+              Categoría <i class="fa-solid" [ngClass]="getSortIcon('categoryName')"></i>
+            </th>
+            <th class="sortable-header" (click)="sortBy('currentStock')">
+              Stock <i class="fa-solid" [ngClass]="getSortIcon('currentStock')"></i>
+            </th>
+            <th class="sortable-header" (click)="sortBy('reorderPoint')">
+              Pto. Reorden <i class="fa-solid" [ngClass]="getSortIcon('reorderPoint')"></i>
+            </th>
+            <th class="sortable-header" (click)="sortBy('unitCost')">
+              Costo Unit. <i class="fa-solid" [ngClass]="getSortIcon('unitCost')"></i>
+            </th>
+            <th class="sortable-header" (click)="sortBy('isActive')">
+              Estado <i class="fa-solid" [ngClass]="getSortIcon('isActive')"></i>
+            </th>
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>

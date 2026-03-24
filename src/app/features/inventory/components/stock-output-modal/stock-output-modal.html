@@ -1,0 +1,157 @@
+<app-modal
+  [title]="'Registrar Salida'"
+  [subtitle]="modalData.productName"
+  [icon]="'fa-arrow-up-from-bracket'"
+  [size]="'md'"
+  (closed)="onCancel()">
+
+  @if (error()) {
+    <div class="alert alert-error">
+      <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+      <span class="alert-message">{{ error() }}</span>
+      <button class="alert-close" (click)="error.set(null)" type="button">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  }
+
+  <div class="product-info-card">
+    <div class="info-row">
+      <span class="info-label">Código:</span>
+      <span class="info-value code">{{ modalData.productCode }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Stock Actual:</span>
+      <span class="info-value stock">{{ modalData.currentStock }} {{ modalData.unit }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="outputForm" (ngSubmit)="onSubmit()" class="output-form">
+
+    @if (!modalData.locationId && locationOptions().length > 0) {
+      <div class="form-group">
+        <label class="form-label required">Sucursal</label>
+        <app-form-select
+          formControlName="locationId"
+          [options]="locationOptions()"
+          placeholder="Selecciona una sucursal..."
+          [required]="true"
+          [error]="hasError('locationId', 'required') ? 'Debes seleccionar una sucursal' : null"
+        ></app-form-select>
+      </div>
+    }
+
+    <div class="form-group">
+      <label class="form-label required">Cantidad a Extraer</label>
+      <div class="quantity-input-wrapper">
+        <input
+          type="number"
+          class="form-input quantity-input"
+          formControlName="quantity"
+          min="0.01"
+          [max]="modalData.currentStock"
+          step="1"
+          [class.error]="hasError('quantity', 'required') || hasError('quantity', 'min') || hasError('quantity', 'max')"
+        />
+        <span class="unit-label">{{ modalData.unit }}</span>
+      </div>
+      @if (hasError('quantity', 'required')) {
+        <span class="error-message">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          La cantidad es requerida
+        </span>
+      }
+      @if (hasError('quantity', 'min')) {
+        <span class="error-message">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          La cantidad debe ser mayor a 0
+        </span>
+      }
+      @if (hasError('quantity', 'max')) {
+        <span class="error-message">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          La cantidad no puede exceder el stock disponible ({{ modalData.currentStock }})
+        </span>
+      }
+    </div>
+
+    <div class="stock-preview">
+      <div class="preview-item">
+        <span class="preview-label">Stock Actual</span>
+        <span class="preview-value">{{ modalData.currentStock }}</span>
+      </div>
+      <div class="preview-arrow">
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
+      <div class="preview-item">
+        <span class="preview-label">Stock Final</span>
+        <span class="preview-value final negative">{{ newStock }}</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label required">Motivo de la Salida</label>
+      <app-form-select
+        formControlName="reason"
+        [options]="commonReasons"
+        placeholder="Selecciona un motivo..."
+        [required]="true"
+        [error]="hasError('reason', 'required') ? 'Debes seleccionar un motivo' : null"
+      ></app-form-select>
+    </div>
+
+    @if (outputForm.get('reason')?.value === 'Otro') {
+      <div class="form-group">
+        <label class="form-label required">Especifica el Motivo</label>
+        <input
+          type="text"
+          class="form-input"
+          formControlName="customReason"
+          placeholder="Describe el motivo de la salida..."
+          [class.error]="hasError('customReason', 'required')"
+        />
+        @if (hasError('customReason', 'required')) {
+          <span class="error-message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            Debes especificar el motivo
+          </span>
+        }
+      </div>
+    }
+
+    <div class="form-group">
+      <label class="form-label">Notas Adicionales</label>
+      <textarea
+        class="form-input form-textarea"
+        formControlName="notes"
+        rows="2"
+        placeholder="Observaciones opcionales..."
+      ></textarea>
+    </div>
+  </form>
+
+  <div modal-footer>
+    <button
+      type="button"
+      class="btn btn-outline"
+      (click)="onCancel()"
+      [disabled]="saving()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline"
+      style="background: var(--warning-500); border-color: var(--warning-500); color: white;"
+      (click)="onSubmit()"
+      [disabled]="saving() || outputForm.invalid">
+      @if (saving()) {
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        Guardando...
+      } @else {
+        <i class="fa-solid fa-check"></i>
+        Confirmar Salida
+      }
+    </button>
+  </div>
+</app-modal>

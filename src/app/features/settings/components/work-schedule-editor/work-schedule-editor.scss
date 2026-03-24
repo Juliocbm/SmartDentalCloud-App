@@ -21,7 +21,7 @@
 
   .schedule-header {
     display: grid;
-    grid-template-columns: 1fr 80px 150px 150px;
+    grid-template-columns: 1fr 80px 130px 130px 130px 130px 110px;
     gap: var(--spacing-md);
     padding: var(--spacing-md) var(--spacing-lg);
     background: var(--surface-secondary);
@@ -35,7 +35,7 @@
 
   .schedule-row {
     display: grid;
-    grid-template-columns: 1fr 80px 150px 150px;
+    grid-template-columns: 1fr 80px 130px 130px 130px 130px 110px;
     gap: var(--spacing-md);
     padding: var(--spacing-md) var(--spacing-lg);
     align-items: center;
@@ -125,6 +125,11 @@
     font-size: var(--font-size-sm);
   }
 
+  .slot-select {
+    padding: 8px 32px 8px 12px;
+    font-size: var(--font-size-sm);
+  }
+
   .time-disabled {
     color: var(--text-muted);
     font-size: var(--font-size-sm);
@@ -133,25 +138,39 @@
   }
 
   .validation-error {
-    position: absolute;
-    right: var(--spacing-lg);
-    top: 50%;
-    transform: translateY(-50%);
+    grid-column: 1 / -1;
     color: var(--error-600);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
+    padding: var(--spacing-xs) 0;
+  }
+
+  .slot-warning {
+    grid-column: 1 / -1;
+    color: var(--warning-600);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) 0;
   }
 }
 
 @media (max-width: 768px) {
   .work-schedule-editor {
+    .schedule-table {
+      overflow-x: auto;
+    }
+
     .schedule-header,
     .schedule-row {
-      grid-template-columns: 1fr 60px 110px 110px;
+      grid-template-columns: 120px 60px 110px 110px 110px 110px 90px;
       padding: var(--spacing-sm) var(--spacing-md);
+      min-width: 800px;
     }
   }
 }

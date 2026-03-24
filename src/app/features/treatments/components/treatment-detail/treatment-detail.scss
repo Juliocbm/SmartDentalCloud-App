@@ -312,6 +312,12 @@
   font-weight: var(--font-weight-normal);
 }
 
+.info-hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-left: var(--spacing-sm);
+}
+
 .inline-loading {
   display: flex;
   align-items: center;

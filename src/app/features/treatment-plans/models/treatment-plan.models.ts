@@ -76,12 +76,19 @@ export interface TreatmentPlanItem {
   discount?: number;
   status: string;
   progressPercentage: number;
+  toothNumber?: string;
+  surface?: string;
+  quadrant?: number;
   displayOrder: number;
   treatmentPhase?: string;
   linkedTreatmentId?: string;
   linkedTreatmentStatus?: string;
   estimatedDate?: Date;
   completedAt?: Date;
+  // Facturación
+  isBilled: boolean;
+  invoiceId?: string;
+  invoiceNumber?: string;
 }
 
 export interface TreatmentPlan {
@@ -106,6 +113,8 @@ export interface TreatmentPlan {
   rejectedAt?: Date;
   rejectedByName?: string;
   rejectionReason?: string;
+  assignedDoctorId?: string;
+  assignedDoctorName?: string;
   createdAt: Date;
   createdByName?: string;
   totalItems: number;
@@ -113,6 +122,8 @@ export interface TreatmentPlan {
   inProgressItems: number;
   pendingItems: number;
   overallProgressPercentage: number;
+  billedItemsCount: number;
+  totalBilledAmount: number;
   items: TreatmentPlanItem[];
 }
 
@@ -127,6 +138,9 @@ export interface CreateTreatmentPlanItemRequest {
   discount?: number;
   treatmentPhase?: string;
   estimatedDate?: string;
+  toothNumber?: string;
+  surface?: string;
+  quadrant?: number;
 }
 
 export interface CreateTreatmentPlanRequest {
@@ -137,6 +151,7 @@ export interface CreateTreatmentPlanRequest {
   patientDiagnosisId?: string;
   estimatedStartDate?: string;
   estimatedEndDate?: string;
+  assignedDoctorId?: string;
   items: CreateTreatmentPlanItemRequest[];
 }
 
@@ -147,6 +162,7 @@ export interface UpdateTreatmentPlanRequest {
   patientDiagnosisId?: string;
   estimatedStartDate?: string;
   estimatedEndDate?: string;
+  assignedDoctorId?: string;
 }
 
 export interface AddPlanItemRequest {
@@ -158,6 +174,9 @@ export interface AddPlanItemRequest {
   discount?: number;
   treatmentPhase?: string;
   estimatedDate?: string;
+  toothNumber?: string;
+  surface?: string;
+  quadrant?: number;
 }
 
 export interface UpdatePlanItemRequest {
@@ -169,6 +188,9 @@ export interface UpdatePlanItemRequest {
   discount?: number;
   treatmentPhase?: string;
   estimatedDate?: string;
+  toothNumber?: string;
+  surface?: string;
+  quadrant?: number;
 }
 
 export interface RejectPlanRequest {

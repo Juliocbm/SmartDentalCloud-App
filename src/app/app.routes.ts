@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard, permissionGuard } from './core/guards/auth.guard';
 import { featureGuard } from './core/guards/feature.guard';
+import { featuresLoaderGuard } from './core/guards/features-loader.guard';
 import { PERMISSIONS } from './core/services/permission.service';
 
 export const routes: Routes = [
@@ -49,7 +50,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./shared/components/layout/layout').then(m => m.LayoutComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, featuresLoaderGuard],
     children: [
       {
         path: '',
@@ -99,6 +100,12 @@ export const routes: Routes = [
         path: 'prescriptions',
         canActivate: [permissionGuard(PERMISSIONS.PrescriptionsView)],
         loadChildren: () => import('./features/prescriptions/prescriptions.routes').then(m => m.PRESCRIPTIONS_ROUTES)
+      },
+      {
+        path: 'consultation-notes',
+        canActivate: [permissionGuard(PERMISSIONS.ConsultationNotesView)],
+        loadChildren: () => import('./features/consultation-notes/consultation-notes.routes').then(m => m.CONSULTATION_NOTES_ROUTES),
+        title: 'Notas de Consulta'
       },
       {
         path: 'dentists',

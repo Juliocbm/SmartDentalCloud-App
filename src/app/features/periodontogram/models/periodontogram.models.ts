@@ -302,7 +302,8 @@ export function toEditableTeeth(apiTeeth: PeriodontogramTooth[]): EditableTooth[
     tooth.plaqueIndex = api.plaqueIndex;
 
     for (const site of api.siteMeasurements) {
-      const targetArr = site.surface === 'Buccal' ? tooth.buccalSites : tooth.lingualSites;
+      const targetArr = (site.surface === 'Buccal' || site.surface === 'Vestibular')
+        ? tooth.buccalSites : tooth.lingualSites;
       const target = targetArr.find(s => s.site === site.site);
       if (target) {
         target.pd = site.probingDepth;

@@ -22,7 +22,6 @@
   }
 
   @if (showLocationSelector()) {
-    <!-- Selector de ubicación (golden rule) -->
     <app-location-autocomplete
       [selectedLocationId]="selectedLocationId()"
       placeholder="Seleccionar sucursal..."
@@ -44,6 +43,9 @@
         <span class="col-toggle">Abierto</span>
         <span class="col-time">Hora Inicio</span>
         <span class="col-time">Hora Fin</span>
+        <span class="col-time">Inicio Almuerzo</span>
+        <span class="col-time">Fin Almuerzo</span>
+        <span class="col-slot">Duración Slot</span>
       </div>
 
       @for (day of schedule(); track day.dayOfWeek) {
@@ -92,11 +94,70 @@
             }
           </span>
 
+          <span class="col-time">
+            @if (day.isOpen) {
+              <select
+                class="form-input time-select"
+                [ngModel]="day.lunchStartTime"
+                (ngModelChange)="updateLunchStartTime(day.dayOfWeek, $event)">
+                <option [ngValue]="null">—</option>
+                @for (time of timeOptions; track time) {
+                  <option [value]="time">{{ time }}</option>
+                }
+              </select>
+            } @else {
+              <span class="time-disabled">—</span>
+            }
+          </span>
+
+          <span class="col-time">
+            @if (day.isOpen) {
+              <select
+                class="form-input time-select"
+                [ngModel]="day.lunchEndTime"
+                (ngModelChange)="updateLunchEndTime(day.dayOfWeek, $event)">
+                <option [ngValue]="null">—</option>
+                @for (time of timeOptions; track time) {
+                  <option [value]="time">{{ time }}</option>
+                }
+              </select>
+            } @else {
+              <span class="time-disabled">—</span>
+            }
+          </span>
+
+          <span class="col-slot">
+            @if (day.isOpen) {
+              <select
+                class="form-input slot-select"
+                [ngModel]="day.slotDurationMinutes"
+                (ngModelChange)="updateSlotDuration(day.dayOfWeek, +$event)">
+                @for (opt of slotDurationOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            } @else {
+              <span class="time-disabled">—</span>
+            }
+          </span>
+
           @if (hasValidationError(day)) {
-            <span class="validation-error">
+            <div class="validation-error">
               <i class="fa-solid fa-circle-exclamation"></i>
               La hora de fin debe ser posterior al inicio
-            </span>
+            </div>
+          }
+          @if (hasLunchValidationError(day)) {
+            <div class="validation-error">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              El horario de almuerzo debe estar dentro del horario de atención
+            </div>
+          }
+          @if (getSlotWarning(day); as warning) {
+            <div class="slot-warning">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              {{ warning }}
+            </div>
           }
         </div>
       }

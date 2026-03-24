@@ -42,6 +42,11 @@ export const REPORTS_ROUTES: Routes = [
     title: 'Servicios Más Solicitados'
   },
   {
+    path: 'billing',
+    loadComponent: () => import('./components/billing-reports/billing-reports').then(m => m.BillingReportsComponent),
+    title: 'Reportes de Producción'
+  },
+  {
     path: 'anonymized-export',
     loadComponent: () => import('../patients/components/anonymized-export/anonymized-export').then(m => m.AnonymizedExportComponent),
     title: 'Exportación Anonimizada'

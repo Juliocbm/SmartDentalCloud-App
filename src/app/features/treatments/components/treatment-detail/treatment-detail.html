@@ -24,6 +24,17 @@
             </span>
           }
         }
+        @if (t.isBilled) {
+          <a class="badge badge-success badge-link" [routerLink]="['/invoices', t.invoiceId]">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            Facturado — {{ t.invoiceNumber }}
+          </a>
+        } @else if (t.status === TreatmentStatus.Completed) {
+          <span class="badge badge-warning">
+            <i class="fa-solid fa-file-circle-exclamation"></i>
+            Sin Facturar
+          </span>
+        }
       }
     </div>
     <div actions>
@@ -36,6 +47,12 @@
             <i class="fa-solid fa-pen"></i>
             Editar
           </a>
+        }
+        @if (permissionService.hasPermission('treatments.delete')) {
+          <button class="btn btn-outline btn-danger" (click)="onDelete()" [disabled]="actionLoading()">
+            <i class="fa-solid fa-trash"></i>
+            Eliminar
+          </button>
         }
         @if (canPutOnHold() && permissionService.hasPermission('treatments.edit')) {
           <button class="btn btn-outline btn-warning" (click)="onPutOnHold()" [disabled]="actionLoading()">
@@ -64,6 +81,12 @@
               <i class="fa-solid fa-circle-check"></i>
               Completar
             }
+          </button>
+        }
+        @if (t.status === TreatmentStatus.Completed && !t.isBilled && permissionService.hasPermission('invoices.create')) {
+          <button class="btn btn-outline btn-primary" (click)="onGenerateInvoice()">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            Generar Factura
           </button>
         }
       }
@@ -192,7 +215,10 @@
                 </div>
                 <div class="info-row">
                   <span class="info-label">Costo:</span>
-                  <span class="info-value price-value">{{ formatCurrency(t.serviceCost) }}</span>
+                  <span class="info-value price-value">{{ formatCurrency(t.cost) }}</span>
+                  @if (t.serviceCost != null && t.serviceCost !== t.cost) {
+                    <span class="info-hint">Catálogo: {{ formatCurrency(t.serviceCost) }}</span>
+                  }
                 </div>
                 @if (t.patientDiagnosisId) {
                   <div class="info-row">

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PaymentsService } from '../../services/payments.service';
 import { Payment, PAYMENT_METHOD_CONFIG } from '../../models/payment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -19,13 +20,17 @@ import { DateFormatService } from '../../../../core/services/date-format.service
 })
 export class PaymentDetailComponent implements OnInit {
   showAuditModal = signal(false);
+  showDeleteConfirm = signal(false);
+  deleting = signal(false);
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private paymentsService = inject(PaymentsService);
   private logger = inject(LoggingService);
+  private notifications = inject(NotificationService);
   private location = inject(Location);
   permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -76,5 +81,33 @@ export class PaymentDetailComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  confirmDelete(): void {
+    this.showDeleteConfirm.set(true);
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm.set(false);
+  }
+
+  deletePayment(): void {
+    const pay = this.payment();
+    if (!pay) return;
+
+    this.deleting.set(true);
+    this.showDeleteConfirm.set(false);
+
+    this.paymentsService.delete(pay.id).subscribe({
+      next: () => {
+        this.notifications.success('Pago eliminado correctamente. El balance de la factura ha sido recalculado.');
+        this.router.navigate(['/payments']);
+      },
+      error: (err) => {
+        this.logger.error('Error deleting payment:', err);
+        this.notifications.error(getApiErrorMessage(err, 'Error al eliminar el pago'));
+        this.deleting.set(false);
+      }
+    });
   }
 }

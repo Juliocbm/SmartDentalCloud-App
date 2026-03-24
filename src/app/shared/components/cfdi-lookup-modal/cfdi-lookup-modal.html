@@ -1,0 +1,96 @@
+<app-modal
+  [title]="title()"
+  [icon]="icon()"
+  size="lg"
+  [closeOnBackdrop]="false"
+  (closed)="onClose()">
+
+  <div class="cfdi-lookup-body">
+    <p class="cfdi-lookup-description">{{ subtitle() }}</p>
+
+    <div class="cfdi-search">
+      <div class="search-input-wrapper">
+        <i class="fa-solid fa-search search-icon"></i>
+        <input
+          type="text"
+          class="form-input search-input"
+          placeholder="Buscar por paciente, RFC, folio o UUID..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="onSearchChange($event)" />
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="cfdi-loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Cargando CFDI timbrados...</span>
+      </div>
+    } @else if (filteredCfdis().length === 0) {
+      <div class="cfdi-empty">
+        <i class="fa-solid fa-file-invoice"></i>
+        <p>
+          @if (allCfdis().length === 0) {
+            No hay CFDI timbrados disponibles en este momento.
+          } @else {
+            No se encontraron CFDI con ese criterio de búsqueda.
+          }
+        </p>
+      </div>
+    } @else {
+      <div class="cfdi-list">
+        @for (cfdi of filteredCfdis(); track trackByCfdiId($index, cfdi)) {
+          <div
+            class="cfdi-item"
+            [class.selected]="selectedCfdi()?.id === cfdi.id"
+            (click)="selectCfdi(cfdi)"
+            role="option"
+            [attr.aria-selected]="selectedCfdi()?.id === cfdi.id">
+            <div class="cfdi-item__radio">
+              <div class="radio-circle" [class.checked]="selectedCfdi()?.id === cfdi.id">
+                @if (selectedCfdi()?.id === cfdi.id) {
+                  <i class="fa-solid fa-check"></i>
+                }
+              </div>
+            </div>
+            <div class="cfdi-item__content">
+              <div class="cfdi-item__header">
+                <span class="cfdi-item__folio">{{ formatFolio(cfdi) || '—' }}</span>
+                <span class="cfdi-item__amount">{{ formatCurrency(cfdi.total) }}</span>
+              </div>
+              <div class="cfdi-item__meta">
+                <span class="cfdi-item__patient">{{ cfdi.receptorNombre }}</span>
+                <span class="cfdi-item__date">{{ formatDate(cfdi.fechaTimbrado ?? cfdi.fecha) }}</span>
+              </div>
+              @if (cfdi.uuid) {
+                <div class="cfdi-item__uuid">
+                  <i class="fa-solid fa-fingerprint"></i>
+                  <span>{{ cfdi.uuid }}</span>
+                </div>
+              }
+            </div>
+            <div class="cfdi-item__status">
+              <span class="badge badge-success">
+                <i class="fa-solid fa-stamp"></i>
+                Timbrada
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div modal-footer>
+    <button class="btn btn-outline" (click)="onClose()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button
+      class="btn btn-primary"
+      [disabled]="!selectedCfdi()"
+      (click)="onConfirm()">
+      <i class="fa-solid fa-check"></i>
+      Confirmar Selección
+    </button>
+  </div>
+</app-modal>

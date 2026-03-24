@@ -44,6 +44,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
   searchTerm = signal('');
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
   filterCategory = signal<string>('all');
+  filterStock = signal<'all' | 'low'>('all');
+
+  sortColumn = signal<'code' | 'name' | 'categoryName' | 'currentStock' | 'reorderPoint' | 'unitCost' | 'isActive' | ''>('');
+  sortDirection = signal<'asc' | 'desc'>('asc');
 
   // Pagination
   currentPage = signal(1);
@@ -125,6 +129,35 @@ export class ProductListComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(product => product.categoryId === categoryId);
     }
 
+    const stock = this.filterStock();
+    if (stock === 'low') {
+      filtered = filtered.filter(product =>
+        (product.currentStock ?? 0) <= product.reorderPoint
+      );
+    }
+
+    const col = this.sortColumn();
+    if (col) {
+      filtered.sort((a, b) => {
+        let aVal: any = (a as any)[col];
+        let bVal: any = (b as any)[col];
+
+        if (col === 'isActive') {
+          aVal = a.isActive ? 1 : 0;
+          bVal = b.isActive ? 1 : 0;
+        }
+
+        if (typeof aVal === 'string') {
+          aVal = aVal.toLowerCase();
+          bVal = bVal.toLowerCase();
+        }
+
+        if (aVal < bVal) return this.sortDirection() === 'asc' ? -1 : 1;
+        if (aVal > bVal) return this.sortDirection() === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
     this.filteredProducts.set(filtered);
   }
 
@@ -142,6 +175,27 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.filterCategory.set(value);
     this.currentPage.set(1);
     this.applyFilters();
+  }
+
+  onStockFilterChange(value: 'all' | 'low'): void {
+    this.filterStock.set(value);
+    this.currentPage.set(1);
+    this.applyFilters();
+  }
+
+  sortBy(column: 'code' | 'name' | 'categoryName' | 'currentStock' | 'reorderPoint' | 'unitCost' | 'isActive'): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.applyFilters();
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
+    return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   onPageChange(page: number): void {

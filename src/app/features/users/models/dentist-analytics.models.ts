@@ -13,6 +13,19 @@ export interface DentistDashboardMetrics {
   avgRevenuePerDentist: number;
 }
 
+export interface DentistIndividualMetrics {
+  dentistId: string;
+  dentistName: string;
+  specialty: string;
+  appointmentsCompleted: number;
+  appointmentsCancelled: number;
+  noShowCount: number;
+  occupancyRate: number;
+  completionRate: number;
+  revenue: number;
+  treatmentsCompleted: number;
+}
+
 export interface DentistRanking {
   dentistId: string;
   dentistName: string;

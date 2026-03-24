@@ -23,6 +23,8 @@ import { PatientClinicalSummaryComponent } from '../../../../shared/components/p
 import { InformedConsentsService, ConsentCheck } from '../../../patients/services/informed-consents.service';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { NavigationStateService } from '../../../../core/services/navigation-state.service';
+import { InvoiceFormContextService } from '../../../invoices/services/invoice-form-context.service';
+import { TREATMENT_INVOICE_CONTEXT } from '../../../invoices/models/invoice-form-context.model';
 
 @Component({
   selector: 'app-treatment-detail',
@@ -44,6 +46,7 @@ export class TreatmentDetailComponent implements OnInit {
   private allergiesService = inject(PatientAllergiesService);
   private consentsService = inject(InformedConsentsService);
   private navigationState = inject(NavigationStateService);
+  private invoiceContextService = inject(InvoiceFormContextService);
   permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -379,6 +382,38 @@ export class TreatmentDetailComponent implements OnInit {
       style: 'currency',
       currency: 'MXN'
     }).format(value);
+  }
+
+  onGenerateInvoice(): void {
+    const t = this.treatment();
+    if (!t) return;
+    this.invoiceContextService.setContext(
+      TREATMENT_INVOICE_CONTEXT(t.patientId, t.patientName || '', t.id)
+    );
+    this.router.navigate(['/invoices', 'new']);
+  }
+
+  async onDelete(): Promise<void> {
+    const t = this.treatment();
+    if (!t || this.actionLoading()) return;
+
+    const confirmed = await this.notifications.confirm(
+      '¿Eliminar este tratamiento? Esta acción no se puede deshacer.'
+    );
+    if (!confirmed) return;
+
+    this.actionLoading.set(true);
+    this.treatmentsService.delete(t.id).subscribe({
+      next: () => {
+        this.notifications.success('Tratamiento eliminado exitosamente');
+        this.router.navigate(['/treatments']);
+      },
+      error: (err) => {
+        this.logger.error('Error deleting treatment:', err);
+        this.notifications.error(getApiErrorMessage(err));
+        this.actionLoading.set(false);
+      }
+    });
   }
 
   goBack(): void {

@@ -85,6 +85,7 @@ export const PERMISSIONS = {
   // Pagos
   PaymentsView: 'payments.view',
   PaymentsCreate: 'payments.create',
+  PaymentsDelete: 'payments.delete',
 
   // Usuarios
   UsersView: 'users.view',

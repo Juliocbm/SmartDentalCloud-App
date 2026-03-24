@@ -4,11 +4,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ServicesService } from '../../services/services.service';
-import { SERVICE_CATEGORIES } from '../../models/service.models';
+import { SERVICE_CATEGORIES, ServiceCategory, TAX_TYPES } from '../../models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
-import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import type { SelectOption } from '../../../../shared/components/form-select/form-select';
 import { SatClaveAutocompleteComponent, SatClaveItem } from '../../../../shared/components/sat-clave-autocomplete/sat-clave-autocomplete';
 
 @Component({
@@ -18,7 +18,6 @@ import { SatClaveAutocompleteComponent, SatClaveItem } from '../../../../shared/
     CommonModule,
     ReactiveFormsModule,
     PageHeaderComponent,
-    FormSelectComponent,
     SatClaveAutocompleteComponent
   ],
   templateUrl: './service-form.html',
@@ -40,6 +39,11 @@ export class ServiceFormComponent implements OnInit {
 
   // Constants
   categoryOptions: SelectOption[] = SERVICE_CATEGORIES;
+  taxTypeOptions: SelectOption[] = TAX_TYPES;
+
+  // Dynamic categories
+  dynamicCategories = signal<ServiceCategory[]>([]);
+  loadingCategories = signal(false);
 
   // SAT catalog selections
   selectedClaveProdServ = signal<string | null>(null);
@@ -70,6 +74,7 @@ export class ServiceFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.loadCategories();
     this.checkEditMode();
   }
 
@@ -79,7 +84,12 @@ export class ServiceFormComponent implements OnInit {
       cost: [0, [Validators.required, Validators.min(0)]],
       durationMinutes: [null],
       description: [''],
+      code: ['', Validators.maxLength(50)],
       category: [''],
+      categoryId: [null],
+      taxType: ['IVA16'],
+      calendarColor: [''],
+      requiresConsent: [false],
       isActive: [true],
       requiresFollowUp: [false],
       followUpDays: [null],
@@ -110,7 +120,12 @@ export class ServiceFormComponent implements OnInit {
           cost: service.cost,
           durationMinutes: service.durationMinutes || null,
           description: service.description || '',
+          code: service.code || '',
           category: service.category || '',
+          categoryId: service.categoryId || null,
+          taxType: service.taxType || 'IVA16',
+          calendarColor: service.calendarColor || '',
+          requiresConsent: service.requiresConsent || false,
           isActive: service.isActive,
           requiresFollowUp: service.requiresFollowUp,
           followUpDays: service.followUpDays || null,
@@ -134,6 +149,19 @@ export class ServiceFormComponent implements OnInit {
         this.logger.error('Error loading service for edit:', err);
         this.error.set(getApiErrorMessage(err));
         this.loading.set(false);
+      }
+    });
+  }
+
+  private loadCategories(): void {
+    this.loadingCategories.set(true);
+    this.servicesService.getAllCategories().subscribe({
+      next: (categories) => {
+        this.dynamicCategories.set(categories.filter(c => c.isActive));
+        this.loadingCategories.set(false);
+      },
+      error: () => {
+        this.loadingCategories.set(false);
       }
     });
   }

@@ -96,4 +96,23 @@ export class SettingsService {
   deleteScheduleException(id: string): Observable<void> {
     return this.api.delete<void>(`/schedule-exceptions/${id}`);
   }
+
+  getInventoryAlertSettings(): Observable<InventoryAlertSettings> {
+    return this.api.get<InventoryAlertSettings>('/tenants/inventory-alert-settings');
+  }
+
+  updateInventoryAlertSettings(settings: InventoryAlertSettings): Observable<InventoryAlertSettings> {
+    return this.api.put<InventoryAlertSettings>('/tenants/inventory-alert-settings', settings);
+  }
+}
+
+export interface InventoryAlertSettings {
+  lowStockAlertsEnabled: boolean;
+  expiryAlertsEnabled: boolean;
+  reorderAlertsEnabled: boolean;
+  expiryAlertDaysBefore: number;
+  lowStockPercentageThreshold: number;
+  notificationEmailList: string;
+  notifyByEmail: boolean;
+  notifyInApp: boolean;
 }

@@ -3,7 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { ServicesService } from '../../services/services.service';
-import { DentalServiceItem, SERVICE_CATEGORIES } from '../../models/service.models';
+import { DentalServiceItem, SERVICE_CATEGORIES, TreatmentSummary, ServiceStatistics, PriceChange } from '../../models/service.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -33,6 +33,17 @@ export class ServiceDetailComponent implements OnInit {
   error = signal<string | null>(null);
   showDeleteConfirm = signal(false);
 
+  // Analytics
+  linkedTreatments = signal<TreatmentSummary[]>([]);
+  statistics = signal<ServiceStatistics | null>(null);
+  priceHistory = signal<PriceChange[]>([]);
+  loadingTreatments = signal(false);
+  loadingStats = signal(false);
+  loadingHistory = signal(false);
+  showTreatmentsSection = signal(false);
+  showStatsSection = signal(false);
+  showHistorySection = signal(false);
+
   breadcrumbs: BreadcrumbItem[] = [
     { label: 'Servicios', route: '/services' },
     { label: 'Detalle' }
@@ -40,7 +51,10 @@ export class ServiceDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) this.loadService(id);
+    if (id) {
+      this.loadService(id);
+      this.loadAnalytics(id);
+    }
   }
 
   private loadService(id: string): void {
@@ -57,9 +71,86 @@ export class ServiceDetailComponent implements OnInit {
     });
   }
 
+  private loadAnalytics(serviceId: string): void {
+    this.loadLinkedTreatments(serviceId);
+    this.loadStatistics(serviceId);
+    this.loadPriceHistory(serviceId);
+  }
+
+  private loadLinkedTreatments(serviceId: string): void {
+    this.loadingTreatments.set(true);
+    this.servicesService.getLinkedTreatments(serviceId).subscribe({
+      next: (data) => {
+        this.linkedTreatments.set(data);
+        this.loadingTreatments.set(false);
+      },
+      error: () => {
+        this.loadingTreatments.set(false);
+      }
+    });
+  }
+
+  private loadStatistics(serviceId: string): void {
+    this.loadingStats.set(true);
+    this.servicesService.getStatistics(serviceId).subscribe({
+      next: (data) => {
+        this.statistics.set(data);
+        this.loadingStats.set(false);
+      },
+      error: () => {
+        this.loadingStats.set(false);
+      }
+    });
+  }
+
+  toggleTreatmentsSection(): void {
+    this.showTreatmentsSection.set(!this.showTreatmentsSection());
+  }
+
+  toggleStatsSection(): void {
+    this.showStatsSection.set(!this.showStatsSection());
+  }
+
+  toggleHistorySection(): void {
+    this.showHistorySection.set(!this.showHistorySection());
+  }
+
+  private loadPriceHistory(serviceId: string): void {
+    this.loadingHistory.set(true);
+    this.servicesService.getPriceHistory(serviceId).subscribe({
+      next: (data) => {
+        this.priceHistory.set(data);
+        this.loadingHistory.set(false);
+      },
+      error: () => {
+        this.loadingHistory.set(false);
+      }
+    });
+  }
+
   getCategoryLabel(value?: string): string {
     if (!value) return '—';
     return SERVICE_CATEGORIES.find(c => c.value === value)?.label || value;
+  }
+
+  getStatusLabel(status: string): string {
+    const statusMap: Record<string, string> = {
+      'Scheduled': 'Programado',
+      'InProgress': 'En Progreso',
+      'Completed': 'Completado',
+      'Cancelled': 'Cancelado'
+    };
+    return statusMap[status] || status;
+  }
+
+  getStatusClass(status: string): string {
+    const classMap: Record<string, string> = {
+      'Scheduled': 'badge-info',
+      'InProgress': 'badge-warning',
+      'Completed': 'badge-success',
+      'Cancelled': 'badge-neutral'
+    };
+    return classMap[status] || 'badge-neutral';
   }
 
   confirmDelete(): void {

@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AbstractControl, FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientAutocompleteComponent } from '../../../../shared/components/patient-autocomplete/patient-autocomplete';
@@ -10,11 +10,18 @@ import { ServiceSelectComponent } from '../service-select/service-select';
 import { DentalService } from '../../models/service.models';
 import { InvoicesService } from '../../services/invoices.service';
 import { CreateInvoiceRequest, CreateInvoiceItemRequest, CFDI_USO_OPTIONS, CFDI_METODO_PAGO_OPTIONS, CFDI_FORMA_PAGO_OPTIONS } from '../../models/invoice.models';
+import { ModalService } from '../../../../shared/services/modal.service';
+import { UnbilledTreatmentsModalComponent, UnbilledTreatmentsModalData } from '../unbilled-treatments-modal/unbilled-treatments-modal';
+import { UnbilledTreatment } from '../../../treatments/models/treatment.models';
+import { TreatmentsService } from '../../../treatments/services/treatments.service';
+import { TreatmentPlansService } from '../../../treatment-plans/services/treatment-plans.service';
+import { PatientsService } from '../../../patients/services/patients.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 import { SatClaveAutocompleteComponent, SatClaveItem } from '../../../../shared/components/sat-clave-autocomplete/sat-clave-autocomplete';
+import { InvoiceFormContextService } from '../../services/invoice-form-context.service';
 
 @Component({
   selector: 'app-invoice-form',
@@ -25,16 +32,30 @@ import { SatClaveAutocompleteComponent, SatClaveItem } from '../../../../shared/
 })
 export class InvoiceFormComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private invoicesService = inject(InvoicesService);
+  private modalService = inject(ModalService);
   private notifications = inject(NotificationService);
+  private treatmentsService = inject(TreatmentsService);
+  private treatmentPlansService = inject(TreatmentPlansService);
+  private patientsService = inject(PatientsService);
   private logger = inject(LoggingService);
+  private contextService = inject(InvoiceFormContextService);
 
   // State
   loading = signal(false);
   error = signal<string | null>(null);
   form!: FormGroup;
   selectedPatient = signal<PatientSearchResult | null>(null);
+  isPatientLocked = signal(false);
+
+  // Context Service / QueryParams from navigation
+  private presetAppointmentId: string | null = null;
+
+  backRoute = computed(() => this.contextService.context().returnUrl);
+  isAdvanceMode = signal(false);
+  advancePlanNumber = signal<string | null>(null);
 
   // Item Modal State
   showItemModal = signal(false);
@@ -56,6 +77,101 @@ export class InvoiceFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.loadContext();
+    this.handleQueryParams();
+  }
+
+  private loadContext(): void {
+    const context = this.contextService.getCurrentContext();
+    if (context.preselectedPatientId) {
+      const result: PatientSearchResult = {
+        id: context.preselectedPatientId,
+        name: context.preselectedPatientName || '',
+        email: '',
+        phone: ''
+      };
+      this.selectedPatient.set(result);
+      this.isPatientLocked.set(context.lockPatient);
+      this.form.patchValue({ patientId: context.preselectedPatientId });
+    }
+  }
+
+  private handleQueryParams(): void {
+    const params = this.route.snapshot.queryParams;
+    const patientId = params['patientId'];
+    this.presetAppointmentId = params['appointmentId'] || null;
+    const treatmentPlanId = params['treatmentPlanId'] || null;
+    const mode = params['mode'] || null;
+
+    // If patient already loaded from Context Service, only handle plan items
+    const contextPatientId = this.selectedPatient()?.id;
+    if (contextPatientId && treatmentPlanId) {
+      if (mode === 'advance') {
+        this.loadAdvanceItems(treatmentPlanId);
+      } else {
+        this.loadUnbilledFromPlan(contextPatientId, treatmentPlanId);
+      }
+      return;
+    }
+
+    // Fallback: load patient from queryParams (legacy/direct URL)
+    if (patientId) {
+      this.form.patchValue({ patientId });
+      this.patientsService.getById(patientId).subscribe({
+        next: (patient) => {
+          const result: PatientSearchResult = { id: patient.id, name: `${patient.firstName} ${patient.lastName}`, email: patient.email || '', phone: patient.phoneNumber || '' };
+          this.selectedPatient.set(result);
+
+          if (treatmentPlanId && mode === 'advance') {
+            this.loadAdvanceItems(treatmentPlanId);
+          } else if (treatmentPlanId) {
+            this.loadUnbilledFromPlan(patientId, treatmentPlanId);
+          }
+        },
+        error: () => {}
+      });
+    }
+  }
+
+  private loadUnbilledFromPlan(patientId: string, treatmentPlanId: string): void {
+    this.treatmentsService.getUnbilledByPatient(patientId, undefined, treatmentPlanId).subscribe({
+      next: (treatments) => {
+        if (treatments.length > 0) {
+          this.addTreatmentsAsItems(treatments);
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  private loadAdvanceItems(treatmentPlanId: string): void {
+    this.treatmentPlansService.getById(treatmentPlanId).subscribe({
+      next: (plan) => {
+        this.isAdvanceMode.set(true);
+        this.advancePlanNumber.set(plan.planNumber || plan.title);
+        const pendingItems = plan.items.filter(i => i.status === 'Pending' || i.status === 'InProgress');
+        for (const item of pendingItems) {
+          const group = this.fb.group({
+            treatmentId: [''],
+            appointmentId: [''],
+            treatmentPlanItemId: [item.id],
+            description: [item.serviceName || item.description, [Validators.required, Validators.minLength(3)]],
+            quantity: [1, [Validators.required, Validators.min(0.01)]],
+            unitPrice: [item.estimatedCost - (item.discount || 0), [Validators.required, Validators.min(0)]],
+            discountPercentage: [0, [Validators.min(0), Validators.max(100)]],
+            taxRate: [16, [Validators.min(0), Validators.max(100)]],
+            claveProdServ: ['85122001'],
+            claveUnidad: ['E48'],
+            noIdentificacion: ['']
+          });
+          this.items.push(group);
+        }
+        if (pendingItems.length > 0) {
+          this.notifications.success(`${pendingItems.length} concepto(s) importado(s) del plan como anticipo.`);
+        }
+      },
+      error: () => {}
+    });
   }
 
   private initForm(): void {
@@ -72,6 +188,8 @@ export class InvoiceFormComponent implements OnInit {
   private initItemForm(): void {
     this.itemForm = this.fb.group({
       treatmentId: [''],
+      appointmentId: [''],
+      treatmentPlanItemId: [''],
       description: ['', [Validators.required, Validators.minLength(3)]],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       unitPrice: [0, [Validators.required, Validators.min(0)]],
@@ -86,6 +204,8 @@ export class InvoiceFormComponent implements OnInit {
   private createItemGroup(): FormGroup {
     return this.fb.group({
       treatmentId: [''],
+      appointmentId: [''],
+      treatmentPlanItemId: [''],
       description: ['', [Validators.required, Validators.minLength(3)]],
       quantity: [1, [Validators.required, Validators.min(0.01)]],
       unitPrice: [0, [Validators.required, Validators.min(0)]],
@@ -147,6 +267,8 @@ export class InvoiceFormComponent implements OnInit {
     const v = this.itemForm.value;
     return this.fb.group({
       treatmentId: [v.treatmentId],
+      appointmentId: [v.appointmentId],
+      treatmentPlanItemId: [v.treatmentPlanItemId],
       description: [v.description, [Validators.required, Validators.minLength(3)]],
       quantity: [v.quantity, [Validators.required, Validators.min(0.01)]],
       unitPrice: [v.unitPrice, [Validators.required, Validators.min(0)]],
@@ -205,6 +327,8 @@ export class InvoiceFormComponent implements OnInit {
       formaPago: formValue.formaPago || undefined,
       items: formValue.items.map((item: CreateInvoiceItemRequest) => ({
         treatmentId: item.treatmentId || undefined,
+        appointmentId: item.appointmentId || undefined,
+        treatmentPlanItemId: item.treatmentPlanItemId || undefined,
         description: item.description,
         quantity: item.quantity,
         unitPrice: item.unitPrice,
@@ -219,6 +343,7 @@ export class InvoiceFormComponent implements OnInit {
     this.invoicesService.create(request).subscribe({
       next: (invoice) => {
         this.notifications.success('Factura creada correctamente.');
+        this.contextService.resetContext();
         this.router.navigate(['/invoices', invoice.id]);
       },
       error: (err) => {
@@ -261,8 +386,55 @@ export class InvoiceFormComponent implements OnInit {
     }
   }
 
+  openImportTreatmentsModal(): void {
+    const patient = this.selectedPatient();
+    if (!patient) {
+      this.notifications.warning('Selecciona un paciente antes de importar tratamientos.');
+      return;
+    }
+
+    const ref = this.modalService.open<UnbilledTreatmentsModalData, UnbilledTreatment[]>(
+      UnbilledTreatmentsModalComponent,
+      {
+        data: {
+          patientId: patient.id,
+          patientName: patient.name
+        },
+        width: '700px'
+      }
+    );
+
+    ref.afterClosed().subscribe((selected) => {
+      if (selected && selected.length > 0) {
+        this.addTreatmentsAsItems(selected);
+      }
+    });
+  }
+
+  private addTreatmentsAsItems(treatments: UnbilledTreatment[]): void {
+    for (const t of treatments) {
+      const group = this.fb.group({
+        treatmentId: [t.id],
+        appointmentId: [t.appointmentId || ''],
+        treatmentPlanItemId: [t.treatmentPlanItemId || ''],
+        description: [t.serviceName || 'Tratamiento', [Validators.required, Validators.minLength(3)]],
+        quantity: [1, [Validators.required, Validators.min(0.01)]],
+        unitPrice: [t.cost, [Validators.required, Validators.min(0)]],
+        discountPercentage: [0, [Validators.min(0), Validators.max(100)]],
+        taxRate: [16, [Validators.min(0), Validators.max(100)]],
+        claveProdServ: [t.claveProdServ || '85122001'],
+        claveUnidad: [t.claveUnidad || 'E48'],
+        noIdentificacion: ['']
+      });
+      this.items.push(group);
+    }
+    this.notifications.success(`${treatments.length} tratamiento(s) importado(s) a la factura.`);
+  }
+
   onCancel(): void {
-    this.router.navigate(['/invoices']);
+    const returnUrl = this.contextService.getCurrentContext().returnUrl;
+    this.contextService.resetContext();
+    this.router.navigate([returnUrl]);
   }
 
   getFieldError(fieldName: string): string | null {

@@ -61,7 +61,11 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
   private elements: any = null;
 
   plans = signal<SubscriptionPlan[]>([]);
+  billingCycle = signal<'monthly' | 'yearly'>('monthly');
   STATUS_CONFIG = SUBSCRIPTION_STATUS_CONFIG;
+
+  maxDiscount = signal(0);
+  hasAnnualDiscount = signal(false);
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -97,7 +101,13 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
 
   private loadPlans(): void {
     this.onboardingService.getPlans().subscribe({
-      next: (plans) => this.plans.set(plans),
+      next: (plans) => {
+        this.plans.set(plans);
+        const discounts = plans.map(p => this.getAnnualDiscount(p));
+        const max = Math.max(...discounts, 0);
+        this.maxDiscount.set(max);
+        this.hasAnnualDiscount.set(max > 0);
+      },
       error: (err) => this.logger.error('Error loading plans:', err)
     });
   }
@@ -172,6 +182,24 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
   hasActiveSubscription(): boolean {
     const sub = this.subscription();
     return !!sub && (sub.status === 'Active' || sub.status === 'Trial');
+  }
+
+  getPlanPrice(plan: SubscriptionPlan): number {
+    if (this.billingCycle() === 'yearly' && plan.yearlyPrice) {
+      return plan.yearlyPrice;
+    }
+    return plan.monthlyPrice;
+  }
+
+  getAnnualDiscount(plan: SubscriptionPlan): number {
+    if (!plan.yearlyPrice) return 0;
+    const monthlyTotal = plan.monthlyPrice * 12;
+    if (plan.yearlyPrice >= monthlyTotal) return 0;
+    return Math.round((1 - plan.yearlyPrice / monthlyTotal) * 100);
+  }
+
+  toggleBillingCycle(cycle: 'monthly' | 'yearly'): void {
+    this.billingCycle.set(cycle);
   }
 
   // === Change Plan Flow ===

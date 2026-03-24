@@ -80,6 +80,7 @@ export class TreatmentFormComponent implements OnInit {
     this.form = this.fb.group({
       patientId: ['', Validators.required],
       serviceId: ['', Validators.required],
+      cost: [null, [Validators.min(0)]],
       startDate: [this.formatDateForInput(new Date()), Validators.required],
       endDate: [''],
       toothNumber: [''],
@@ -87,7 +88,7 @@ export class TreatmentFormComponent implements OnInit {
       quadrant: [null],
       isMultipleTooth: [false],
       status: [TreatmentStatus.InProgress],
-      duration: [null],
+      duration: [null, [Validators.min(1)]],
       patientDiagnosisId: [null],
       notes: ['']
     });
@@ -116,6 +117,7 @@ export class TreatmentFormComponent implements OnInit {
           quadrant: treatment.quadrant || null,
           isMultipleTooth: treatment.isMultipleTooth,
           status: treatment.status,
+          cost: treatment.cost || null,
           duration: treatment.duration || null,
           patientDiagnosisId: treatment.patientDiagnosisId || null,
           notes: treatment.notes || ''
@@ -174,6 +176,9 @@ export class TreatmentFormComponent implements OnInit {
   onServiceSelected(service: DentalService | null): void {
     this.selectedService.set(service);
     this.form.patchValue({ serviceId: service?.id || '' });
+    if (service?.cost && !this.form.get('cost')?.value) {
+      this.form.patchValue({ cost: service.cost });
+    }
     if (service?.durationMinutes) {
       this.form.patchValue({ duration: service.durationMinutes });
     }
@@ -194,7 +199,8 @@ export class TreatmentFormComponent implements OnInit {
       startDate: new Date(formValue.startDate).toISOString(),
       endDate: formValue.endDate ? new Date(formValue.endDate).toISOString() : undefined,
       quadrant: formValue.quadrant ? Number(formValue.quadrant) : undefined,
-      duration: formValue.duration ? Number(formValue.duration) : undefined
+      duration: formValue.duration ? Number(formValue.duration) : undefined,
+      cost: formValue.cost ? Number(formValue.cost) : undefined
     };
 
     if (this.isEditMode()) {

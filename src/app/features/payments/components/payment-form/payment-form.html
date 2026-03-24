@@ -100,6 +100,7 @@
             <app-date-picker
               formControlName="paidAt"
               [required]="true"
+              [maxDate]="today"
               [error]="isFieldInvalid('paidAt') ? getFieldError('paidAt') : null"
               placeholder="Seleccionar fecha de pago..."
             >

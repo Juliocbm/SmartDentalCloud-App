@@ -1,6 +1,6 @@
 import { Injectable, inject, computed, signal, effect } from '@angular/core';
 import { ThemeService } from './theme.service';
-import { ChartOptions } from 'chart.js';
+import type { ChartOptions } from 'chart.js'; // type-only import — no runtime chart.js in core bundle
 
 /**
  * Servicio de configuración global para Charts

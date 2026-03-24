@@ -5,6 +5,12 @@
     [icon]="'fa-user-doctor'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      <app-dentist-autocomplete
+        [selectedDentistId]="selectedDentist()?.id ?? null"
+        [selectedDentistName]="selectedDentist()?.name ?? null"
+        placeholder="Ver métricas de dentista..."
+        (dentistSelected)="onDentistSelected($event)"
+      ></app-dentist-autocomplete>
       <app-date-range-picker
         [showPresets]="true"
         [defaultPreset]="'this_month'"
@@ -163,6 +169,70 @@
         </div>
       }
     </div>
+
+    <!-- Métricas Individuales del Dentista Seleccionado -->
+    @if (selectedDentistMetrics() && featureService.hasFeature('AdvancedReports')) {
+      <div class="individual-dentist-section">
+        <div class="dash-section-header">
+          <div class="dash-section-header__info">
+            <h2 class="dash-section-header__title">
+              <i class="fa-solid fa-user-doctor"></i>
+              {{ selectedDentistMetrics()!.dentistName }}
+            </h2>
+            <span class="dash-section-header__badge">{{ selectedDentistMetrics()!.specialty }}</span>
+          </div>
+          <button class="btn btn-outline btn-sm" (click)="onDentistSelected(null)">
+            <i class="fa-solid fa-xmark"></i>
+            Limpiar filtro
+          </button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-card--primary">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Citas Completadas</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-calendar-check"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ selectedDentistMetrics()!.appointmentsCompleted }}</div>
+          </div>
+          <div class="kpi-card kpi-card--success">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Tasa Completación</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-chart-line"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ selectedDentistMetrics()!.completionRate }}%</div>
+          </div>
+          <div class="kpi-card kpi-card--info">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Tasa Ocupación</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-percentage"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ selectedDentistMetrics()!.occupancyRate }}%</div>
+          </div>
+          <div class="kpi-card kpi-card--warning">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Citas Canceladas</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-calendar-xmark"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ selectedDentistMetrics()!.appointmentsCancelled }}</div>
+          </div>
+          <div class="kpi-card kpi-card--success">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Ingresos (mes)</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-dollar-sign"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ formatCurrency(selectedDentistMetrics()!.revenue) }}</div>
+          </div>
+          <div class="kpi-card kpi-card--info">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Tratamientos</span>
+              <div class="kpi-card__icon"><i class="fa-solid fa-tooth"></i></div>
+            </div>
+            <div class="kpi-card__value">{{ selectedDentistMetrics()!.treatmentsCompleted }}</div>
+          </div>
+        </div>
+      </div>
+    }
 
     <!-- Charts Grid (2 columnas) -->
     <div class="analytics-grid">

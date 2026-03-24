@@ -13,7 +13,7 @@ export const subscriptionInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error) => {
-      if (error.status === 402) {
+      if (error.status === 402 && !req.url.includes('/subscriptions')) {
         const body = error.error;
         router.navigate(['/subscription/expired'], {
           queryParams: {

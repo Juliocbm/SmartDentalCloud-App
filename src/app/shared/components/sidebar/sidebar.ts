@@ -97,7 +97,8 @@ export class SidebarComponent implements OnInit {
       requiredPermission: PERMISSIONS.TreatmentsView,
       children: [
         { id: 'services-list', icon: 'fa-solid fa-list', label: 'Servicios', route: '/services', requiredPermission: PERMISSIONS.TreatmentsView },
-        { id: 'services-new', icon: 'fa-solid fa-plus', label: 'Nuevo Servicio', route: '/services/new', requiredPermission: PERMISSIONS.TreatmentsCreate }
+        { id: 'services-new', icon: 'fa-solid fa-plus', label: 'Nuevo Servicio', route: '/services/new', requiredPermission: PERMISSIONS.TreatmentsCreate },
+        { id: 'services-categories', icon: 'fa-solid fa-tags', label: 'Categorías', route: '/services/categories', requiredPermission: PERMISSIONS.TreatmentsView }
       ]
     },
     { 
@@ -111,6 +112,13 @@ export class SidebarComponent implements OnInit {
         { id: 'prescriptions-new', icon: 'fa-solid fa-plus', label: 'Nueva Receta', route: '/prescriptions/new', requiredPermission: PERMISSIONS.PrescriptionsCreate }
       ]
     },
+    {
+      id: 'consultation-notes',
+      icon: 'fa-solid fa-notes-medical',
+      label: 'Notas de Consulta',
+      route: '/consultation-notes',
+      requiredPermission: PERMISSIONS.ConsultationNotesView,
+    },
     { 
       id: 'billing',
       icon: 'fa-solid fa-file-invoice-dollar', 
@@ -120,8 +128,10 @@ export class SidebarComponent implements OnInit {
       requiredPermission: PERMISSIONS.InvoicesView,
       children: [
         { id: 'billing-invoices', icon: 'fa-solid fa-file-invoice', label: 'Facturas', route: '/invoices/list', requiredPermission: PERMISSIONS.InvoicesView },
+        { id: 'billing-pending', icon: 'fa-solid fa-file-circle-exclamation', label: 'Pendientes', route: '/invoices/pending-billing', requiredPermission: PERMISSIONS.InvoicesView },
         { id: 'billing-payments', icon: 'fa-solid fa-money-bill-wave', label: 'Pagos', route: '/payments', requiredPermission: PERMISSIONS.PaymentsView },
-        { id: 'billing-new-invoice', icon: 'fa-solid fa-plus', label: 'Nueva Factura', route: '/invoices/new', requiredPermission: PERMISSIONS.InvoicesCreate }
+        { id: 'billing-new-invoice', icon: 'fa-solid fa-plus', label: 'Nueva Factura', route: '/invoices/new', requiredPermission: PERMISSIONS.InvoicesCreate },
+        { id: 'billing-reports', icon: 'fa-solid fa-chart-bar', label: 'Reportes Producción', route: '/reports/billing', requiredPermission: PERMISSIONS.ReportsView }
       ]
     },
     { 

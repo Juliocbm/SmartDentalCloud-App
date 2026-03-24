@@ -128,3 +128,12 @@ export interface TopService {
   totalRevenue: number;
   avgPrice: number;
 }
+
+export interface BillingConversion {
+  totalCompletedTreatments: number;
+  billedTreatments: number;
+  unbilledTreatments: number;
+  conversionRate: number;
+  totalBilledAmount: number;
+  totalUnbilledAmount: number;
+}

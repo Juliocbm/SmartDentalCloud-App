@@ -34,13 +34,12 @@ export class SendWhatsAppModalComponent implements ModalComponentBase<SendWhatsA
   selectedTemplate = signal<WhatsAppTemplate | null>(null);
   sending = signal(false);
 
-  // Solo parámetros editables por el usuario (sin los de sistema)
   templateParams = signal<Record<string, string>>({});
 
-  // Vista previa completa con parámetros de sistema resueltos
   previewMessage = signal('');
 
-  // Parámetros que el usuario debe completar (excluye los de sistema)
+  private clinicName = signal('Consultorio');
+
   userParameters = computed(() => {
     const tpl = this.selectedTemplate();
     if (!tpl) return [];
@@ -50,6 +49,14 @@ export class SendWhatsAppModalComponent implements ModalComponentBase<SendWhatsA
 
   ngOnInit(): void {
     this.loadTemplates();
+    this.loadClinicInfo();
+  }
+
+  private loadClinicInfo(): void {
+    this.messagingService.getClinicInfo().subscribe({
+      next: (info) => this.clinicName.set(info.clinicName),
+      error: () => this.clinicName.set('Consultorio')
+    });
   }
 
   private loadTemplates(): void {
@@ -97,7 +104,7 @@ export class SendWhatsAppModalComponent implements ModalComponentBase<SendWhatsA
     // clinicName se resuelve en el backend; aquí usamos un placeholder descriptivo
     const systemValues: Record<string, string> = {
       patientName: this.modalData?.patientName ?? '',
-      clinicName: '[Nombre del consultorio]',
+      clinicName: this.clinicName(),
     };
 
     // Primero reemplazar parámetros de sistema

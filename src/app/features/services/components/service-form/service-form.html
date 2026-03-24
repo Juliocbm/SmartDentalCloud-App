@@ -73,12 +73,39 @@
             </div>
 
             <div class="form-group">
-              <label for="category" class="form-label">Categoría</label>
-              <app-form-select
-                formControlName="category"
-                [options]="categoryOptions"
-                placeholder="Seleccionar categoría..."
-              ></app-form-select>
+              <label for="code" class="form-label">Código Interno</label>
+              <input
+                id="code"
+                type="text"
+                formControlName="code"
+                class="form-input"
+                placeholder="Ej: PREV-001"
+              />
+              <span class="field-hint">Código único para identificación interna</span>
+            </div>
+
+            <div class="form-group">
+              <label for="categoryId" class="form-label">Categoría</label>
+              @if (loadingCategories()) {
+                <div class="loading-small">Cargando categorías...</div>
+              } @else if (dynamicCategories().length > 0) {
+                <select
+                  id="categoryId"
+                  formControlName="categoryId"
+                  class="form-input">
+                  <option [value]="null">Seleccionar categoría...</option>
+                  @for (cat of dynamicCategories(); track cat.id) {
+                    <option [value]="cat.id">{{ cat.name }}</option>
+                  }
+                </select>
+              } @else {
+                <input type="text" class="form-input" placeholder="No hay categorías" disabled />
+              }
+              <span class="field-hint">
+                <a routerLink="/services/categories" target="_blank" style="color: var(--primary-600);">
+                  Gestionar categorías
+                </a>
+              </span>
             </div>
 
             <div class="form-group">
@@ -100,6 +127,31 @@
                 <span class="error-message">El costo es requerido y debe ser mayor o igual a 0</span>
               }
             </div>
+          </div>
+
+          <div class="form-row-4">
+            <div class="form-group">
+              <label for="taxType" class="form-label">Tipo de Impuesto</label>
+              <select
+                id="taxType"
+                formControlName="taxType"
+                class="form-input">
+                @for (tax of taxTypeOptions; track tax.value) {
+                  <option [value]="tax.value">{{ tax.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="calendarColor" class="form-label">Color en Calendario</label>
+              <input
+                id="calendarColor"
+                type="color"
+                formControlName="calendarColor"
+                class="form-input form-input-color"
+              />
+              <span class="field-hint">Color para identificar en el calendario de citas</span>
+            </div>
 
             <div class="form-group">
               <label for="durationMinutes" class="form-label">Duración (min)</label>
@@ -111,6 +163,13 @@
                 placeholder="Ej: 60"
                 min="1"
               />
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="requiresConsent" class="form-checkbox" />
+                <span>Requiere Consentimiento Informado</span>
+              </label>
             </div>
           </div>
 

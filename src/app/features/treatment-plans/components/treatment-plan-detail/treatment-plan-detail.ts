@@ -29,6 +29,8 @@ import { DatePickerComponent } from '../../../../shared/components/date-picker/d
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { InvoiceFormContextService } from '../../../invoices/services/invoice-form-context.service';
+import { PLAN_INVOICE_CONTEXT } from '../../../invoices/models/invoice-form-context.model';
 
 @Component({
   selector: 'app-treatment-plan-detail',
@@ -48,6 +50,7 @@ export class TreatmentPlanDetailComponent implements OnInit {
   private logger = inject(LoggingService);
   private location = inject(Location);
   private patientsService = inject(PatientsService);
+  private invoiceContextService = inject(InvoiceFormContextService);
   permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -64,6 +67,8 @@ export class TreatmentPlanDetailComponent implements OnInit {
   itemActionLoading = signal<string | null>(null);
   rejectReason = signal('');
   showRejectModal = signal(false);
+  cancelReason = signal('');
+  showCancelModal = signal(false);
 
   // Email modal state
   showEmailModal = signal(false);
@@ -102,7 +107,10 @@ export class TreatmentPlanDetailComponent implements OnInit {
       estimatedCost: [0, [Validators.required, Validators.min(0)]],
       discount: [0, Validators.min(0)],
       treatmentPhase: [''],
-      estimatedDate: ['']
+      estimatedDate: [''],
+      toothNumber: [''],
+      surface: [''],
+      quadrant: [null]
     });
   }
 
@@ -141,6 +149,58 @@ export class TreatmentPlanDetailComponent implements OnInit {
     return Math.round((p.completedItems / p.totalItems) * 100);
   }
 
+  getBilledItemsCount(): number {
+    return this.plan()?.items.filter(i => i.isBilled).length ?? 0;
+  }
+
+  getBilledTotal(): number {
+    return this.plan()?.items.filter(i => i.isBilled).reduce((sum, i) => sum + (i.actualCost ?? i.estimatedCost), 0) ?? 0;
+  }
+
+  getUnbilledCompletedCount(): number {
+    return this.plan()?.items.filter(i => i.status === ItemStatus.Completed && i.linkedTreatmentId && !i.isBilled).length ?? 0;
+  }
+
+  getUnbilledTotal(): number {
+    return this.plan()?.items
+      .filter(i => i.status === ItemStatus.Completed && i.linkedTreatmentId && !i.isBilled)
+      .reduce((sum, i) => sum + (i.actualCost ?? i.estimatedCost), 0) ?? 0;
+  }
+
+  canBillCompletedItems(): boolean {
+    const p = this.plan();
+    if (!p) return false;
+    const status = p.status;
+    return (status === TreatmentPlanStatus.InProgress || status === TreatmentPlanStatus.Completed) &&
+           this.getUnbilledCompletedCount() > 0;
+  }
+
+  canGenerateAdvanceInvoice(): boolean {
+    return this.plan()?.status === TreatmentPlanStatus.Approved;
+  }
+
+  onBillCompletedItems(): void {
+    const p = this.plan();
+    if (!p) return;
+    this.invoiceContextService.setContext(
+      PLAN_INVOICE_CONTEXT(p.patientId, p.patientName || '', p.id)
+    );
+    this.router.navigate(['/invoices', 'new'], {
+      queryParams: { treatmentPlanId: p.id }
+    });
+  }
+
+  onGenerateAdvanceInvoice(): void {
+    const p = this.plan();
+    if (!p) return;
+    this.invoiceContextService.setContext(
+      PLAN_INVOICE_CONTEXT(p.patientId, p.patientName || '', p.id)
+    );
+    this.router.navigate(['/invoices', 'new'], {
+      queryParams: { treatmentPlanId: p.id, mode: 'advance' }
+    });
+  }
+
   canEdit(): boolean {
     const status = this.plan()?.status;
     return status !== TreatmentPlanStatus.Completed &&
@@ -165,6 +225,34 @@ export class TreatmentPlanDetailComponent implements OnInit {
   canComplete(): boolean {
     const p = this.plan();
     return p?.status === TreatmentPlanStatus.InProgress && this.getProgressPercentage() >= 100;
+  }
+
+  canCancel(): boolean {
+    const status = this.plan()?.status;
+    return status !== TreatmentPlanStatus.Completed &&
+           status !== TreatmentPlanStatus.Cancelled &&
+           status !== undefined;
+  }
+
+  async onSubmitForApproval(): Promise<void> {
+    const confirmed = await this.notifications.confirm('¿Está seguro de enviar este plan a aprobación?');
+    if (!confirmed) return;
+
+    this.actionLoading.set(true);
+    const planId = this.plan()!.id;
+
+    this.plansService.submitForApproval(planId).subscribe({
+      next: () => {
+        this.notifications.success('Plan enviado a aprobación exitosamente.');
+        this.loadPlan(planId);
+        this.actionLoading.set(false);
+      },
+      error: (err) => {
+        this.logger.error('Error submitting plan for approval:', err);
+        this.notifications.error(getApiErrorMessage(err));
+        this.actionLoading.set(false);
+      }
+    });
   }
 
   async onApprove(): Promise<void> {
@@ -216,6 +304,40 @@ export class TreatmentPlanDetailComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error rejecting plan:', err);
+        this.notifications.error(getApiErrorMessage(err));
+        this.actionLoading.set(false);
+      }
+    });
+  }
+
+  onShowCancel(): void {
+    this.cancelReason.set('');
+    this.showCancelModal.set(true);
+  }
+
+  onCancelCancel(): void {
+    this.showCancelModal.set(false);
+  }
+
+  onConfirmCancel(): void {
+    const reason = this.cancelReason().trim();
+    if (!reason) {
+      this.notifications.error('Debe proporcionar una razón para la cancelación.');
+      return;
+    }
+
+    this.actionLoading.set(true);
+    this.showCancelModal.set(false);
+    const planId = this.plan()!.id;
+
+    this.plansService.cancel(planId, reason).subscribe({
+      next: () => {
+        this.notifications.success('Plan de tratamiento cancelado.');
+        this.loadPlan(planId);
+        this.actionLoading.set(false);
+      },
+      error: (err) => {
+        this.logger.error('Error cancelling plan:', err);
         this.notifications.error(getApiErrorMessage(err));
         this.actionLoading.set(false);
       }
@@ -373,7 +495,28 @@ export class TreatmentPlanDetailComponent implements OnInit {
       estimatedCost: 0,
       discount: 0,
       treatmentPhase: '',
-      estimatedDate: ''
+      estimatedDate: '',
+      toothNumber: '',
+      surface: '',
+      quadrant: null
+    });
+    this.showItemModal.set(true);
+  }
+
+  onDuplicateItem(item: TreatmentPlanItem): void {
+    this.editingItem.set(null);
+    this.procForm.patchValue({
+      serviceId: item.serviceId || '',
+      description: item.description,
+      notes: item.notes || '',
+      priority: item.priority,
+      estimatedCost: item.estimatedCost,
+      discount: item.discount || 0,
+      treatmentPhase: item.treatmentPhase || '',
+      estimatedDate: '',
+      toothNumber: item.toothNumber || '',
+      surface: item.surface || '',
+      quadrant: item.quadrant ?? null
     });
     this.showItemModal.set(true);
   }
@@ -388,7 +531,10 @@ export class TreatmentPlanDetailComponent implements OnInit {
       estimatedCost: item.estimatedCost,
       discount: item.discount || 0,
       treatmentPhase: item.treatmentPhase || '',
-      estimatedDate: item.estimatedDate ? new Date(item.estimatedDate).toISOString().split('T')[0] : ''
+      estimatedDate: item.estimatedDate ? new Date(item.estimatedDate).toISOString().split('T')[0] : '',
+      toothNumber: item.toothNumber || '',
+      surface: item.surface || '',
+      quadrant: item.quadrant ?? null
     });
     this.showItemModal.set(true);
   }
@@ -445,7 +591,10 @@ export class TreatmentPlanDetailComponent implements OnInit {
       estimatedCost: formValue.estimatedCost,
       discount: formValue.discount || undefined,
       treatmentPhase: formValue.treatmentPhase || undefined,
-      estimatedDate: formValue.estimatedDate || undefined
+      estimatedDate: formValue.estimatedDate || undefined,
+      toothNumber: formValue.toothNumber || undefined,
+      surface: formValue.surface || undefined,
+      quadrant: formValue.quadrant || undefined
     };
 
     const editing = this.editingItem();
@@ -555,6 +704,13 @@ export class TreatmentPlanDetailComponent implements OnInit {
 
   setActiveTab(tab: 'info' | 'procedures'): void {
     this.activeTab.set(tab);
+  }
+
+  retryLoad(): void {
+    const planId = this.route.snapshot.paramMap.get('id');
+    if (planId) {
+      this.loadPlan(planId);
+    }
   }
 
   goBack(): void {

@@ -8,7 +8,7 @@ import {
 } from '../models/consultation-note.models';
 import { Appointment } from '../../appointments/models/appointment.models';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ConsultationNotesService {
   private api = inject(ApiService);
 

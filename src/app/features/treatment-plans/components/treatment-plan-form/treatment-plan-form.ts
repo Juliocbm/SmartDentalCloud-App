@@ -106,7 +106,8 @@ export class TreatmentPlanFormComponent implements OnInit {
             : '',
           estimatedEndDate: plan.estimatedEndDate
             ? new Date(plan.estimatedEndDate).toISOString().split('T')[0]
-            : ''
+            : '',
+          assignedDoctorId: plan.assignedDoctorId || ''
         });
 
         if (plan.patientName) {
@@ -133,7 +134,10 @@ export class TreatmentPlanFormComponent implements OnInit {
               treatmentPhase: [item.treatmentPhase || ''],
               estimatedDate: [item.estimatedDate
                 ? new Date(item.estimatedDate).toISOString().split('T')[0]
-                : '']
+                : ''],
+              toothNumber: [item.toothNumber || ''],
+              surface: [item.surface || ''],
+              quadrant: [item.quadrant ?? null]
             });
             this.items.push(itemGroup);
           }
@@ -157,6 +161,7 @@ export class TreatmentPlanFormComponent implements OnInit {
       diagnosis: [''],
       estimatedStartDate: [''],
       estimatedEndDate: [''],
+      assignedDoctorId: [''],
       items: this.fb.array([], Validators.required)
     });
 
@@ -173,7 +178,10 @@ export class TreatmentPlanFormComponent implements OnInit {
       estimatedCost: [0, [Validators.required, Validators.min(0)]],
       discount: [0, Validators.min(0)],
       treatmentPhase: [''],
-      estimatedDate: ['']
+      estimatedDate: [''],
+      toothNumber: [''],
+      surface: [''],
+      quadrant: [null]
     });
   }
 
@@ -194,7 +202,10 @@ export class TreatmentPlanFormComponent implements OnInit {
       estimatedCost: 0,
       discount: 0,
       treatmentPhase: '',
-      estimatedDate: ''
+      estimatedDate: '',
+      toothNumber: '',
+      surface: '',
+      quadrant: null
     });
     this.showProcModal.set(true);
   }
@@ -225,7 +236,10 @@ export class TreatmentPlanFormComponent implements OnInit {
         estimatedCost: [this.procForm.value.estimatedCost, [Validators.required, Validators.min(0)]],
         discount: [this.procForm.value.discount, Validators.min(0)],
         treatmentPhase: [this.procForm.value.treatmentPhase],
-        estimatedDate: [this.procForm.value.estimatedDate]
+        estimatedDate: [this.procForm.value.estimatedDate],
+        toothNumber: [this.procForm.value.toothNumber],
+        surface: [this.procForm.value.surface],
+        quadrant: [this.procForm.value.quadrant]
       });
       this.items.push(itemGroup);
     }
@@ -321,6 +335,7 @@ export class TreatmentPlanFormComponent implements OnInit {
       diagnosis: formValue.diagnosis || undefined,
       estimatedStartDate: formValue.estimatedStartDate || undefined,
       estimatedEndDate: formValue.estimatedEndDate || undefined,
+      assignedDoctorId: formValue.assignedDoctorId || undefined,
       items: formValue.items.map((item: CreateTreatmentPlanItemRequest) => ({
         serviceId: item.serviceId || undefined,
         description: item.description,
@@ -329,7 +344,10 @@ export class TreatmentPlanFormComponent implements OnInit {
         estimatedCost: item.estimatedCost,
         discount: item.discount || undefined,
         treatmentPhase: item.treatmentPhase || undefined,
-        estimatedDate: item.estimatedDate || undefined
+        estimatedDate: item.estimatedDate || undefined,
+        toothNumber: item.toothNumber || undefined,
+        surface: item.surface || undefined,
+        quadrant: item.quadrant || undefined
       }))
     };
 
@@ -354,7 +372,8 @@ export class TreatmentPlanFormComponent implements OnInit {
       description: formValue.description || undefined,
       diagnosis: formValue.diagnosis || undefined,
       estimatedStartDate: formValue.estimatedStartDate || undefined,
-      estimatedEndDate: formValue.estimatedEndDate || undefined
+      estimatedEndDate: formValue.estimatedEndDate || undefined,
+      assignedDoctorId: formValue.assignedDoctorId || undefined
     };
 
     this.plansService.update(this.planId()!, request).subscribe({

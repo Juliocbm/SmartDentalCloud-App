@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProductsService } from '../../services/products.service';
 import { StockService } from '../../services/stock.service';
 import { Product, PRODUCT_UNITS } from '../../models/product.models';
-import { Stock } from '../../models/stock.models';
+import { Stock, StockMovement } from '../../models/stock.models';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
@@ -12,6 +12,7 @@ import { ModalService } from '../../../../shared/services/modal.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
+import { StockOutputModalComponent, StockOutputModalData } from '../stock-output-modal/stock-output-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 
@@ -24,6 +25,7 @@ import { PermissionService, PERMISSIONS } from '../../../../core/services/permis
 })
 export class ProductDetailComponent implements OnInit {
   showAuditModal = signal(false);
+  showOutputModal = signal(false);
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -48,7 +50,9 @@ export class ProductDetailComponent implements OnInit {
   error = signal<string | null>(null);
   stockByLocation = signal<Stock[]>([]);
   loadingStock = signal(false);
-  activeTab = signal<'info' | 'stock'>('info');
+  transactions = signal<StockMovement[]>([]);
+  loadingTransactions = signal(false);
+  activeTab = signal<'info' | 'stock' | 'history'>('info');
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -66,9 +70,7 @@ export class ProductDetailComponent implements OnInit {
       next: (product) => {
         this.product.set(product);
         this.loading.set(false);
-        if (this.locationsService.hasMultipleLocations()) {
-          this.loadStockByLocation(id);
-        }
+        this.loadStockByLocation(id);
       },
       error: (err) => {
         this.logger.error('Error loading product:', err);
@@ -92,8 +94,46 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  setActiveTab(tab: 'info' | 'stock'): void {
+  private loadTransactions(productId: string): void {
+    this.loadingTransactions.set(true);
+    this.productsService.getTransactions(productId).subscribe({
+      next: (movements) => {
+        this.transactions.set(movements);
+        this.loadingTransactions.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al cargar historial'));
+        this.loadingTransactions.set(false);
+      }
+    });
+  }
+
+  setActiveTab(tab: 'info' | 'stock' | 'history'): void {
     this.activeTab.set(tab);
+    if (tab === 'history' && this.transactions().length === 0) {
+      const p = this.product();
+      if (p) this.loadTransactions(p.id);
+    }
+  }
+
+  getMovementTypeLabel(type: string): string {
+    const labels: Record<string, string> = {
+      'Adjustment': 'Ajuste',
+      'Purchase': 'Compra',
+      'Sale': 'Venta',
+      'Transfer': 'Transferencia',
+      'Loss': 'Pérdida',
+      'Usage': 'Uso',
+      'Return': 'Devolución'
+    };
+    return labels[type] || type;
+  }
+
+  getMovementTypeClass(type: string): string {
+    if (type === 'Purchase' || type === 'Return') return 'badge-success';
+    if (type === 'Adjustment') return 'badge-info';
+    if (type === 'Loss') return 'badge-error';
+    return 'badge-warning';
   }
 
   goBack(): void {
@@ -138,6 +178,36 @@ export class ProductDetailComponent implements OnInit {
 
     const modalRef = this.modalService.open<StockAdjustmentModalData, boolean>(
       StockAdjustmentModalComponent,
+      { data: modalData }
+    );
+
+    modalRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadProduct(p.id);
+      }
+    });
+  }
+
+  openOutputModal(locationId?: string | null, locationStock?: number): void {
+    const p = this.product();
+    if (!p) return;
+
+    if (!locationId && this.stockByLocation().length > 0) {
+      locationId = this.stockByLocation()[0].locationId;
+      locationStock = this.stockByLocation()[0].currentStock;
+    }
+
+    const modalData: StockOutputModalData = {
+      productId: p.id,
+      locationId: locationId,
+      productCode: p.code,
+      productName: p.name,
+      currentStock: locationStock ?? p.currentStock ?? 0,
+      unit: p.unit
+    };
+
+    const modalRef = this.modalService.open<StockOutputModalData, boolean>(
+      StockOutputModalComponent,
       { data: modalData }
     );
 

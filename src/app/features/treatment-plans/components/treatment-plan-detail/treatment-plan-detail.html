@@ -37,6 +37,12 @@
           Editar
         </a>
       }
+      @if (plan()?.status === 'Draft' && permissionService.hasPermission('treatment_plans.edit')) {
+        <button class="btn btn-outline btn-primary" (click)="onSubmitForApproval()" [disabled]="actionLoading()">
+          <i class="fa-solid fa-paper-plane"></i>
+          Enviar a Aprobación
+        </button>
+      }
       @if (canApprove() && permissionService.hasPermission('treatment_plans.approve')) {
         <button class="btn btn-outline btn-success" (click)="onApprove()" [disabled]="actionLoading()">
           <i class="fa-solid fa-circle-check"></i>
@@ -45,6 +51,18 @@
         <button class="btn btn-outline btn-danger" (click)="onShowReject()" [disabled]="actionLoading()">
           <i class="fa-solid fa-circle-xmark"></i>
           Rechazar
+        </button>
+      }
+      @if (canGenerateAdvanceInvoice() && permissionService.hasPermission('invoices.create')) {
+        <button class="btn btn-outline btn-primary" (click)="onGenerateAdvanceInvoice()">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+          Factura de Anticipo
+        </button>
+      }
+      @if (canBillCompletedItems() && permissionService.hasPermission('invoices.create')) {
+        <button class="btn btn-primary" (click)="onBillCompletedItems()">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          Facturar Completados
         </button>
       }
       @if (canStart()) {
@@ -57,6 +75,12 @@
         <button class="btn btn-outline btn-success" (click)="onComplete()" [disabled]="actionLoading()">
           <i class="fa-solid fa-circle-check"></i>
           Completar Plan
+        </button>
+      }
+      @if (canCancel() && permissionService.hasPermission('treatment_plans.edit')) {
+        <button class="btn btn-outline btn-danger" (click)="onShowCancel()" [disabled]="actionLoading()">
+          <i class="fa-solid fa-ban"></i>
+          Cancelar Plan
         </button>
       }
     </div>
@@ -72,10 +96,16 @@
       <i class="fa-solid fa-exclamation-circle"></i>
       <h2>Error al cargar el plan</h2>
       <p>{{ error() }}</p>
-      <button (click)="goBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver a Planes
-      </button>
+      <div class="empty-state-actions">
+        <button (click)="retryLoad()" class="btn btn-secondary">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          Reintentar
+        </button>
+        <button (click)="goBack()" class="btn btn-outline">
+          <i class="fa-solid fa-arrow-left"></i>
+          Volver a Planes
+        </button>
+      </div>
     </div>
   } @else if (plan(); as p) {
 
@@ -173,6 +203,14 @@
                     <span class="stat-label">En Progreso</span>
                     <span class="stat-value info">{{ p.inProgressItems }}</span>
                   </div>
+                  <div class="stat-card">
+                    <span class="stat-label">Facturados</span>
+                    <span class="stat-value success">{{ getBilledItemsCount() }}</span>
+                  </div>
+                  <div class="stat-card">
+                    <span class="stat-label">Total Facturado</span>
+                    <span class="stat-value success">{{ formatCurrency(getBilledTotal()) }}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -205,6 +243,15 @@
                     <div class="info-row">
                       <span class="info-label">Descripción:</span>
                       <span class="info-value">{{ p.description }}</span>
+                    </div>
+                  }
+                  @if (p.assignedDoctorName) {
+                    <div class="info-row">
+                      <span class="info-label">Doctor Asignado:</span>
+                      <span class="info-value">
+                        <i class="fa-solid fa-user-doctor"></i>
+                        {{ p.assignedDoctorName }}
+                      </span>
                     </div>
                   }
                   @if (p.approvedAt) {
@@ -306,6 +353,14 @@
                                 {{ item.serviceName }}
                               </span>
                             }
+                            @if (item.toothNumber || item.surface || item.quadrant) {
+                              <span class="item-desc__tooth">
+                                <i class="fa-solid fa-tooth"></i>
+                                @if (item.toothNumber) { #{{ item.toothNumber }} }
+                                @if (item.surface) { · {{ item.surface }} }
+                                @if (item.quadrant) { · Q{{ item.quadrant }} }
+                              </span>
+                            }
                             @if (item.notes) {
                               <span class="item-desc__notes">{{ item.notes }}</span>
                             }
@@ -317,6 +372,17 @@
                             <i [class]="'fa-solid ' + getItemStatusConfig(item.status).icon"></i>
                             {{ getItemStatusConfig(item.status).label }}
                           </span>
+                          @if (item.isBilled) {
+                            <a class="badge badge-success badge-link badge-sm" [routerLink]="['/invoices', item.invoiceId]">
+                              <i class="fa-solid fa-file-invoice-dollar"></i>
+                              {{ item.invoiceNumber }}
+                            </a>
+                          } @else if (item.status === ItemStatus.Completed && item.linkedTreatmentId) {
+                            <span class="badge badge-warning badge-sm">
+                              <i class="fa-solid fa-file-circle-exclamation"></i>
+                              Sin Facturar
+                            </span>
+                          }
                         </td>
                         <td>
                           <span [class]="'badge ' + getItemPriorityConfig(item.priority).class">
@@ -373,6 +439,16 @@
                                 [disabled]="itemActionLoading() === item.id"
                               >
                                 <i class="fa-solid fa-trash"></i>
+                              </button>
+                            }
+                            @if (canManageItems()) {
+                              <button
+                                class="btn btn-sm btn-outline btn-icon"
+                                title="Duplicar procedimiento"
+                                (click)="onDuplicateItem(item)"
+                                [disabled]="itemActionLoading() === item.id"
+                              >
+                                <i class="fa-solid fa-copy"></i>
                               </button>
                             }
                             @if (item.linkedTreatmentId) {
@@ -478,6 +554,45 @@
         </div>
       </app-modal>
     }
+
+    <!-- Cancel Modal -->
+    @if (showCancelModal()) {
+      <app-modal
+        title="Cancelar Plan de Tratamiento"
+        icon="fa-ban"
+        size="sm"
+        (closed)="onCancelCancel()">
+
+        <div class="form-group">
+          <label class="form-label">
+            Razón de la cancelación <span class="required">*</span>
+          </label>
+          <textarea
+            class="form-input form-textarea"
+            rows="4"
+            placeholder="Indique la razón por la cual se cancela este plan..."
+            [value]="cancelReason()"
+            (input)="cancelReason.set($any($event.target).value)"
+          ></textarea>
+        </div>
+
+        <div modal-footer>
+          <button class="btn btn-outline" (click)="onCancelCancel()" [disabled]="actionLoading()">
+            <i class="fa-solid fa-times"></i>
+            Volver
+          </button>
+          <button class="btn btn-danger" (click)="onConfirmCancel()" [disabled]="actionLoading() || !cancelReason().trim()">
+            @if (actionLoading()) {
+              <span class="btn-spinner"></span>
+              Cancelando...
+            } @else {
+              <i class="fa-solid fa-ban"></i>
+              Confirmar Cancelación
+            }
+          </button>
+        </div>
+      </app-modal>
+    }
   }
 
   <!-- Item Add/Edit Modal -->
@@ -577,6 +692,41 @@
             >
               Fecha Estimada
             </app-date-picker>
+          </div>
+        </div>
+
+        <!-- Campos Dentales -->
+        <div class="form-row form-row-3">
+          <div class="form-group">
+            <label class="form-label">Pieza Dental</label>
+            <input
+              type="text"
+              formControlName="toothNumber"
+              class="form-input"
+              placeholder="Ej: 16, 21"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Superficie</label>
+            <input
+              type="text"
+              formControlName="surface"
+              class="form-input"
+              placeholder="Ej: Oclusal, Mesial"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cuadrante</label>
+            <input
+              type="number"
+              formControlName="quadrant"
+              class="form-input"
+              placeholder="1-4"
+              min="1"
+              max="4"
+            />
           </div>
         </div>
 

@@ -1,0 +1,17 @@
+@if (!loading() && isTrial()) {
+  <div class="trial-banner" [class]="urgencyClass">
+    <div class="trial-banner__content">
+      <i class="fa-solid fa-flask"></i>
+      @if (daysRemaining() > 1) {
+        <span>Período de prueba: <strong>{{ daysRemaining() }} días restantes</strong></span>
+      } @else if (daysRemaining() === 1) {
+        <span>Período de prueba: <strong>¡último día!</strong></span>
+      } @else {
+        <span><strong>Tu período de prueba ha terminado.</strong></span>
+      }
+    </div>
+    <a routerLink="/subscription" class="trial-banner__cta">
+      Suscribirme ahora <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+}

@@ -45,6 +45,8 @@ export class DentistListComponent implements OnInit, OnDestroy {
   
   searchTerm = signal('');
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
+  selectedSpecialty = signal<string>('');
+  specialties = signal<string[]>([]);
 
   // Pagination
   currentPage = signal(1);
@@ -99,6 +101,12 @@ export class DentistListComponent implements OnInit, OnDestroy {
         );
         
         this.dentists.set(dentistUsers);
+        const uniqueSpecialties = [...new Set(
+          dentistUsers
+            .map(d => d.profile?.specialty)
+            .filter((s): s is string => !!s && s.trim() !== '')
+        )].sort();
+        this.specialties.set(uniqueSpecialties);
         this.applyFilters();
         this.loading.set(false);
       },
@@ -129,6 +137,13 @@ export class DentistListComponent implements OnInit, OnDestroy {
       );
     }
 
+    const specialty = this.selectedSpecialty();
+    if (specialty) {
+      filtered = filtered.filter(dentist =>
+        dentist.profile?.specialty === specialty
+      );
+    }
+
     this.filteredDentists.set(filtered);
     this.currentPage.set(1);
   }
@@ -139,6 +154,11 @@ export class DentistListComponent implements OnInit, OnDestroy {
 
   onStatusFilterChange(value: 'all' | 'active' | 'inactive'): void {
     this.filterStatus.set(value);
+    this.applyFilters();
+  }
+
+  onSpecialtyFilterChange(value: string): void {
+    this.selectedSpecialty.set(value);
     this.applyFilters();
   }
 

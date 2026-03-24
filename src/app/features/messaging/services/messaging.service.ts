@@ -49,4 +49,8 @@ export class MessagingService {
   updateConfig(config: WhatsAppTenantConfig): Observable<WhatsAppTenantConfig> {
     return this.api.put<WhatsAppTenantConfig>(`${this.baseUrl}/config`, config);
   }
+
+  getClinicInfo(): Observable<{ clinicName: string }> {
+    return this.api.get<{ clinicName: string }>(`${this.baseUrl}/clinic-info`);
+  }
 }

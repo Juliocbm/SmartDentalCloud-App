@@ -6,11 +6,65 @@
     [defaultBackRoute]="'/payments'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      @if (permissionService.hasPermission(PERMISSIONS.PaymentsDelete)) {
+        <button
+          class="btn btn-outline btn-sm"
+          style="color: var(--error-600); border-color: var(--error-300);"
+          (click)="confirmDelete()"
+          [disabled]="deleting()"
+          title="Eliminar pago">
+          @if (deleting()) {
+            <span class="btn-spinner"></span>
+          } @else {
+            <i class="fa-solid fa-trash"></i>
+          }
+          Eliminar
+        </button>
+      }
       <button class="btn btn-icon" (click)="showAuditModal.set(true)" title="Auditoría">
         <i class="fa-solid fa-clock-rotate-left"></i>
       </button>
     </div>
   </app-page-header>
+
+  <!-- Modal de confirmación de eliminación -->
+  @if (showDeleteConfirm()) {
+    <div class="modal-overlay" (click)="cancelDelete()">
+      <div class="modal-container modal-sm" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--error-500);"></i>
+            Confirmar eliminación
+          </h3>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas eliminar este pago?</p>
+          @if (payment(); as pay) {
+            <div class="modal-detail">
+              <strong>Monto:</strong> {{ formatCurrency(pay.amount) }}<br>
+              <strong>Fecha:</strong> {{ formatDate(pay.paidAt) }}<br>
+              <strong>Método:</strong> {{ getMethodConfig(pay.paymentMethod).label }}
+            </div>
+          }
+          <p class="modal-warning">
+            <i class="fa-solid fa-info-circle"></i>
+            El balance de la factura se recalculará automáticamente.
+            Esta acción no puede deshacerse.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline btn-sm" (click)="cancelDelete()">Cancelar</button>
+          <button
+            class="btn btn-outline btn-sm"
+            style="color: var(--error-600); border-color: var(--error-300);"
+            (click)="deletePayment()">
+            <i class="fa-solid fa-trash"></i>
+            Sí, eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 
   @if (loading()) {
     <div class="loading-container">

@@ -193,6 +193,16 @@
     i { color: var(--primary-500); }
   }
 
+  &__tooth {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+
+    i { color: var(--info-600); }
+  }
+
   &__notes {
     font-size: var(--font-size-xs);
     color: var(--text-tertiary);

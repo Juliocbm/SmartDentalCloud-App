@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { Treatment, CreateTreatmentRequest, UpdateTreatmentRequest } from '../models/treatment.models';
+import { Treatment, CreateTreatmentRequest, UpdateTreatmentRequest, UnbilledTreatment } from '../models/treatment.models';
 import { TreatmentFollowUp, CreateFollowUpRequest, UpdateFollowUpRequest } from '../models/treatment-followup.models';
 import { TreatmentMaterial, CreateTreatmentMaterialRequest } from '../models/treatment-material.models';
 import { TreatmentSession, CreateSessionRequest } from '../models/treatment-session.models';
@@ -35,6 +35,13 @@ export class TreatmentsService {
 
   delete(id: string): Observable<void> {
     return this.api.delete<void>(`/treatments/${id}`);
+  }
+
+  getUnbilledByPatient(patientId: string, appointmentId?: string, treatmentPlanId?: string): Observable<UnbilledTreatment[]> {
+    const params: Record<string, string> = { patientId };
+    if (appointmentId) params['appointmentId'] = appointmentId;
+    if (treatmentPlanId) params['treatmentPlanId'] = treatmentPlanId;
+    return this.api.get<UnbilledTreatment[]>('/treatments/unbilled', params);
   }
 
   // === Follow-ups ===

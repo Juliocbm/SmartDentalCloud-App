@@ -5,12 +5,20 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { PatientsService } from '../../services/patients.service';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { Patient, CreatePatientRequest, UpdatePatientRequest, MaritalStatus, Gender } from '../../models/patient.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { isFieldInvalid, getFieldError, markFormGroupTouched, applyServerErrors } from '../../../../core/utils/form-error.utils';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { CatalogsService, StateDto, MunicipalityDto } from '../../../../core/services/catalogs.service';
+
+/** Mapa de retrocompatibilidad para valores legacy de Gender almacenados en BD */
+const GENDER_LEGACY_MAP: Record<string, string> = {
+  'M': 'Masculino',
+  'F': 'Femenino',
+  'O': 'Otro',
+};
 
 @Component({
   selector: 'app-patient-form',
@@ -25,6 +33,7 @@ export class PatientFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private patientsService = inject(PatientsService);
   private logger = inject(LoggingService);
+  private notifications = inject(NotificationService);
   private catalogsService = inject(CatalogsService);
 
   patientForm!: FormGroup;
@@ -129,7 +138,8 @@ export class PatientFormComponent implements OnInit {
           firstName: patient.firstName,
           lastName: patient.lastName,
           dateOfBirth: patient.dateOfBirth,
-          gender: patient.gender || '',
+          // PAC-BUG-008: mapa de retrocompatibilidad para valores legacy ('M'→'Masculino', 'F'→'Femenino')
+          gender: (patient.gender ? GENDER_LEGACY_MAP[patient.gender] ?? patient.gender : '') || '',
           phoneNumber: patient.phoneNumber,
           email: patient.email,
           address: patient.address || '',
@@ -200,6 +210,8 @@ export class PatientFormComponent implements OnInit {
   private createPatient(data: CreatePatientRequest): void {
     this.patientsService.create(data).subscribe({
       next: (patient) => {
+        // PAC-BUG-007: toast de éxito en creación
+        this.notifications.success('Paciente creado exitosamente');
         this.router.navigate(['/patients', patient.id]);
       },
       error: (err) => {
@@ -216,6 +228,8 @@ export class PatientFormComponent implements OnInit {
 
     this.patientsService.update(id, { ...data, id } as UpdatePatientRequest).subscribe({
       next: () => {
+        // PAC-BUG-007: toast de éxito en actualización
+        this.notifications.success('Paciente actualizado exitosamente');
         this.router.navigate(['/patients', id]);
       },
       error: (err) => {

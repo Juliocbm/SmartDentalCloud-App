@@ -93,6 +93,25 @@
       Planes Disponibles
     </h2>
 
+    <!-- Billing Cycle Toggle -->
+    <div class="billing-cycle-toggle">
+      <button 
+        [class.active]="billingCycle() === 'monthly'" 
+        (click)="toggleBillingCycle('monthly')"
+        class="btn btn-toggle">
+        Mensual
+      </button>
+      <button 
+        [class.active]="billingCycle() === 'yearly'" 
+        (click)="toggleBillingCycle('yearly')"
+        class="btn btn-toggle">
+        Anual
+        @if (hasAnnualDiscount()) {
+          <span class="discount-hint">Ahorra hasta {{ maxDiscount() }}%</span>
+        }
+      </button>
+    </div>
+
     <div class="plans-grid">
       @for (plan of plans(); track plan.id) {
         <div class="plan-card" [class.current]="isCurrentPlan(plan)" [class.popular]="plan.isRecommended">
@@ -101,8 +120,11 @@
           }
           <h3>{{ plan.name }}</h3>
           <div class="plan-price-block">
-            <span class="plan-amount">{{ formatCurrency(plan.monthlyPrice) }}</span>
-            <span class="plan-period">/mes</span>
+            <span class="plan-amount">{{ formatCurrency(getPlanPrice(plan)) }}</span>
+            <span class="plan-period">/{{ billingCycle() === 'yearly' ? 'año' : 'mes' }}</span>
+            @if (billingCycle() === 'yearly' && getAnnualDiscount(plan) > 0) {
+              <span class="discount-badge">Ahorra {{ getAnnualDiscount(plan) }}%</span>
+            }
           </div>
           <div class="plan-limits">
             <span><i class="fa-solid fa-user-group"></i> {{ !plan.patientLimit || plan.patientLimit < 0 ? 'Ilimitados' : plan.patientLimit }} pacientes</span>
@@ -144,7 +166,7 @@
         <div class="modal-body">
           <div class="checkout-plan-summary">
             <span class="checkout-plan-name">Plan {{ plan.name }}</span>
-            <span class="checkout-plan-price">{{ formatCurrency(plan.monthlyPrice) }}/mes</span>
+            <span class="checkout-plan-price">{{ formatCurrency(getPlanPrice(plan)) }}/{{ billingCycle() === 'yearly' ? 'año' : 'mes' }}</span>
           </div>
 
           <!-- Payment Provider Selector -->
@@ -185,7 +207,7 @@
             @if (subscribing()) {
               <i class="fa-solid fa-spinner fa-spin"></i> Procesando...
             } @else {
-              <i class="fa-solid fa-lock"></i> Suscribirse por {{ formatCurrency(plan.monthlyPrice) }}/mes
+              <i class="fa-solid fa-lock"></i> Suscribirse por {{ formatCurrency(getPlanPrice(plan)) }}/{{ billingCycle() === 'yearly' ? 'año' : 'mes' }}
             }
           </button>
         </div>
@@ -246,7 +268,7 @@
           <p>¿Deseas cambiar tu plan a <strong>{{ plan.name }}</strong>?</p>
           <div class="checkout-plan-summary">
             <span class="checkout-plan-name">Plan {{ plan.name }}</span>
-            <span class="checkout-plan-price">{{ formatCurrency(plan.monthlyPrice) }}/mes</span>
+            <span class="checkout-plan-price">{{ formatCurrency(getPlanPrice(plan)) }}/{{ billingCycle() === 'yearly' ? 'año' : 'mes' }}</span>
           </div>
           <p class="text-secondary">El cambio se aplicará de inmediato. Los límites y funcionalidades de tu nuevo plan estarán disponibles al instante.</p>
         </div>

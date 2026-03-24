@@ -1,5 +1,6 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { PrescriptionsService } from '../../services/prescriptions.service';
 import {
@@ -11,6 +12,7 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { AuditInfoComponent } from '../../../../shared/components/audit-info/audit-info';
 import { SendEmailModalComponent } from '../../../../shared/components/send-email-modal/send-email-modal';
+import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { PatientsService } from '../../../patients/services/patients.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -19,7 +21,7 @@ import { PermissionService, PERMISSIONS } from '../../../../core/services/permis
 @Component({
   selector: 'app-prescription-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, ModalComponent],
   templateUrl: './prescription-detail.html',
   styleUrl: './prescription-detail.scss'
 })
@@ -33,6 +35,8 @@ export class PrescriptionDetailComponent implements OnInit {
   private notifications = inject(NotificationService);
   private location = inject(Location);
   permissionService = inject(PermissionService);
+  PERMISSIONS = PERMISSIONS;
+  PrescriptionStatus = PrescriptionStatus;
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -53,6 +57,12 @@ export class PrescriptionDetailComponent implements OnInit {
   showEmailModal = signal(false);
   patientEmail = signal<string | null>(null);
   sendingEmail = signal(false);
+
+  // Cancel Modal State
+  showCancelModal = signal(false);
+  cancelReason = signal('');
+  cancelling = signal(false);
+  completing = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -106,6 +116,13 @@ export class PrescriptionDetailComponent implements OnInit {
     this.activeTab.set(tab);
   }
 
+  retryLoad(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadPrescription(id);
+    }
+  }
+
   goBack(): void {
     this.location.back();
   }
@@ -123,6 +140,74 @@ export class PrescriptionDetailComponent implements OnInit {
       error: (err) => {
         this.notifications.error(getApiErrorMessage(err));
         this.printLoading.set(false);
+      }
+    });
+  }
+
+  // ===== State Transitions =====
+
+  async completePrescription(): Promise<void> {
+    const rx = this.prescription();
+    if (!rx) return;
+
+    const confirmed = await this.notifications.confirm(
+      '¿Desea marcar esta receta como dispensada?',
+      {
+        title: 'Dispensar Receta',
+        confirmText: 'Dispensar',
+        type: 'info'
+      }
+    );
+    if (!confirmed) return;
+
+    this.completing.set(true);
+    this.prescriptionsService.complete(rx.id).subscribe({
+      next: (updated) => {
+        this.prescription.set({
+          ...updated,
+          issuedAt: new Date(updated.issuedAt),
+          expiresAt: updated.expiresAt ? new Date(updated.expiresAt) : undefined
+        });
+        this.notifications.success('Receta marcada como dispensada');
+        this.completing.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.completing.set(false);
+      }
+    });
+  }
+
+  openCancelModal(): void {
+    this.cancelReason.set('');
+    this.cancelling.set(false);
+    this.showCancelModal.set(true);
+  }
+
+  closeCancelModal(): void {
+    this.showCancelModal.set(false);
+  }
+
+  confirmCancel(): void {
+    const rx = this.prescription();
+    const reason = this.cancelReason().trim();
+    if (!rx || !reason) return;
+
+    this.cancelling.set(true);
+    this.prescriptionsService.cancel(rx.id, reason).subscribe({
+      next: (updated) => {
+        this.prescription.set({
+          ...updated,
+          issuedAt: new Date(updated.issuedAt),
+          expiresAt: updated.expiresAt ? new Date(updated.expiresAt) : undefined
+        });
+        this.notifications.success('Receta cancelada');
+        this.cancelling.set(false);
+        this.showCancelModal.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.cancelling.set(false);
       }
     });
   }

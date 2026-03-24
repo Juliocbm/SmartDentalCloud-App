@@ -46,6 +46,9 @@ export class PatientListComponent implements OnInit, OnDestroy {
   
   searchTerm = signal('');
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
+  // PAC-BUG-010: estado de ordenamiento de la tabla
+  sortColumn = signal<string>('lastName');
+  sortDirection = signal<'asc' | 'desc'>('asc');
 
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
@@ -84,7 +87,9 @@ export class PatientListComponent implements OnInit, OnDestroy {
       this.currentPage(),
       this.pageSize(),
       this.searchTerm() || undefined,
-      isActive
+      isActive,
+      this.sortColumn(),
+      this.sortDirection()
     ).subscribe({
       next: (response) => {
         this.patients.set(response.items);
@@ -108,6 +113,24 @@ export class PatientListComponent implements OnInit, OnDestroy {
     this.filterStatus.set(value);
     this.currentPage.set(1);
     this.loadPatients();
+  }
+
+  // PAC-BUG-010: ordenamiento de columnas
+  onSortChange(column: string): void {
+    if (this.sortColumn() === column) {
+      // Invertir dirección si ya está ordenado por esta columna
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+    this.loadPatients();
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
+    return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   onPageChange(page: number): void {

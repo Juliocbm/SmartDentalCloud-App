@@ -7,11 +7,14 @@ import { DateRangePickerComponent, DateRange } from '../../../../shared/componen
 import { DentistAnalyticsService } from '../../services/dentist-analytics.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { User } from '../../models/user.models';
-import { DentistProductivity } from '../../../reports/models/report.models';
+import { DentistProductivity, AppointmentOccupancy } from '../../../reports/models/report.models';
+import { DentistAutocompleteComponent } from '../../../../shared/components/dentist-autocomplete/dentist-autocomplete';
+import { DentistListItem } from '../../../../core/models/user.models';
 import {
   DentistDashboardMetrics,
   DentistRanking,
-  DentistTeamMember
+  DentistTeamMember,
+  DentistIndividualMetrics
 } from '../../models/dentist-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
@@ -20,7 +23,7 @@ import { FeatureService } from '../../../../core/services/feature.service';
 @Component({
   selector: 'app-dentist-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, DateRangePickerComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, DateRangePickerComponent, DentistAutocompleteComponent],
   templateUrl: './dentist-dashboard.html',
   styleUrl: './dentist-dashboard.scss'
 })
@@ -52,6 +55,11 @@ export class DentistDashboardComponent implements OnInit {
   topByTreatments = signal<DentistRanking[]>([]);
   teamList = signal<DentistTeamMember[]>([]);
 
+  // Dentista seleccionado para ver métricas individuales
+  selectedDentist = signal<User | null>(null);
+  selectedDentistMetrics = signal<DentistIndividualMetrics | null>(null);
+  private occupancyData = signal<AppointmentOccupancy | null>(null);
+
   // Dentistas sin actividad este mes
   inactiveDentistsCount = computed(() => {
     const m = this.metrics();
@@ -75,6 +83,28 @@ export class DentistDashboardComponent implements OnInit {
     this.loadData();
   }
 
+  onDentistSelected(dentist: DentistListItem | null): void {
+    if (!dentist) {
+      this.selectedDentist.set(null);
+      this.selectedDentistMetrics.set(null);
+      return;
+    }
+    const user = this.dentists().find(d => d.id === dentist.id) ?? null;
+    this.selectedDentist.set(user);
+    if (user) {
+      this.updateSelectedDentistMetrics(user);
+    }
+  }
+
+  private updateSelectedDentistMetrics(dentist: User): void {
+    const metrics = this.analyticsService.getIndividualMetrics(
+      dentist,
+      this.productivity(),
+      this.occupancyData()
+    );
+    this.selectedDentistMetrics.set(metrics);
+  }
+
   private loadData(): void {
     this.loading.set(true);
     this.error.set(null);
@@ -85,7 +115,6 @@ export class DentistDashboardComponent implements OnInit {
         this.dentists.set(dentists);
         this.productivity.set(productivity);
 
-        // Computar todas las métricas y datos derivados
         this.metrics.set(this.analyticsService.computeMetrics(dentists, productivity));
         this.revenueChartData.set(this.analyticsService.getRevenueChartData(dentists, productivity));
         this.appointmentsChartData.set(this.analyticsService.getAppointmentsChartData(dentists, productivity));
@@ -93,7 +122,13 @@ export class DentistDashboardComponent implements OnInit {
         this.topByTreatments.set(this.analyticsService.getTopByTreatments(dentists, productivity, 5));
         this.teamList.set(this.analyticsService.getTeamList(dentists, productivity));
 
-        this.loading.set(false);
+        this.analyticsService.loadOccupancyData(start, end).subscribe(occ => {
+          this.occupancyData.set(occ);
+          if (this.selectedDentist()) {
+            this.updateSelectedDentistMetrics(this.selectedDentist()!);
+          }
+          this.loading.set(false);
+        });
       },
       error: (err) => {
         this.logger.error('Error loading dentist dashboard:', err);

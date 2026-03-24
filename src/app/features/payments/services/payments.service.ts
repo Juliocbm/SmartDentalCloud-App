@@ -34,6 +34,15 @@ export class PaymentsService {
   }
 
   /**
+   * Elimina un pago registrado.
+   * La factura asociada recalcula su balance automáticamente en el servidor.
+   * No se puede eliminar pagos de facturas con CFDI vigente (409 Conflict).
+   */
+  delete(id: string): Observable<void> {
+    return this.api.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  /**
    * Filtra pagos según criterios
    * Implementación cliente-side
    */

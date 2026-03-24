@@ -67,7 +67,7 @@ export interface ReceivePurchaseOrderItemRequest {
  * Received: Recibida completamente
  * Cancelled: Cancelada
  */
-export type PurchaseOrderStatus = 'Draft' | 'Sent' | 'Received' | 'Cancelled';
+export type PurchaseOrderStatus = 'Draft' | 'Sent' | 'PartialReceived' | 'Received' | 'Cancelled';
 
 /**
  * Labels para estados
@@ -75,6 +75,7 @@ export type PurchaseOrderStatus = 'Draft' | 'Sent' | 'Received' | 'Cancelled';
 export const PURCHASE_ORDER_STATUS_LABELS: Record<PurchaseOrderStatus, string> = {
   Draft: 'Borrador',
   Sent: 'Enviada',
+  PartialReceived: 'Parcialmente Recibida',
   Received: 'Recibida',
   Cancelled: 'Cancelada'
 };

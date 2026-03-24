@@ -1,6 +1,7 @@
 import { Component, Input, inject, effect, ElementRef, ViewChild, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Chart, ChartData, ChartOptions } from 'chart.js';
+import type { ChartData, ChartOptions } from 'chart.js';
+import { Chart } from '../chart-register'; // side-effect: registers all Chart.js components lazily
 import { ChartConfigService } from '../../../../core/services/chart-config.service';
 import { ChartDataItem } from '../chart.models';
 

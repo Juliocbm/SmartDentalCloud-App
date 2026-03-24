@@ -159,6 +159,27 @@ export class AuthService {
     });
   }
 
+  /**
+   * Limpia la sesión anterior y establece el token del nuevo tenant post-registro.
+   * Usado exclusivamente por el flujo de registro (Onboarding).
+   * ON-BUG-001: evita que el JWT de un tenant anterior contamine el nuevo tenant.
+   */
+  setRegistrationToken(accessToken: string): void {
+    // Limpiar AMBOS storages para eliminar cualquier sesión anterior
+    [localStorage, sessionStorage].forEach(storage => {
+      storage.removeItem(this.TOKEN_KEY);
+      storage.removeItem(this.REFRESH_TOKEN_KEY);
+      storage.removeItem(this.USER_KEY);
+      storage.removeItem(this.TOKEN_EXPIRY_KEY);
+    });
+    // Guardar el nuevo token en localStorage con rememberMe=true
+    // para que el interceptor siempre lo encuentre como primera opción
+    localStorage.setItem(this.REMEMBER_ME_KEY, 'true');
+    localStorage.setItem(this.TOKEN_KEY, accessToken);
+    this.isAuthenticated.set(true);
+    this.currentUser.set(null); // se resolverá al navegar al dashboard
+  }
+
   private getUserFromStorage(): UserInfo | null {
     const userJson = this.getStorage().getItem(this.USER_KEY)
       || localStorage.getItem(this.USER_KEY)

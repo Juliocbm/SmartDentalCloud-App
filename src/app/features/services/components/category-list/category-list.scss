@@ -1,0 +1,48 @@
+// ============================================
+// CategoryListComponent (Services) - Estilos Específicos
+// Container: usa .page-container.container-wide de _layout.scss
+// Header: usa PageHeaderComponent compartido
+// Filters: usa .filters-section de _components.scss
+// Loading: usa .loading-container de _components.scss
+// Empty: usa .empty-state de _components.scss
+// Table: usa .table-container, .table-scroll, .table de _components.scss
+// Pagination: usa .table-footer, .btn-page de _components.scss
+// Botones: usa clases globales .btn de _components.scss
+// ============================================
+
+// ===== Table Cell Content =====
+
+.description-cell {
+  max-width: 280px;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.order-cell {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+// ===== Responsive =====
+
+@media (max-width: 768px) {
+  .filters-section {
+    flex-direction: column;
+
+    .search-box {
+      min-width: 100%;
+    }
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .description-cell,
+  .order-cell {
+    display: none;
+  }
+}

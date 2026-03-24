@@ -2395,6 +2395,12 @@ button.link-primary {
     border: none;
   }
 
+  .section-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;

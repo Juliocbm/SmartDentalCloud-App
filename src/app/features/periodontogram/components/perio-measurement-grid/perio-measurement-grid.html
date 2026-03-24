@@ -139,19 +139,21 @@
               </td>
             }
           </tr>
-          <!-- Furcation Row -->
+          <!-- Furcation Row (molars only) -->
           <tr class="data-row extra-row">
             <td class="row-label-cell">Furca.</td>
             @for (tn of UPPER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
                 [class.quadrant-divider-cell]="ti === 8">
-                @if (!readonly && !getToothByNumber(tn)?.isMissing) {
+                @if (isMolar(tn) && !readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"
                     [value]="getToothByNumber(tn)!.furcation"
                     (input)="onFurcationChange($event, getToothByNumber(tn)!)"/>
-                } @else {
+                } @else if (isMolar(tn)) {
                   <span class="extra-value">{{ getToothByNumber(tn)?.furcation ?? '' }}</span>
+                } @else {
+                  <span class="extra-value text-muted">—</span>
                 }
               </td>
             }
@@ -311,23 +313,6 @@
               </td>
             }
           </tr>
-          <!-- Furcation Row Lingual -->
-          <tr class="data-row extra-row">
-            <td class="row-label-cell">Furca.</td>
-            @for (tn of UPPER_TEETH; track tn; let ti = $index) {
-              <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 8">
-                @if (!readonly && !getToothByNumber(tn)?.isMissing) {
-                  <input type="number" min="0" max="3"
-                    class="extra-input"
-                    [value]="getToothByNumber(tn)!.furcation"
-                    (input)="onFurcationChange($event, getToothByNumber(tn)!)"/>
-                } @else {
-                  <span class="extra-value">{{ getToothByNumber(tn)?.furcation ?? '' }}</span>
-                }
-              </td>
-            }
-          </tr>
         </tbody>
       </table>
     </div>
@@ -468,19 +453,21 @@
               </td>
             }
           </tr>
-          <!-- Furcation Row -->
+          <!-- Furcation Row (molars only) -->
           <tr class="data-row extra-row">
             <td class="row-label-cell">Furca.</td>
             @for (tn of LOWER_TEETH; track tn; let ti = $index) {
               <td colspan="3" class="tooth-extra-cell"
                 [class.quadrant-divider-cell]="ti === 8">
-                @if (!readonly && !getToothByNumber(tn)?.isMissing) {
+                @if (isMolar(tn) && !readonly && !getToothByNumber(tn)?.isMissing) {
                   <input type="number" min="0" max="3"
                     class="extra-input"
                     [value]="getToothByNumber(tn)!.furcation"
                     (input)="onFurcationChange($event, getToothByNumber(tn)!)"/>
-                } @else {
+                } @else if (isMolar(tn)) {
                   <span class="extra-value">{{ getToothByNumber(tn)?.furcation ?? '' }}</span>
+                } @else {
+                  <span class="extra-value text-muted">—</span>
                 }
               </td>
             }
@@ -631,23 +618,6 @@
                     (input)="onMobilityChange($event, getToothByNumber(tn)!)"/>
                 } @else {
                   <span class="extra-value">{{ getToothByNumber(tn)?.mobility ?? '' }}</span>
-                }
-              </td>
-            }
-          </tr>
-          <!-- Furcation Row Lingual -->
-          <tr class="data-row extra-row">
-            <td class="row-label-cell">Furca.</td>
-            @for (tn of LOWER_TEETH; track tn; let ti = $index) {
-              <td colspan="3" class="tooth-extra-cell"
-                [class.quadrant-divider-cell]="ti === 8">
-                @if (!readonly && !getToothByNumber(tn)?.isMissing) {
-                  <input type="number" min="0" max="3"
-                    class="extra-input"
-                    [value]="getToothByNumber(tn)!.furcation"
-                    (input)="onFurcationChange($event, getToothByNumber(tn)!)"/>
-                } @else {
-                  <span class="extra-value">{{ getToothByNumber(tn)?.furcation ?? '' }}</span>
                 }
               </td>
             }

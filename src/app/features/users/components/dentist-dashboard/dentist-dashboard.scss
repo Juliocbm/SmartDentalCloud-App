@@ -4,3 +4,11 @@
 // Lists: usa .dash-list / .dash-item de _dashboard.scss
 // Charts: usa app-bar-chart de shared/components/charts
 // Alert Banner: usa .alert-banner de _components.scss
+
+.individual-dentist-section {
+  margin-top: var(--spacing-lg);
+
+  .dash-section-header {
+    margin-bottom: var(--spacing-md);
+  }
+}

@@ -10,6 +10,56 @@
 // Botones: usa clases globales .btn de _components.scss (BUTTON_GUIDELINES_PATTERN)
 // ============================================
 
+// ===== Sortable Column Headers =====
+
+.sortable-th {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  .sort-icon {
+    margin-left: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    vertical-align: middle;
+  }
+}
+
+// ===== Date Filter Inputs =====
+
+.date-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.date-filter-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.filter-input-date {
+  height: 36px;
+  padding: 0 var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-400);
+    box-shadow: 0 0 0 3px var(--primary-100);
+  }
+}
+
 // ===== Table Cell Content =====
 
 .date-cell {

@@ -29,7 +29,7 @@ import {
 } from '../../../invoices/models/cfdi.models';
 import { MessagingService } from '../../../messaging/services/messaging.service';
 
-type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'consent-templates' | 'facturacion' | 'smtp' | 'whatsapp' | 'branding' | 'domain';
+type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'consent-templates' | 'facturacion' | 'smtp' | 'whatsapp' | 'branding' | 'domain' | 'inventory-alerts';
 
 @Component({
   selector: 'app-settings-page',
@@ -98,6 +98,18 @@ export class SettingsPageComponent implements OnInit {
   // Domain form
   domainCustom = signal('');
 
+  // Inventory Alerts form
+  alertLowStockEnabled = signal(true);
+  alertExpiryEnabled = signal(true);
+  alertReorderEnabled = signal(true);
+  alertExpiryDays = signal(30);
+  alertLowStockPercent = signal(20);
+  alertNotifyEmail = signal(true);
+  alertNotifyInApp = signal(true);
+  alertEmailList = signal('');
+  alertLoading = signal(false);
+  alertSaving = signal(false);
+
   // Constants
   TIMEZONE_OPTIONS = TIMEZONE_OPTIONS;
   LANGUAGE_OPTIONS = LANGUAGE_OPTIONS;
@@ -113,7 +125,8 @@ export class SettingsPageComponent implements OnInit {
     { key: 'smtp', label: 'Correo (SMTP)', icon: 'fa-envelope' },
     { key: 'whatsapp', label: 'WhatsApp', icon: 'fa-brands fa-whatsapp' },
     { key: 'branding', label: 'Branding', icon: 'fa-palette' },
-    { key: 'domain', label: 'Dominio', icon: 'fa-globe' }
+    { key: 'domain', label: 'Dominio', icon: 'fa-globe' },
+    { key: 'inventory-alerts', label: 'Alertas Inventario', icon: 'fa-bell' }
   ];
 
   ngOnInit(): void {
@@ -136,6 +149,56 @@ export class SettingsPageComponent implements OnInit {
     if (tab === 'whatsapp' && !this.waLoaded()) {
       this.loadWhatsAppConfig();
     }
+    if (tab === 'inventory-alerts' && !this.alertSettingsLoaded()) {
+      this.loadAlertSettings();
+    }
+  }
+
+  private alertSettingsLoaded = signal(false);
+
+  private loadAlertSettings(): void {
+    this.alertLoading.set(true);
+    this.settingsService.getInventoryAlertSettings().subscribe({
+      next: (settings) => {
+        this.alertLowStockEnabled.set(settings.lowStockAlertsEnabled);
+        this.alertExpiryEnabled.set(settings.expiryAlertsEnabled);
+        this.alertReorderEnabled.set(settings.reorderAlertsEnabled);
+        this.alertExpiryDays.set(settings.expiryAlertDaysBefore);
+        this.alertLowStockPercent.set(settings.lowStockPercentageThreshold);
+        this.alertNotifyEmail.set(settings.notifyByEmail);
+        this.alertNotifyInApp.set(settings.notifyInApp);
+        this.alertEmailList.set(settings.notificationEmailList ?? '');
+        this.alertLoading.set(false);
+        this.alertSettingsLoaded.set(true);
+      },
+      error: () => {
+        this.alertLoading.set(false);
+        this.alertSettingsLoaded.set(true);
+      }
+    });
+  }
+
+  saveAlertSettings(): void {
+    this.alertSaving.set(true);
+    this.settingsService.updateInventoryAlertSettings({
+      lowStockAlertsEnabled: this.alertLowStockEnabled(),
+      expiryAlertsEnabled: this.alertExpiryEnabled(),
+      reorderAlertsEnabled: this.alertReorderEnabled(),
+      expiryAlertDaysBefore: this.alertExpiryDays(),
+      lowStockPercentageThreshold: this.alertLowStockPercent(),
+      notifyByEmail: this.alertNotifyEmail(),
+      notifyInApp: this.alertNotifyInApp(),
+      notificationEmailList: this.alertEmailList()
+    }).subscribe({
+      next: () => {
+        this.notifications.success('Configuración de alertas guardada correctamente.');
+        this.alertSaving.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err, 'Error al guardar la configuración.'));
+        this.alertSaving.set(false);
+      }
+    });
   }
 
   // === Load ===

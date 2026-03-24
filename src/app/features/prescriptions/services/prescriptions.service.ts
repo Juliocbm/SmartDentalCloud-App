@@ -23,6 +23,14 @@ export class PrescriptionsService {
     return this.api.post<Prescription>('/prescriptions', request);
   }
 
+  complete(id: string): Observable<Prescription> {
+    return this.api.post<Prescription>(`/prescriptions/${id}/complete`, {});
+  }
+
+  cancel(id: string, reason: string): Observable<Prescription> {
+    return this.api.post<Prescription>(`/prescriptions/${id}/cancel`, { reason });
+  }
+
   sendEmail(id: string, request: { email: string }): Observable<{ message: string }> {
     return this.api.post<{ message: string }>(`/prescriptions/${id}/send-email`, request);
   }

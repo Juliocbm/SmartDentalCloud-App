@@ -157,13 +157,15 @@ Todas las variables provienen de `src/styles/_variables.scss`.
 }
 ```
 
-### 3.2 Tabla con Scroll Vertical (para tablas con muchos registros visibles)
+### 3.2 Tabla con Scroll Vertical — **OBLIGATORIO en todas las listas CRUD**
 
-Cuando la tabla necesita scroll vertical (ej: auditoría, logs), envolver la `<table>` en `.table-scroll`. Esto constraña la altura a `--table-scroll-max-height` (60vh) y hace el `thead` sticky.
+> ⚠️ **REGLA OBLIGATORIA:** Toda lista CRUD con paginación **debe** envolver la `<table>` en `<div class="table-scroll">`. Esto garantiza que todas las páginas tengan la **misma altura máxima sincronizada** (`--table-scroll-max-height: 60vh`) y el `thead` sticky al hacer scroll. Sin este wrapper, la tabla crece ilimitadamente rompiendo la consistencia visual entre páginas.
+
+El footer de paginación queda **fuera** del `.table-scroll` para que siempre sea visible.
 
 ```html
 <div class="table-container">
-  <div class="table-scroll">
+  <div class="table-scroll">           <!-- ← SIEMPRE presente en listas CRUD -->
     <table class="table">
       <thead>...</thead>
       <tbody>...</tbody>
@@ -174,6 +176,8 @@ Cuando la tabla necesita scroll vertical (ej: auditoría, logs), envolver la `<t
   <div class="table-footer">...</div>
 </div>
 ```
+
+**Solo omitir** `.table-scroll` en tablas simples sin paginación (dentro de reportes, details, dashboard) — ver §3.3.
 
 ### 3.3 Tabla Simple sin Paginación (para secciones internas de reportes)
 
@@ -571,7 +575,7 @@ Orden de elementos dentro del `page-container`:
 - Usar `.badge` + variantes para estados
 - Usar `var(--spacing-*)`, `var(--font-size-*)`, etc. para todo el styling
 - Usar `pageSize = 10` o `15` según densidad de contenido
-- Usar `.table-scroll` cuando la tabla necesita scroll vertical fijo
+- Usar **siempre** `.table-container` > `div.table-scroll` > `.table` en **todas las listas CRUD** con paginación (garantiza altura máxima 60vh sincronizada entre páginas)
 
 ### ❌ NO hacer
 - ❌ Crear clases custom como `data-table`, `report-table`, `custom-table`
@@ -582,6 +586,7 @@ Orden de elementos dentro del `page-container`:
 - ❌ Encadenar estados con `@else if` (usar `@if` independientes)
 - ❌ Poner `pageSize > 15` en listas CRUD
 - ❌ Omitir el estado de error con botón "Reintentar"
+- ❌ Omitir `div.table-scroll` en listas CRUD (provoca altura inconsistente respecto al resto de páginas)
 
 ---
 
@@ -596,7 +601,7 @@ Orden de elementos dentro del `page-container`:
   .loading-container
   .empty-state
   .table-container
-    (.table-scroll)                    ← opcional
+    div.table-scroll                   ← OBLIGATORIO en listas CRUD
       .table
         thead > tr > th (.actions-column)
         tbody > tr (.row-inactive)
@@ -621,27 +626,27 @@ Orden de elementos dentro del `page-container`:
 
 | Componente | `pageSize` | Scroll | Acciones |
 |------------|-----------|--------|----------|
-| `patient-list` | 10 | No | Ver, Editar, Toggle, Eliminar |
-| `service-list` | 10 | No | Editar, Eliminar |
-| `treatment-list` | 10 | No | Ver, Editar |
-| `treatment-plan-list` | 10 | No | Imprimir, Email, Editar, Ver |
-| `prescription-list` | 10 | No | Imprimir, Email, Ver |
-| `consultation-note-list` | 10 | No | Ver |
-| `user-list` | 10 | No | Ver, Editar, Eliminar |
-| `invoice-list` | 10 | No | Ver |
-| `payment-list` | 15 | No | Ver Factura |
-| `appointment-list` | — | No | Ver, Editar |
-| `audit-log-list` | 15 | Sí (.table-scroll) | Expandir detalle |
+| `patient-list` | 10 | Sí | Ver, Editar, Toggle, Eliminar |
+| `service-list` | 10 | Sí | Editar, Eliminar |
+| `treatment-list` | 10 | Sí | Ver, Editar |
+| `treatment-plan-list` | 10 | Sí | Imprimir, Email, Editar, Ver |
+| `prescription-list` | 10 | Sí | Imprimir, Email, Ver |
+| `consultation-note-list` | 10 | Sí | Ver |
+| `user-list` | 10 | Sí | Ver, Editar, Eliminar |
+| `invoice-list` | 10 | Sí | Ver |
+| `payment-list` | 15 | Sí | Ver Factura |
+| `appointment-list` | — | Sí | Ver, Editar |
+| `audit-log-list` | 15 | Sí | Expandir detalle |
 
 ### Listas de Inventario (con paginación)
 
 | Componente | `pageSize` | Scroll | Acciones |
 |------------|-----------|--------|----------|
-| `category-list` | 10 | No | Editar, Eliminar |
-| `product-list` | 10 | No | Ver, Editar |
-| `supplier-list` | 10 | No | Ver, Editar |
-| `purchase-order-list` | 10 | No | Ver |
-| `stock-alerts` | 10 | No | Ajustar Stock |
+| `category-list` | 10 | Sí | Editar, Eliminar |
+| `product-list` | 10 | Sí | Ver, Editar |
+| `supplier-list` | 10 | Sí | Ver, Editar |
+| `purchase-order-list` | 10 | Sí | Ver |
+| `stock-alerts` | 10 | Sí | Ajustar Stock |
 
 ### Tablas en Detalle (sin paginación)
 
@@ -670,4 +675,4 @@ Orden de elementos dentro del `page-container`:
 
 ---
 
-*Última actualización: Febrero 2026*
+*Última actualización: Marzo 2026*

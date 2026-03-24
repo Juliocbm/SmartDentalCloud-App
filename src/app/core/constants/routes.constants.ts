@@ -125,7 +125,11 @@ export const getDynamicRoute = {
 
   serviceEdit: (serviceId: string) => `/services/${serviceId}/edit`,
 
+  treatmentDetail: (treatmentId: string) => `/treatments/${treatmentId}`,
+
   treatmentPlanDetail: (planId: string) => `/treatment-plans/${planId}`,
+
+  appointmentDetail: (appointmentId: string) => `/appointments/${appointmentId}`,
 
   prescriptionDetail: (prescriptionId: string) => `/prescriptions/${prescriptionId}`,
 

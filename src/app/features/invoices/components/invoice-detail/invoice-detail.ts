@@ -20,11 +20,12 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { CfdiLookupModalComponent } from '../../../../shared/components/cfdi-lookup-modal/cfdi-lookup-modal';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, FormSelectComponent, ModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, FormSelectComponent, ModalComponent, CfdiLookupModalComponent],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })
@@ -66,6 +67,7 @@ export class InvoiceDetailComponent implements OnInit {
   satError = signal<string | null>(null);
   cancelMotivo = signal('');
   cancelObservaciones = signal('');
+  cancelUuidSustitucion = signal<Cfdi | null>(null);
   satStatus = signal<CfdiSatStatus | null>(null);
 
   // PDF & Email State
@@ -272,10 +274,12 @@ export class InvoiceDetailComponent implements OnInit {
     const cfdi = this.cfdi();
     const inv = this.invoice();
     if (!cfdi || !inv || !this.cancelMotivo() || this.cfdiActionLoading()) return;
+    if (this.cancelMotivo() === '01' && !this.cancelUuidSustitucion()?.uuid) return;
 
     this.cfdiActionLoading.set(true);
     this.cfdiService.cancelar(cfdi.id, {
       motivoCancelacion: this.cancelMotivo(),
+      uuidSustitucion: this.cancelUuidSustitucion()?.uuid || undefined,
       observaciones: this.cancelObservaciones().trim() || undefined
     }).subscribe({
       next: (result) => {
@@ -291,6 +295,50 @@ export class InvoiceDetailComponent implements OnInit {
       error: (err) => {
         this.notifications.error(getApiErrorMessage(err));
         this.cfdiActionLoading.set(false);
+      }
+    });
+  }
+
+  deleteCfdi(): void {
+    const cfdi = this.cfdi();
+    const inv = this.invoice();
+    if (!cfdi || !inv || this.cfdiActionLoading()) return;
+
+    this.cfdiActionLoading.set(true);
+    this.cfdiService.deleteCfdi(cfdi.id).subscribe({
+      next: () => {
+        this.notifications.success('CFDI eliminado. Puede generar uno nuevo.');
+        this.cancelMotivo.set('');
+        this.cancelObservaciones.set('');
+        this.cancelUuidSustitucion.set(null);
+        this.cfdi.set(null);
+        this.loadInvoice(inv.id);
+        this.cfdiActionLoading.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.cfdiActionLoading.set(false);
+      }
+    });
+  }
+
+  onCancelMotivoChange(motivo: string): void {
+    this.cancelMotivo.set(motivo);
+    if (motivo === '01') {
+      this.openCfdiLookupModal();
+    } else {
+      this.cancelUuidSustitucion.set(null);
+    }
+  }
+
+  openCfdiLookupModal(): void {
+    const cfdiId = this.cfdi()?.id;
+    const modalRef = this.modalService.open<void, Cfdi>(CfdiLookupModalComponent, {
+      excludeCfdiId: cfdiId
+    } as any);
+    modalRef.afterClosed().subscribe((selectedCfdi: Cfdi | undefined) => {
+      if (selectedCfdi) {
+        this.cancelUuidSustitucion.set(selectedCfdi);
       }
     });
   }

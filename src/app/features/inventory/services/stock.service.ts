@@ -76,7 +76,7 @@ export class StockService {
   private parseMovementDates(movement: StockMovement): StockMovement {
     return {
       ...movement,
-      createdAt: new Date(movement.createdAt)
+      movementDate: new Date(movement.movementDate)
     };
   }
 }

@@ -3,11 +3,12 @@ import { permissionGuard } from '../../core/guards/auth.guard';
 import { PERMISSIONS } from '../../core/services/permission.service';
 import { AppointmentsAnalyticsService } from './services/appointments-analytics.service';
 import { ConsultationNotesService } from '../consultation-notes/services/consultation-notes.service';
+import { InvoicesService } from '../invoices/services/invoices.service';
 
 export const APPOINTMENTS_ROUTES: Routes = [
   {
     path: '',
-    providers: [AppointmentsAnalyticsService, ConsultationNotesService],
+    providers: [AppointmentsAnalyticsService, ConsultationNotesService, InvoicesService],
     children: [
       {
         path: '',
@@ -34,6 +35,11 @@ export const APPOINTMENTS_ROUTES: Routes = [
         path: ':id',
         loadComponent: () => import('./components/appointment-detail/appointment-detail')
           .then(m => m.AppointmentDetailComponent)
+      },
+      {
+        path: ':id/checkout',
+        loadComponent: () => import('./components/appointment-checkout/appointment-checkout')
+          .then(m => m.AppointmentCheckoutComponent)
       },
       {
         path: ':id/edit',

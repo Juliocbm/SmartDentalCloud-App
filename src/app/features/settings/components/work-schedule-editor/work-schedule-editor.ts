@@ -13,7 +13,8 @@ import {
   DAY_LABELS,
   DAY_ORDER,
   DEFAULT_WORK_SCHEDULE,
-  generateTimeOptions
+  generateTimeOptions,
+  SLOT_DURATION_OPTIONS
 } from '../../models/work-schedule.models';
 
 @Component({
@@ -50,6 +51,7 @@ export class WorkScheduleEditorComponent implements OnInit {
   DAY_LABELS = DAY_LABELS;
   DAY_ORDER = DAY_ORDER;
   timeOptions = generateTimeOptions();
+  slotDurationOptions = SLOT_DURATION_OPTIONS;
 
   private locationEffect = effect(() => {
     const extLoc = this.locationId();
@@ -96,7 +98,10 @@ export class WorkScheduleEditorComponent implements OnInit {
             ...d,
             isOpen,
             startTime: isOpen ? '08:00' : null,
-            endTime: isOpen ? '18:00' : null
+            endTime: isOpen ? '18:00' : null,
+            lunchStartTime: isOpen ? d.lunchStartTime ?? '13:00' : null,
+            lunchEndTime: isOpen ? d.lunchEndTime ?? '14:00' : null,
+            slotDurationMinutes: isOpen ? d.slotDurationMinutes ?? 30 : null
           };
         }
         return d;
@@ -116,16 +121,66 @@ export class WorkScheduleEditorComponent implements OnInit {
     );
   }
 
+  updateLunchStartTime(dayOfWeek: string, value: string): void {
+    this.schedule.update(days =>
+      days.map(d => d.dayOfWeek === dayOfWeek ? { ...d, lunchStartTime: value } : d)
+    );
+  }
+
+  updateLunchEndTime(dayOfWeek: string, value: string): void {
+    this.schedule.update(days =>
+      days.map(d => d.dayOfWeek === dayOfWeek ? { ...d, lunchEndTime: value } : d)
+    );
+  }
+
+  updateSlotDuration(dayOfWeek: string, value: number): void {
+    this.schedule.update(days =>
+      days.map(d => d.dayOfWeek === dayOfWeek ? { ...d, slotDurationMinutes: value } : d)
+    );
+  }
+
   hasValidationError(day: DaySchedule): boolean {
     if (!day.isOpen) return false;
     if (!day.startTime || !day.endTime) return true;
-    return day.startTime >= day.endTime;
+    if (day.startTime >= day.endTime) return true;
+    if (day.lunchStartTime && day.lunchEndTime && day.lunchStartTime >= day.lunchEndTime) return true;
+    if (day.lunchStartTime && !day.lunchEndTime) return true;
+    if (!day.lunchStartTime && day.lunchEndTime) return true;
+    return false;
+  }
+
+  hasLunchValidationError(day: DaySchedule): boolean {
+    if (!day.isOpen) return false;
+    if (!day.lunchStartTime || !day.lunchEndTime) return false;
+    if (day.lunchStartTime >= day.lunchEndTime) return true;
+    if (day.startTime && day.lunchStartTime < day.startTime) return true;
+    if (day.endTime && day.lunchEndTime > day.endTime) return true;
+    return false;
+  }
+
+  getSlotWarning(day: DaySchedule): string | null {
+    if (!day.isOpen || !day.startTime || !day.endTime || !day.slotDurationMinutes) return null;
+    const [startH, startM] = day.startTime.split(':').map(Number);
+    const [endH, endM] = day.endTime.split(':').map(Number);
+    const workMinutes = (endH * 60 + endM) - (startH * 60 + startM);
+    const lunchMinutes = day.lunchStartTime && day.lunchEndTime
+      ? (() => {
+          const [lsH, lsM] = day.lunchStartTime!.split(':').map(Number);
+          const [leH, leM] = day.lunchEndTime!.split(':').map(Number);
+          return (leH * 60 + leM) - (lsH * 60 + lsM);
+        })()
+      : 0;
+    const availableMinutes = workMinutes - lunchMinutes;
+    if (day.slotDurationMinutes > availableMinutes) {
+      return `Duración del slot (${day.slotDurationMinutes} min) mayor al tiempo disponible (${availableMinutes} min)`;
+    }
+    return null;
   }
 
   isFormValid(): boolean {
     const days = this.schedule();
     if (!days.some(d => d.isOpen)) return false;
-    return !days.some(d => this.hasValidationError(d));
+    return !days.some(d => this.hasValidationError(d) || this.hasLunchValidationError(d));
   }
 
   save(): void {

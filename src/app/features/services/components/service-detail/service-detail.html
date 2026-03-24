@@ -148,6 +148,244 @@
           </div>
         </div>
       </div>
+
+      <!-- Estadísticas de Uso -->
+      <div class="info-section">
+        <div class="section-header section-header--collapsible" (click)="toggleStatsSection()">
+          <h3 class="section-header__title">
+            <i class="fa-solid fa-chart-line"></i>
+            Estadísticas de Uso
+          </h3>
+          <button class="btn-collapse">
+            <i class="fa-solid" [class.fa-chevron-down]="!showStatsSection()" [class.fa-chevron-up]="showStatsSection()"></i>
+          </button>
+        </div>
+        <hr>
+
+        @if (showStatsSection()) {
+          @if (loadingStats()) {
+            <div class="loading-small">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando estadísticas...</span>
+            </div>
+          }
+
+          @if (!loadingStats() && statistics(); as stats) {
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon stat-icon--primary">
+                  <i class="fa-solid fa-procedures"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-label">Tratamientos Totales</div>
+                  <div class="stat-value">{{ stats.totalTreatments }}</div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon stat-icon--warning">
+                  <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-label">En Progreso</div>
+                  <div class="stat-value">{{ stats.activeTreatments }}</div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon stat-icon--success">
+                  <i class="fa-solid fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-label">Completados</div>
+                  <div class="stat-value">{{ stats.completedTreatments }}</div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-icon stat-icon--info">
+                  <i class="fa-solid fa-dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-label">Ingresos Generados</div>
+                  <div class="stat-value">{{ formatCurrency(stats.totalRevenue) }}</div>
+                </div>
+              </div>
+
+              @if (stats.lastUsed) {
+                <div class="stat-card">
+                  <div class="stat-icon stat-icon--neutral">
+                    <i class="fa-solid fa-calendar"></i>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-label">Último Uso</div>
+                    <div class="stat-value stat-value--small">{{ formatDate(stats.lastUsed) }}</div>
+                  </div>
+                </div>
+              }
+
+              @if (stats.firstUsed) {
+                <div class="stat-card">
+                  <div class="stat-icon stat-icon--neutral">
+                    <i class="fa-solid fa-calendar-plus"></i>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-label">Primer Uso</div>
+                    <div class="stat-value stat-value--small">{{ formatDate(stats.firstUsed) }}</div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          @if (!loadingStats() && !statistics()) {
+            <div class="empty-state-small">
+              <i class="fa-solid fa-chart-line"></i>
+              <p>No hay estadísticas disponibles</p>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Historial de Cambios de Precio -->
+      <div class="info-section">
+        <div class="section-header section-header--collapsible" (click)="toggleHistorySection()">
+          <h3 class="section-header__title">
+            <i class="fa-solid fa-history"></i>
+            Historial de Precios
+            @if (priceHistory().length > 0) {
+              <span class="badge badge-info">{{ priceHistory().length }}</span>
+            }
+          </h3>
+          <button class="btn-collapse">
+            <i class="fa-solid" [class.fa-chevron-down]="!showHistorySection()" [class.fa-chevron-up]="showHistorySection()"></i>
+          </button>
+        </div>
+        <hr>
+
+        @if (showHistorySection()) {
+          @if (loadingHistory()) {
+            <div class="loading-small">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando historial...</span>
+            </div>
+          }
+
+          @if (!loadingHistory() && priceHistory().length > 0) {
+            <div class="table-container">
+              <table class="table table-compact">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Precio Anterior</th>
+                    <th>Precio Nuevo</th>
+                    <th>Diferencia</th>
+                    <th>Cambio %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (change of priceHistory(); track $index) {
+                    <tr>
+                      <td>{{ formatDate(change.changedAt) }}</td>
+                      <td>{{ change.changedBy }}</td>
+                      <td>{{ formatCurrency(change.oldPrice) }}</td>
+                      <td>{{ formatCurrency(change.newPrice) }}</td>
+                      <td [ngClass]="change.difference >= 0 ? 'text-success' : 'text-error'">
+                        {{ change.difference >= 0 ? '+' : '' }}{{ formatCurrency(change.difference) }}
+                      </td>
+                      <td [ngClass]="change.percentageChange >= 0 ? 'text-success' : 'text-error'">
+                        {{ change.percentageChange >= 0 ? '+' : '' }}{{ change.percentageChange }}%
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+
+          @if (!loadingHistory() && priceHistory().length === 0) {
+            <div class="empty-state-small">
+              <i class="fa-solid fa-history"></i>
+              <p>No hay cambios de precio registrados</p>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Tratamientos Vinculados -->
+      <div class="info-section">
+        <div class="section-header section-header--collapsible" (click)="toggleTreatmentsSection()">
+          <h3 class="section-header__title">
+            <i class="fa-solid fa-tooth"></i>
+            Tratamientos que Usan este Servicio
+            @if (linkedTreatments().length > 0) {
+              <span class="badge badge-info">{{ linkedTreatments().length }}</span>
+            }
+          </h3>
+          <button class="btn-collapse">
+            <i class="fa-solid" [class.fa-chevron-down]="!showTreatmentsSection()" [class.fa-chevron-up]="showTreatmentsSection()"></i>
+          </button>
+        </div>
+        <hr>
+
+        @if (showTreatmentsSection()) {
+          @if (loadingTreatments()) {
+            <div class="loading-small">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando tratamientos...</span>
+            </div>
+          }
+
+          @if (!loadingTreatments() && linkedTreatments().length > 0) {
+            <div class="table-container">
+              <table class="table table-compact">
+                <thead>
+                  <tr>
+                    <th>Paciente</th>
+                    <th>Fecha Inicio</th>
+                    <th>Estado</th>
+                    <th>Costo</th>
+                    <th>Diente</th>
+                    <th class="actions-column">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (treatment of linkedTreatments(); track treatment.id) {
+                    <tr>
+                      <td>
+                        <a [routerLink]="['/patients', treatment.patientId]" class="link-primary">
+                          {{ treatment.patientName }}
+                        </a>
+                      </td>
+                      <td>{{ formatDate(treatment.startDate) }}</td>
+                      <td>
+                        <span class="badge" [ngClass]="getStatusClass(treatment.status)">
+                          {{ getStatusLabel(treatment.status) }}
+                        </span>
+                      </td>
+                      <td>{{ formatCurrency(treatment.cost) }}</td>
+                      <td>{{ treatment.toothNumber || '—' }}</td>
+                      <td>
+                        <a [routerLink]="['/treatments', treatment.id]" class="btn btn-icon btn-sm" title="Ver detalle">
+                          <i class="fa-solid fa-eye"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+
+          @if (!loadingTreatments() && linkedTreatments().length === 0) {
+            <div class="empty-state-small">
+              <i class="fa-solid fa-tooth"></i>
+              <p>No hay tratamientos vinculados a este servicio</p>
+            </div>
+          }
+        }
+      </div>
     </div>
 
     <app-audit-info

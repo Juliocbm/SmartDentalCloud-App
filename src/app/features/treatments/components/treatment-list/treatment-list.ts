@@ -40,6 +40,10 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
   searchTerm = signal('');
   filterStatus = signal<'all' | TreatmentStatus>('all');
 
+  // Sorting
+  sortColumn = signal<string | null>(null);
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
   // Pagination
   currentPage = signal(1);
   pageSize = signal(10);
@@ -126,6 +130,45 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(t => t.status === status);
     }
 
+    // Apply sorting
+    const column = this.sortColumn();
+    const direction = this.sortDirection();
+    if (column) {
+      filtered.sort((a, b) => {
+        let aVal: any;
+        let bVal: any;
+
+        switch (column) {
+          case 'patient':
+            aVal = a.patientName?.toLowerCase() || '';
+            bVal = b.patientName?.toLowerCase() || '';
+            break;
+          case 'service':
+            aVal = a.serviceName?.toLowerCase() || '';
+            bVal = b.serviceName?.toLowerCase() || '';
+            break;
+          case 'date':
+            aVal = new Date(a.startDate).getTime();
+            bVal = new Date(b.startDate).getTime();
+            break;
+          case 'cost':
+            aVal = a.cost || 0;
+            bVal = b.cost || 0;
+            break;
+          case 'status':
+            aVal = a.status;
+            bVal = b.status;
+            break;
+          default:
+            return 0;
+        }
+
+        if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
     this.filteredTreatments.set(filtered);
     this.totalItems.set(filtered.length);
     this.totalPages.set(Math.ceil(filtered.length / this.pageSize()));
@@ -139,6 +182,23 @@ export class TreatmentListComponent implements OnInit, OnDestroy {
   onStatusFilterChange(value: string): void {
     this.filterStatus.set(value as 'all' | TreatmentStatus);
     this.applyFilters();
+  }
+
+  onSort(column: string): void {
+    if (this.sortColumn() === column) {
+      // Toggle direction
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      // New column, default to ascending
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.applyFilters();
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
+    return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   getStatusConfig(status: TreatmentStatus) {

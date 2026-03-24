@@ -321,6 +321,19 @@
                   }
                 </button>
               }
+              @if (cfdi()?.estado === 'ErrorTimbrado') {
+                <button
+                  class="btn btn-sm btn-outline"
+                  [disabled]="cfdiActionLoading()"
+                  (click)="deleteCfdi()">
+                  @if (cfdiActionLoading()) {
+                    <span class="btn-spinner"></span>
+                  } @else {
+                    <i class="fa-solid fa-trash"></i>
+                  }
+                  Eliminar CFDI
+                </button>
+              }
               @if (canCancelarCfdi()) {
                 <button
                   class="btn btn-sm btn-outline"
@@ -356,7 +369,7 @@
               @if (c.estado === 'ErrorTimbrado') {
                 <div class="alert alert-error alert-compact cfdi-error-alert">
                   <i class="fa-solid fa-triangle-exclamation"></i>
-                  <span>Ocurrió un error al timbrar el CFDI. Puede re-intentar timbrar o eliminar el borrador.</span>
+                  <span>El CFDI no se pudo timbrar. Puede re-intentar o eliminar este CFDI e intentar nuevamente.</span>
                 </div>
               }
 
@@ -514,11 +527,46 @@
         <label class="form-label">Motivo de Cancelación <span class="required">*</span></label>
         <app-form-select
           [ngModel]="cancelMotivo()"
-          (ngModelChange)="cancelMotivo.set($event)"
+          (ngModelChange)="onCancelMotivoChange($event)"
           [options]="MOTIVO_CANCELACION_OPTIONS"
           placeholder="Seleccionar motivo..."
         ></app-form-select>
       </div>
+
+      @if (cancelMotivo() === '01') {
+        <div class="form-group">
+          <label class="form-label">CFDI Sustituto <span class="required">*</span></label>
+          @if (cancelUuidSustitucion(); as cfdi) {
+            <div class="cfdi-selected-card">
+              <div class="cfdi-selected-info">
+                <div class="cfdi-selected-header">
+                  <span class="cfdi-selected-folio">
+                    {{ cfdi.serie }}{{ cfdi.folio }}
+                  </span>
+                  <span class="badge badge-success badge-sm">
+                    <i class="fa-solid fa-stamp"></i>
+                    Timbrada
+                  </span>
+                </div>
+                <div class="cfdi-selected-patient">{{ cfdi.receptorNombre }}</div>
+                <div class="cfdi-selected-uuid">
+                  <i class="fa-solid fa-fingerprint"></i>
+                  {{ cfdi.uuid }}
+                </div>
+              </div>
+              <button type="button" class="btn btn-icon btn-sm btn-outline" (click)="openCfdiLookupModal()" title="Cambiar CFDI">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </div>
+          } @else {
+            <button type="button" class="btn btn-outline btn-full" (click)="openCfdiLookupModal()">
+              <i class="fa-solid fa-search"></i>
+              Buscar CFDI sustituto...
+            </button>
+          }
+        </div>
+      }
+
       <div class="form-group">
         <label class="form-label">Observaciones</label>
         <textarea
@@ -538,7 +586,7 @@
         <button
           type="button"
           class="btn btn-danger"
-          [disabled]="!cancelMotivo() || cfdiActionLoading()"
+          [disabled]="!cancelMotivo() || (cancelMotivo() === '01' && !cancelUuidSustitucion()?.uuid) || cfdiActionLoading()"
           (click)="cancelarCfdi()">
           @if (cfdiActionLoading()) {
             <span class="btn-spinner"></span>

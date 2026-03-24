@@ -21,7 +21,7 @@
     
     @if (loading()) {
       <i class="fa-solid fa-spinner fa-spin autocomplete-icon"></i>
-    } @else if (selectedPatient()) {
+    } @else if (selectedPatient() && !disabled) {
       <button
         type="button"
         (click)="clearSelection()"
@@ -30,6 +30,8 @@
       >
         <i class="fa-solid fa-times"></i>
       </button>
+    } @else if (selectedPatient() && disabled) {
+      <i class="fa-solid fa-lock autocomplete-icon"></i>
     } @else {
       <i class="fa-solid fa-search autocomplete-icon"></i>
     }

@@ -197,6 +197,70 @@
   }
 }
 
+// Read-only field display
+.readonly-field {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+
+  > i {
+    color: var(--primary-500);
+  }
+
+  .readonly-hint {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-normal);
+  }
+}
+
+// Linked consultation note info
+.linked-note-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--info-50, #eff6ff);
+  border: 1px solid var(--info-200, #bfdbfe);
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-sm);
+
+  > i {
+    color: var(--info-500, #3b82f6);
+    font-size: var(--font-size-lg);
+  }
+
+  .linked-note-label {
+    display: block;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+  }
+
+  .linked-note-detail {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+}
+
+// Loading inline
+.loading-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
 // Responsive
 @media (max-width: 768px) {
   .section-header-row {

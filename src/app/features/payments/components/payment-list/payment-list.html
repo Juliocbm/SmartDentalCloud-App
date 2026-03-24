@@ -17,18 +17,20 @@
 
   <!-- Filters and Search -->
   <div class="filters-section">
+    <!-- Búsqueda -->
     <div class="search-box">
       <i class="fa-solid fa-search search-icon"></i>
       <input
         type="text"
         class="search-input"
-        placeholder="Buscar por referencia..."
+        placeholder="Buscar por paciente, referencia, factura..."
         [value]="searchTerm()"
         (input)="onSearchChange($any($event.target).value)"
       />
     </div>
 
     <div class="filter-actions">
+      <!-- Método de pago -->
       <select
         class="filter-select"
         [value]="filterMethod()"
@@ -39,6 +41,36 @@
           <option [value]="method">{{ getMethodConfig(method).label }}</option>
         }
       </select>
+
+      <!-- Fecha desde -->
+      <div class="date-filter-group">
+        <label class="date-filter-label">Desde</label>
+        <input
+          type="date"
+          class="filter-input-date"
+          [value]="startDate()"
+          (change)="onStartDateChange($any($event.target).value)"
+        />
+      </div>
+
+      <!-- Fecha hasta -->
+      <div class="date-filter-group">
+        <label class="date-filter-label">Hasta</label>
+        <input
+          type="date"
+          class="filter-input-date"
+          [value]="endDate()"
+          (change)="onEndDateChange($any($event.target).value)"
+        />
+      </div>
+
+      <!-- Limpiar filtros -->
+      @if (hasActiveFilters()) {
+        <button class="btn btn-outline btn-sm" (click)="clearFilters()" title="Limpiar filtros">
+          <i class="fa-solid fa-filter-circle-xmark"></i>
+          Limpiar
+        </button>
+      }
     </div>
   </div>
 
@@ -63,7 +95,7 @@
   }
 
   <!-- Empty State -->
-  @if (!loading() && !error() && filteredPayments().length === 0 && payments().length === 0) {
+  @if (!loading() && !error() && payments().length === 0) {
     <div class="empty-state">
       <i class="fa-solid fa-receipt"></i>
       <h3>No hay pagos registrados</h3>
@@ -77,6 +109,10 @@
       <i class="fa-solid fa-filter-circle-xmark"></i>
       <h3>Sin resultados</h3>
       <p>No se encontraron pagos con los filtros aplicados</p>
+      <button class="btn btn-outline btn-sm" (click)="clearFilters()">
+        <i class="fa-solid fa-filter-circle-xmark"></i>
+        Limpiar filtros
+      </button>
     </div>
   }
 
@@ -87,11 +123,28 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Fecha</th>
-              <th>Monto</th>
-              <th>Método</th>
+              <!-- Fecha — ordenable -->
+              <th class="sortable-th" (click)="onSortChange('paidAt')">
+                Fecha
+                <i [class]="'fa-solid ' + getSortIcon('paidAt')" class="sort-icon"></i>
+              </th>
+              <!-- Paciente — ordenable -->
+              <th class="sortable-th" (click)="onSortChange('patientName')">
+                Paciente
+                <i [class]="'fa-solid ' + getSortIcon('patientName')" class="sort-icon"></i>
+              </th>
+              <!-- Monto — ordenable -->
+              <th class="sortable-th" (click)="onSortChange('amount')">
+                Monto
+                <i [class]="'fa-solid ' + getSortIcon('amount')" class="sort-icon"></i>
+              </th>
+              <!-- Método — ordenable -->
+              <th class="sortable-th" (click)="onSortChange('paymentMethod')">
+                Método
+                <i [class]="'fa-solid ' + getSortIcon('paymentMethod')" class="sort-icon"></i>
+              </th>
               <th>Referencia</th>
-              <th class="actions-column">Factura</th>
+              <th class="actions-column">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -100,6 +153,21 @@
                 <!-- Fecha -->
                 <td class="date-cell">
                   {{ formatDate(payment.paidAt) }}
+                </td>
+
+                <!-- Paciente -->
+                <td>
+                  @if (payment.patientName) {
+                    <span>{{ payment.patientName }}</span>
+                    @if (payment.invoiceNumber) {
+                      <br>
+                      <span class="text-muted" style="font-size: var(--font-size-xs);">
+                        Factura {{ payment.invoiceNumber }}
+                      </span>
+                    }
+                  } @else {
+                    <span class="text-muted">-</span>
+                  }
                 </td>
 
                 <!-- Monto -->
@@ -124,10 +192,13 @@
                   }
                 </td>
 
-                <!-- Factura -->
+                <!-- Acciones -->
                 <td class="actions-cell">
-                  <button class="btn-icon btn-icon-view" title="Ver factura" [routerLink]="['/invoices', payment.invoiceId]">
+                  <button class="btn-icon btn-icon-view" title="Ver detalle del pago" [routerLink]="['/payments', payment.id]">
                     <i class="fa-solid fa-eye"></i>
+                  </button>
+                  <button class="btn-icon btn-icon-view" title="Ver factura" [routerLink]="['/invoices', payment.invoiceId]">
+                    <i class="fa-solid fa-file-invoice"></i>
                   </button>
                 </td>
               </tr>

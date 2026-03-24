@@ -4,4 +4,63 @@
 //       .info-row, .info-two-col, .info-empty de _components.scss
 // ============================================
 
-// No se necesitan estilos adicionales — usa 100% clases globales
+.supplier-tabs {
+  display: flex;
+  gap: var(--spacing-xs);
+  background: var(--surface-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  padding: 0 var(--spacing-lg);
+}
+
+.supplier-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: var(--transition-base);
+
+  i {
+    font-size: var(--font-size-base);
+  }
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--surface-tertiary);
+  }
+
+  &.active {
+    color: var(--primary-600);
+    border-bottom-color: var(--primary-600);
+  }
+}
+
+.tab-badge {
+  background: var(--primary-100);
+  color: var(--primary-700);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--radius-full);
+  min-width: 20px;
+  text-align: center;
+}
+
+.code-cell {
+  .order-code,
+  .product-code {
+    font-family: var(--font-family-mono, monospace);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    background: var(--surface-secondary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+  }
+}

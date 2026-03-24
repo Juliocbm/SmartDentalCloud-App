@@ -11,8 +11,11 @@
 @use './styles/datepicker';
 @use './styles/print';
 
-// Font Awesome (local via npm)
-@import '@fortawesome/fontawesome-free/css/all.min.css';
+// Font Awesome — selective subset (solid + brands only)
+// Eliminamos regular/light/thin que no se usan, reduciendo ~35% del peso FA
+@import '@fortawesome/fontawesome-free/css/fontawesome.min.css';
+@import '@fortawesome/fontawesome-free/css/solid.min.css';
+@import '@fortawesome/fontawesome-free/css/brands.min.css';
 
 // ===== Reset y estilos base =====
 * {

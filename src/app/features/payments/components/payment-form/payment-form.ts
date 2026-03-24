@@ -28,6 +28,9 @@ export class PaymentFormComponent implements OnInit {
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
 
+  // Max date for payment date picker (no future dates allowed)
+  readonly today = new Date().toISOString().split('T')[0];
+
   // State
   invoices = signal<Invoice[]>([]);
   selectedInvoice = signal<Invoice | null>(null);
@@ -54,12 +57,11 @@ export class PaymentFormComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    const today = new Date().toISOString().split('T')[0];
     this.form = this.fb.group({
       invoiceId: ['', Validators.required],
       amount: [{ value: 0, disabled: true }, [Validators.required, Validators.min(0.01)]],
       paymentMethod: ['cash', Validators.required],
-      paidAt: [today, Validators.required],
+      paidAt: [this.today, Validators.required],
       reference: ['']
     });
 

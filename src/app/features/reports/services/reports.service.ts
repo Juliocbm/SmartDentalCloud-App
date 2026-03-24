@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService, QueryParams } from '../../../core/services/api.service';
-import { AccountsReceivableItem, IncomeReport, TreatmentsSummary, DentistProductivity, InventorySummary, AppointmentOccupancy, TopService } from '../models/report.models';
+import { AccountsReceivableItem, IncomeReport, TreatmentsSummary, DentistProductivity, InventorySummary, AppointmentOccupancy, TopService, BillingConversion } from '../models/report.models';
 
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
@@ -52,5 +52,12 @@ export class ReportsService {
     if (endDate) params['endDate'] = endDate;
     if (top) params['top'] = top;
     return this.api.get<TopService[]>('/reports/top-services', params);
+  }
+
+  getBillingConversion(startDate?: string, endDate?: string): Observable<BillingConversion> {
+    const params: QueryParams = {};
+    if (startDate) params['startDate'] = startDate;
+    if (endDate) params['endDate'] = endDate;
+    return this.api.get<BillingConversion>('/reports/billing-conversion', params);
   }
 }

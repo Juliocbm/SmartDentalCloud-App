@@ -135,6 +135,7 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
     const classes: Record<PurchaseOrderStatus, string> = {
       Draft: 'badge-warning',
       Sent: 'badge-info',
+      PartialReceived: 'badge-info',
       Received: 'badge-success',
       Cancelled: 'badge-error'
     };

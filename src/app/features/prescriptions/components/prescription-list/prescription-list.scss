@@ -64,6 +64,19 @@
   text-align: center;
 }
 
+// ===== Date Range Filter =====
+
+.date-range-filter {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+
+  .date-separator {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+  }
+}
+
 // ===== Responsive =====
 
 @media (max-width: 768px) {

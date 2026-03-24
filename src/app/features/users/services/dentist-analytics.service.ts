@@ -3,12 +3,13 @@ import { Observable, forkJoin, map, catchError, of } from 'rxjs';
 import { UsersService } from './users.service';
 import { ReportsService } from '../../reports/services/reports.service';
 import { User } from '../models/user.models';
-import { DentistProductivity } from '../../reports/models/report.models';
+import { DentistProductivity, AppointmentOccupancy } from '../../reports/models/report.models';
 import { ChartDataItem } from '../../../shared/components/charts';
 import {
   DentistDashboardMetrics,
   DentistRanking,
-  DentistTeamMember
+  DentistTeamMember,
+  DentistIndividualMetrics
 } from '../models/dentist-analytics.models';
 
 /**
@@ -171,5 +172,41 @@ export class DentistAnalyticsService {
   private truncateName(name: string, maxLength: number = 18): string {
     if (name.length <= maxLength) return name;
     return name.substring(0, maxLength) + '…';
+  }
+
+  /**
+   * Obtiene métricas individuales de un dentista específico.
+   */
+  getIndividualMetrics(
+    dentist: User,
+    productivity: DentistProductivity[],
+    occupancy: AppointmentOccupancy | null
+  ): DentistIndividualMetrics {
+    const prod = productivity.find(p => p.dentistId === dentist.id);
+    const occ = occupancy?.byDentist.find(o => o.dentistId === dentist.id);
+    const completed = prod?.appointmentsCompleted ?? 0;
+    const cancelled = prod?.appointmentsCancelled ?? 0;
+    const total = completed + cancelled;
+    return {
+      dentistId: dentist.id,
+      dentistName: dentist.name,
+      specialty: dentist.profile?.specialty || 'Sin especialidad',
+      appointmentsCompleted: completed,
+      appointmentsCancelled: cancelled,
+      noShowCount: occ?.cancelled ?? 0,
+      occupancyRate: occ?.occupancyRate ?? 0,
+      completionRate: total > 0 ? Math.round((completed / total) * 100 * 10) / 10 : 0,
+      revenue: prod?.revenueGenerated ?? 0,
+      treatmentsCompleted: prod?.treatmentsCompleted ?? 0
+    };
+  }
+
+  /**
+   * Carga datos de ocupación por dentista.
+   */
+  loadOccupancyData(startDate: string, endDate: string): Observable<AppointmentOccupancy | null> {
+    return this.reportsService.getAppointmentOccupancy(startDate, endDate).pipe(
+      catchError(() => of(null))
+    );
   }
 }

@@ -30,8 +30,11 @@
         </button>
       }
       @if (canComplete()) {
+        <button (click)="onCheckout()" class="btn btn-primary" [disabled]="actionLoading()">
+          <i class="fa-solid fa-cash-register"></i> Checkout
+        </button>
         <button (click)="onComplete()" class="btn btn-outline btn-success" [disabled]="actionLoading()">
-          <i class="fa-solid fa-check"></i> Completar
+          <i class="fa-solid fa-check"></i> Solo Completar
         </button>
       }
       @if (canMarkNoShow()) {
@@ -42,6 +45,16 @@
       @if (canCancel()) {
         <button (click)="onCancel()" class="btn btn-outline btn-danger" [disabled]="actionLoading()">
           <i class="fa-solid fa-times-circle"></i> Cancelar
+        </button>
+      }
+      @if (appointment()?.status === AppointmentStatus.Completed && permissionService.hasPermission('prescriptions.create')) {
+        <button (click)="onCreatePrescription()" class="btn btn-outline">
+          <i class="fa-solid fa-prescription"></i> Crear Receta
+        </button>
+      }
+      @if (appointment()?.status === AppointmentStatus.Completed && permissionService.hasPermission('invoices.create')) {
+        <button (click)="onGenerateInvoice()" class="btn btn-outline btn-primary">
+          <i class="fa-solid fa-file-invoice-dollar"></i> Generar Factura
         </button>
       }
     </div>

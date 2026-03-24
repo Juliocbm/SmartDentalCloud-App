@@ -80,6 +80,8 @@ export interface Invoice {
 export interface InvoiceItem {
   id: string;
   treatmentId: string | null;
+  appointmentId: string | null;
+  treatmentPlanItemId: string | null;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -114,6 +116,8 @@ export interface CreateInvoiceRequest {
  */
 export interface CreateInvoiceItemRequest {
   treatmentId?: string;
+  appointmentId?: string;
+  treatmentPlanItemId?: string;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -200,6 +204,25 @@ export const PAYMENT_METHOD_OPTIONS = [
   { value: 'transfer', label: 'Transferencia', icon: 'fa-building-columns' },
   { value: 'check', label: 'Cheque', icon: 'fa-money-check' }
 ];
+
+/**
+ * Tratamiento completado pendiente de facturar (vista global billing)
+ */
+export interface PendingBillingItem {
+  treatmentId: string;
+  patientId: string;
+  patientName?: string;
+  serviceId: string;
+  serviceName?: string;
+  cost: number;
+  toothNumber?: string;
+  startDate: Date;
+  endDate?: Date;
+  appointmentId?: string;
+  treatmentPlanItemId?: string;
+  treatmentPlanId?: string;
+  treatmentPlanTitle?: string;
+}
 
 /**
  * Filtros para lista de facturas

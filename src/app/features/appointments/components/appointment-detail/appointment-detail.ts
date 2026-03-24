@@ -19,6 +19,8 @@ import { InformedConsentsService, ConsentCheck } from '../../../patients/service
 import { InformedConsent } from '../../../patients/models/informed-consent.models';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { DateFormatService } from '../../../../core/services/date-format.service';
+import { InvoiceFormContextService } from '../../../invoices/services/invoice-form-context.service';
+import { APPOINTMENT_INVOICE_CONTEXT } from '../../../invoices/models/invoice-form-context.model';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -40,6 +42,7 @@ export class AppointmentDetailComponent implements OnInit {
   locationsService = inject(LocationsService);
   private allergiesService = inject(PatientAllergiesService);
   private consentsService = inject(InformedConsentsService);
+  private invoiceContextService = inject(InvoiceFormContextService);
   permissionService = inject(PermissionService);
 
   breadcrumbItems: BreadcrumbItem[] = [
@@ -322,5 +325,28 @@ export class AppointmentDetailComponent implements OnInit {
 
   formatNoteDateTime(date: Date | undefined): string {
     return DateFormatService.dateTime(date);
+  }
+
+  onCheckout(): void {
+    const apt = this.appointment();
+    if (!apt) return;
+    this.router.navigate(['/appointments', apt.id, 'checkout']);
+  }
+
+  onCreatePrescription(): void {
+    const apt = this.appointment();
+    if (!apt) return;
+    this.router.navigate(['/prescriptions', 'new'], {
+      queryParams: { patientId: apt.patientId, appointmentId: apt.id }
+    });
+  }
+
+  onGenerateInvoice(): void {
+    const apt = this.appointment();
+    if (!apt) return;
+    this.invoiceContextService.setContext(
+      APPOINTMENT_INVOICE_CONTEXT(apt.patientId, apt.patientName, apt.id)
+    );
+    this.router.navigate(['/invoices', 'new']);
   }
 }

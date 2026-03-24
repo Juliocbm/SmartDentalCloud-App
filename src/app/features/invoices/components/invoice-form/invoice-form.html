@@ -5,7 +5,7 @@
     [subtitle]="'Crea una nueva factura para un paciente'"
     [icon]="'fa-file-invoice-dollar'"
     [showBackButton]="true"
-    [backRoute]="'/invoices'"
+    [backRoute]="backRoute()"
     [breadcrumbs]="breadcrumbItems"
     [sticky]="true">
     <div actions class="header-form-actions">
@@ -37,6 +37,13 @@
       </div>
     }
 
+    @if (isAdvanceMode()) {
+      <div class="alert alert-info">
+        <i class="fa-solid fa-hand-holding-dollar alert-icon"></i>
+        <span class="alert-message">Factura de anticipo — Plan {{ advancePlanNumber() }}</span>
+      </div>
+    }
+
     <form [formGroup]="form" class="standard-form">
       <!-- Información del Paciente -->
       <div class="form-section form-section--compact">
@@ -49,13 +56,20 @@
         <div class="form-group">
           <app-patient-autocomplete
             [selectedPatientId]="selectedPatient()?.id || null"
+            [selectedPatientName]="selectedPatient()?.name || null"
             [required]="true"
-            [disabled]="loading()"
+            [disabled]="loading() || isPatientLocked()"
             [error]="getFieldError('patientId')"
             (patientSelected)="onPatientSelected($event)"
           >
             Buscar Paciente
           </app-patient-autocomplete>
+          @if (isPatientLocked()) {
+            <span class="field-hint locked">
+              <i class="fa-solid fa-lock"></i>
+              Paciente preseleccionado desde el origen
+            </span>
+          }
         </div>
       </div>
 
@@ -106,10 +120,16 @@
             Items de Factura
             <span class="required">*</span>
           </h3>
-          <button type="button" class="btn btn-outline btn-sm" (click)="openAddItemModal()">
-            <i class="fa-solid fa-plus"></i>
-            Agregar Item
-          </button>
+          <div class="section-actions">
+            <button type="button" class="btn btn-outline btn-sm" (click)="openImportTreatmentsModal()">
+              <i class="fa-solid fa-file-import"></i>
+              Importar Tratamientos
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" (click)="openAddItemModal()">
+              <i class="fa-solid fa-plus"></i>
+              Agregar Item
+            </button>
+          </div>
         </div>
 
         @if (items.length === 0) {

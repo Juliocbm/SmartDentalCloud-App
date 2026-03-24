@@ -1,0 +1,432 @@
+<div class="checkout-container">
+  <app-page-header
+    [title]="'Checkout de Cita'"
+    [subtitle]="appointment() ? appointment()!.patientName : ''"
+    [icon]="'fa-cash-register'"
+    [showBackButton]="true"
+    [defaultBackRoute]="appointment() ? '/appointments/' + appointment()!.id : '/appointments'"
+    [breadcrumbs]="breadcrumbItems">
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando datos de la cita...</p>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h3>Error</h3>
+      <p>{{ error() }}</p>
+    </div>
+  } @else if (appointment(); as apt) {
+
+    <!-- Stepper -->
+    <div class="stepper">
+      @for (step of steps; track step; let i = $index) {
+        <button
+          class="stepper__step"
+          [class.stepper__step--active]="isStepActive(step)"
+          [class.stepper__step--completed]="isStepCompleted(step)"
+          [class.stepper__step--disabled]="i > currentStepIndex() && !isStepCompleted(step)"
+          (click)="goToStep(step)"
+          [disabled]="i > currentStepIndex()">
+          <span class="stepper__number">
+            @if (isStepCompleted(step)) {
+              <i class="fa-solid fa-check"></i>
+            } @else {
+              {{ i + 1 }}
+            }
+          </span>
+          <span class="stepper__label">{{ getStepLabel(step) }}</span>
+        </button>
+        @if (i < steps.length - 1) {
+          <div class="stepper__connector" [class.stepper__connector--active]="isStepCompleted(steps[i + 1]) || isStepActive(steps[i + 1])"></div>
+        }
+      }
+    </div>
+
+    <!-- Appointment Info Bar -->
+    <div class="apt-info-bar">
+      <div class="apt-info-bar__item">
+        <i class="fa-solid fa-user"></i>
+        <a [routerLink]="['/patients', apt.patientId]">{{ apt.patientName }}</a>
+      </div>
+      <div class="apt-info-bar__item">
+        <i class="fa-solid fa-calendar"></i>
+        <span>{{ formatDate(apt.startAt) }}, {{ formatTime(apt.startAt) }}</span>
+      </div>
+      @if (apt.doctorName) {
+        <div class="apt-info-bar__item">
+          <i class="fa-solid fa-user-doctor"></i>
+          <span>{{ apt.doctorName }}</span>
+        </div>
+      }
+      @if (apt.reason) {
+        <div class="apt-info-bar__item">
+          <i class="fa-solid fa-notes-medical"></i>
+          <span>{{ apt.reason }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Step Content -->
+    <div class="step-content">
+
+      <!-- STEP 1: Treatments Summary -->
+      @if (currentStep() === 'summary') {
+        <div class="step-panel">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-tooth"></i>
+              Tratamientos Realizados
+            </h3>
+            <span class="section-header__hint">Selecciona los tratamientos a incluir en la factura</span>
+          </div>
+
+          @if (treatmentsLoading()) {
+            <div class="loading-inline">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              Cargando tratamientos...
+            </div>
+          } @else if (treatments().length === 0) {
+            <div class="empty-items">
+              <i class="fa-solid fa-info-circle"></i>
+              <p>No se encontraron tratamientos completados sin facturar para esta cita.</p>
+              <p class="empty-items__hint">Puedes completar la cita sin generar factura.</p>
+            </div>
+          } @else {
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="col-check">
+                      <label class="checkbox-label">
+                        <input type="checkbox" [checked]="allSelected()" (change)="toggleAll()">
+                      </label>
+                    </th>
+                    <th>Servicio</th>
+                    <th>Diente</th>
+                    <th>Fecha</th>
+                    <th class="text-right">Costo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (t of treatments(); track t.id) {
+                    <tr [class.row-selected]="isSelected(t.id)" (click)="toggleTreatment(t.id)">
+                      <td class="col-check">
+                        <label class="checkbox-label">
+                          <input type="checkbox" [checked]="isSelected(t.id)" (change)="toggleTreatment(t.id)" (click)="$event.stopPropagation()">
+                        </label>
+                      </td>
+                      <td>
+                        <span class="treatment-name">{{ t.serviceName || 'Tratamiento' }}</span>
+                      </td>
+                      <td>
+                        @if (t.toothNumber) {
+                          <span class="badge badge-neutral badge-sm">
+                            <i class="fa-solid fa-tooth"></i>
+                            #{{ t.toothNumber }}
+                          </span>
+                        } @else {
+                          —
+                        }
+                      </td>
+                      <td>{{ formatDate(t.startDate) }}</td>
+                      <td class="text-right">
+                        <strong>{{ formatCurrency(t.cost) }}</strong>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4" class="text-right"><strong>Subtotal seleccionado:</strong></td>
+                    <td class="text-right"><strong>{{ formatCurrency(subtotal()) }}</strong></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          }
+
+          <div class="step-actions">
+            <button class="btn btn-outline" (click)="onSkipBilling()">
+              <i class="fa-solid fa-forward"></i>
+              Solo Completar Cita
+            </button>
+            <button
+              class="btn btn-primary"
+              [disabled]="selectedTreatmentIds().size === 0"
+              (click)="nextStep()">
+              Continuar a Facturación
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- STEP 2: Billing Config -->
+      @if (currentStep() === 'billing') {
+        <div class="step-panel">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+              Configuración de Factura
+            </h3>
+          </div>
+
+          <div class="billing-config">
+            <div class="config-grid">
+              <div class="form-group">
+                <label class="form-label">Uso CFDI</label>
+                <select class="form-control" [(ngModel)]="usoCFDI" [ngModelOptions]="{standalone: true}">
+                  @for (opt of cfdiUsoOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Método de Pago</label>
+                <select class="form-control" [(ngModel)]="metodoPago" [ngModelOptions]="{standalone: true}">
+                  @for (opt of cfdiMetodoPagoOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Forma de Pago</label>
+                <select class="form-control" [(ngModel)]="formaPago" [ngModelOptions]="{standalone: true}">
+                  @for (opt of cfdiFormaPagoOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tasa IVA (%)</label>
+                <input type="number" class="form-control" [(ngModel)]="taxRate" [ngModelOptions]="{standalone: true}" min="0" max="100">
+              </div>
+            </div>
+
+            <!-- Items Preview -->
+            <div class="items-preview">
+              <h4 class="items-preview__title">
+                <i class="fa-solid fa-list"></i>
+                Conceptos de la factura ({{ selectedTreatments().length }})
+              </h4>
+              <div class="table-container">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Concepto</th>
+                      <th class="text-right">Precio</th>
+                      <th class="text-right">IVA</th>
+                      <th class="text-right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (t of selectedTreatments(); track t.id) {
+                      <tr>
+                        <td>
+                          {{ t.serviceName || 'Tratamiento' }}
+                          @if (t.toothNumber) {
+                            <span class="text-muted"> — #{{ t.toothNumber }}</span>
+                          }
+                        </td>
+                        <td class="text-right">{{ formatCurrency(t.cost) }}</td>
+                        <td class="text-right">{{ formatCurrency(t.cost * taxRate() / 100) }}</td>
+                        <td class="text-right"><strong>{{ formatCurrency(t.cost + t.cost * taxRate() / 100) }}</strong></td>
+                      </tr>
+                    }
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td class="text-right"><strong>Subtotal:</strong></td>
+                      <td class="text-right">{{ formatCurrency(subtotal()) }}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2"></td>
+                      <td class="text-right"><strong>IVA ({{ taxRate() }}%):</strong></td>
+                      <td class="text-right">{{ formatCurrency(taxAmount()) }}</td>
+                    </tr>
+                    <tr class="total-row">
+                      <td colspan="2"></td>
+                      <td class="text-right"><strong>Total:</strong></td>
+                      <td class="text-right"><strong>{{ formatCurrency(total()) }}</strong></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button class="btn btn-outline" (click)="prevStep()">
+              <i class="fa-solid fa-arrow-left"></i>
+              Anterior
+            </button>
+            <button class="btn btn-primary" (click)="nextStep()">
+              Continuar a Pago
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- STEP 3: Payment -->
+      @if (currentStep() === 'payment') {
+        <div class="step-panel">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-credit-card"></i>
+              Registro de Pago
+            </h3>
+          </div>
+
+          <div class="payment-toggle">
+            <label class="toggle-card" [class.toggle-card--active]="registerPayment()">
+              <input type="checkbox" [checked]="registerPayment()" (change)="registerPayment.set(!registerPayment())">
+              <div class="toggle-card__content">
+                <i class="fa-solid fa-money-bill-wave toggle-card__icon"></i>
+                <div class="toggle-card__text">
+                  <strong>Registrar pago ahora</strong>
+                  <span>El paciente paga el total de la factura al finalizar la cita</span>
+                </div>
+              </div>
+            </label>
+          </div>
+
+          @if (registerPayment()) {
+            <div class="payment-config">
+              <div class="payment-amount">
+                <span class="payment-amount__label">Monto a cobrar</span>
+                <span class="payment-amount__value">{{ formatCurrency(total()) }}</span>
+              </div>
+
+              <div class="payment-methods">
+                <label class="form-label">Forma de pago</label>
+                <div class="method-grid">
+                  @for (method of paymentMethodOptions; track method.value) {
+                    <button
+                      class="method-card"
+                      [class.method-card--active]="paymentMethod() === method.value"
+                      (click)="paymentMethod.set(method.value)">
+                      <i class="fa-solid {{ method.icon }}"></i>
+                      <span>{{ method.label }}</span>
+                    </button>
+                  }
+                </div>
+              </div>
+
+              @if (paymentMethod() === 'transfer' || paymentMethod() === 'check') {
+                <div class="form-group">
+                  <label class="form-label">Referencia</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Número de referencia o cheque"
+                    [(ngModel)]="paymentReference"
+                    [ngModelOptions]="{standalone: true}">
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="payment-skip-notice">
+              <i class="fa-solid fa-info-circle"></i>
+              <p>La factura se creará con saldo pendiente. Podrás registrar el pago posteriormente.</p>
+            </div>
+          }
+
+          <div class="step-actions">
+            <button class="btn btn-outline" (click)="prevStep()">
+              <i class="fa-solid fa-arrow-left"></i>
+              Anterior
+            </button>
+            <button class="btn btn-primary" (click)="nextStep()">
+              Revisar y Confirmar
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- STEP 4: Confirm -->
+      @if (currentStep() === 'confirm') {
+        <div class="step-panel">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-check-circle"></i>
+              Confirmar Checkout
+            </h3>
+          </div>
+
+          <div class="confirm-summary">
+            <!-- Action 1: Complete appointment -->
+            <div class="confirm-item">
+              <div class="confirm-item__icon confirm-item__icon--success">
+                <i class="fa-solid fa-calendar-check"></i>
+              </div>
+              <div class="confirm-item__content">
+                <strong>Completar cita</strong>
+                <span>{{ apt.patientName }} — {{ formatDate(apt.startAt) }}</span>
+              </div>
+            </div>
+
+            <!-- Action 2: Create invoice -->
+            @if (generateInvoice() && selectedTreatments().length > 0) {
+              <div class="confirm-item">
+                <div class="confirm-item__icon confirm-item__icon--primary">
+                  <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+                <div class="confirm-item__content">
+                  <strong>Generar factura</strong>
+                  <span>{{ selectedTreatments().length }} concepto{{ selectedTreatments().length !== 1 ? 's' : '' }} — {{ formatCurrency(total()) }}</span>
+                </div>
+              </div>
+
+              <!-- Action 3: Register payment -->
+              @if (registerPayment()) {
+                <div class="confirm-item">
+                  <div class="confirm-item__icon confirm-item__icon--success">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                  </div>
+                  <div class="confirm-item__content">
+                    <strong>Registrar pago</strong>
+                    <span>{{ formatCurrency(total()) }} — {{ getPaymentMethodLabel(paymentMethod()) }}</span>
+                  </div>
+                </div>
+              }
+            } @else {
+              <div class="confirm-item">
+                <div class="confirm-item__icon confirm-item__icon--neutral">
+                  <i class="fa-solid fa-forward"></i>
+                </div>
+                <div class="confirm-item__content">
+                  <strong>Sin factura</strong>
+                  <span>La cita se completará sin generar factura</span>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="step-actions">
+            <button class="btn btn-outline" (click)="prevStep()" [disabled]="submitting()">
+              <i class="fa-solid fa-arrow-left"></i>
+              Anterior
+            </button>
+            <button class="btn btn-primary btn-lg" (click)="onSubmit()" [disabled]="submitting()">
+              @if (submitting()) {
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Procesando...
+              } @else {
+                <i class="fa-solid fa-check-circle"></i>
+                Confirmar Checkout
+              }
+            </button>
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+</div>

@@ -37,6 +37,7 @@
         <option value="all">Todos los estados</option>
         <option value="Draft">Borrador</option>
         <option value="Sent">Enviada</option>
+        <option value="PartialReceived">Parcialmente Recibida</option>
         <option value="Received">Recibida</option>
         <option value="Cancelled">Cancelada</option>
       </select>
@@ -156,6 +157,8 @@
                     <i class="fa-solid fa-file-lines"></i>
                   } @else if (order.status === 'Sent') {
                     <i class="fa-solid fa-paper-plane"></i>
+                  } @else if (order.status === 'PartialReceived') {
+                    <i class="fa-solid fa-box-open"></i>
                   } @else if (order.status === 'Received') {
                     <i class="fa-solid fa-circle-check"></i>
                   } @else if (order.status === 'Cancelled') {
@@ -170,7 +173,7 @@
                 <button class="btn-icon btn-icon-view" title="Ver detalle" [routerLink]="['/inventory/purchase-orders', order.id]">
                   <i class="fa-solid fa-eye"></i>
                 </button>
-                @if (order.status === 'Draft' || order.status === 'Sent') {
+                @if (order.status === 'Draft' || order.status === 'Sent' || order.status === 'PartialReceived') {
                   <button class="btn-icon btn-icon-success" title="Recibir orden" [routerLink]="['/inventory/purchase-orders', order.id, 'receive']">
                     <i class="fa-solid fa-box"></i>
                   </button>

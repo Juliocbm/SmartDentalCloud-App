@@ -22,6 +22,27 @@ export const SERVICES_ROUTES: Routes = [
         title: 'Nuevo Servicio'
       },
       {
+        path: 'categories',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentsView)],
+        loadComponent: () =>
+          import('./components/category-list/category-list').then(m => m.CategoryListComponent),
+        title: 'Categorías de Servicios'
+      },
+      {
+        path: 'categories/new',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentsCreate)],
+        loadComponent: () =>
+          import('./components/category-form/category-form').then(m => m.CategoryFormComponent),
+        title: 'Nueva Categoría'
+      },
+      {
+        path: 'categories/:id/edit',
+        canActivate: [permissionGuard(PERMISSIONS.TreatmentsEdit)],
+        loadComponent: () =>
+          import('./components/category-form/category-form').then(m => m.CategoryFormComponent),
+        title: 'Editar Categoría'
+      },
+      {
         path: ':id',
         loadComponent: () =>
           import('./components/service-detail/service-detail').then(m => m.ServiceDetailComponent),

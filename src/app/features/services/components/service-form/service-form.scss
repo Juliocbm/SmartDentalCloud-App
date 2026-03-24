@@ -12,3 +12,32 @@
 
 // Estilos específicos de service-form
 // .checkbox-label y .form-checkbox son globales en _components.scss
+
+.field-hint {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  
+  a {
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.loading-small {
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.form-input-color {
+  height: 40px;
+  padding: var(--spacing-xs);
+  cursor: pointer;
+}

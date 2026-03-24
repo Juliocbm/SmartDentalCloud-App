@@ -39,6 +39,28 @@
         <option [value]="PrescriptionStatus.Cancelled">Canceladas</option>
       </select>
 
+      <div class="date-range-filter">
+        <input
+          type="date"
+          class="filter-select"
+          [value]="dateFrom()"
+          (change)="onDateFromChange($any($event.target).value)"
+          title="Desde"
+        />
+        <span class="date-separator">—</span>
+        <input
+          type="date"
+          class="filter-select"
+          [value]="dateTo()"
+          (change)="onDateToChange($any($event.target).value)"
+          title="Hasta"
+        />
+        @if (dateFrom() || dateTo()) {
+          <button class="btn btn-icon btn-sm" (click)="clearDateFilters()" title="Limpiar fechas">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        }
+      </div>
     </div>
   </div>
 

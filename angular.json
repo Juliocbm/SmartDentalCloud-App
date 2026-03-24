@@ -4,7 +4,7 @@
   "cli": {
     "packageManager": "npm",
     "cache": {
-      "enabled": false
+      "enabled": true
     },
     "analytics": "f1c2c6c6-cba7-47a8-98f3-4ca5f919adc6"
   },
@@ -38,28 +38,45 @@
             ],
             "outputMode": "static",
             "ssr": false,
-            "prerender": false
+            "prerender": false,
+            "allowedCommonJsDependencies": [
+              "flatpickr",
+              "flatpickr/dist/l10n/es"
+            ]
           },
           "configurations": {
             "production": {
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": true
+                },
+                "fonts": true
+              },
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "16kB",
+                  "maximumError": "32kB"
                 }
               ],
-              "outputHashing": "all"
+              "serviceWorker": "ngsw-config.json"
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"

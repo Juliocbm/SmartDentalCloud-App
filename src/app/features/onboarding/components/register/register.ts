@@ -6,6 +6,7 @@ import { OnboardingService } from '../../services/onboarding.service';
 import { RegisterTenantRequest, SubscriptionPlanDto } from '../../models/onboarding.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -18,6 +19,7 @@ export class RegisterComponent implements OnInit {
   private onboardingService = inject(OnboardingService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
 
   // Steps (now 4: Consultorio, Admin, Plan, Confirmar)
   currentStep = signal(1);
@@ -46,6 +48,8 @@ export class RegisterComponent implements OnInit {
   adminEmail = signal('');
   adminPassword = signal('');
   confirmPassword = signal('');
+  // F-ON-001: Aceptación de términos y condiciones (requerimiento legal para SaaS)
+  termsAccepted = signal(false);
 
   // Form fields - Step 3 (Plan selection)
   plans = signal<SubscriptionPlanDto[]>([]);
@@ -103,7 +107,8 @@ export class RegisterComponent implements OnInit {
     return this.adminName().trim().length > 0
       && this.adminEmail().trim().length > 0
       && this.adminPassword().length >= 8
-      && this.adminPassword() === this.confirmPassword();
+      && this.adminPassword() === this.confirmPassword()
+      && this.termsAccepted(); // F-ON-001: términos y condiciones obligatorios
   }
 
   canProceedStep3(): boolean {
@@ -161,7 +166,9 @@ export class RegisterComponent implements OnInit {
       next: (result) => {
         this.loading.set(false);
         this.success.set(true);
-        localStorage.setItem('access_token', result.authToken);
+        // ON-BUG-001: limpiar sesión anterior y establecer la nueva correctamente.
+        // Evita que el JWT de un tenant anterior (en sessionStorage) contamine el nuevo tenant.
+        this.authService.setRegistrationToken(result.authToken);
         // Redirect al onboarding wizard en vez del dashboard
         setTimeout(() => this.router.navigate(['/onboarding/welcome']), 2000);
       },

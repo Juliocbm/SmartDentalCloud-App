@@ -1,0 +1,190 @@
+<div class="page-container">
+  <app-page-header
+    [title]="'Reportes de Producción'"
+    [subtitle]="'Productividad, ingresos por servicio y conversión de facturación'"
+    [icon]="'fa-chart-bar'"
+    [showBackButton]="true"
+    [backRoute]="'/invoices'"
+    [breadcrumbs]="breadcrumbItems"
+    [sticky]="true">
+    <div actions>
+      <app-date-range-picker
+        [startDate]="startDate()"
+        [endDate]="endDate()"
+        (rangeChange)="onRangeChange($event)">
+      </app-date-range-picker>
+    </div>
+  </app-page-header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando reportes...</p>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <h3>Error al cargar datos</h3>
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <!-- Billing Conversion KPIs -->
+    @if (conversion(); as conv) {
+      <div class="report-section">
+        <h3 class="report-section__title">
+          <i class="fa-solid fa-chart-pie"></i>
+          Conversión de Facturación
+        </h3>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-card__icon kpi-card__icon--primary">
+              <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+            <div class="kpi-card__content">
+              <span class="kpi-card__value">{{ conv.totalCompletedTreatments }}</span>
+              <span class="kpi-card__label">Completados</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card__icon kpi-card__icon--success">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <div class="kpi-card__content">
+              <span class="kpi-card__value">{{ conv.billedTreatments }}</span>
+              <span class="kpi-card__label">Facturados</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card__icon kpi-card__icon--warning">
+              <i class="fa-solid fa-exclamation-triangle"></i>
+            </div>
+            <div class="kpi-card__content">
+              <span class="kpi-card__value">{{ conv.unbilledTreatments }}</span>
+              <span class="kpi-card__label">Sin Facturar</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card__icon" [class.kpi-card__icon--success]="conv.conversionRate >= 80" [class.kpi-card__icon--warning]="conv.conversionRate >= 50 && conv.conversionRate < 80" [class.kpi-card__icon--danger]="conv.conversionRate < 50">
+              <i class="fa-solid fa-percent"></i>
+            </div>
+            <div class="kpi-card__content">
+              <span class="kpi-card__value">{{ conv.conversionRate }}%</span>
+              <span class="kpi-card__label">Tasa de Conversión</span>
+            </div>
+          </div>
+        </div>
+        <div class="conversion-amounts">
+          <span class="conversion-amount conversion-amount--billed">
+            <i class="fa-solid fa-check-circle"></i>
+            Facturado: {{ formatCurrency(conv.totalBilledAmount) }}
+          </span>
+          <span class="conversion-amount conversion-amount--unbilled">
+            <i class="fa-solid fa-clock"></i>
+            Pendiente: {{ formatCurrency(conv.totalUnbilledAmount) }}
+          </span>
+        </div>
+      </div>
+    }
+
+    <!-- Dentist Productivity -->
+    @if (productivity().length > 0) {
+      <div class="report-section">
+        <h3 class="report-section__title">
+          <i class="fa-solid fa-user-doctor"></i>
+          Producción por Dentista
+        </h3>
+        <div class="production-summary">
+          <span><strong>{{ totalTreatments() }}</strong> tratamientos</span>
+          <span>{{ formatCurrency(totalProduction()) }} total</span>
+        </div>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Dentista</th>
+                <th class="text-center">Citas</th>
+                <th class="text-center">Tratamientos</th>
+                <th class="text-right">Producción</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (d of productivity(); track d.dentistId) {
+                <tr>
+                  <td class="dentist-name">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    {{ d.dentistName }}
+                  </td>
+                  <td class="text-center">
+                    <span class="badge badge-sm badge-neutral">{{ d.appointmentsCompleted }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge badge-sm badge-primary">{{ d.treatmentsCompleted }}</span>
+                  </td>
+                  <td class="text-right amount">{{ formatCurrency(d.revenueGenerated) }}</td>
+                  <td>
+                    <div class="bar-cell">
+                      <div class="bar" [style.width.%]="d.revenueGenerated / getMaxRevenue() * 100"></div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- Top Services (Revenue) -->
+    @if (topServices().length > 0) {
+      <div class="report-section">
+        <h3 class="report-section__title">
+          <i class="fa-solid fa-ranking-star"></i>
+          Ingresos por Servicio
+        </h3>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Servicio</th>
+                <th>Categoría</th>
+                <th class="text-center">Realizados</th>
+                <th class="text-right">Ingreso Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of topServices(); track s.serviceId) {
+                <tr>
+                  <td class="service-name">{{ s.serviceName }}</td>
+                  <td>
+                    @if (s.categoryName) {
+                      <span class="badge badge-sm badge-neutral">{{ s.categoryName }}</span>
+                    } @else {
+                      —
+                    }
+                  </td>
+                  <td class="text-center">{{ s.timesUsed }}</td>
+                  <td class="text-right amount">{{ formatCurrency(s.totalRevenue) }}</td>
+                  <td>
+                    <div class="bar-cell">
+                      <div class="bar bar--info" [style.width.%]="s.totalRevenue / getServiceMaxRevenue() * 100"></div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    @if (!productivity().length && !topServices().length && !conversion()) {
+      <div class="empty-state">
+        <i class="fa-solid fa-chart-bar"></i>
+        <h3>Sin datos</h3>
+        <p>No hay datos de producción para el período seleccionado.</p>
+      </div>
+    }
+  }
+</div>

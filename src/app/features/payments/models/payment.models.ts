@@ -14,6 +14,10 @@ export interface Payment {
   paidAt: Date;
   reference: string | null;
   createdAt: Date;
+  /** Nombre completo del paciente — desnormalizado desde el servidor */
+  patientName: string;
+  /** Número de factura (Serie-Folio) — desnormalizado desde el servidor */
+  invoiceNumber: string;
 }
 
 /**

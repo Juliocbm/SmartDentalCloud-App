@@ -19,7 +19,8 @@ import {
 import {
   PatientDashboard,
   PatientHistory,
-  PatientFinancialSummary
+  PatientFinancialSummary,
+  PatientLedger
 } from '../models/patient-dashboard.models';
 
 @Injectable({ providedIn: 'root' })
@@ -28,10 +29,12 @@ export class PatientsService {
   private readonly baseUrl = '/patients';
 
   getAll(
-    pageNumber: number = 1, 
-    pageSize: number = 10, 
+    pageNumber: number = 1,
+    pageSize: number = 10,
     searchTerm?: string,
-    isActive?: boolean
+    isActive?: boolean,
+    orderBy?: string,
+    sortDirection?: 'asc' | 'desc'
   ): Observable<PaginatedList<Patient>> {
     const params: QueryParams = { pageNumber, pageSize };
     if (searchTerm) {
@@ -39,6 +42,13 @@ export class PatientsService {
     }
     if (isActive !== undefined) {
       params['isActive'] = isActive;
+    }
+    // PAC-BUG-010: pasar parámetros de ordenamiento al API
+    if (orderBy) {
+      params['orderBy'] = orderBy;
+    }
+    if (sortDirection) {
+      params['sortDirection'] = sortDirection;
     }
     return this.api.get<PaginatedList<Patient>>(this.baseUrl, params);
   }
@@ -89,6 +99,10 @@ export class PatientsService {
     return this.api.get<PatientFinancialSummary>(`${this.baseUrl}/${id}/financial-summary`);
   }
 
+  getLedger(id: string): Observable<PatientLedger> {
+    return this.api.get<PatientLedger>(`${this.baseUrl}/${id}/ledger`);
+  }
+
   activate(id: string): Observable<void> {
     return this.api.patch<void>(`${this.baseUrl}/${id}/activate`, {});
   }
@@ -122,7 +136,7 @@ export class PatientsService {
     const params: QueryParams = {};
     if (options) {
       if (options.includeAllergies !== undefined) params['includeAllergies'] = options.includeAllergies;
-      if (options.includeProblems !== undefined) params['includeProblems'] = options.includeProblems;
+      if (options.includeDiagnoses !== undefined) params['includeDiagnoses'] = options.includeDiagnoses;
       if (options.includeTreatments !== undefined) params['includeTreatments'] = options.includeTreatments;
       if (options.includePrescriptions !== undefined) params['includePrescriptions'] = options.includePrescriptions;
       if (options.includeConsents !== undefined) params['includeConsents'] = options.includeConsents;
@@ -136,7 +150,7 @@ export class PatientsService {
     const parts: string[] = [];
     if (options) {
       if (options.includeAllergies !== undefined) parts.push(`includeAllergies=${options.includeAllergies}`);
-      if (options.includeProblems !== undefined) parts.push(`includeProblems=${options.includeProblems}`);
+      if (options.includeDiagnoses !== undefined) parts.push(`includeDiagnoses=${options.includeDiagnoses}`);
       if (options.includeTreatments !== undefined) parts.push(`includeTreatments=${options.includeTreatments}`);
       if (options.includePrescriptions !== undefined) parts.push(`includePrescriptions=${options.includePrescriptions}`);
       if (options.includeConsents !== undefined) parts.push(`includeConsents=${options.includeConsents}`);

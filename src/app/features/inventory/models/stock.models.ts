@@ -28,16 +28,20 @@ export interface StockMovement {
   id: string;
   productId: string;
   locationId?: string | null;
+  productCode?: string;
   productName?: string;
-  movementType: 'Adjustment' | 'Purchase' | 'Sale' | 'Transfer' | 'Loss' | 'Usage' | 'Return';
+  movementType: string;
   quantity: number;
-  previousStock: number;
-  newStock: number;
-  reason?: string;
-  notes?: string;
-  createdBy: string;
-  createdByName?: string;
-  createdAt: Date;
+  unitCost?: number | null;
+  totalCost?: number | null;
+  referenceId?: string | null;
+  referenceType?: string | null;
+  stockBefore: number;
+  stockAfter: number;
+  reason?: string | null;
+  movementDate: Date;
+  createdBy?: string | null;
+  createdByName?: string | null;
 }
 
 /**
@@ -45,6 +49,13 @@ export interface StockMovement {
  * quantity: Diferencia a aplicar (+entrada, -salida)
  */
 export interface StockAdjustmentRequest {
+  productId: string;
+  locationId?: string | null;
+  quantity: number;
+  reason: string;
+}
+
+export interface RecordStockOutputRequest {
   productId: string;
   locationId?: string | null;
   quantity: number;

@@ -9,6 +9,7 @@ export interface Treatment {
   patientName?: string;
   serviceId: string;
   serviceName?: string;
+  cost: number;
   serviceCost?: number;
   startDate: Date;
   endDate?: Date;
@@ -39,11 +40,16 @@ export interface Treatment {
   // Info adicional
   materialsCount?: number;
   followUpsCount?: number;
+  // Facturación
+  isBilled: boolean;
+  invoiceId?: string;
+  invoiceNumber?: string;
 }
 
 export interface CreateTreatmentRequest {
   patientId: string;
   serviceId: string;
+  cost?: number;
   startDate: string;
   endDate?: string;
   toothNumber?: string;
@@ -62,6 +68,7 @@ export interface UpdateTreatmentRequest {
   id: string;
   patientId: string;
   serviceId: string;
+  cost?: number;
   startDate: string;
   endDate?: string;
   toothNumber?: string;
@@ -127,3 +134,22 @@ export const QUADRANT_OPTIONS = [
   { value: 3, label: 'Q3 - Inferior Izquierdo' },
   { value: 4, label: 'Q4 - Inferior Derecho' }
 ];
+
+/**
+ * Tratamiento completado no facturado (para importar a factura)
+ */
+export interface UnbilledTreatment {
+  id: string;
+  patientId: string;
+  patientName?: string;
+  serviceId: string;
+  serviceName?: string;
+  cost: number;
+  toothNumber?: string;
+  startDate: Date;
+  endDate?: Date;
+  appointmentId?: string;
+  treatmentPlanItemId?: string;
+  claveProdServ?: string;
+  claveUnidad?: string;
+}

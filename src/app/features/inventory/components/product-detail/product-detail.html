@@ -22,6 +22,10 @@
             <i class="fa-solid fa-boxes-stacked"></i>
             Ajustar Stock
           </button>
+          <button class="btn btn-outline" (click)="openOutputModal()">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+            Registrar Salida
+          </button>
           <button class="btn btn-outline" (click)="editProduct()">
             <i class="fa-solid fa-pen"></i>
             Editar
@@ -71,6 +75,13 @@
             <span class="nav-count">{{ stockByLocation().length }}</span>
           </button>
         }
+        <button
+          class="nav-item"
+          [class.active]="activeTab() === 'history'"
+          (click)="setActiveTab('history')">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Historial</span>
+        </button>
       </nav>
 
       <!-- Content -->
@@ -307,6 +318,80 @@
               <div class="empty-items">
                 <i class="fa-solid fa-building"></i>
                 <p>No hay información de stock por sucursal</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Historial Tab -->
+        @if (activeTab() === 'history') {
+          <div class="info-section">
+            <div class="section-header">
+              <h3 class="section-header__title">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Historial de Transacciones
+              </h3>
+            </div>
+            <hr>
+
+            @if (loadingTransactions()) {
+              <div class="loading-container">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Cargando historial...</span>
+              </div>
+            } @else if (transactions().length > 0) {
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Tipo</th>
+                      <th>Cantidad</th>
+                      <th>Stock Anterior</th>
+                      <th>Stock Nuevo</th>
+                      <th>Motivo / Referencia</th>
+                      <th>Costo Unit.</th>
+                      <th>Usuario</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (tx of transactions(); track tx.id) {
+                      <tr>
+                        <td>{{ tx.movementDate | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td>
+                          <span class="badge" [ngClass]="getMovementTypeClass(tx.movementType)">
+                            {{ getMovementTypeLabel(tx.movementType) }}
+                          </span>
+                        </td>
+                        <td>
+                          <span [class.text-success]="tx.quantity > 0" [class.text-error]="tx.quantity < 0">
+                            {{ tx.quantity > 0 ? '+' : '' }}{{ tx.quantity }}
+                          </span>
+                        </td>
+                        <td>{{ tx.stockBefore }}</td>
+                        <td>{{ tx.stockAfter }}</td>
+                        <td>
+                          @if (tx.referenceType) {
+                            <span class="text-tertiary">{{ tx.referenceType }}</span>
+                          }
+                          @if (tx.reason) {
+                            <span>{{ tx.reason }}</span>
+                          }
+                          @if (!tx.referenceType && !tx.reason) {
+                            <span class="text-tertiary">—</span>
+                          }
+                        </td>
+                        <td>{{ tx.unitCost ? (tx.unitCost | currency:'MXN') : '—' }}</td>
+                        <td>{{ tx.createdByName || '—' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              <div class="empty-items">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <p>No hay transacciones registradas para este producto</p>
               </div>
             }
           </div>

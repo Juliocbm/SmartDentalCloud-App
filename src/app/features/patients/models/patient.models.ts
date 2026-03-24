@@ -130,6 +130,7 @@ export enum Gender {
 export enum SmokingStatus {
   NonSmoker = 'No fumador',
   Smoker = 'Fumador',
+  OccasionalSmoker = 'Ocasional',
   ExSmoker = 'Ex-fumador'
 }
 
@@ -214,7 +215,7 @@ export interface MergeResultDto {
 
 export interface ClinicalExportRequest {
   includeAllergies?: boolean;
-  includeProblems?: boolean;
+  includeDiagnoses?: boolean;
   includeTreatments?: boolean;
   includePrescriptions?: boolean;
   includeConsents?: boolean;

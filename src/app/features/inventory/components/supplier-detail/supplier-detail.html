@@ -47,7 +47,39 @@
   }
 
   @if (!loading() && !error() && supplier(); as sup) {
+    <!-- Tab Navigation -->
+    <div class="supplier-tabs">
+      <button
+        class="supplier-tab"
+        [class.active]="activeTab() === 'info'"
+        (click)="setActiveTab('info')">
+        <i class="fa-solid fa-truck"></i>
+        <span>Información</span>
+      </button>
+      <button
+        class="supplier-tab"
+        [class.active]="activeTab() === 'orders'"
+        (click)="setActiveTab('orders')">
+        <i class="fa-solid fa-file-invoice"></i>
+        <span>Órdenes de Compra</span>
+        @if (supplierOrders().length > 0) {
+          <span class="tab-badge">{{ supplierOrders().length }}</span>
+        }
+      </button>
+      <button
+        class="supplier-tab"
+        [class.active]="activeTab() === 'products'"
+        (click)="setActiveTab('products')">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        <span>Productos</span>
+        @if (supplierProducts().length > 0) {
+          <span class="tab-badge">{{ supplierProducts().length }}</span>
+        }
+      </button>
+    </div>
+
     <div class="detail-body">
+      @if (activeTab() === 'info') {
       <div class="info-section">
         <div class="section-header">
           <h3 class="section-header__title">
@@ -131,7 +163,134 @@
           </div>
         </div>
       </div>
+      }
     </div>
+
+    <!-- Órdenes de Compra Tab -->
+    @if (activeTab() === 'orders') {
+      <div class="detail-body">
+        <div class="info-section">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-file-invoice"></i>
+              Órdenes de Compra
+            </h3>
+          </div>
+          <hr>
+
+          @if (loadingOrders()) {
+            <div class="loading-container">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando órdenes...</span>
+            </div>
+          } @else if (supplierOrders().length > 0) {
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Folio</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (order of supplierOrders(); track order.id) {
+                    <tr>
+                      <td class="code-cell">
+                        <span class="order-code">{{ order.orderNumber }}</span>
+                      </td>
+                      <td>{{ order.orderDate | date:'dd/MM/yyyy' }}</td>
+                      <td>
+                        <span class="badge" [ngClass]="getStatusClass(order.status)">
+                          {{ getStatusLabel(order.status) }}
+                        </span>
+                      </td>
+                      <td>{{ formatCurrency(order.total) }}</td>
+                      <td>
+                        <button class="btn btn-sm btn-outline" [routerLink]="['/inventory/purchase-orders', order.id]">
+                          <i class="fa-solid fa-eye"></i>
+                          Ver
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="empty-items">
+              <i class="fa-solid fa-file-invoice"></i>
+              <p>No hay órdenes de compra para este proveedor</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Productos Tab -->
+    @if (activeTab() === 'products') {
+      <div class="detail-body">
+        <div class="info-section">
+          <div class="section-header">
+            <h3 class="section-header__title">
+              <i class="fa-solid fa-boxes-stacked"></i>
+              Productos Suministrados
+            </h3>
+          </div>
+          <hr>
+
+          @if (loadingProducts()) {
+            <div class="loading-container">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <span>Cargando productos...</span>
+            </div>
+          } @else if (supplierProducts().length > 0) {
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Costo Unit.</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (product of supplierProducts(); track product.id) {
+                    <tr>
+                      <td class="code-cell">
+                        <span class="product-code">{{ product.code }}</span>
+                      </td>
+                      <td>
+                        <a class="link-primary" [routerLink]="['/inventory/products', product.id]">{{ product.name }}</a>
+                      </td>
+                      <td>{{ product.categoryName || '—' }}</td>
+                      <td>{{ formatCurrency(product.unitCost) }}</td>
+                      <td>{{ product.currentStock ?? 0 }}</td>
+                      <td>
+                        <button class="btn btn-sm btn-outline" [routerLink]="['/inventory/products', product.id]">
+                          <i class="fa-solid fa-eye"></i>
+                          Ver
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="empty-items">
+              <i class="fa-solid fa-boxes-stacked"></i>
+              <p>No hay productos registrados para este proveedor</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
 
     <app-audit-info
       [visible]="showAuditModal()"

@@ -784,6 +784,149 @@
 
           </div>
         }
+
+        <!-- Inventory Alerts Tab -->
+        @if (activeTab() === 'inventory-alerts') {
+          <div class="settings-section">
+            <div class="section-header">
+              <div class="section-header__info">
+                <h3 class="section-header__title">
+                  <i class="fa-solid fa-bell"></i>
+                  Alertas de Inventario
+                </h3>
+                <p class="section-header__description">Configura las notificaciones automáticas para el control de inventario</p>
+              </div>
+              <button class="btn btn-outline btn-sm" [disabled]="alertSaving()" (click)="saveAlertSettings()">
+                @if (alertSaving()) {
+                  <span class="btn-spinner"></span>
+                  Guardando...
+                } @else {
+                  <i class="fa-solid fa-floppy-disk"></i>
+                  Guardar Cambios
+                }
+              </button>
+            </div>
+            <hr>
+
+            @if (alertLoading()) {
+              <div class="loading-inline">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Cargando configuración...
+              </div>
+            } @else {
+
+              <!-- Alert Types -->
+              <div class="alerts-config-section">
+                <h4 class="subsection-title">
+                  <i class="fa-solid fa-toggle-on"></i>
+                  Tipos de Alerta
+                </h4>
+                <p class="field-hint">Activa o desactiva cada tipo de alerta según tus necesidades.</p>
+
+                <div class="alert-toggle-card">
+                  <div class="alert-toggle-info">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <div>
+                      <strong>Stock Bajo</strong>
+                      <p>Notifica cuando el stock de un producto cae por debajo del punto de reorden.</p>
+                    </div>
+                  </div>
+                  <label class="toggle-label">
+                    <input type="checkbox" [ngModel]="alertLowStockEnabled()" (ngModelChange)="alertLowStockEnabled.set($event)" />
+                    <span class="toggle-text">{{ alertLowStockEnabled() ? 'Activada' : 'Desactivada' }}</span>
+                  </label>
+                </div>
+
+                <div class="alert-toggle-card">
+                  <div class="alert-toggle-info">
+                    <i class="fa-solid fa-clock"></i>
+                    <div>
+                      <strong>Productos por Caducar</strong>
+                      <p>Notifica cuando un producto se acerca a su fecha de vencimiento.</p>
+                    </div>
+                  </div>
+                  <label class="toggle-label">
+                    <input type="checkbox" [ngModel]="alertExpiryEnabled()" (ngModelChange)="alertExpiryEnabled.set($event)" />
+                    <span class="toggle-text">{{ alertExpiryEnabled() ? 'Activada' : 'Desactivada' }}</span>
+                  </label>
+                </div>
+
+                <div class="alert-toggle-card">
+                  <div class="alert-toggle-info">
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                    <div>
+                      <strong>Punto de Reorden</strong>
+                      <p>Notifica cuando es momento de realizar un nuevo pedido de un producto.</p>
+                    </div>
+                  </div>
+                  <label class="toggle-label">
+                    <input type="checkbox" [ngModel]="alertReorderEnabled()" (ngModelChange)="alertReorderEnabled.set($event)" />
+                    <span class="toggle-text">{{ alertReorderEnabled() ? 'Activada' : 'Desactivada' }}</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Thresholds -->
+              <div class="alerts-config-section">
+                <h4 class="subsection-title">
+                  <i class="fa-solid fa-sliders"></i>
+                  Umbrales
+                </h4>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Días antes de caducar para alertar</label>
+                    <input type="number" class="form-input" min="1" max="365"
+                      [ngModel]="alertExpiryDays()" (ngModelChange)="alertExpiryDays.set($event)" />
+                    <span class="field-hint">Notificar X días antes de la fecha de caducidad</span>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Porcentaje de stock mínimo (%)</label>
+                    <input type="number" class="form-input" min="1" max="100"
+                      [ngModel]="alertLowStockPercent()" (ngModelChange)="alertLowStockPercent.set($event)" />
+                    <span class="field-hint">% del punto de reorden para alertar</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notification Channels -->
+              <div class="alerts-config-section">
+                <h4 class="subsection-title">
+                  <i class="fa-solid fa-paper-plane"></i>
+                  Canales de Notificación
+                </h4>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="toggle-label">
+                      <input type="checkbox" [ngModel]="alertNotifyInApp()" (ngModelChange)="alertNotifyInApp.set($event)" />
+                      <span class="toggle-text">Notificaciones en la aplicación</span>
+                    </label>
+                    <p class="field-hint">Mostrar alertas en el dashboard y menú de inventario.</p>
+                  </div>
+                  <div class="form-group">
+                    <label class="toggle-label">
+                      <input type="checkbox" [ngModel]="alertNotifyEmail()" (ngModelChange)="alertNotifyEmail.set($event)" />
+                      <span class="toggle-text">Notificaciones por correo electrónico</span>
+                    </label>
+                    <p class="field-hint">Enviar alertas a los emails configurados abajo.</p>
+                  </div>
+                </div>
+
+                @if (alertNotifyEmail()) {
+                  <div class="form-group">
+                    <label class="form-label">Correos para notificaciones</label>
+                    <textarea class="form-input form-textarea" rows="2"
+                      placeholder="email1@ejemplo.com, email2@ejemplo.com"
+                      [ngModel]="alertEmailList()" (ngModelChange)="alertEmailList.set($event)"></textarea>
+                    <span class="field-hint">Separa múltiples correos con comas. Requiere configuración SMTP activa.</span>
+                  </div>
+                }
+              </div>
+
+            }
+          </div>
+        }
       </div>
     </div>
   }

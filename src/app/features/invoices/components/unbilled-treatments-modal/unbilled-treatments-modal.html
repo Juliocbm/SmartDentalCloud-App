@@ -1,0 +1,78 @@
+<app-modal
+  [title]="'Importar Tratamientos'"
+  [subtitle]="modalData?.patientName"
+  [icon]="'fa-file-medical'"
+  [size]="'lg'"
+  (closed)="onClose()"
+>
+  @if (loading()) {
+    <div class="loading-state">
+      <span class="btn-spinner"></span>
+      <p>Cargando tratamientos sin facturar...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-danger">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      {{ error() }}
+    </div>
+  } @else if (treatments().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-check-circle empty-state__icon"></i>
+      <p class="empty-state__title">Sin tratamientos pendientes</p>
+      <p class="empty-state__text">Todos los tratamientos completados de este paciente ya han sido facturados.</p>
+    </div>
+  } @else {
+    <!-- Select all -->
+    <div class="select-all-bar">
+      <label class="checkbox-label">
+        <input type="checkbox" [checked]="allSelected" (change)="toggleAll()" />
+        <span>Seleccionar todos ({{ treatments().length }})</span>
+      </label>
+      @if (selectedCount > 0) {
+        <span class="selected-summary">
+          {{ selectedCount }} seleccionado{{ selectedCount > 1 ? 's' : '' }} · {{ formatCurrency(selectedTotal) }}
+        </span>
+      }
+    </div>
+
+    <!-- Treatments list -->
+    <div class="treatments-list">
+      @for (t of treatments(); track t.id) {
+        <div class="treatment-row" [class.selected]="isSelected(t.id)" (click)="toggleSelection(t.id)">
+          <div class="treatment-row__check">
+            <input type="checkbox" [checked]="isSelected(t.id)" (click)="$event.stopPropagation()" (change)="toggleSelection(t.id)" />
+          </div>
+          <div class="treatment-row__info">
+            <div class="treatment-row__name">{{ t.serviceName || 'Servicio' }}</div>
+            <div class="treatment-row__meta">
+              @if (t.toothNumber) {
+                <span class="meta-tag"><i class="fa-solid fa-tooth"></i> {{ t.toothNumber }}</span>
+              }
+              <span class="meta-tag"><i class="fa-solid fa-calendar"></i> {{ formatDate(t.startDate) }}</span>
+            </div>
+          </div>
+          <div class="treatment-row__cost">
+            {{ formatCurrency(t.cost) }}
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Footer -->
+  <div modal-footer>
+    <button type="button" class="btn btn-outline" (click)="onClose()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline btn-primary"
+      [disabled]="selectedCount === 0"
+      (click)="onConfirm()"
+    >
+      <i class="fa-solid fa-file-import"></i>
+      Importar {{ selectedCount > 0 ? selectedCount : '' }} tratamiento{{ selectedCount !== 1 ? 's' : '' }}
+    </button>
+  </div>
+</app-modal>

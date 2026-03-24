@@ -80,6 +80,21 @@ backRoute = computed(() => this.contextService.context().returnUrl);
 - Datos que necesitan persistir en refresh (usar localStorage/sessionStorage)
 - Configuración global de la app (usar configuration service)
 
+### Matriz de Decisión: QueryParams vs Context Service
+
+| Criterio | QueryParams | Context Service |
+|----------|------------|-----------------|
+| **Type-safe** | ❌ Strings sin validar | ✅ Interfaces TypeScript |
+| **Bloqueo de campos** | ❌ No soportado | ✅ `lockField: true` |
+| **URL limpia** | ❌ Parámetros visibles | ✅ Sin parámetros en URL |
+| **Bookmarkeable** | ✅ Se preserva en URL | ❌ Se pierde en refresh |
+| **Complejidad** | Baja (0 archivos nuevos) | Media (modelo + servicio) |
+| **Datos ricos** | ❌ Solo strings/números | ✅ Objetos, arrays, dates |
+
+**Regla general:** Si necesitas **bloquear campos** o pasar **más de 2 parámetros** con comportamiento contextual, usa Context Service. Si solo necesitas pasar un ID simple y bookmarkeable, usa QueryParams.
+
+> **Nota:** Para el comportamiento del back-button (`backRoute` vs `defaultBackRoute`), ver `NAVIGATION_BACK_PATTERN.md`.
+
 ---
 
 ## Arquitectura del Patrón
@@ -731,6 +746,8 @@ backRoute = computed(() => this.contextService.context().returnUrl);
 [backRoute]="backRoute()"  // ✅ Dinámico
 [backRoute]="'/static'"    // ❌ Hardcoded
 ```
+
+> Para guía completa sobre `backRoute` vs `defaultBackRoute`, ver `NAVIGATION_BACK_PATTERN.md`.
 
 ---
 

@@ -8,6 +8,9 @@ export interface DaySchedule {
   isOpen: boolean;
   startTime: string | null;
   endTime: string | null;
+  lunchStartTime?: string | null;
+  lunchEndTime?: string | null;
+  slotDurationMinutes?: number | null;
 }
 
 export interface WorkSchedule {
@@ -16,6 +19,14 @@ export interface WorkSchedule {
   locationName?: string | null;
   days: DaySchedule[];
 }
+
+export const SLOT_DURATION_OPTIONS = [
+  { value: 15, label: '15 min' },
+  { value: 20, label: '20 min' },
+  { value: 30, label: '30 min' },
+  { value: 45, label: '45 min' },
+  { value: 60, label: '60 min' }
+];
 
 export const DAY_LABELS: Record<string, string> = {
   monday: 'Lunes',
@@ -47,13 +58,13 @@ export const DAY_TO_FULLCALENDAR: Record<string, number> = {
 export const DEFAULT_WORK_SCHEDULE: WorkSchedule = {
   userId: null,
   days: [
-    { dayOfWeek: 'monday',    isOpen: true,  startTime: '08:00', endTime: '18:00' },
-    { dayOfWeek: 'tuesday',   isOpen: true,  startTime: '08:00', endTime: '18:00' },
-    { dayOfWeek: 'wednesday', isOpen: true,  startTime: '08:00', endTime: '18:00' },
-    { dayOfWeek: 'thursday',  isOpen: true,  startTime: '08:00', endTime: '18:00' },
-    { dayOfWeek: 'friday',    isOpen: true,  startTime: '08:00', endTime: '18:00' },
-    { dayOfWeek: 'saturday',  isOpen: false, startTime: null,     endTime: null    },
-    { dayOfWeek: 'sunday',    isOpen: false, startTime: null,     endTime: null    }
+    { dayOfWeek: 'monday',    isOpen: true,  startTime: '08:00', endTime: '18:00', lunchStartTime: '13:00', lunchEndTime: '14:00', slotDurationMinutes: 30 },
+    { dayOfWeek: 'tuesday',   isOpen: true,  startTime: '08:00', endTime: '18:00', lunchStartTime: '13:00', lunchEndTime: '14:00', slotDurationMinutes: 30 },
+    { dayOfWeek: 'wednesday', isOpen: true,  startTime: '08:00', endTime: '18:00', lunchStartTime: '13:00', lunchEndTime: '14:00', slotDurationMinutes: 30 },
+    { dayOfWeek: 'thursday',  isOpen: true,  startTime: '08:00', endTime: '18:00', lunchStartTime: '13:00', lunchEndTime: '14:00', slotDurationMinutes: 30 },
+    { dayOfWeek: 'friday',    isOpen: true,  startTime: '08:00', endTime: '18:00', lunchStartTime: '13:00', lunchEndTime: '14:00', slotDurationMinutes: 30 },
+    { dayOfWeek: 'saturday',  isOpen: false, startTime: null,     endTime: null,     lunchStartTime: null,    lunchEndTime: null,    slotDurationMinutes: null },
+    { dayOfWeek: 'sunday',    isOpen: false, startTime: null,     endTime: null,     lunchStartTime: null,    lunchEndTime: null,    slotDurationMinutes: null }
   ]
 };
 

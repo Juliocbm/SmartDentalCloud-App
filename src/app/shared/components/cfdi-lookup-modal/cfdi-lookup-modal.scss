@@ -1,0 +1,196 @@
+// ===== CfdiLookupModal =====
+
+.cfdi-lookup-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.cfdi-lookup-description {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.cfdi-search {
+  .search-input-wrapper {
+    position: relative;
+
+    .search-icon {
+      position: absolute;
+      left: var(--spacing-md);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+      font-size: var(--font-size-sm);
+      pointer-events: none;
+    }
+
+    .search-input {
+      padding-left: calc(var(--spacing-lg) + var(--spacing-md) + var(--spacing-sm));
+      width: 100%;
+    }
+  }
+}
+
+.cfdi-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.cfdi-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl);
+  color: var(--text-tertiary);
+  text-align: center;
+
+  i {
+    font-size: var(--font-size-xl);
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+  }
+}
+
+.cfdi-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: var(--spacing-xs);
+}
+
+.cfdi-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  background: var(--surface-primary);
+
+  &:hover {
+    border-color: var(--primary-300);
+    background: var(--surface-secondary);
+  }
+
+  &.selected {
+    border-color: var(--primary-500);
+    background: var(--primary-50);
+  }
+}
+
+.cfdi-item__radio {
+  flex-shrink: 0;
+  padding-top: 2px;
+
+  .radio-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    font-size: 10px;
+    color: white;
+
+    &.checked {
+      border-color: var(--primary-500);
+      background: var(--primary-500);
+    }
+  }
+}
+
+.cfdi-item__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cfdi-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.cfdi-item__folio {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.cfdi-item__amount {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-600);
+}
+
+.cfdi-item__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.cfdi-item__patient {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cfdi-item__date {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.cfdi-item__uuid {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-family: monospace;
+  overflow: hidden;
+
+  i {
+    flex-shrink: 0;
+    color: var(--text-tertiary);
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.cfdi-item__status {
+  flex-shrink: 0;
+  padding-top: 2px;
+
+  .badge {
+    font-size: var(--font-size-xs);
+  }
+}

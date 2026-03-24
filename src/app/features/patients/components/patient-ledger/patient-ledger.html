@@ -1,0 +1,121 @@
+@if (loading()) {
+  <div class="loading-container">
+    <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+    <p>Cargando libro mayor...</p>
+  </div>
+} @else if (error()) {
+  <div class="empty-state">
+    <i class="fa-solid fa-exclamation-circle"></i>
+    <h3>Error al cargar datos</h3>
+    <p>{{ error() }}</p>
+  </div>
+} @else if (!hasData()) {
+  <div class="empty-state">
+    <i class="fa-solid fa-book-open"></i>
+    <h3>Sin movimientos</h3>
+    <p>No hay cargos, facturas ni pagos registrados para este paciente.</p>
+  </div>
+} @else if (ledger(); as l) {
+  <!-- KPI Summary -->
+  <div class="ledger-kpis">
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--charge">
+        <i class="fa-solid fa-stethoscope"></i>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ formatCurrency(l.totalCharges) }}</span>
+        <span class="kpi-card__label">Total Cargos</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--invoice">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ formatCurrency(l.totalBilled) }}</span>
+        <span class="kpi-card__label">Total Facturado</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--payment">
+        <i class="fa-solid fa-money-bill-wave"></i>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ formatCurrency(l.totalPaid) }}</span>
+        <span class="kpi-card__label">Total Pagado</span>
+      </div>
+    </div>
+    <div class="kpi-card" [class.kpi-card--danger]="l.currentBalance > 0">
+      <div class="kpi-card__icon" [class.kpi-card__icon--balance]="l.currentBalance <= 0" [class.kpi-card__icon--danger]="l.currentBalance > 0">
+        <i class="fa-solid fa-scale-balanced"></i>
+      </div>
+      <div class="kpi-card__content">
+        <span class="kpi-card__value">{{ formatCurrency(l.currentBalance) }}</span>
+        <span class="kpi-card__label">Saldo Actual</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="ledger-timeline">
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th class="text-right">Monto</th>
+            <th class="text-right">Saldo</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of l.entries; track entry.id) {
+            <tr class="ledger-entry" [ngClass]="getEntryClass(entry.type)">
+              <td class="ledger-entry__date">{{ formatDate(entry.date) }}</td>
+              <td>
+                <span class="ledger-type-badge" [ngClass]="getEntryClass(entry.type)">
+                  <i [class]="getEntryIcon(entry.type)"></i>
+                  {{ getEntryTypeLabel(entry.type) }}
+                </span>
+              </td>
+              <td class="ledger-entry__description">
+                {{ entry.description }}
+                @if (entry.reference) {
+                  <span class="ledger-entry__ref">Ref: {{ entry.reference }}</span>
+                }
+              </td>
+              <td class="text-right ledger-entry__amount" [ngClass]="{
+                'amount--charge': entry.type === 'Charge',
+                'amount--payment': entry.type === 'Payment',
+                'amount--invoice': entry.type === 'Invoice'
+              }">
+                @if (entry.type === 'Payment') {
+                  -{{ formatCurrency(entry.amount) }}
+                } @else {
+                  {{ formatCurrency(entry.amount) }}
+                }
+              </td>
+              <td class="text-right ledger-entry__balance">
+                {{ formatCurrency(entry.runningBalance) }}
+              </td>
+              <td class="ledger-entry__actions">
+                @if (entry.treatmentId) {
+                  <a class="btn btn-sm btn-outline btn-icon" [routerLink]="['/treatments', entry.treatmentId]" title="Ver tratamiento">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                }
+                @if (entry.invoiceId) {
+                  <a class="btn btn-sm btn-outline btn-icon" [routerLink]="['/invoices', entry.invoiceId]" title="Ver factura">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

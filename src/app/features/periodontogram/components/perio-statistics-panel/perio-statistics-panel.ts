@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { Component, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   EditableTooth,
@@ -13,18 +13,15 @@ import {
   styleUrl: './perio-statistics-panel.scss'
 })
 export class PerioStatisticsPanelComponent {
-  @Input({ required: true }) set teeth(value: EditableTooth[]) {
-    this._teeth.set(value);
-  }
-  @Input() classification: string | null = null;
-  @Input() grade: string | null = null;
-  @Input() riskLevel: string | null = null;
+  teeth = input.required<EditableTooth[]>();
+  classification = input<string | null>(null);
+  grade = input<string | null>(null);
+  riskLevel = input<string | null>(null);
 
-  private _teeth = signal<EditableTooth[]>([]);
   RISK_LEVEL_CONFIG = RISK_LEVEL_CONFIG;
 
   stats = computed(() => {
-    const teeth = this._teeth();
+    const teeth = this.teeth();
     if (!teeth.length) return null;
 
     const activeSites = teeth

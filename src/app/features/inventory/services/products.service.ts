@@ -7,6 +7,7 @@ import {
   CreateProductRequest, 
   UpdateProductRequest 
 } from '../models/product.models';
+import { StockMovement, RecordStockOutputRequest } from '../models/stock.models';
 
 /**
  * Servicio para gestión de productos de inventario
@@ -61,6 +62,30 @@ export class ProductsService {
    */
   delete(id: string): Observable<void> {
     return this.api.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  /**
+   * Obtiene el historial de transacciones de un producto
+   */
+  recordOutput(productId: string, data: RecordStockOutputRequest): Observable<void> {
+    return this.api.post<void>(`${this.baseUrl}/${productId}/output`, data);
+  }
+
+  getTransactions(id: string, startDate?: string, endDate?: string): Observable<StockMovement[]> {
+    const params: Record<string, string> = {};
+    if (startDate) params['startDate'] = startDate;
+    if (endDate) params['endDate'] = endDate;
+    const query = Object.keys(params).length > 0 ? '?' + new URLSearchParams(params).toString() : '';
+    return this.api.get<StockMovement[]>(`${this.baseUrl}/${id}/transactions${query}`).pipe(
+      map(movements => movements.map(this.parseMovementDates))
+    );
+  }
+
+  private parseMovementDates(movement: StockMovement): StockMovement {
+    return {
+      ...movement,
+      movementDate: new Date(movement.movementDate)
+    };
   }
 
   /**

@@ -44,6 +44,8 @@ export class PrescriptionListComponent implements OnInit {
   // Filters
   searchTerm = signal('');
   statusFilter = signal<string>('all');
+  dateFrom = signal<string>('');
+  dateTo = signal<string>('');
 
   // Pagination
   currentPage = signal(1);
@@ -68,9 +70,23 @@ export class PrescriptionListComponent implements OnInit {
     let items = this.prescriptions();
     const search = this.searchTerm().toLowerCase().trim();
     const status = this.statusFilter();
+    const from = this.dateFrom();
+    const to = this.dateTo();
 
     if (status !== 'all') {
       items = items.filter(p => p.status === status);
+    }
+
+    if (from) {
+      const fromDate = new Date(from);
+      fromDate.setHours(0, 0, 0, 0);
+      items = items.filter(p => new Date(p.issuedAt) >= fromDate);
+    }
+
+    if (to) {
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999);
+      items = items.filter(p => new Date(p.issuedAt) <= toDate);
     }
 
     if (search) {
@@ -132,6 +148,22 @@ export class PrescriptionListComponent implements OnInit {
 
   onStatusFilterChange(status: string): void {
     this.statusFilter.set(status);
+    this.currentPage.set(1);
+  }
+
+  onDateFromChange(value: string): void {
+    this.dateFrom.set(value);
+    this.currentPage.set(1);
+  }
+
+  onDateToChange(value: string): void {
+    this.dateTo.set(value);
+    this.currentPage.set(1);
+  }
+
+  clearDateFilters(): void {
+    this.dateFrom.set('');
+    this.dateTo.set('');
     this.currentPage.set(1);
   }
 

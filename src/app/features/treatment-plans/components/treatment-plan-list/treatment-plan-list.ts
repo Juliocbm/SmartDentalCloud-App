@@ -51,6 +51,8 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
   // Filters
   searchTerm = signal('');
   filterStatus = signal<'all' | TreatmentPlanStatus>('all');
+  dateFrom = signal<string>('');
+  dateTo = signal<string>('');
 
   // Pagination
   currentPage = signal(1);
@@ -137,6 +139,19 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(p => p.status === status);
     }
 
+    const from = this.dateFrom();
+    const to = this.dateTo();
+    if (from) {
+      const fromDate = new Date(from);
+      fromDate.setHours(0, 0, 0, 0);
+      filtered = filtered.filter(p => p.createdAt && new Date(p.createdAt) >= fromDate);
+    }
+    if (to) {
+      const toDate = new Date(to);
+      toDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(p => p.createdAt && new Date(p.createdAt) <= toDate);
+    }
+
     this.filteredPlans.set(filtered);
     this.totalItems.set(filtered.length);
     this.totalPages.set(Math.ceil(filtered.length / this.pageSize()));
@@ -149,6 +164,22 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
 
   onStatusFilterChange(value: string): void {
     this.filterStatus.set(value as 'all' | TreatmentPlanStatus);
+    this.applyFilters();
+  }
+
+  onDateFromChange(value: string): void {
+    this.dateFrom.set(value);
+    this.applyFilters();
+  }
+
+  onDateToChange(value: string): void {
+    this.dateTo.set(value);
+    this.applyFilters();
+  }
+
+  clearDateFilters(): void {
+    this.dateFrom.set('');
+    this.dateTo.set('');
     this.applyFilters();
   }
 
