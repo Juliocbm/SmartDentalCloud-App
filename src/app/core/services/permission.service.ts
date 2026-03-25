@@ -70,6 +70,7 @@ export const PERMISSIONS = {
   // Notificaciones
   NotificationsView: 'notifications.view',
   NotificationsManage: 'notifications.manage',
+  NotificationsAdmin: 'notifications.admin',
 
   // Archivos Adjuntos
   AttachedFilesView: 'attached_files.view',
@@ -169,7 +170,6 @@ export const PERMISSIONS = {
 
   // Mensajería WhatsApp
   MessagingSend: 'messaging.send',
-  MessagingView: 'messaging.view',
 
   // Suscripciones
   SubscriptionsView: 'subscriptions.view',

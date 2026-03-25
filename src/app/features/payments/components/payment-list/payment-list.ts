@@ -13,8 +13,6 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 
-export type SortField = 'paidAt' | 'amount' | 'paymentMethod' | 'patientName';
-export type SortDirection = 'asc' | 'desc';
 
 @Component({
   selector: 'app-payment-list',
@@ -43,8 +41,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   endDate = signal('');
 
   // Sorting
-  sortField = signal<SortField>('paidAt');
-  sortDirection = signal<SortDirection>('desc');
+  sortColumn = signal<string>('paidAt');
+  sortDirection = signal<'asc' | 'desc'>('desc');
 
   // Pagination
   currentPage = signal(1);
@@ -85,7 +83,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     }
 
     // Ordenamiento
-    const field = this.sortField();
+    const field = this.sortColumn();
     const dir = this.sortDirection() === 'asc' ? 1 : -1;
 
     filtered.sort((a, b) => {
@@ -201,11 +199,11 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     this.currentPage.set(1);
   }
 
-  onSortChange(field: SortField): void {
-    if (this.sortField() === field) {
+  onSort(column: string): void {
+    if (this.sortColumn() === column) {
       this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
     } else {
-      this.sortField.set(field);
+      this.sortColumn.set(column);
       this.sortDirection.set('asc');
     }
     this.currentPage.set(1);
@@ -244,8 +242,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     return pages;
   }
 
-  getSortIcon(field: SortField): string {
-    if (this.sortField() !== field) return 'fa-sort';
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
     return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 

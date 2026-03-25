@@ -44,6 +44,10 @@ export class ServiceListComponent implements OnInit, OnDestroy {
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
   filterCategory = signal<string>('all');
 
+  // Sorting
+  sortColumn = signal<string>('name');
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
   // Computed - paginated items for display
   paginatedServices = computed(() => {
     const filtered = this.filteredServices();
@@ -127,6 +131,24 @@ export class ServiceListComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(s => s.category === category);
     }
 
+    // Sort
+    const col = this.sortColumn();
+    const dir = this.sortDirection();
+    filtered.sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      switch (col) {
+        case 'name':     aVal = a.name?.toLowerCase() ?? '';         bVal = b.name?.toLowerCase() ?? '';         break;
+        case 'category': aVal = a.category?.toLowerCase() ?? '';     bVal = b.category?.toLowerCase() ?? '';     break;
+        case 'price':    aVal = a.cost ?? 0;                         bVal = b.cost ?? 0;                         break;
+        case 'status':   aVal = a.isActive ? 0 : 1;                  bVal = b.isActive ? 0 : 1;                  break;
+        default: return 0;
+      }
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ?  1 : -1;
+      return 0;
+    });
+
     this.filteredServices.set(filtered);
     this.totalItems.set(filtered.length);
     this.totalPages.set(Math.ceil(filtered.length / this.pageSize()));
@@ -144,6 +166,22 @@ export class ServiceListComponent implements OnInit, OnDestroy {
     this.filterStatus.set(value as 'all' | 'active' | 'inactive');
     this.currentPage.set(1);
     this.applyFilters();
+  }
+
+  onSort(column: string): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+    this.applyFilters();
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
+    return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   onCategoryFilterChange(value: string): void {

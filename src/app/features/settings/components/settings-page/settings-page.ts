@@ -28,8 +28,16 @@ import {
   CsdStatus
 } from '../../../invoices/models/cfdi.models';
 import { MessagingService } from '../../../messaging/services/messaging.service';
+import { NotificationSettingsService } from '../../services/notification-settings.service';
+import {
+  NotificationSettings,
+  NotificationChannelSettings,
+  NotificationTypeSettings,
+  REMINDER_HOURS_OPTIONS,
+  POST_TREATMENT_DAYS_OPTIONS
+} from '../../models/notification-settings.models';
 
-type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'consent-templates' | 'facturacion' | 'smtp' | 'whatsapp' | 'branding' | 'domain' | 'inventory-alerts';
+type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'consent-templates' | 'facturacion' | 'smtp' | 'notifications' | 'branding' | 'domain' | 'inventory-alerts';
 
 @Component({
   selector: 'app-settings-page',
@@ -45,6 +53,7 @@ export class SettingsPageComponent implements OnInit {
   private notifications = inject(NotificationService);
   private navigationState = inject(NavigationStateService);
   private router = inject(Router);
+  private notificationService = inject(NotificationSettingsService);
 
   scheduleEditor = viewChild<WorkScheduleEditorComponent>('scheduleEditor');
   dentistScheduleManager = viewChild<DentistScheduleManagerComponent>('dentistScheduleManager');
@@ -123,7 +132,7 @@ export class SettingsPageComponent implements OnInit {
     { key: 'consent-templates', label: 'Consentimientos', icon: 'fa-file-contract' },
     { key: 'facturacion', label: 'Facturación', icon: 'fa-file-invoice-dollar' },
     { key: 'smtp', label: 'Correo (SMTP)', icon: 'fa-envelope' },
-    { key: 'whatsapp', label: 'WhatsApp', icon: 'fa-brands fa-whatsapp' },
+    { key: 'notifications', label: 'Notificaciones', icon: 'fa-bell' },
     { key: 'branding', label: 'Branding', icon: 'fa-palette' },
     { key: 'domain', label: 'Dominio', icon: 'fa-globe' },
     { key: 'inventory-alerts', label: 'Alertas Inventario', icon: 'fa-bell' }
@@ -146,8 +155,8 @@ export class SettingsPageComponent implements OnInit {
     if (tab === 'facturacion' && !this.csdStatus()) {
       this.loadCsdStatus();
     }
-    if (tab === 'whatsapp' && !this.waLoaded()) {
-      this.loadWhatsAppConfig();
+    if (tab === 'notifications' && !this.notificationLoaded()) {
+      this.loadNotificationSettings();
     }
     if (tab === 'inventory-alerts' && !this.alertSettingsLoaded()) {
       this.loadAlertSettings();
@@ -487,7 +496,7 @@ export class SettingsPageComponent implements OnInit {
     });
   }
 
-  // === WhatsApp Config ===
+  // === WhatsApp Config (Legacy - migrating to Notifications) ===
 
   waEnabled = signal(false);
   waReminderHours = signal(24);
@@ -529,6 +538,148 @@ export class SettingsPageComponent implements OnInit {
         this.waSaving.set(false);
       }
     });
+  }
+
+  // === Unified Notifications Config ===
+
+  notificationLoaded = signal(false);
+  notificationSaving = signal(false);
+
+  waChannelEnabled = signal(true);
+  waChannelPhone = signal('');
+  emailChannelEnabled = signal(false);
+  emailRequiresConfig = signal(false);
+
+  appointmentReminderActive = signal(true);
+  appointmentReminderChannels = signal<string[]>(['whatsapp']);
+  appointmentReminderHours = signal<number[]>([24]);
+
+  postTreatmentActive = signal(false);
+  postTreatmentChannels = signal<string[]>(['whatsapp']);
+  postTreatmentDays = signal(7);
+
+  birthdayActive = signal(false);
+  birthdayChannels = signal<string[]>(['whatsapp']);
+  birthdaySendGreeting = signal(true);
+
+  REMINDER_HOURS_OPTIONS = REMINDER_HOURS_OPTIONS;
+  POST_TREATMENT_DAYS_OPTIONS = POST_TREATMENT_DAYS_OPTIONS;
+
+  loadNotificationSettings(): void {
+    this.notificationService.getSettings().subscribe({
+      next: (settings) => {
+        this.waChannelEnabled.set(settings.channels.whatsapp.isEnabled);
+        this.waChannelPhone.set(settings.channels.whatsapp.accountPhone || '');
+        this.emailChannelEnabled.set(settings.channels.email.isEnabled);
+        this.emailRequiresConfig.set(settings.channels.email.requiresConfig);
+
+        this.appointmentReminderActive.set(settings.types.appointmentReminder.isActive);
+        this.appointmentReminderChannels.set([...settings.types.appointmentReminder.channels]);
+        this.appointmentReminderHours.set([...settings.types.appointmentReminder.hoursBefore]);
+
+        this.postTreatmentActive.set(settings.types.postTreatment.isActive);
+        this.postTreatmentChannels.set([...settings.types.postTreatment.channels]);
+        this.postTreatmentDays.set(settings.types.postTreatment.daysAfter);
+
+        this.birthdayActive.set(settings.types.birthday.isActive);
+        this.birthdayChannels.set([...settings.types.birthday.channels]);
+        this.birthdaySendGreeting.set(settings.types.birthday.sendGreeting);
+
+        this.notificationLoaded.set(true);
+      },
+      error: () => {
+        this.notificationLoaded.set(true);
+      }
+    });
+  }
+
+  saveNotificationSettings(): void {
+    if (this.notificationSaving()) return;
+    this.notificationSaving.set(true);
+
+    const settings = {
+      channels: {
+        whatsapp: {
+          isEnabled: this.waChannelEnabled(),
+          accountPhone: this.waChannelPhone() || undefined
+        },
+        email: {
+          isEnabled: this.emailChannelEnabled(),
+          requiresConfig: this.emailRequiresConfig()
+        }
+      },
+      types: {
+        appointmentReminder: {
+          isActive: this.appointmentReminderActive(),
+          channels: this.appointmentReminderChannels() as ('whatsapp' | 'email')[],
+          hoursBefore: this.appointmentReminderHours()
+        },
+        postTreatment: {
+          isActive: this.postTreatmentActive(),
+          channels: this.postTreatmentChannels() as ('whatsapp' | 'email')[],
+          daysAfter: this.postTreatmentDays()
+        },
+        birthday: {
+          isActive: this.birthdayActive(),
+          channels: this.birthdayChannels() as ('whatsapp' | 'email')[],
+          sendGreeting: this.birthdaySendGreeting()
+        }
+      }
+    };
+
+    this.notificationService.updateSettings(settings).subscribe({
+      next: () => {
+        this.notifications.success('Configuración de notificaciones guardada');
+        this.notificationSaving.set(false);
+      },
+      error: (err) => {
+        this.notifications.error(getApiErrorMessage(err));
+        this.notificationSaving.set(false);
+      }
+    });
+  }
+
+  toggleChannel(channel: 'whatsapp' | 'email'): void {
+    if (channel === 'whatsapp') {
+      this.waChannelEnabled.update(v => !v);
+    } else {
+      this.emailChannelEnabled.update(v => !v);
+    }
+  }
+
+  toggleReminderChannel(channel: 'whatsapp' | 'email', type: 'appointment' | 'postTreatment' | 'birthday'): void {
+    let currentChannels: string[];
+    let setter: (v: string[]) => void;
+
+    switch (type) {
+      case 'appointment':
+        currentChannels = this.appointmentReminderChannels();
+        setter = (v) => this.appointmentReminderChannels.set(v);
+        break;
+      case 'postTreatment':
+        currentChannels = this.postTreatmentChannels();
+        setter = (v) => this.postTreatmentChannels.set(v);
+        break;
+      case 'birthday':
+        currentChannels = this.birthdayChannels();
+        setter = (v) => this.birthdayChannels.set(v);
+        break;
+    }
+
+    if (currentChannels.includes(channel)) {
+      setter(currentChannels.filter(c => c !== channel));
+    } else {
+      setter([...currentChannels, channel]);
+    }
+  }
+
+  toggleReminderHour(hour: number): void {
+    const current = this.appointmentReminderHours();
+    if (current.includes(hour)) {
+      this.appointmentReminderHours.set(current.filter(h => h !== hour));
+    } else {
+      this.appointmentReminderHours.set([...current, hour].sort((a, b) => b - a));
+    }
   }
 
   // === Save Domain ===

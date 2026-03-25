@@ -49,6 +49,10 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
   searchTerm = signal('');
   filterStatus = signal<'all' | InvoiceStatus>('all');
 
+  // Sorting
+  sortColumn = signal<string>('createdAt');
+  sortDirection = signal<'asc' | 'desc'>('desc');
+
   // Pagination
   currentPage = signal(1);
   pageSize = signal(10);
@@ -128,7 +132,41 @@ export class InvoiceListComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(inv => inv.status === status);
     }
 
+    // Sort
+    const col = this.sortColumn();
+    const dir = this.sortDirection();
+    filtered.sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      switch (col) {
+        case 'patient':   aVal = a.patientName?.toLowerCase() ?? '';   bVal = b.patientName?.toLowerCase() ?? '';   break;
+        case 'createdAt': aVal = new Date(a.createdAt).getTime();       bVal = new Date(b.createdAt).getTime();       break;
+        case 'total':     aVal = a.totalAmount ?? 0;                    bVal = b.totalAmount ?? 0;                    break;
+        case 'status':    aVal = a.status;                              bVal = b.status;                              break;
+        default: return 0;
+      }
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ?  1 : -1;
+      return 0;
+    });
+
     this.filteredInvoices.set(filtered);
+  }
+
+  onSort(column: string): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+    this.applyFilters();
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
+    return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   onSearchChange(value: string): void {

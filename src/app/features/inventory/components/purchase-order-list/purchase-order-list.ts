@@ -29,6 +29,8 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
   error = signal<string | null>(null);
   searchTerm = signal('');
   filterStatus = signal<'all' | PurchaseOrderStatus>('all');
+  sortColumn = signal<string>('orderDate');
+  sortDirection = signal<'asc' | 'desc'>('desc');
 
   // Pagination
   currentPage = signal(1);
@@ -58,7 +60,23 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
       result = result.filter(o => o.status === status);
     }
 
-    return result;
+    // Sort
+    const col = this.sortColumn();
+    const dir = this.sortDirection();
+    return [...result].sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      switch (col) {
+        case 'supplier':  aVal = a.supplierName?.toLowerCase() ?? '';   bVal = b.supplierName?.toLowerCase() ?? '';   break;
+        case 'orderDate': aVal = new Date(a.orderDate).getTime();        bVal = new Date(b.orderDate).getTime();        break;
+        case 'total':     aVal = a.total ?? 0;                           bVal = b.total ?? 0;                           break;
+        case 'status':    aVal = a.status;                               bVal = b.status;                               break;
+        default: return 0;
+      }
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ?  1 : -1;
+      return 0;
+    });
   });
 
   totalPages = computed(() => Math.ceil(this.filteredOrders().length / this.pageSize()) || 1);
@@ -102,6 +120,21 @@ export class PurchaseOrderListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       }
     });
+  }
+
+  onSort(column: string): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
+    return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   onSearchInput(value: string): void {

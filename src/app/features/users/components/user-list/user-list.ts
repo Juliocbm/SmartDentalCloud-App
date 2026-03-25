@@ -40,6 +40,10 @@ export class UserListComponent implements OnInit, OnDestroy {
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
   filterRole = signal<string>('all');
 
+  // Sorting
+  sortColumn = signal<string>('name');
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
   // Pagination
   currentPage = signal(1);
   pageSize = signal(10);
@@ -121,7 +125,39 @@ export class UserListComponent implements OnInit, OnDestroy {
       );
     }
 
+    // Sort
+    const col = this.sortColumn();
+    const dir = this.sortDirection();
+    filtered.sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      switch (col) {
+        case 'name':   aVal = a.name?.toLowerCase() ?? '';   bVal = b.name?.toLowerCase() ?? '';   break;
+        case 'status': aVal = a.isActive ? 0 : 1;            bVal = b.isActive ? 0 : 1;            break;
+        default: return 0;
+      }
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ?  1 : -1;
+      return 0;
+    });
+
     this.filteredUsers.set(filtered);
+  }
+
+  onSort(column: string): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+    this.applyFilters();
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
+    return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   onSearchChange(value: string): void {

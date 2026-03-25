@@ -25,7 +25,7 @@ import { CfdiLookupModalComponent } from '../../../../shared/components/cfdi-loo
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, FormSelectComponent, ModalComponent, CfdiLookupModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, FormSelectComponent, ModalComponent],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })

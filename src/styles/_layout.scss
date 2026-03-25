@@ -482,8 +482,8 @@
 
 .page-container {
   margin: 0 auto;
-  padding: var(--spacing-2xl);
-  
+  padding: var(--spacing-md) var(--spacing-2xl) var(--spacing-2xl);
+
   // ===== Variantes de Ancho =====
   &.container-wide {
     max-width: var(--layout-max-width); // 1400px - Listas/Tablas
@@ -510,11 +510,11 @@
   
   // ===== Responsive =====
   @media (max-width: 1024px) {
-    padding: var(--spacing-xl);
+    padding: var(--spacing-md) var(--spacing-xl) var(--spacing-xl);
   }
-  
+
   @media (max-width: 768px) {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
     
     &.container-wide,
     &.container-standard,

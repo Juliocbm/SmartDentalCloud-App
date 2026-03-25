@@ -105,11 +105,19 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Servicio</th>
-            <th>Categoría</th>
-            <th>Costo</th>
+            <th class="th-sortable" (click)="onSort('name')">
+              Servicio <i class="fa-solid sort-icon" [ngClass]="getSortIcon('name')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('category')">
+              Categoría <i class="fa-solid sort-icon" [ngClass]="getSortIcon('category')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('price')">
+              Costo <i class="fa-solid sort-icon" [ngClass]="getSortIcon('price')"></i>
+            </th>
             <th>Duración</th>
-            <th>Estado</th>
+            <th class="th-sortable" (click)="onSort('status')">
+              Estado <i class="fa-solid sort-icon" [ngClass]="getSortIcon('status')"></i>
+            </th>
             <th>Características</th>
             <th class="actions-column">Acciones</th>
           </tr>

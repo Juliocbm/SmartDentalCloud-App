@@ -1,0 +1,257 @@
+<div class="page-container container-wide">
+  <app-page-header
+    [title]="'Centro de Notificaciones'"
+    [subtitle]="'Gestión de notificaciones externas (WhatsApp, Email)'"
+    [icon]="'fa-bell'"
+    [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <button class="btn btn-outline" (click)="refresh()" [disabled]="loading() || statsLoading()">
+        <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="loading()"></i>
+        Actualizar
+      </button>
+      @if (failedCount() > 0 && canManage()) {
+        <button class="btn btn-outline btn-danger" (click)="bulkRetry()">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          Reintentar fallidas ({{ failedCount() }})
+        </button>
+      }
+      @if (canManage()) {
+        <button class="btn btn-outline btn-success" (click)="openSendModal()">
+          <i class="fa-solid fa-paper-plane"></i>
+          Enviar Notificación
+        </button>
+      }
+    </div>
+  </app-page-header>
+
+  <!-- Stats Summary -->
+  @if (stats(); as s) {
+    <div class="stats-bar">
+      <div class="stats-bar__item">
+        <i class="fa-solid fa-clock stats-bar__icon stats-bar__icon--info"></i>
+        <span class="stats-bar__label">En cola:</span>
+        <strong class="stats-bar__value">{{ s.pending }}</strong>
+      </div>
+      <div class="stats-bar__separator"></div>
+      <div class="stats-bar__item">
+        <i class="fa-solid fa-check-circle stats-bar__icon stats-bar__icon--success"></i>
+        <span class="stats-bar__label">Enviadas hoy:</span>
+        <strong class="stats-bar__value">{{ s.sentToday }}</strong>
+      </div>
+      <div class="stats-bar__separator"></div>
+      <div class="stats-bar__item">
+        <i class="fa-solid fa-exclamation-triangle stats-bar__icon stats-bar__icon--error"></i>
+        <span class="stats-bar__label">Fallidas:</span>
+        <strong class="stats-bar__value">{{ s.failed }}</strong>
+      </div>
+      <div class="stats-bar__separator"></div>
+      <div class="stats-bar__item">
+        <i class="fa-solid fa-chart-line stats-bar__icon stats-bar__icon--primary"></i>
+        <span class="stats-bar__label">Éxito:</span>
+        <strong class="stats-bar__value">{{ s.successRate }}%</strong>
+      </div>
+    </div>
+  }
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="fa-solid fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Paciente, teléfono, email..."
+        [value]="searchTerm()"
+        (input)="onSearchInput($any($event.target).value)" />
+    </div>
+    <div class="filter-actions">
+      <select class="filter-select" [ngModel]="filterChannel()" (ngModelChange)="filterChannel.set($event); onFilterChange()">
+        <option value="">Canal: Todos</option>
+        <option value="WhatsApp">WhatsApp</option>
+        <option value="Email">Email</option>
+        <option value="SMS">SMS</option>
+      </select>
+      <select class="filter-select" [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event); onFilterChange()">
+        <option value="">Estado: Todos</option>
+        <option value="Queued">En cola</option>
+        <option value="Sending">Enviando</option>
+        <option value="Sent">Enviado</option>
+        <option value="Delivered">Entregado</option>
+        <option value="Failed">Fallido</option>
+        <option value="Cancelled">Cancelado</option>
+      </select>
+      <select class="filter-select" [ngModel]="filterType()" (ngModelChange)="filterType.set($event); onFilterChange()">
+        <option value="">Tipo: Todos</option>
+        <option value="AppointmentReminder">Recordatorio de Cita</option>
+        <option value="PostTreatment">Post-Tratamiento</option>
+        <option value="Birthday">Cumpleaños</option>
+        <option value="Custom">Personalizada</option>
+        <option value="Manual">Manual</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando notificaciones...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" (click)="loadQueue()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && items().length === 0 && !hasActiveFilters()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-bell-slash"></i>
+      <h3>No hay notificaciones</h3>
+      <p>No se han registrado notificaciones en el sistema</p>
+    </div>
+  }
+
+  <!-- No Results State -->
+  @if (!loading() && !error() && items().length === 0 && hasActiveFilters()) {
+    <div class="empty-state">
+      <i class="fa-solid fa-filter-circle-xmark"></i>
+      <h3>Sin resultados</h3>
+      <p>No se encontraron notificaciones con los filtros aplicados</p>
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error() && items().length > 0) {
+    <div class="table-container">
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Canal</th>
+              <th>Tipo</th>
+              <th>Destinatario</th>
+              <th>Paciente</th>
+              <th>Asunto</th>
+              <th>Estado</th>
+              <th>Prioridad</th>
+              <th>Fecha</th>
+              <th class="actions-column">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of items(); track item.id) {
+              <tr (click)="viewDetail(item)">
+                <td>
+                  <span class="channel-badge" [ngClass]="getChannelConfig(item.channel).cssClass">
+                    <i [ngClass]="getChannelConfig(item.channel).icon"></i>
+                    {{ getChannelConfig(item.channel).label }}
+                  </span>
+                </td>
+                <td>
+                  <span class="type-label">{{ getTypeLabel(item.notificationType) }}</span>
+                </td>
+                <td>
+                  <span class="recipient">{{ getRecipient(item) }}</span>
+                </td>
+                <td>
+                  @if (item.patientId && item.patientName) {
+                    <a [routerLink]="['/patients', item.patientId]" class="link-primary" (click)="$event.stopPropagation()">
+                      {{ item.patientName }}
+                    </a>
+                  } @else if (item.patientName) {
+                    <span>{{ item.patientName }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
+                <td>
+                  <span class="subject-cell" [title]="item.subject ?? ''">
+                    {{ item.subject ?? item.templateName ?? '—' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getStatusConfig(item.status).cssClass">
+                    <i class="fa-solid" [ngClass]="getStatusConfig(item.status).icon"></i>
+                    {{ getStatusConfig(item.status).label }}
+                  </span>
+                  @if (item.retryCount > 0) {
+                    <span class="retry-badge" title="Intentos">{{ item.retryCount }}/{{ item.maxRetries }}</span>
+                  }
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getPriorityConfig(item.priority).cssClass">
+                    {{ getPriorityConfig(item.priority).label }}
+                  </span>
+                </td>
+                <td class="date-cell">
+                  {{ DateFormatService.dateTime(item.createdAt) }}
+                </td>
+                <td class="actions-cell" (click)="$event.stopPropagation()">
+                  @if (item.status === 'Queued' && canManage()) {
+                    <button class="btn-icon btn-icon-success" title="Enviar ahora" (click)="sendNow(item)">
+                      <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                    <button class="btn-icon btn-icon-danger" title="Cancelar" (click)="cancelItem(item)">
+                      <i class="fa-solid fa-ban"></i>
+                    </button>
+                  }
+                  @if (item.status === 'Failed' && canManage()) {
+                    <button class="btn-icon btn-icon-warning" title="Reintentar" (click)="retryItem(item)">
+                      <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                  }
+                  <button class="btn-icon btn-icon-view" title="Ver detalle" (click)="viewDetail(item)">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer with Pagination -->
+      <div class="table-footer">
+        <span class="pagination-info">
+          Mostrando
+          <strong>{{ (pageNumber() - 1) * pageSize() + 1 }}</strong> -
+          <strong>{{ pageNumber() * pageSize() > totalCount() ? totalCount() : pageNumber() * pageSize() }}</strong>
+          de <strong>{{ totalCount() }}</strong> registros
+        </span>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-controls">
+            <button class="btn-page" [disabled]="pageNumber() === 1" (click)="goToPage(1)">
+              <i class="fa-solid fa-angles-left"></i>
+            </button>
+            <button class="btn-page" [disabled]="pageNumber() === 1" (click)="goToPage(pageNumber() - 1)">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            @for (page of getPaginationPages(); track page) {
+              <button class="btn-page" [class.active]="page === pageNumber()" (click)="goToPage(page)">
+                {{ page }}
+              </button>
+            }
+
+            <button class="btn-page" [disabled]="pageNumber() === totalPages()" (click)="goToPage(pageNumber() + 1)">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button class="btn-page" [disabled]="pageNumber() === totalPages()" (click)="goToPage(totalPages())">
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -5,76 +5,57 @@
 // Estilos de formulario base: importados desde _components.scss
 // ============================================
 
-.appointment-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-// Estilo único del appointment-form: info box para avisos
-.info-box {
-  background-color: var(--primary-100);
-  border: 1px solid var(--primary-200);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg) var(--spacing-xl);
-  margin-top: var(--spacing-xl);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  color: var(--primary-700);
-  font-size: var(--font-size-base);
-  
-  i {
-    font-size: var(--font-size-lg);
-    flex-shrink: 0;
-  }
-}
-
 // ===== Schedule Warning =====
 .schedule-warning {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--warning-50, #fffbeb);
-  border: 1px solid var(--warning-200, #fde68a);
-  border-radius: var(--radius-md);
-  color: var(--warning-700, #b45309);
-  font-size: var(--font-size-sm);
 
   i {
     flex-shrink: 0;
   }
 }
 
-// ===== Availability Check =====
-.availability-section {
-  margin-top: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
+// ===== Slots Container =====
 .slots-container {
   background: var(--surface-secondary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
   padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+
+  &.slots-loading,
+  &.slots-empty-state,
+  &.slots-error-state {
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+
+    i {
+      font-size: var(--font-size-lg);
+      margin-bottom: var(--spacing-xs);
+    }
+  }
+
+  &.slots-error-state {
+    color: var(--error-600);
+
+    .btn {
+      margin-top: var(--spacing-sm);
+    }
+  }
 }
 
 .slots-title {
-  margin: 0 0 var(--spacing-md) 0;
+  margin: 0;
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
   font-weight: var(--font-weight-semibold);
-}
-
-.slots-empty {
-  margin: 0;
-  font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
-  font-style: italic;
 }
 
 .slots-grid {
@@ -113,5 +94,74 @@
     opacity: 0.6;
 
     i { font-size: var(--font-size-xs); }
+  }
+
+  &.selected {
+    background: var(--primary-50);
+    color: var(--primary-700);
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 2px var(--primary-200);
+
+    &:hover {
+      background: var(--primary-100);
+    }
+  }
+}
+
+// ===== Slots Hint (no dentist/date yet) =====
+.slots-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+
+  i {
+    flex-shrink: 0;
+    color: var(--primary-400);
+  }
+}
+
+// ===== Selected Time Summary =====
+.selected-time-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-md);
+  color: var(--primary-700);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+
+  i {
+    color: var(--primary-500);
+    flex-shrink: 0;
+  }
+}
+
+// ===== Manual Mode Link =====
+.manual-mode-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: color var(--transition-smooth);
+
+  &:hover {
+    color: var(--primary-500);
+  }
+
+  i {
+    font-size: var(--font-size-xs);
   }
 }

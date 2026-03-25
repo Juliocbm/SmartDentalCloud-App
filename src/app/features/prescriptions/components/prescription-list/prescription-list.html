@@ -113,13 +113,19 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Paciente</th>
+            <th class="th-sortable" (click)="onSort('issuedDate')">
+              Fecha <i class="fa-solid sort-icon" [ngClass]="getSortIcon('issuedDate')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('patient')">
+              Paciente <i class="fa-solid sort-icon" [ngClass]="getSortIcon('patient')"></i>
+            </th>
             <th>Diagnóstico</th>
             <th>Medicamentos</th>
             <th>Prescrito por</th>
             <th>Vigencia</th>
-            <th>Estado</th>
+            <th class="th-sortable" (click)="onSort('status')">
+              Estado <i class="fa-solid sort-icon" [ngClass]="getSortIcon('status')"></i>
+            </th>
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>

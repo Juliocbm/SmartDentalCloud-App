@@ -98,10 +98,18 @@
         <thead>
           <tr>
             <th>Orden de Compra</th>
-            <th>Proveedor</th>
-            <th>Fechas</th>
-            <th>Total</th>
-            <th>Estado</th>
+            <th class="th-sortable" (click)="onSort('supplier')">
+              Proveedor <i class="fa-solid sort-icon" [ngClass]="getSortIcon('supplier')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('orderDate')">
+              Fechas <i class="fa-solid sort-icon" [ngClass]="getSortIcon('orderDate')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('total')">
+              Total <i class="fa-solid sort-icon" [ngClass]="getSortIcon('total')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('status')">
+              Estado <i class="fa-solid sort-icon" [ngClass]="getSortIcon('status')"></i>
+            </th>
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>

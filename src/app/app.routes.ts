@@ -153,9 +153,14 @@ export const routes: Routes = [
         title: 'Notificaciones'
       },
       {
+        path: 'notification-center',
+        canActivate: [permissionGuard(PERMISSIONS.NotificationsView)],
+        loadChildren: () => import('./features/notification-center/notification-center.routes').then(m => m.NOTIFICATION_CENTER_ROUTES)
+      },
+      {
         path: 'messaging',
-        canActivate: [permissionGuard(PERMISSIONS.MessagingView)],
-        loadChildren: () => import('./features/messaging/messaging.routes').then(m => m.MESSAGING_ROUTES)
+        redirectTo: 'notification-center',
+        pathMatch: 'full'
       },
       {
         path: 'audit-log',

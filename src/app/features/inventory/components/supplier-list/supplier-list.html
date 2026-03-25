@@ -96,10 +96,14 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Proveedor</th>
+            <th class="th-sortable" (click)="onSort('name')">
+              Proveedor <i class="fa-solid sort-icon" [ngClass]="getSortIcon('name')"></i>
+            </th>
             <th>Contacto</th>
             <th>Condiciones de Pago</th>
-            <th>Estado</th>
+            <th class="th-sortable" (click)="onSort('status')">
+              Estado <i class="fa-solid sort-icon" [ngClass]="getSortIcon('status')"></i>
+            </th>
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>

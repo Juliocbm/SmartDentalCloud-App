@@ -122,11 +122,19 @@
         <thead>
           <tr>
             <th>Plan</th>
-            <th>Paciente</th>
-            <th>Estado</th>
+            <th class="th-sortable" (click)="onSort('patient')">
+              Paciente <i class="fa-solid sort-icon" [ngClass]="getSortIcon('patient')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('status')">
+              Estado <i class="fa-solid sort-icon" [ngClass]="getSortIcon('status')"></i>
+            </th>
             <th>Progreso</th>
-            <th>Costo Estimado</th>
-            <th>Fecha Estimada</th>
+            <th class="th-sortable" (click)="onSort('totalCost')">
+              Costo Estimado <i class="fa-solid sort-icon" [ngClass]="getSortIcon('totalCost')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('startDate')">
+              Fecha Estimada <i class="fa-solid sort-icon" [ngClass]="getSortIcon('startDate')"></i>
+            </th>
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>

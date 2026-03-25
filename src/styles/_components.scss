@@ -983,6 +983,35 @@ textarea.form-control {
   }
 }
 
+// ===== SORTABLE COLUMN HEADER =====
+// Applies cursor, hover feedback, and sort icon styling to <th> elements.
+// Usage: <th class="th-sortable" (click)="onSort('field')">
+//          Label <i class="fa-solid sort-icon" [ngClass]="getSortIcon('field')"></i>
+//        </th>
+.th-sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color var(--transition-fast), background var(--transition-fast);
+
+  &:hover {
+    background: var(--surface-secondary);
+    color: var(--primary-600);
+
+    .sort-icon {
+      color: var(--primary-500);
+    }
+  }
+
+  .sort-icon {
+    margin-left: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    vertical-align: middle;
+    transition: color var(--transition-fast);
+  }
+}
+
 // ===== TABLE FOOTER =====
 .table-footer {
   padding: var(--spacing-md) var(--spacing-lg);

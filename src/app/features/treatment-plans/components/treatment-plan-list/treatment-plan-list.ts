@@ -54,6 +54,10 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
   dateFrom = signal<string>('');
   dateTo = signal<string>('');
 
+  // Sorting
+  sortColumn = signal<string>('startDate');
+  sortDirection = signal<'asc' | 'desc'>('desc');
+
   // Pagination
   currentPage = signal(1);
   pageSize = signal(10);
@@ -152,10 +156,45 @@ export class TreatmentPlanListComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(p => p.createdAt && new Date(p.createdAt) <= toDate);
     }
 
+    // Sort
+    const col = this.sortColumn();
+    const dir = this.sortDirection();
+    filtered.sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      switch (col) {
+        case 'patient':    aVal = a.patientName?.toLowerCase() ?? '';    bVal = b.patientName?.toLowerCase() ?? '';    break;
+        case 'startDate':  aVal = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                           bVal = b.createdAt ? new Date(b.createdAt).getTime() : 0;  break;
+        case 'status':     aVal = a.status;                              bVal = b.status;                              break;
+        case 'totalCost':  aVal = a.totalEstimatedCost ?? 0;             bVal = b.totalEstimatedCost ?? 0;             break;
+        default: return 0;
+      }
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ?  1 : -1;
+      return 0;
+    });
+
     this.filteredPlans.set(filtered);
     this.totalItems.set(filtered.length);
     this.totalPages.set(Math.ceil(filtered.length / this.pageSize()));
     this.currentPage.set(1);
+  }
+
+  onSort(column: string): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+    this.applyFilters();
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
+    return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   onSearchChange(value: string): void {

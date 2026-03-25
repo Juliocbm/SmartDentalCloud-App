@@ -89,15 +89,15 @@
     <table class="table">
       <thead>
         <tr>
-          <th class="sortable" (click)="onSortChange('lastName')" style="cursor:pointer" title="Ordenar por apellido">
-            Paciente <i class="fa-solid {{ getSortIcon('lastName') }}" style="margin-left:4px;font-size:0.75rem;opacity:0.7"></i>
+          <th class="th-sortable" (click)="onSort('lastName')">
+            Paciente <i class="fa-solid sort-icon" [ngClass]="getSortIcon('lastName')"></i>
           </th>
           <th>Contacto</th>
-          <th class="sortable" (click)="onSortChange('age')" style="cursor:pointer" title="Ordenar por edad">
-            Edad <i class="fa-solid {{ getSortIcon('age') }}" style="margin-left:4px;font-size:0.75rem;opacity:0.7"></i>
+          <th class="th-sortable" (click)="onSort('age')">
+            Edad <i class="fa-solid sort-icon" [ngClass]="getSortIcon('age')"></i>
           </th>
-          <th class="sortable" (click)="onSortChange('createdAt')" style="cursor:pointer" title="Ordenar por fecha de registro">
-            Última Visita <i class="fa-solid {{ getSortIcon('createdAt') }}" style="margin-left:4px;font-size:0.75rem;opacity:0.7"></i>
+          <th class="th-sortable" (click)="onSort('createdAt')">
+            Última Visita <i class="fa-solid sort-icon" [ngClass]="getSortIcon('createdAt')"></i>
           </th>
           <th>Estado</th>
           <th>Indicadores</th>

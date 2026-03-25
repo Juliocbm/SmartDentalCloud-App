@@ -10,25 +10,6 @@
 // Botones: usa clases globales .btn de _components.scss (BUTTON_GUIDELINES_PATTERN)
 // ============================================
 
-// ===== Sortable Column Headers =====
-
-.sortable-th {
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-
-  &:hover {
-    background-color: var(--surface-hover);
-  }
-
-  .sort-icon {
-    margin-left: var(--spacing-xs);
-    font-size: var(--font-size-xs);
-    color: var(--text-muted);
-    vertical-align: middle;
-  }
-}
-
 // ===== Date Filter Inputs =====
 
 .date-filter-group {

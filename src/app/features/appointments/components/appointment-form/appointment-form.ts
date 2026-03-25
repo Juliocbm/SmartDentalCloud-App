@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { AppointmentsService } from '../../services/appointments.service';
@@ -15,7 +15,7 @@ import { DentistListItem } from '../../../../core/models/user.models';
 import { TimeSlot } from '../../models/appointment.models';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { SettingsService } from '../../../settings/services/settings.service';
-import { DaySchedule, DAY_ORDER } from '../../../settings/models/work-schedule.models';
+import { DaySchedule } from '../../../settings/models/work-schedule.models';
 import { ScheduleException, EXCEPTION_TYPE_LABELS } from '../../../settings/models/schedule-exception.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -27,6 +27,7 @@ import { DatePickerComponent } from '../../../../shared/components/date-picker/d
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     PatientAutocompleteComponent,
     DentistAutocompleteComponent,
     LocationAutocompleteComponent,
@@ -55,14 +56,18 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
   error = signal<string | null>(null);
   isEditMode = signal(false);
   appointmentId = signal<string | null>(null);
-  
+
   selectedPatient = signal<PatientSearchResult | null>(null);
   selectedDentist = signal<DentistListItem | null>(null);
 
-  // Availability
+  // Slot-first mode
+  selectedDate = signal<string | null>(null);
+  duration = signal(30);
+  selectedSlot = signal<TimeSlot | null>(null);
+  manualMode = signal(false);
+  slotsLoading = signal(false);
+  slotsError = signal(false);
   availabilitySlots = signal<TimeSlot[]>([]);
-  checkingAvailability = signal(false);
-  availabilityChecked = signal(false);
 
   // Work schedule
   workScheduleDays = signal<DaySchedule[]>([]);
@@ -77,6 +82,29 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
     { label: 'Citas', route: '/appointments', icon: 'fa-calendar-days' },
     { label: this.isEditMode() ? 'Reagendar' : 'Nueva' }
   ]);
+
+  canLoadSlots = computed(() => !!this.selectedDentist() && !!this.selectedDate());
+
+  canSubmit(): boolean {
+    if (this.appointmentForm?.invalid) return false;
+    if (this.manualMode()) return true;
+    return !!this.selectedSlot();
+  }
+
+  constructor() {
+    // Auto-load slots when dentist, date, or duration changes
+    effect(() => {
+      const dentist = this.selectedDentist();
+      const date = this.selectedDate();
+      const dur = this.duration();
+      const locationId = this.selectedLocationId();
+      const manual = this.manualMode();
+
+      if (!manual && dentist && date) {
+        this.loadSlots();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.initForm();
@@ -94,7 +122,7 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
   private loadWorkSchedule(): void {
     this.settingsService.getWorkSchedule().subscribe({
       next: (schedule) => this.workScheduleDays.set(schedule.days),
-      error: () => {} // Silent — use no schedule
+      error: () => {}
     });
   }
 
@@ -108,26 +136,26 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
 
     this.settingsService.getScheduleExceptions(fromStr, toStr).subscribe({
       next: (exceptions) => this.scheduleExceptions.set(exceptions),
-      error: () => {} // Silent
+      error: () => {}
     });
   }
 
   getActiveException(): ScheduleException | null {
-    const startAtValue = this.appointmentForm?.get('startAt')?.value;
-    if (!startAtValue) return null;
+    const dateStr = this.manualMode()
+      ? (() => {
+          const val = this.appointmentForm?.get('startAt')?.value;
+          if (!val) return null;
+          const d = new Date(val);
+          return isNaN(d.getTime()) ? null : d.toISOString().split('T')[0];
+        })()
+      : this.selectedDate();
 
-    const date = new Date(startAtValue);
-    if (isNaN(date.getTime())) return null;
-
-    const dateStr = date.toISOString().split('T')[0];
+    if (!dateStr) return null;
     const dentistId = this.appointmentForm?.get('userId')?.value || null;
 
-    // Find the most relevant exception for this date
     return this.scheduleExceptions().find(ex => {
       if (ex.date !== dateStr) return false;
-      // Clinic-wide exception applies to everyone
       if (!ex.userId) return true;
-      // Dentist-specific exception applies only if matching
       if (dentistId && ex.userId === dentistId) return true;
       return false;
     }) || null;
@@ -155,7 +183,6 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
     const startAt = new Date(startAtValue);
     if (isNaN(startAt.getTime())) return false;
 
-    // Map JS day (0=Sun) to our day names
     const jsDay = startAt.getDay();
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const dayName = dayNames[jsDay];
@@ -173,20 +200,22 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
 
   private loadContext(): void {
     const context = this.contextService.getCurrentContext();
-    
-    // Aplicar preselección de dentista
+
     if (context.preselectedDentistId && context.preselectedDentistName) {
       this.selectedDentist.set({
         id: context.preselectedDentistId,
         name: context.preselectedDentistName,
         specialization: context.preselectedDentistSpecialization || undefined
       });
-      this.appointmentForm.patchValue({
-        userId: context.preselectedDentistId
+      this.appointmentForm.patchValue({ userId: context.preselectedDentistId });
+
+      // Load dentist-specific schedule
+      this.settingsService.getDentistWorkSchedule(context.preselectedDentistId).subscribe({
+        next: (schedule) => this.workScheduleDays.set(schedule.days),
+        error: () => this.loadWorkSchedule()
       });
     }
 
-    // Aplicar preselección de paciente
     if (context.preselectedPatientId && context.preselectedPatientName) {
       this.selectedPatient.set({
         id: context.preselectedPatientId,
@@ -194,30 +223,38 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
         email: '',
         phone: ''
       });
-      this.appointmentForm.patchValue({
-        patientId: context.preselectedPatientId
-      });
+      this.appointmentForm.patchValue({ patientId: context.preselectedPatientId });
     }
 
-    // Aplicar preselección de sucursal
     if (context.preselectedLocationId && context.preselectedLocationName) {
       this.selectedLocationId.set(context.preselectedLocationId);
       this.selectedLocationName.set(context.preselectedLocationName);
-      this.appointmentForm.patchValue({
-        locationId: context.preselectedLocationId
-      });
+      this.appointmentForm.patchValue({ locationId: context.preselectedLocationId });
     }
 
-    // Aplicar preselección de fechas (desde calendario)
+    // Calendar context: extract date and duration, auto-select matching slot
     if (context.preselectedStartAt) {
+      const start = new Date(context.preselectedStartAt);
+      const dateStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+      this.selectedDate.set(dateStr);
+
+      if (context.preselectedEndAt) {
+        const end = new Date(context.preselectedEndAt);
+        const durationMin = Math.round((end.getTime() - start.getTime()) / 60000);
+        if ([15, 20, 30, 45, 60, 90, 120].includes(durationMin)) {
+          this.duration.set(durationMin);
+        }
+      }
+
+      // Also set form values for manual mode fallback
       this.appointmentForm.patchValue({
-        startAt: this.formatDateTimeLocal(context.preselectedStartAt)
+        startAt: this.formatDateTimeLocal(start)
       });
-    }
-    if (context.preselectedEndAt) {
-      this.appointmentForm.patchValue({
-        endAt: this.formatDateTimeLocal(context.preselectedEndAt)
-      });
+      if (context.preselectedEndAt) {
+        this.appointmentForm.patchValue({
+          endAt: this.formatDateTimeLocal(new Date(context.preselectedEndAt))
+        });
+      }
     }
   }
 
@@ -257,14 +294,14 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
           reason: appointment.reason,
           locationId: appointment.locationId || null
         });
-        
+
         this.selectedPatient.set({
           id: appointment.patientId,
           name: appointment.patientName,
           email: '',
           phone: ''
         });
-        
+
         if (appointment.userId && appointment.doctorName) {
           this.selectedDentist.set({
             id: appointment.userId,
@@ -277,6 +314,18 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
           this.selectedLocationId.set(appointment.locationId);
           this.selectedLocationName.set(appointment.locationName);
         }
+
+        // Pre-fill slot-first mode from existing appointment
+        const start = new Date(appointment.startAt);
+        const end = new Date(appointment.endAt);
+        const dateStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+        this.selectedDate.set(dateStr);
+
+        const durationMin = Math.round((end.getTime() - start.getTime()) / 60000);
+        if ([15, 20, 30, 45, 60, 90, 120].includes(durationMin)) {
+          this.duration.set(durationMin);
+        }
+
         this.loading.set(false);
       },
       error: (err) => {
@@ -287,24 +336,134 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ===== Slot-first mode methods =====
+
+  onDateChange(date: string | null): void {
+    this.selectedDate.set(date);
+    this.selectedSlot.set(null);
+  }
+
+  onDurationChange(duration: number): void {
+    this.duration.set(Number(duration));
+    this.selectedSlot.set(null);
+  }
+
+  loadSlots(): void {
+    const dateStr = this.selectedDate();
+    const dentist = this.selectedDentist();
+    if (!dateStr || !dentist) return;
+
+    const date = new Date(dateStr + 'T00:00:00');
+    this.slotsLoading.set(true);
+    this.slotsError.set(false);
+    this.selectedSlot.set(null);
+
+    this.appointmentsService.getAvailability(
+      date,
+      dentist.id,
+      this.duration(),
+      this.selectedLocationId()
+    ).subscribe({
+      next: (slots) => {
+        this.availabilitySlots.set(slots);
+        this.slotsLoading.set(false);
+
+        // Auto-select slot if coming from calendar context
+        this.autoSelectSlotFromContext(slots);
+      },
+      error: () => {
+        this.slotsError.set(true);
+        this.slotsLoading.set(false);
+        this.availabilitySlots.set([]);
+      }
+    });
+  }
+
+  private autoSelectSlotFromContext(slots: TimeSlot[]): void {
+    const context = this.contextService.getCurrentContext();
+    if (!context.preselectedStartAt) return;
+
+    const preStart = new Date(context.preselectedStartAt);
+    const match = slots.find(s =>
+      s.available &&
+      s.start.getHours() === preStart.getHours() &&
+      s.start.getMinutes() === preStart.getMinutes()
+    );
+
+    if (match) {
+      this.selectSlot(match);
+    }
+  }
+
+  selectSlot(slot: TimeSlot): void {
+    if (!slot.available) return;
+    this.selectedSlot.set(slot);
+    this.appointmentForm.patchValue({
+      startAt: this.formatDateTimeLocal(slot.start),
+      endAt: this.formatDateTimeLocal(slot.end)
+    });
+  }
+
+  isSlotSelected(slot: TimeSlot): boolean {
+    const selected = this.selectedSlot();
+    if (!selected) return false;
+    return selected.start.getTime() === slot.start.getTime();
+  }
+
+  switchToSlotMode(): void {
+    this.manualMode.set(false);
+    this.selectedSlot.set(null);
+    if (this.canLoadSlots()) {
+      this.loadSlots();
+    }
+  }
+
+  onLocationSelected(event: { id: string; name: string } | null): void {
+    if (event) {
+      this.selectedLocationId.set(event.id);
+      this.selectedLocationName.set(event.name);
+      this.appointmentForm.patchValue({ locationId: event.id });
+    } else {
+      this.selectedLocationId.set(null);
+      this.selectedLocationName.set(null);
+      this.appointmentForm.patchValue({ locationId: null });
+    }
+  }
+
+  formatSlotTime(date: Date): string {
+    return DateFormatService.timeOnly(date);
+  }
+
+  // ===== Form methods =====
+
   async onSubmit(): Promise<void> {
-    if (this.appointmentForm.invalid) {
+    if (!this.canSubmit()) {
       this.appointmentForm.markAllAsTouched();
       return;
     }
 
-    // Confirmación si la cita está fuera de horario laboral o en día con excepción
-    const outsideSchedule = this.isOutsideWorkSchedule();
-    const activeException = this.getActiveException();
-    if (outsideSchedule || activeException) {
-      const confirmMessage = this.buildOutOfHoursConfirmMessage(activeException);
-      const confirmed = await this.notifications.confirm(confirmMessage, {
-        title: 'Cita fuera de horario',
-        confirmText: 'Crear de todas formas',
-        cancelText: 'Cancelar',
-        type: 'warning'
+    // In slot mode, ensure form has the slot values
+    if (!this.manualMode() && this.selectedSlot()) {
+      this.appointmentForm.patchValue({
+        startAt: this.formatDateTimeLocal(this.selectedSlot()!.start),
+        endAt: this.formatDateTimeLocal(this.selectedSlot()!.end)
       });
-      if (!confirmed) return;
+    }
+
+    // Confirmation if outside work schedule or exception active (manual mode only)
+    if (this.manualMode()) {
+      const outsideSchedule = this.isOutsideWorkSchedule();
+      const activeException = this.getActiveException();
+      if (outsideSchedule || activeException) {
+        const confirmMessage = this.buildOutOfHoursConfirmMessage(activeException);
+        const confirmed = await this.notifications.confirm(confirmMessage, {
+          title: 'Cita fuera de horario',
+          confirmText: 'Crear de todas formas',
+          cancelText: 'Cancelar',
+          type: 'warning'
+        });
+        if (!confirmed) return;
+      }
     }
 
     this.loading.set(true);
@@ -402,51 +561,14 @@ export class AppointmentFormComponent implements OnInit, OnDestroy {
     this.selectedDentist.set(dentist);
     if (dentist) {
       this.appointmentForm.patchValue({ userId: dentist.id });
-      // Load dentist-specific schedule for out-of-schedule warning
       this.settingsService.getDentistWorkSchedule(dentist.id).subscribe({
         next: (schedule) => this.workScheduleDays.set(schedule.days),
-        error: () => this.loadWorkSchedule() // Fallback to clinic schedule
+        error: () => this.loadWorkSchedule()
       });
     } else {
       this.appointmentForm.patchValue({ userId: '' });
-      this.loadWorkSchedule(); // Reset to clinic schedule
+      this.loadWorkSchedule();
     }
-    this.availabilityChecked.set(false);
-  }
-
-  checkAvailability(): void {
-    const formValue = this.appointmentForm.value;
-    if (!formValue.userId || !formValue.startAt) return;
-
-    const date = new Date(formValue.startAt);
-    const startMs = new Date(formValue.startAt).getTime();
-    const endMs = formValue.endAt ? new Date(formValue.endAt).getTime() : startMs + 3600000;
-    const durationMin = Math.round((endMs - startMs) / 60000);
-
-    this.checkingAvailability.set(true);
-    this.availabilityChecked.set(false);
-
-    this.appointmentsService.getAvailability(date, formValue.userId, durationMin, formValue.locationId).subscribe({
-      next: (slots) => {
-        this.availabilitySlots.set(slots);
-        this.checkingAvailability.set(false);
-        this.availabilityChecked.set(true);
-      },
-      error: (err) => {
-        this.notifications.warning('No se pudo verificar disponibilidad');
-        this.checkingAvailability.set(false);
-      }
-    });
-  }
-
-  selectSlot(slot: TimeSlot): void {
-    this.appointmentForm.patchValue({
-      startAt: this.formatDateTimeLocal(slot.start),
-      endAt: this.formatDateTimeLocal(slot.end)
-    });
-  }
-
-  formatSlotTime(date: Date): string {
-    return DateFormatService.timeOnly(date);
+    this.selectedSlot.set(null);
   }
 }

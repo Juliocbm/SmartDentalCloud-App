@@ -115,8 +115,7 @@ export class PatientListComponent implements OnInit, OnDestroy {
     this.loadPatients();
   }
 
-  // PAC-BUG-010: ordenamiento de columnas
-  onSortChange(column: string): void {
+  onSort(column: string): void {
     if (this.sortColumn() === column) {
       // Invertir dirección si ya está ordenado por esta columna
       this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');

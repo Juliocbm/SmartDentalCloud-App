@@ -46,7 +46,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   filterCategory = signal<string>('all');
   filterStock = signal<'all' | 'low'>('all');
 
-  sortColumn = signal<'code' | 'name' | 'categoryName' | 'currentStock' | 'reorderPoint' | 'unitCost' | 'isActive' | ''>('');
+  sortColumn = signal<string>('');
   sortDirection = signal<'asc' | 'desc'>('asc');
 
   // Pagination
@@ -183,7 +183,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.applyFilters();
   }
 
-  sortBy(column: 'code' | 'name' | 'categoryName' | 'currentStock' | 'reorderPoint' | 'unitCost' | 'isActive'): void {
+  onSort(column: string): void {
     if (this.sortColumn() === column) {
       this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
     } else {

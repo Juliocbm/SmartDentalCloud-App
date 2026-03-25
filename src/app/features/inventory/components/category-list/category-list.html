@@ -96,9 +96,13 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Categoría</th>
+            <th class="th-sortable" (click)="onSort('name')">
+              Categoría <i class="fa-solid sort-icon" [ngClass]="getSortIcon('name')"></i>
+            </th>
             <th>Descripción</th>
-            <th>Estado</th>
+            <th class="th-sortable" (click)="onSort('status')">
+              Estado <i class="fa-solid sort-icon" [ngClass]="getSortIcon('status')"></i>
+            </th>
             <th>Fecha Creación</th>
             <th class="actions-column">Acciones</th>
           </tr>

@@ -1,0 +1,165 @@
+<app-modal
+  [title]="'Detalle de Notificación'"
+  [icon]="'fa-bell'"
+  [size]="'lg'"
+  (closed)="close()">
+
+  @if (loading()) {
+    <div class="modal-loading">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Cargando...</p>
+    </div>
+  } @else if (error()) {
+    <div class="modal-error">
+      <i class="fa-solid fa-exclamation-circle"></i>
+      <p>{{ error() }}</p>
+    </div>
+  } @else if (detail(); as d) {
+    <div class="detail-content">
+      <!-- Status header -->
+      <div class="detail-status-bar">
+        <span class="badge badge-lg" [ngClass]="getStatusConfig(d.status).cssClass">
+          <i class="fa-solid" [ngClass]="getStatusConfig(d.status).icon"></i>
+          {{ getStatusConfig(d.status).label }}
+        </span>
+        <span class="channel-badge" [ngClass]="getChannelConfig(d.channel).cssClass">
+          <i [ngClass]="getChannelConfig(d.channel).icon"></i>
+          {{ getChannelConfig(d.channel).label }}
+        </span>
+      </div>
+
+      <!-- Info grid -->
+      <div class="detail-grid">
+        <div class="detail-field">
+          <span class="detail-label">Tipo</span>
+          <span class="detail-value">{{ getTypeLabel(d.notificationType) }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="detail-label">Prioridad</span>
+          <span class="detail-value">{{ getPriorityLabel(d.priority) }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="detail-label">Destinatario</span>
+          <span class="detail-value">{{ d.recipientEmail || d.recipientPhone || '—' }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="detail-label">Paciente</span>
+          <span class="detail-value">{{ d.patientName || '—' }}</span>
+        </div>
+        @if (d.subject) {
+          <div class="detail-field detail-field--full">
+            <span class="detail-label">Asunto</span>
+            <span class="detail-value">{{ d.subject }}</span>
+          </div>
+        }
+        @if (d.templateName) {
+          <div class="detail-field">
+            <span class="detail-label">Plantilla</span>
+            <span class="detail-value template-tag">{{ d.templateName }}</span>
+          </div>
+        }
+        <div class="detail-field">
+          <span class="detail-label">Creado</span>
+          <span class="detail-value">{{ formatDate(d.createdAt) }}</span>
+        </div>
+        @if (d.createdByName) {
+          <div class="detail-field">
+            <span class="detail-label">Creado por</span>
+            <span class="detail-value">{{ d.createdByName }}</span>
+          </div>
+        }
+        @if (d.scheduledAt) {
+          <div class="detail-field">
+            <span class="detail-label">Programado</span>
+            <span class="detail-value">{{ formatDate(d.scheduledAt) }}</span>
+          </div>
+        }
+        @if (d.sentAt) {
+          <div class="detail-field">
+            <span class="detail-label">Enviado</span>
+            <span class="detail-value">{{ formatDate(d.sentAt) }}</span>
+          </div>
+        }
+        @if (d.deliveredAt) {
+          <div class="detail-field">
+            <span class="detail-label">Entregado</span>
+            <span class="detail-value">{{ formatDate(d.deliveredAt) }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Message body -->
+      <div class="detail-section">
+        <h4 class="detail-section-title">Contenido del Mensaje</h4>
+        <div class="detail-message-body" [innerHTML]="d.messageBody"></div>
+      </div>
+
+      <!-- Error info -->
+      @if (d.errorMessage) {
+        <div class="detail-section detail-section--error">
+          <h4 class="detail-section-title">Error</h4>
+          <p class="error-message">{{ d.errorMessage }}</p>
+          @if (d.errorDetails) {
+            <details class="error-details">
+              <summary>Detalles técnicos</summary>
+              <pre>{{ d.errorDetails }}</pre>
+            </details>
+          }
+          <div class="retry-info">
+            <span>Intentos: {{ d.retryCount }} / {{ d.maxRetries }}</span>
+            @if (d.lastRetryAt) {
+              <span>Último intento: {{ formatDate(d.lastRetryAt) }}</span>
+            }
+            @if (d.nextRetryAt) {
+              <span>Próximo intento: {{ formatDate(d.nextRetryAt) }}</span>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Cancellation info -->
+      @if (d.cancelledAt) {
+        <div class="detail-section detail-section--warning">
+          <h4 class="detail-section-title">Cancelación</h4>
+          <div class="detail-grid">
+            <div class="detail-field">
+              <span class="detail-label">Cancelado</span>
+              <span class="detail-value">{{ formatDate(d.cancelledAt) }}</span>
+            </div>
+            @if (d.cancelledByName) {
+              <div class="detail-field">
+                <span class="detail-label">Cancelado por</span>
+                <span class="detail-value">{{ d.cancelledByName }}</span>
+              </div>
+            }
+            @if (d.cancellationReason) {
+              <div class="detail-field detail-field--full">
+                <span class="detail-label">Razón</span>
+                <span class="detail-value">{{ d.cancellationReason }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Actions -->
+      @if (permissionService.hasPermission(PERMISSIONS.NotificationsManage)) {
+        <div class="detail-actions">
+          @if (d.status === 'Queued') {
+            <button class="btn btn-primary btn-sm" (click)="sendNow()">
+              <i class="fa-solid fa-paper-plane"></i> Enviar Ahora
+            </button>
+            <button class="btn btn-outline btn-sm" (click)="cancel()">
+              <i class="fa-solid fa-ban"></i> Cancelar
+            </button>
+          }
+          @if (d.status === 'Failed') {
+            <button class="btn btn-primary btn-sm" (click)="retry()">
+              <i class="fa-solid fa-rotate-right"></i> Reintentar
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+</app-modal>

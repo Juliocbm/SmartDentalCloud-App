@@ -124,24 +124,17 @@
           <thead>
             <tr>
               <!-- Fecha — ordenable -->
-              <th class="sortable-th" (click)="onSortChange('paidAt')">
-                Fecha
-                <i [class]="'fa-solid ' + getSortIcon('paidAt')" class="sort-icon"></i>
+              <th class="th-sortable" (click)="onSort('paidAt')">
+                Fecha <i class="fa-solid sort-icon" [ngClass]="getSortIcon('paidAt')"></i>
               </th>
-              <!-- Paciente — ordenable -->
-              <th class="sortable-th" (click)="onSortChange('patientName')">
-                Paciente
-                <i [class]="'fa-solid ' + getSortIcon('patientName')" class="sort-icon"></i>
+              <th class="th-sortable" (click)="onSort('patientName')">
+                Paciente <i class="fa-solid sort-icon" [ngClass]="getSortIcon('patientName')"></i>
               </th>
-              <!-- Monto — ordenable -->
-              <th class="sortable-th" (click)="onSortChange('amount')">
-                Monto
-                <i [class]="'fa-solid ' + getSortIcon('amount')" class="sort-icon"></i>
+              <th class="th-sortable" (click)="onSort('amount')">
+                Monto <i class="fa-solid sort-icon" [ngClass]="getSortIcon('amount')"></i>
               </th>
-              <!-- Método — ordenable -->
-              <th class="sortable-th" (click)="onSortChange('paymentMethod')">
-                Método
-                <i [class]="'fa-solid ' + getSortIcon('paymentMethod')" class="sort-icon"></i>
+              <th class="th-sortable" (click)="onSort('paymentMethod')">
+                Método <i class="fa-solid sort-icon" [ngClass]="getSortIcon('paymentMethod')"></i>
               </th>
               <th>Referencia</th>
               <th class="actions-column">Acciones</th>

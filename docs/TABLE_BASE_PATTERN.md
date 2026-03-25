@@ -620,33 +620,196 @@ Orden de elementos dentro del `page-container`:
 
 ---
 
+## 12. Ordenamiento de Columnas (Sort)
+
+### 12.1 Clase Global
+
+La clase `.th-sortable` vive en `src/styles/_components.scss`. **No redefinir** en componentes individuales.
+
+```
+.th-sortable        → cursor pointer, hover (background + color primary), user-select none
+.th-sortable .sort-icon → icono fa-sort, alineación vertical, color --text-muted; en hover → --primary-500
+```
+
+> **Eliminar** cualquier versión local (`.sortable`, `.sortable-th`, `.sortable-header`) — todas migran a `.th-sortable`.
+
+---
+
+### 12.2 Señales TypeScript Estándar
+
+```typescript
+// Señales de ordenamiento — agregar junto a las señales de filtro/paginación
+sortColumn   = signal<string>('defaultField');   // columna activa — usar null si no hay default
+sortDirection = signal<'asc' | 'desc'>('asc');   // dirección activa
+```
+
+**Reglas de valor inicial:**
+- Si la tabla debe cargarse pre-ordenada (ej. pacientes por apellido): `signal<string>('lastName')`
+- Si no hay orden inicial (usuario decide): `signal<string | null>(null)`
+- Fechas en orden descendente (más reciente primero): `sortDirection = signal<'asc' | 'desc'>('desc')`
+
+---
+
+### 12.3 Métodos TypeScript Estándar
+
+```typescript
+/** Cambia columna o invierte dirección; reinicia página a 1. */
+onSort(column: string): void {
+  if (this.sortColumn() === column) {
+    this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+  } else {
+    this.sortColumn.set(column);
+    this.sortDirection.set('asc');
+  }
+  this.currentPage.set(1);
+  // Client-side: llamar applyFilters()  |  Server-side: llamar loadData()
+}
+
+/** Retorna la clase de ícono de Font Awesome para la columna dada. */
+getSortIcon(column: string): string {
+  if (this.sortColumn() !== column) return 'fa-sort';
+  return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
+}
+```
+
+**Nombres canónicos:** `onSort` y `getSortIcon` — **nunca** `onSortChange`, `sortBy`, `changeSort` u otros.
+
+---
+
+### 12.4 Sort Client-Side (tabla carga todos los datos de una vez)
+
+Aplicar dentro de `applyFilters()` o `computed()`, **después** de filtrar:
+
+```typescript
+applyFilters(): void {
+  let filtered = [...this.items()];
+
+  // 1. Filtros (search, status, etc.)
+  // ...
+
+  // 2. Sort
+  const col = this.sortColumn();
+  const dir = this.sortDirection();
+  if (col) {
+    filtered.sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      switch (col) {
+        case 'name':   aVal = a.name?.toLowerCase() ?? '';   bVal = b.name?.toLowerCase() ?? '';   break;
+        case 'date':   aVal = new Date(a.date).getTime();    bVal = new Date(b.date).getTime();    break;
+        case 'amount': aVal = a.amount ?? 0;                 bVal = b.amount ?? 0;                 break;
+        case 'status': aVal = a.status;                      bVal = b.status;                      break;
+        default: return 0;
+      }
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ?  1 : -1;
+      return 0;
+    });
+  }
+
+  this.filteredItems.set(filtered);
+  this.totalItems.set(filtered.length);
+  this.totalPages.set(Math.ceil(filtered.length / this.pageSize()) || 1);
+  this.currentPage.set(1);
+}
+```
+
+---
+
+### 12.5 Sort Server-Side (tabla pagina desde el backend)
+
+Pasar `sortColumn()` y `sortDirection()` directamente al servicio:
+
+```typescript
+loadData(): void {
+  this.loading.set(true);
+  this.service.getAll(
+    this.currentPage(),
+    this.pageSize(),
+    this.searchTerm() || undefined,
+    this.sortColumn(),
+    this.sortDirection()
+  ).subscribe({ ... });
+}
+```
+
+El método `onSort()` llama `this.currentPage.set(1)` y luego `this.loadData()`.
+
+---
+
+### 12.6 HTML — Patrón de `<th>` Ordenable
+
+```html
+<th class="th-sortable" (click)="onSort('fieldName')">
+  Etiqueta <i class="fa-solid sort-icon" [ngClass]="getSortIcon('fieldName')"></i>
+</th>
+```
+
+- **Una** clase: `th-sortable` — no agregar `style="cursor:pointer"` ni clases adicionales.
+- El ícono usa `class="fa-solid sort-icon"` (clase fija) + `[ngClass]="getSortIcon(...)"` (clase dinámica).
+- **No** usar `{{ getSortIcon() }}` por interpolación de string — siempre `[ngClass]`.
+- Columnas no-ordenables (Acciones, indicadores): `<th class="actions-column">` sin `th-sortable`.
+
+---
+
+### 12.7 Columnas Recomendadas por Entidad
+
+| Tabla | Columnas ordenables | Default | Tipo |
+|-------|---------------------|---------|------|
+| `patient-list` | `lastName`, `age`, `createdAt` | `lastName asc` | Server-side |
+| `treatment-list` | `patient`, `service`, `date`, `cost`, `status` | ninguno | Client-side |
+| `payment-list` | `paidAt`, `patientName`, `amount`, `paymentMethod` | `paidAt desc` | Client-side |
+| `product-list` | `code`, `name`, `categoryName`, `currentStock`, `reorderPoint`, `unitCost`, `isActive` | ninguno | Client-side |
+| `service-list` | `name`, `category`, `price`, `status` | `name asc` | Client-side |
+| `treatment-plan-list` | `patient`, `startDate`, `status`, `totalCost` | `startDate desc` | Client-side |
+| `prescription-list` | `patient`, `issuedDate`, `status` | `issuedDate desc` | Client-side |
+| `user-list` | `lastName`, `role`, `status` | `lastName asc` | Client-side |
+| `invoice-list` | `patient`, `issueDate`, `total`, `status` | `issueDate desc` | Client-side |
+| `category-list` | `name`, `status` | `name asc` | Client-side |
+| `supplier-list` | `name`, `status` | `name asc` | Client-side |
+| `purchase-order-list` | `supplier`, `orderDate`, `total`, `status` | `orderDate desc` | Client-side |
+
+---
+
+### 12.8 Reglas
+
+- ✅ Usar siempre `.th-sortable` + `onSort()` + `getSortIcon()` (nombres exactos)
+- ✅ El ícono siempre tiene `class="fa-solid sort-icon"` + `[ngClass]="getSortIcon('col')"`
+- ✅ `onSort()` siempre reinicia `currentPage` a 1
+- ❌ No usar `.sortable`, `.sortable-th`, `.sortable-header` — son legacy
+- ❌ No usar `onSortChange()`, `sortBy()` — el nombre estándar es `onSort()`
+- ❌ No agregar `style="cursor:pointer"` inline — `.th-sortable` ya lo incluye
+- ❌ No crear `SortField` type para columnas simples — usar `string` directamente
+
+---
+
 ## 11. Componentes Que Siguen Este Patrón
 
 ### Listas CRUD (con paginación)
 
-| Componente | `pageSize` | Scroll | Acciones |
-|------------|-----------|--------|----------|
-| `patient-list` | 10 | Sí | Ver, Editar, Toggle, Eliminar |
-| `service-list` | 10 | Sí | Editar, Eliminar |
-| `treatment-list` | 10 | Sí | Ver, Editar |
-| `treatment-plan-list` | 10 | Sí | Imprimir, Email, Editar, Ver |
-| `prescription-list` | 10 | Sí | Imprimir, Email, Ver |
-| `consultation-note-list` | 10 | Sí | Ver |
-| `user-list` | 10 | Sí | Ver, Editar, Eliminar |
-| `invoice-list` | 10 | Sí | Ver |
-| `payment-list` | 15 | Sí | Ver Factura |
-| `appointment-list` | — | Sí | Ver, Editar |
-| `audit-log-list` | 15 | Sí | Expandir detalle |
+| Componente | `pageSize` | Scroll | Sort | Columnas Ordenables |
+|------------|-----------|--------|------|---------------------|
+| `patient-list` | 10 | Sí | ✅ Server-side | `lastName` (default), `age`, `createdAt` |
+| `service-list` | 10 | Sí | ✅ Client-side | `name` (default), `category`, `price`, `status` |
+| `treatment-list` | 10 | Sí | ✅ Client-side | `patient`, `service`, `date`, `cost`, `status` |
+| `treatment-plan-list` | 10 | Sí | ✅ Client-side | `patient`, `startDate` (default desc), `status`, `totalCost` |
+| `prescription-list` | 10 | Sí | ✅ Client-side | `issuedDate` (default desc), `patient`, `status` |
+| `consultation-note-list` | 10 | Sí | — | — |
+| `user-list` | 10 | Sí | ✅ Client-side | `name` (default), `status` |
+| `invoice-list` | 10 | Sí | ✅ Client-side | `patient`, `createdAt` (default desc), `total`, `status` |
+| `payment-list` | 15 | Sí | ✅ Client-side | `paidAt` (default desc), `patientName`, `amount`, `paymentMethod` |
+| `appointment-list` | — | Sí | — | — |
+| `audit-log-list` | 15 | Sí | — | — |
 
 ### Listas de Inventario (con paginación)
 
-| Componente | `pageSize` | Scroll | Acciones |
-|------------|-----------|--------|----------|
-| `category-list` | 10 | Sí | Editar, Eliminar |
-| `product-list` | 10 | Sí | Ver, Editar |
-| `supplier-list` | 10 | Sí | Ver, Editar |
-| `purchase-order-list` | 10 | Sí | Ver |
-| `stock-alerts` | 10 | Sí | Ajustar Stock |
+| Componente | `pageSize` | Scroll | Sort | Columnas Ordenables |
+|------------|-----------|--------|------|---------------------|
+| `category-list` | 10 | Sí | ✅ Client-side | `name` (default), `status` |
+| `product-list` | 10 | Sí | ✅ Client-side | `code`, `name`, `categoryName`, `currentStock`, `reorderPoint`, `unitCost`, `isActive` |
+| `supplier-list` | 10 | Sí | ✅ Client-side | `name` (default), `status` |
+| `purchase-order-list` | 10 | Sí | ✅ Client-side | `supplier`, `orderDate` (default desc), `total`, `status` |
+| `stock-alerts` | 10 | Sí | — | — |
 
 ### Tablas en Detalle (sin paginación)
 

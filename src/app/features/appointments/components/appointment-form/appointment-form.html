@@ -13,7 +13,7 @@
         <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading() || appointmentForm.invalid">
+      <button type="button" class="btn btn-outline btn-success" (click)="onSubmit()" [disabled]="loading() || !canSubmit()">
         @if (loading()) {
           <span class="btn-spinner"></span>
           Guardando...
@@ -70,7 +70,7 @@
               [selectedLocationId]="selectedLocationId()"
               [selectedLocationName]="selectedLocationName()"
               placeholder="Seleccionar sucursal..."
-              (locationSelected)="selectedLocationId.set($event?.id ?? null); selectedLocationName.set($event?.name ?? null); appointmentForm.patchValue({ locationId: $event?.id ?? null })"
+              (locationSelected)="onLocationSelected($event)"
             >
               Sucursal
             </app-location-autocomplete>
@@ -83,94 +83,174 @@
     <div class="form-section form-section--compact">
       <h3 class="section-title">
         <i class="fa-solid fa-calendar-days section-icon"></i>
-        Fecha, Hora y Motivo
+        Fecha y Hora
       </h3>
 
-      <div class="form-row">
-        <div class="form-group">
-          <app-date-picker
-            formControlName="startAt"
-            mode="datetime"
-            [required]="true"
-            minDate="today"
-            [error]="getFieldError('startAt')"
-            placeholder="Seleccionar fecha y hora..."
-          >
-            Inicio
-          </app-date-picker>
+      @if (!manualMode()) {
+        <!-- Slot-first mode (default) -->
+        <div class="form-row">
+          <div class="form-group">
+            <app-date-picker
+              [ngModel]="selectedDate()"
+              (ngModelChange)="onDateChange($event)"
+              [ngModelOptions]="{standalone: true}"
+              mode="date"
+              [required]="true"
+              minDate="today"
+              placeholder="Seleccionar fecha..."
+            >
+              Fecha
+            </app-date-picker>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Duración</label>
+            <select class="form-input" [ngModel]="duration()" (ngModelChange)="onDurationChange($event)" [ngModelOptions]="{standalone: true}">
+              <option [ngValue]="15">15 minutos</option>
+              <option [ngValue]="20">20 minutos</option>
+              <option [ngValue]="30">30 minutos</option>
+              <option [ngValue]="45">45 minutos</option>
+              <option [ngValue]="60">1 hora</option>
+              <option [ngValue]="90">1 hora 30 min</option>
+              <option [ngValue]="120">2 horas</option>
+            </select>
+          </div>
         </div>
 
-        <div class="form-group">
-          <app-date-picker
-            formControlName="endAt"
-            mode="datetime"
-            [required]="true"
-            minDate="today"
-            [error]="getFieldError('endAt')"
-            placeholder="Seleccionar fecha y hora..."
-          >
-            Fin
-          </app-date-picker>
-        </div>
-      </div>
-
-      @if (getActiveException(); as exception) {
-        <div class="alert schedule-warning" [class.alert-error]="exception.type !== 'modifiedHours'" [class.alert-warning]="exception.type === 'modifiedHours'">
-          <i class="fa-solid" [class.fa-ban]="exception.type !== 'modifiedHours'" [class.fa-clock]="exception.type === 'modifiedHours'"></i>
-          <span>{{ getExceptionWarningMessage() }}</span>
-        </div>
-      }
-
-      @if (isOutsideWorkSchedule() && !getActiveException()) {
-        <div class="alert alert-warning schedule-warning">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-          <span>Esta cita está fuera del horario laboral configurado</span>
-        </div>
-      }
-
-      <div class="availability-section">
-        <button
-          type="button"
-          class="btn btn-outline btn-sm"
-          [disabled]="checkingAvailability() || !appointmentForm.get('userId')?.value || !appointmentForm.get('startAt')?.value"
-          (click)="checkAvailability()"
-        >
-          @if (checkingAvailability()) {
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            Verificando...
-          } @else {
-            <i class="fa-solid fa-calendar-check"></i>
-            Verificar Disponibilidad
-          }
-        </button>
-
-        @if (availabilityChecked()) {
-          <div class="slots-container">
-            @if (availabilitySlots().length === 0) {
-              <p class="slots-empty">No se encontraron horarios disponibles para la fecha seleccionada.</p>
-            } @else {
-              <p class="slots-title">Horarios disponibles:</p>
-              <div class="slots-grid">
-                @for (slot of availabilitySlots(); track slot.start) {
-                  <button
-                    type="button"
-                    class="slot-chip"
-                    [class.available]="slot.available"
-                    [class.unavailable]="!slot.available"
-                    [disabled]="!slot.available"
-                    (click)="selectSlot(slot)"
-                  >
-                    {{ formatSlotTime(slot.start) }} - {{ formatSlotTime(slot.end) }}
-                    @if (!slot.available) {
-                      <i class="fa-solid fa-lock"></i>
-                    }
-                  </button>
-                }
-              </div>
-            }
+        <!-- Schedule exception warning -->
+        @if (getActiveException(); as exception) {
+          <div class="alert schedule-warning" [class.alert-error]="exception.type !== 'modifiedHours'" [class.alert-warning]="exception.type === 'modifiedHours'">
+            <i class="fa-solid" [class.fa-ban]="exception.type !== 'modifiedHours'" [class.fa-clock]="exception.type === 'modifiedHours'"></i>
+            <span>{{ getExceptionWarningMessage() }}</span>
           </div>
         }
-      </div>
+
+        <!-- Slots section -->
+        @if (slotsLoading()) {
+          <div class="slots-container slots-loading">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Cargando horarios disponibles...</span>
+          </div>
+        } @else if (slotsError()) {
+          <div class="slots-container slots-error-state">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            <span>No se pudieron cargar los horarios</span>
+            <button type="button" class="btn btn-sm btn-outline" (click)="loadSlots()">
+              <i class="fa-solid fa-arrows-rotate"></i> Reintentar
+            </button>
+          </div>
+        } @else if (availabilitySlots().length > 0) {
+          <div class="slots-container">
+            <p class="slots-title">Horarios disponibles:</p>
+            <div class="slots-grid">
+              @for (slot of availabilitySlots(); track $index) {
+                <button
+                  type="button"
+                  class="slot-chip"
+                  [class.available]="slot.available"
+                  [class.unavailable]="!slot.available"
+                  [class.selected]="isSlotSelected(slot)"
+                  [disabled]="!slot.available"
+                  (click)="selectSlot(slot)"
+                >
+                  {{ formatSlotTime(slot.start) }}
+                  @if (!slot.available) {
+                    <i class="fa-solid fa-lock"></i>
+                  }
+                  @if (isSlotSelected(slot)) {
+                    <i class="fa-solid fa-check"></i>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        } @else if (canLoadSlots() && selectedDate()) {
+          <div class="slots-container slots-empty-state">
+            <i class="fa-solid fa-calendar-xmark"></i>
+            <span>No hay horarios disponibles para esta fecha</span>
+          </div>
+        } @else if (!selectedDentist()) {
+          <div class="slots-hint">
+            <i class="fa-solid fa-info-circle"></i>
+            <span>Selecciona un dentista y una fecha para ver los horarios disponibles</span>
+          </div>
+        } @else if (!selectedDate()) {
+          <div class="slots-hint">
+            <i class="fa-solid fa-info-circle"></i>
+            <span>Selecciona una fecha para ver los horarios disponibles</span>
+          </div>
+        }
+
+        <!-- Selected time summary -->
+        @if (selectedSlot(); as slot) {
+          <div class="selected-time-summary">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Horario seleccionado: <strong>{{ formatSlotTime(slot.start) }} - {{ formatSlotTime(slot.end) }}</strong></span>
+          </div>
+        }
+
+        <!-- Manual mode link -->
+        <button type="button" class="manual-mode-link" (click)="manualMode.set(true)">
+          <i class="fa-solid fa-pen"></i>
+          Ingresar horario manualmente
+        </button>
+      } @else {
+        <!-- Manual mode (fallback) -->
+        <div class="form-row">
+          <div class="form-group">
+            <app-date-picker
+              formControlName="startAt"
+              mode="datetime"
+              [required]="true"
+              minDate="today"
+              [error]="getFieldError('startAt')"
+              placeholder="Seleccionar fecha y hora..."
+            >
+              Inicio
+            </app-date-picker>
+          </div>
+
+          <div class="form-group">
+            <app-date-picker
+              formControlName="endAt"
+              mode="datetime"
+              [required]="true"
+              minDate="today"
+              [error]="getFieldError('endAt')"
+              placeholder="Seleccionar fecha y hora..."
+            >
+              Fin
+            </app-date-picker>
+          </div>
+        </div>
+
+        @if (getActiveException(); as exception) {
+          <div class="alert schedule-warning" [class.alert-error]="exception.type !== 'modifiedHours'" [class.alert-warning]="exception.type === 'modifiedHours'">
+            <i class="fa-solid" [class.fa-ban]="exception.type !== 'modifiedHours'" [class.fa-clock]="exception.type === 'modifiedHours'"></i>
+            <span>{{ getExceptionWarningMessage() }}</span>
+          </div>
+        }
+
+        @if (isOutsideWorkSchedule() && !getActiveException()) {
+          <div class="alert alert-warning schedule-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Esta cita está fuera del horario laboral configurado</span>
+          </div>
+        }
+
+        <button type="button" class="manual-mode-link" (click)="switchToSlotMode()">
+          <i class="fa-solid fa-calendar-check"></i>
+          Volver a selección por horarios disponibles
+        </button>
+      }
+    </div>
+
+    <!-- Motivo -->
+    <div class="form-section form-section--compact">
+      <h3 class="section-title">
+        <i class="fa-solid fa-clipboard section-icon"></i>
+        Motivo
+      </h3>
 
       <div class="form-row">
         <div class="form-group form-group-full">

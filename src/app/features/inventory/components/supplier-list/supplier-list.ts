@@ -33,6 +33,8 @@ export class SupplierListComponent implements OnInit, OnDestroy {
   error = signal<string | null>(null);
   searchTerm = signal('');
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
+  sortColumn = signal<string>('name');
+  sortDirection = signal<'asc' | 'desc'>('asc');
 
   // Pagination
   currentPage = signal(1);
@@ -65,7 +67,21 @@ export class SupplierListComponent implements OnInit, OnDestroy {
       result = result.filter(s => !s.isActive);
     }
 
-    return result;
+    // Sort
+    const col = this.sortColumn();
+    const dir = this.sortDirection();
+    return [...result].sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      switch (col) {
+        case 'name':   aVal = a.name?.toLowerCase() ?? '';  bVal = b.name?.toLowerCase() ?? '';  break;
+        case 'status': aVal = a.isActive ? 0 : 1;           bVal = b.isActive ? 0 : 1;           break;
+        default: return 0;
+      }
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ?  1 : -1;
+      return 0;
+    });
   });
 
   totalPages = computed(() => Math.ceil(this.filteredSuppliers().length / this.pageSize()) || 1);
@@ -109,6 +125,21 @@ export class SupplierListComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       }
     });
+  }
+
+  onSort(column: string): void {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn() !== column) return 'fa-sort';
+    return this.sortDirection() === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   onSearchInput(value: string): void {

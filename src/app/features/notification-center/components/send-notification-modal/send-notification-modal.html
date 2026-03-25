@@ -1,0 +1,109 @@
+<app-modal
+  [title]="'Enviar Notificación'"
+  [icon]="'fa-paper-plane'"
+  [size]="'md'"
+  (closed)="close()">
+
+  <div class="send-form">
+    @if (error()) {
+      <div class="form-error">
+        <i class="fa-solid fa-exclamation-circle"></i>
+        {{ error() }}
+      </div>
+    }
+
+    <!-- Patient Autocomplete -->
+    <div class="form-group">
+      <app-patient-autocomplete
+        [required]="true"
+        [disabled]="sending()"
+        (patientSelected)="onPatientSelected($event)">
+        Paciente
+      </app-patient-autocomplete>
+    </div>
+
+    <!-- Patient contact info (read-only) -->
+    @if (selectedPatient()) {
+      <div class="patient-info">
+        @if (selectedPatient()!.email) {
+          <span class="patient-info__item">
+            <i class="fa-solid fa-envelope"></i>
+            {{ selectedPatient()!.email }}
+          </span>
+        }
+        @if (selectedPatient()!.phone) {
+          <span class="patient-info__item">
+            <i class="fa-solid fa-phone"></i>
+            {{ selectedPatient()!.phone }}
+          </span>
+        }
+        @if (!selectedPatient()!.email && !selectedPatient()!.phone) {
+          <span class="patient-info__item patient-info__item--warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            El paciente no tiene datos de contacto registrados
+          </span>
+        }
+      </div>
+    }
+
+    <!-- Channel -->
+    <div class="form-group">
+      <label class="form-label">Canal</label>
+      <select class="form-input" [ngModel]="channel()" (ngModelChange)="channel.set($event)">
+        <option value="Email">Email</option>
+        <option value="WhatsApp">WhatsApp</option>
+      </select>
+    </div>
+
+    <!-- Subject (only for Email) -->
+    @if (channel() === 'Email') {
+      <div class="form-group">
+        <label class="form-label">Asunto</label>
+        <input
+          type="text"
+          class="form-input"
+          placeholder="Asunto del email"
+          [ngModel]="subject()"
+          (ngModelChange)="subject.set($event)" />
+      </div>
+    }
+
+    <!-- Message -->
+    <div class="form-group">
+      <label class="form-label">Mensaje <span class="required">*</span></label>
+      <textarea
+        class="form-input form-textarea"
+        rows="5"
+        placeholder="Escriba el mensaje..."
+        [ngModel]="messageBody()"
+        (ngModelChange)="messageBody.set($event)">
+      </textarea>
+    </div>
+
+    <!-- Priority -->
+    <div class="form-group">
+      <label class="form-label">Prioridad</label>
+      <select class="form-input" [ngModel]="priority()" (ngModelChange)="priority.set(+$event)">
+        <option [value]="0">Normal</option>
+        <option [value]="1">Alta</option>
+        <option [value]="2">Urgente</option>
+      </select>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button class="btn btn-outline" (click)="close()" [disabled]="sending()">
+        Cancelar
+      </button>
+      <button class="btn btn-primary" (click)="send()" [disabled]="sending() || !selectedPatient()">
+        @if (sending()) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          Enviando...
+        } @else {
+          <i class="fa-solid fa-paper-plane"></i>
+          Encolar Notificación
+        }
+      </button>
+    </div>
+  </div>
+</app-modal>

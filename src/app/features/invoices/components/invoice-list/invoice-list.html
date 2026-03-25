@@ -102,12 +102,20 @@
         <thead>
           <tr>
             <th>Folio</th>
-            <th>Paciente</th>
-            <th>Fecha</th>
-            <th>Monto Total</th>
+            <th class="th-sortable" (click)="onSort('patient')">
+              Paciente <i class="fa-solid sort-icon" [ngClass]="getSortIcon('patient')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('createdAt')">
+              Fecha <i class="fa-solid sort-icon" [ngClass]="getSortIcon('createdAt')"></i>
+            </th>
+            <th class="th-sortable" (click)="onSort('total')">
+              Monto Total <i class="fa-solid sort-icon" [ngClass]="getSortIcon('total')"></i>
+            </th>
             <th>Pagado</th>
             <th>Saldo</th>
-            <th>Estado</th>
+            <th class="th-sortable" (click)="onSort('status')">
+              Estado <i class="fa-solid sort-icon" [ngClass]="getSortIcon('status')"></i>
+            </th>
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>
