@@ -20,6 +20,7 @@ import {
   PRIORITY_CONFIG,
 } from '../../models/notification-center.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-notification-dashboard',
@@ -31,6 +32,7 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 export class NotificationDashboardComponent implements OnInit, OnDestroy {
   private notificationCenterService = inject(NotificationCenterService);
   private modalService = inject(ModalService);
+  private notifications = inject(NotificationService);
   permissionService = inject(PermissionService);
 
   // Expose for template
@@ -187,30 +189,28 @@ export class NotificationDashboardComponent implements OnInit, OnDestroy {
   sendNow(item: NotificationQueueItem): void {
     this.notificationCenterService.sendNow(item.id).subscribe({
       next: () => this.refresh(),
-      error: (err) => console.error('Error sending now', err)
+      error: (err) => this.notifications.error(getApiErrorMessage(err, 'Error al enviar la notificación'))
     });
   }
 
   retryItem(item: NotificationQueueItem): void {
     this.notificationCenterService.retry(item.id).subscribe({
       next: () => this.refresh(),
-      error: (err) => console.error('Error retrying', err)
+      error: (err) => this.notifications.error(getApiErrorMessage(err, 'Error al reintentar la notificación'))
     });
   }
 
   cancelItem(item: NotificationQueueItem): void {
     this.notificationCenterService.cancel(item.id).subscribe({
       next: () => this.refresh(),
-      error: (err) => console.error('Error cancelling', err)
+      error: (err) => this.notifications.error(getApiErrorMessage(err, 'Error al cancelar la notificación'))
     });
   }
 
   bulkRetry(): void {
     this.notificationCenterService.bulkRetry().subscribe({
-      next: () => {
-        this.refresh();
-      },
-      error: (err) => console.error('Error bulk retry', err)
+      next: () => this.refresh(),
+      error: (err) => this.notifications.error(getApiErrorMessage(err, 'Error al reintentar las notificaciones'))
     });
   }
 
