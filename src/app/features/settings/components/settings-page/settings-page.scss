@@ -820,6 +820,31 @@
   }
 }
 
+.notification-template-select {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  padding-top: var(--spacing-sm);
+  border-top: 1px dashed var(--border-primary);
+
+  &__label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+
+    i {
+      margin-right: var(--spacing-xs);
+    }
+  }
+
+  .form-select {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
 .hours-selector {
   display: flex;
   flex-wrap: wrap;

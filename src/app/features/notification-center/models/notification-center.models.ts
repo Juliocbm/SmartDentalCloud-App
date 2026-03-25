@@ -90,7 +90,9 @@ export interface CreateNotificationRequest {
   recipientPhone?: string;
   recipientEmail?: string;
   subject?: string;
-  messageBody: string;
+  messageBody?: string;                        // Email: cuerpo libre
+  templateName?: string;                       // WhatsApp/SMS: nombre del template Twilio
+  templateParameters?: Record<string, string>; // WhatsApp/SMS: variables del template
   scheduledAt?: string;
   priority?: number;
   contextType?: string;

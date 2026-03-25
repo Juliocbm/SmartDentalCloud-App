@@ -1,0 +1,126 @@
+<app-modal
+  [title]="isEdit() ? 'Editar Plantilla' : 'Nueva Plantilla de Notificación'"
+  [icon]="'fa-bells'"
+  [size]="'lg'"
+  (closed)="onClose()">
+
+  <form [formGroup]="form">
+
+    <div class="form-row-2">
+      <!-- Canal (solo al crear) -->
+      @if (!isEdit()) {
+        <div class="form-group">
+          <label class="form-label">Canal <span class="required">*</span></label>
+          <select class="form-input" formControlName="channel">
+            <option value="Email">Email</option>
+            <option value="SMS">SMS</option>
+          </select>
+        </div>
+      }
+
+      <!-- Tipo de notificación -->
+      <div class="form-group">
+        <label class="form-label">Tipo de notificación <span class="required">*</span></label>
+        <select class="form-input" formControlName="notificationType">
+          <option value="">Seleccionar tipo...</option>
+          @for (opt of NOTIFICATION_TEMPLATE_TYPES; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Nombre -->
+      <div class="form-group">
+        <label class="form-label">Nombre de la plantilla <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-input"
+          formControlName="displayName"
+          placeholder="Ej: Recordatorio de cita (Email)" />
+      </div>
+    </div>
+
+    <!-- Asunto (solo Email) -->
+    @if (isEmail()) {
+      <div class="form-group">
+        <label class="form-label">Asunto del email</label>
+        <input
+          type="text"
+          class="form-input"
+          formControlName="subject"
+          placeholder="Ej: Recordatorio de tu cita dental el [appointmentDate]" />
+      </div>
+    }
+
+    <!-- Cuerpo del template -->
+    @if (!isWhatsApp()) {
+      <div class="form-group">
+        <div class="body-label-row">
+          <label class="form-label">Cuerpo del mensaje <span class="required">*</span></label>
+          <span class="form-label-hint">Haz clic en una variable para insertarla</span>
+        </div>
+
+        <!-- Chips de variables disponibles -->
+        <div class="variable-chips">
+          @for (v of TEMPLATE_SYSTEM_VARIABLES; track v.key) {
+            <button type="button" class="variable-chip" (click)="insertVariable(v.key)" title="{{ v.label }}">
+              {{ v.key }}
+            </button>
+          }
+        </div>
+
+        <textarea
+          #bodyRef
+          class="form-input form-textarea"
+          rows="7"
+          formControlName="bodyTemplate"
+          placeholder="Escriba el cuerpo del mensaje. Haga clic en las variables de arriba para insertarlas.">
+        </textarea>
+      </div>
+    } @else {
+      <!-- WhatsApp: preview de solo lectura del contenido de Twilio -->
+      @if (modalData?.template?.cachedPreview) {
+        <div class="form-group">
+          <label class="form-label">Contenido del template (Twilio)</label>
+          <div class="whatsapp-preview-readonly">
+            {{ modalData!.template!.cachedPreview }}
+          </div>
+          <p class="form-hint">
+            <i class="fa-solid fa-circle-info"></i>
+            El contenido del template WhatsApp es gestionado por Twilio/Meta y no puede editarse desde aquí.
+          </p>
+        </div>
+      }
+    }
+
+    <!-- Predeterminada -->
+    <div class="form-group">
+      <label class="form-check">
+        <input type="checkbox" formControlName="isDefault" />
+        <span>Plantilla predeterminada para este tipo de notificación</span>
+      </label>
+    </div>
+
+  </form>
+
+  <div modal-footer>
+    <button type="button" class="btn btn-outline" (click)="onClose()" [disabled]="loading()">
+      <i class="fa-solid fa-times"></i>
+      Cancelar
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline btn-success"
+      (click)="onSubmit()"
+      [disabled]="loading() || form.invalid">
+      @if (loading()) {
+        <span class="btn-spinner"></span>
+        Guardando...
+      } @else {
+        <i class="fa-solid fa-save"></i>
+        {{ isEdit() ? 'Actualizar' : 'Crear Plantilla' }}
+      }
+    </button>
+  </div>
+
+</app-modal>

@@ -12,7 +12,7 @@
       </div>
     }
 
-    <!-- Patient Autocomplete -->
+    <!-- Selector de paciente -->
     <div class="form-group">
       <app-patient-autocomplete
         [required]="true"
@@ -22,7 +22,7 @@
       </app-patient-autocomplete>
     </div>
 
-    <!-- Patient contact info (read-only) -->
+    <!-- Info de contacto del paciente (solo lectura) -->
     @if (selectedPatient()) {
       <div class="patient-info">
         @if (selectedPatient()!.email) {
@@ -46,56 +46,240 @@
       </div>
     }
 
-    <!-- Channel -->
+    <!-- Canal -->
     <div class="form-group">
       <label class="form-label">Canal</label>
-      <select class="form-input" [ngModel]="channel()" (ngModelChange)="channel.set($event)">
+      <select
+        class="form-input"
+        [ngModel]="channel()"
+        (ngModelChange)="onChannelChange($event)"
+        [disabled]="sending()">
         <option value="Email">Email</option>
         <option value="WhatsApp">WhatsApp</option>
+        <option value="SMS">SMS</option>
       </select>
     </div>
 
-    <!-- Subject (only for Email) -->
-    @if (channel() === 'Email') {
-      <div class="form-group">
-        <label class="form-label">Asunto</label>
-        <input
-          type="text"
-          class="form-input"
-          placeholder="Asunto del email"
-          [ngModel]="subject()"
-          (ngModelChange)="subject.set($event)" />
-      </div>
+    <!-- ── WhatsApp / SMS: template obligatorio ── -->
+    @if (isTemplateChannel()) {
+
+      @if (templatesLoading()) {
+        <div class="loading-center">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span>Cargando templates...</span>
+        </div>
+
+      } @else if (!selectedTemplate()) {
+        <div class="template-list">
+          @for (tpl of templates(); track tpl.name) {
+            <button class="template-card" type="button" (click)="selectTemplate(tpl)" [disabled]="sending()">
+              <div class="template-card__header">
+                <span class="template-card__category">{{ tpl.category }}</span>
+              </div>
+              <h4 class="template-card__name">{{ tpl.displayName }}</h4>
+              <p class="template-card__preview">{{ tpl.preview }}</p>
+            </button>
+          } @empty {
+            <div class="empty-state-small">
+              <i class="fa-solid fa-inbox"></i>
+              <p>No hay templates disponibles para este canal</p>
+            </div>
+          }
+        </div>
+
+      } @else {
+        <div class="template-step">
+          <button class="btn-back" type="button" (click)="goBack()" [disabled]="sending()">
+            <i class="fa-solid fa-arrow-left"></i>
+            Cambiar template
+          </button>
+
+          <div class="selected-template-badge">
+            <i class="fa-solid fa-file-lines"></i>
+            {{ selectedTemplate()!.displayName }}
+          </div>
+
+          @if (userParameters().length > 0) {
+            <div class="params-section">
+              <h4 class="params-title">Parámetros del mensaje</h4>
+              @for (param of userParameters(); track param) {
+                <div class="form-group">
+                  <label class="form-label">{{ getParamLabel(param) }} <span class="required">*</span></label>
+                  <input
+                    [type]="getParamInputType(param)"
+                    class="form-input"
+                    [value]="templateParams()[param] || ''"
+                    (input)="onParamChange(param, $any($event.target).value)"
+                    [placeholder]="'Ingrese ' + getParamLabel(param).toLowerCase() + '...'"
+                    [step]="getParamInputAttrs(param).step ?? null"
+                    [min]="getParamInputAttrs(param).min ?? null"
+                    [disabled]="sending()" />
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="params-auto-note">
+              <i class="fa-solid fa-circle-check"></i>
+              Este mensaje se enviará automáticamente con los datos del paciente y del consultorio.
+            </div>
+          }
+
+          @if (previewMessage()) {
+            <div class="preview-section">
+              <h4 class="preview-title">
+                <i class="fa-solid fa-eye"></i>
+                Vista previa
+              </h4>
+              <div class="preview-bubble">
+                <p>{{ previewMessage() }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+    <!-- ── Email: selección de plantilla o libre ── -->
+    } @else {
+
+      @if (emailTemplatesLoading()) {
+        <div class="loading-center">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <span>Cargando plantillas...</span>
+        </div>
+
+      } @else if (showEmailTemplateStep()) {
+        <!-- Paso 1 Email: elegir plantilla -->
+        <div class="template-list">
+          @for (tpl of emailTemplates(); track tpl.id) {
+            <button class="template-card" type="button" (click)="selectEmailTemplate(tpl)" [disabled]="sending()">
+              <div class="template-card__header">
+                <span class="template-card__category">{{ tpl.notificationType }}</span>
+                @if (tpl.isDefault) {
+                  <span class="template-card__default">Predeterminada</span>
+                }
+              </div>
+              <h4 class="template-card__name">{{ tpl.displayName }}</h4>
+              @if (tpl.subject) {
+                <p class="template-card__preview">{{ tpl.subject }}</p>
+              }
+            </button>
+          }
+        </div>
+        <button class="btn-skip-template" type="button" (click)="skipEmailTemplate.set(true)" [disabled]="sending()">
+          <i class="fa-solid fa-pen"></i>
+          Escribir desde cero
+        </button>
+
+      } @else {
+        <!-- Paso 2 Email -->
+        @if (selectedEmailTemplate() || skipEmailTemplate()) {
+          <button class="btn-back" type="button" (click)="goBackEmailTemplate()" [disabled]="sending()">
+            <i class="fa-solid fa-arrow-left"></i>
+            {{ selectedEmailTemplate() ? 'Cambiar plantilla' : 'Elegir plantilla' }}
+          </button>
+        }
+
+        @if (selectedEmailTemplate()) {
+          <!-- Plantilla seleccionada: vista previa no editable con resolución de variables -->
+          <div class="selected-template-badge">
+            <i class="fa-solid fa-file-lines"></i>
+            {{ selectedEmailTemplate()!.displayName }}
+          </div>
+
+          @if (emailUserParameters().length > 0) {
+            <div class="params-section">
+              <h4 class="params-title">Parámetros del mensaje</h4>
+              @for (param of emailUserParameters(); track param) {
+                <div class="form-group">
+                  <label class="form-label">{{ getParamLabel(param) }} <span class="required">*</span></label>
+                  <input
+                    [type]="getParamInputType(param)"
+                    class="form-input"
+                    [value]="emailTemplateParams()[param] || ''"
+                    (input)="onEmailParamChange(param, $any($event.target).value)"
+                    [placeholder]="'Ingrese ' + getParamLabel(param).toLowerCase() + '...'"
+                    [step]="getParamInputAttrs(param).step ?? null"
+                    [min]="getParamInputAttrs(param).min ?? null"
+                    [disabled]="sending()" />
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="params-auto-note">
+              <i class="fa-solid fa-circle-check"></i>
+              Este mensaje se enviará automáticamente con los datos del paciente y del consultorio.
+            </div>
+          }
+
+          @if (emailPreview()) {
+            <div class="preview-section">
+              <h4 class="preview-title">
+                <i class="fa-solid fa-eye"></i>
+                Vista previa
+              </h4>
+              @if (emailPreview()!.subject) {
+                <div class="preview-subject">
+                  <span class="preview-subject__label">Asunto:</span> {{ emailPreview()!.subject }}
+                </div>
+              }
+              <div class="preview-bubble">
+                <p>{{ emailPreview()!.body }}</p>
+              </div>
+            </div>
+          }
+
+        } @else {
+          <!-- Escribir desde cero: campos editables libres -->
+          <div class="form-group">
+            <label class="form-label">Asunto</label>
+            <input
+              type="text"
+              class="form-input"
+              placeholder="Asunto del email"
+              [ngModel]="subject()"
+              (ngModelChange)="subject.set($event)"
+              [disabled]="sending()" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mensaje <span class="required">*</span></label>
+            <textarea
+              class="form-input form-textarea"
+              rows="5"
+              placeholder="Escriba el mensaje..."
+              [ngModel]="messageBody()"
+              (ngModelChange)="messageBody.set($event)"
+              [disabled]="sending()">
+            </textarea>
+          </div>
+        }
+      }
     }
 
-    <!-- Message -->
-    <div class="form-group">
-      <label class="form-label">Mensaje <span class="required">*</span></label>
-      <textarea
-        class="form-input form-textarea"
-        rows="5"
-        placeholder="Escriba el mensaje..."
-        [ngModel]="messageBody()"
-        (ngModelChange)="messageBody.set($event)">
-      </textarea>
-    </div>
-
-    <!-- Priority -->
+    <!-- Prioridad -->
     <div class="form-group">
       <label class="form-label">Prioridad</label>
-      <select class="form-input" [ngModel]="priority()" (ngModelChange)="priority.set(+$event)">
+      <select
+        class="form-input"
+        [ngModel]="priority()"
+        (ngModelChange)="priority.set(+$event)"
+        [disabled]="sending()">
         <option [value]="0">Normal</option>
         <option [value]="1">Alta</option>
         <option [value]="2">Urgente</option>
       </select>
     </div>
 
-    <!-- Actions -->
+    <!-- Acciones -->
     <div class="form-actions">
-      <button class="btn btn-outline" (click)="close()" [disabled]="sending()">
+      <button class="btn btn-outline" type="button" (click)="close()" [disabled]="sending()">
         Cancelar
       </button>
-      <button class="btn btn-primary" (click)="send()" [disabled]="sending() || !selectedPatient()">
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="send()"
+        [disabled]="sending() || !canSend()">
         @if (sending()) {
           <i class="fa-solid fa-spinner fa-spin"></i>
           Enviando...

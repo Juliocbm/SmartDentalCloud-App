@@ -241,6 +241,13 @@
           </div>
         }
 
+        <!-- Notification Templates Tab -->
+        @if (activeTab() === 'notification-templates') {
+          <div class="settings-section">
+            <app-notification-template-list />
+          </div>
+        }
+
         <!-- Facturación Tab -->
         @if (activeTab() === 'facturacion') {
           <div class="settings-section">
@@ -747,6 +754,34 @@
                         }
                       </div>
                     </div>
+
+                    <!-- Selección de plantilla por canal -->
+                    @if (appointmentReminderChannels().includes('email') && emailTemplatesForSettings().length > 0) {
+                      <div class="notification-template-select">
+                        <span class="notification-template-select__label"><i class="fa-solid fa-envelope"></i> Plantilla de Email:</span>
+                        <select class="form-select"
+                          [ngModel]="getTemplateSelection('AppointmentReminder', 'Email')"
+                          (ngModelChange)="onTemplateSelected('AppointmentReminder', 'Email', $event)">
+                          <option value="">— Contenido predeterminado del sistema —</option>
+                          @for (tpl of emailTemplatesForSettings(); track tpl.id) {
+                            <option [value]="tpl.id">{{ tpl.displayName }}</option>
+                          }
+                        </select>
+                      </div>
+                    }
+                    @if (appointmentReminderChannels().includes('whatsapp') && whatsAppTemplatesForSettings().length > 0) {
+                      <div class="notification-template-select">
+                        <span class="notification-template-select__label"><i class="fa-brands fa-whatsapp"></i> Plantilla de WhatsApp:</span>
+                        <select class="form-select"
+                          [ngModel]="getTemplateSelection('AppointmentReminder', 'WhatsApp')"
+                          (ngModelChange)="onTemplateSelected('AppointmentReminder', 'WhatsApp', $event)">
+                          <option value="">— Contenido predeterminado del sistema —</option>
+                          @for (tpl of whatsAppTemplatesForSettings(); track tpl.id) {
+                            <option [value]="tpl.id">{{ tpl.displayName }}</option>
+                          }
+                        </select>
+                      </div>
+                    }
                   </div>
                 }
               </div>
@@ -801,6 +836,34 @@
                         }
                       </select>
                     </div>
+
+                    <!-- Selección de plantilla por canal -->
+                    @if (postTreatmentChannels().includes('email') && emailTemplatesForSettings().length > 0) {
+                      <div class="notification-template-select">
+                        <span class="notification-template-select__label"><i class="fa-solid fa-envelope"></i> Plantilla de Email:</span>
+                        <select class="form-select"
+                          [ngModel]="getTemplateSelection('PostTreatment', 'Email')"
+                          (ngModelChange)="onTemplateSelected('PostTreatment', 'Email', $event)">
+                          <option value="">— Contenido predeterminado del sistema —</option>
+                          @for (tpl of emailTemplatesForSettings(); track tpl.id) {
+                            <option [value]="tpl.id">{{ tpl.displayName }}</option>
+                          }
+                        </select>
+                      </div>
+                    }
+                    @if (postTreatmentChannels().includes('whatsapp') && whatsAppTemplatesForSettings().length > 0) {
+                      <div class="notification-template-select">
+                        <span class="notification-template-select__label"><i class="fa-brands fa-whatsapp"></i> Plantilla de WhatsApp:</span>
+                        <select class="form-select"
+                          [ngModel]="getTemplateSelection('PostTreatment', 'WhatsApp')"
+                          (ngModelChange)="onTemplateSelected('PostTreatment', 'WhatsApp', $event)">
+                          <option value="">— Contenido predeterminado del sistema —</option>
+                          @for (tpl of whatsAppTemplatesForSettings(); track tpl.id) {
+                            <option [value]="tpl.id">{{ tpl.displayName }}</option>
+                          }
+                        </select>
+                      </div>
+                    }
                   </div>
                 }
               </div>
@@ -853,6 +916,34 @@
                         <span class="toggle-text">Enviar felicitación automática el día de cumpleaños</span>
                       </label>
                     </div>
+
+                    <!-- Selección de plantilla por canal -->
+                    @if (birthdayChannels().includes('email') && emailTemplatesForSettings().length > 0) {
+                      <div class="notification-template-select">
+                        <span class="notification-template-select__label"><i class="fa-solid fa-envelope"></i> Plantilla de Email:</span>
+                        <select class="form-select"
+                          [ngModel]="getTemplateSelection('Birthday', 'Email')"
+                          (ngModelChange)="onTemplateSelected('Birthday', 'Email', $event)">
+                          <option value="">— Contenido predeterminado del sistema —</option>
+                          @for (tpl of emailTemplatesForSettings(); track tpl.id) {
+                            <option [value]="tpl.id">{{ tpl.displayName }}</option>
+                          }
+                        </select>
+                      </div>
+                    }
+                    @if (birthdayChannels().includes('whatsapp') && whatsAppTemplatesForSettings().length > 0) {
+                      <div class="notification-template-select">
+                        <span class="notification-template-select__label"><i class="fa-brands fa-whatsapp"></i> Plantilla de WhatsApp:</span>
+                        <select class="form-select"
+                          [ngModel]="getTemplateSelection('Birthday', 'WhatsApp')"
+                          (ngModelChange)="onTemplateSelected('Birthday', 'WhatsApp', $event)">
+                          <option value="">— Contenido predeterminado del sistema —</option>
+                          @for (tpl of whatsAppTemplatesForSettings(); track tpl.id) {
+                            <option [value]="tpl.id">{{ tpl.displayName }}</option>
+                          }
+                        </select>
+                      </div>
+                    }
                   </div>
                 }
               </div>

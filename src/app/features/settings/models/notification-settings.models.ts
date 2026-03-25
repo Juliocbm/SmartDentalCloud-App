@@ -31,11 +31,14 @@ export interface NotificationSettings {
   channels: NotificationChannelSettings;
   types: NotificationTypeSettings;
   lastUpdated?: Date;
+  /** Clave: "AppointmentReminder_Email", valor: UUID del template seleccionado */
+  templateSelections?: Record<string, string>;
 }
 
 export interface UpdateNotificationSettingsRequest {
   channels: NotificationChannelSettings;
   types: NotificationTypeSettings;
+  templateSelections?: Record<string, string>;
 }
 
 export const REMINDER_HOURS_OPTIONS = [

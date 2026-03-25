@@ -8,6 +8,7 @@ import { DentistScheduleManagerComponent } from '../dentist-schedule-manager/den
 import { ScheduleExceptionsManagerComponent } from '../schedule-exceptions-manager/schedule-exceptions-manager';
 import { LocationListComponent } from '../location-list/location-list';
 import { ConsentTemplateListComponent } from '../consent-template-list/consent-template-list';
+import { NotificationTemplateListComponent } from '../notification-template-list/notification-template-list';
 import { ImageUploadComponent } from '../../../../shared/components/image-upload/image-upload';
 import { SettingsService } from '../../services/settings.service';
 import { CfdiService } from '../../../invoices/services/cfdi.service';
@@ -36,13 +37,15 @@ import {
   REMINDER_HOURS_OPTIONS,
   POST_TREATMENT_DAYS_OPTIONS
 } from '../../models/notification-settings.models';
+import { NotificationTemplateService } from '../../services/notification-template.service';
+import { NotificationTemplate } from '../../models/notification-template.models';
 
-type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'consent-templates' | 'facturacion' | 'smtp' | 'notifications' | 'branding' | 'domain' | 'inventory-alerts';
+type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | 'exceptions' | 'consent-templates' | 'notification-templates' | 'facturacion' | 'smtp' | 'notifications' | 'branding' | 'domain' | 'inventory-alerts';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent, ConsentTemplateListComponent, ImageUploadComponent, FormSelectComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent, ConsentTemplateListComponent, NotificationTemplateListComponent, ImageUploadComponent, FormSelectComponent],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss'
 })
@@ -54,6 +57,7 @@ export class SettingsPageComponent implements OnInit {
   private navigationState = inject(NavigationStateService);
   private router = inject(Router);
   private notificationService = inject(NotificationSettingsService);
+  private notificationTemplateService = inject(NotificationTemplateService);
 
   scheduleEditor = viewChild<WorkScheduleEditorComponent>('scheduleEditor');
   dentistScheduleManager = viewChild<DentistScheduleManagerComponent>('dentistScheduleManager');
@@ -130,6 +134,7 @@ export class SettingsPageComponent implements OnInit {
     { key: 'dentist-schedule', label: 'Horarios Dentistas', icon: 'fa-user-doctor' },
     { key: 'exceptions', label: 'Excepciones', icon: 'fa-calendar-xmark' },
     { key: 'consent-templates', label: 'Consentimientos', icon: 'fa-file-contract' },
+    { key: 'notification-templates', label: 'Plantillas Notificación', icon: 'fa-bells' },
     { key: 'facturacion', label: 'Facturación', icon: 'fa-file-invoice-dollar' },
     { key: 'smtp', label: 'Correo (SMTP)', icon: 'fa-envelope' },
     { key: 'notifications', label: 'Notificaciones', icon: 'fa-bell' },
@@ -565,7 +570,17 @@ export class SettingsPageComponent implements OnInit {
   REMINDER_HOURS_OPTIONS = REMINDER_HOURS_OPTIONS;
   POST_TREATMENT_DAYS_OPTIONS = POST_TREATMENT_DAYS_OPTIONS;
 
+  // Templates disponibles para seleccionar en cada tipo de notificación
+  emailTemplatesForSettings = signal<NotificationTemplate[]>([]);
+  whatsAppTemplatesForSettings = signal<NotificationTemplate[]>([]);
+  // Mapa de selecciones: "AppointmentReminder_Email" → "guid"
+  templateSelections = signal<Record<string, string>>({});
+
   loadNotificationSettings(): void {
+    // Cargar templates disponibles para los dropdowns de selección
+    this.notificationTemplateService.getAll('Email').subscribe(t => this.emailTemplatesForSettings.set(t));
+    this.notificationTemplateService.getAll('WhatsApp').subscribe(t => this.whatsAppTemplatesForSettings.set(t));
+
     this.notificationService.getSettings().subscribe({
       next: (settings) => {
         this.waChannelEnabled.set(settings.channels.whatsapp.isEnabled);
@@ -585,11 +600,36 @@ export class SettingsPageComponent implements OnInit {
         this.birthdayChannels.set([...settings.types.birthday.channels]);
         this.birthdaySendGreeting.set(settings.types.birthday.sendGreeting);
 
+        if (settings.templateSelections) {
+          // Convertir Guid? → string (filtrar nulls)
+          const sel: Record<string, string> = {};
+          for (const [key, val] of Object.entries(settings.templateSelections)) {
+            if (val) sel[key] = val as string;
+          }
+          this.templateSelections.set(sel);
+        }
+
         this.notificationLoaded.set(true);
       },
       error: () => {
         this.notificationLoaded.set(true);
       }
+    });
+  }
+
+  getTemplateSelection(notificationType: string, channel: string): string {
+    return this.templateSelections()[`${notificationType}_${channel}`] ?? '';
+  }
+
+  onTemplateSelected(notificationType: string, channel: string, templateId: string): void {
+    this.templateSelections.update(sel => {
+      const updated = { ...sel };
+      if (templateId) {
+        updated[`${notificationType}_${channel}`] = templateId;
+      } else {
+        delete updated[`${notificationType}_${channel}`];
+      }
+      return updated;
     });
   }
 
@@ -624,7 +664,8 @@ export class SettingsPageComponent implements OnInit {
           channels: this.birthdayChannels() as ('whatsapp' | 'email')[],
           sendGreeting: this.birthdaySendGreeting()
         }
-      }
+      },
+      templateSelections: this.templateSelections()
     };
 
     this.notificationService.updateSettings(settings).subscribe({

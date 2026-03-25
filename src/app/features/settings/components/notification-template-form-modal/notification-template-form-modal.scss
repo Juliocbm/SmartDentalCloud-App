@@ -1,0 +1,115 @@
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.required {
+  color: var(--error-500);
+}
+
+.form-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin: var(--spacing-xs) 0 0;
+
+  i { color: var(--primary-400); }
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    accent-color: var(--primary-500);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+}
+
+// ─── Área del cuerpo del template ─────────────────────────────────────────────
+
+.body-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--spacing-xs);
+}
+
+.form-label-hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+// ─── Chips de variables ───────────────────────────────────────────────────────
+
+.variable-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.variable-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--spacing-sm);
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-sm);
+  color: var(--primary-700);
+  font-size: var(--font-size-xs);
+  font-family: monospace;
+  cursor: pointer;
+  transition: all 0.1s ease;
+
+  &:hover {
+    background: var(--primary-100);
+    border-color: var(--primary-400);
+  }
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 140px;
+  font-family: inherit;
+}
+
+// ─── Preview WhatsApp (readonly) ──────────────────────────────────────────────
+
+.whatsapp-preview-readonly {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: #dcf8c6;
+  border-radius: var(--radius-md);
+  border-top-left-radius: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+  white-space: pre-line;
+  max-width: 90%;
+  margin-bottom: var(--spacing-xs);
+}
