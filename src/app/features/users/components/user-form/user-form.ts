@@ -11,6 +11,10 @@ import { Role } from '../../models/role.models';
 import { LocationSummary } from '../../../settings/models/location.models';
 import { UserFormContextService } from '../../services/user-form-context.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { markFormGroupTouched, applyServerErrors, isFieldInvalid, getFieldError } from '../../../../core/utils/form-error.utils';
+import { phoneValidator } from '../../../../core/validators/mx-validators';
+import { InputFormatDirective } from '../../../../shared/directives/input-format.directive';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 interface UserFormValue {
   name: string;
@@ -24,7 +28,7 @@ interface UserFormValue {
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, InputFormatDirective, FormAlertComponent],
   templateUrl: './user-form.html',
   styleUrls: ['./user-form.scss']
 })
@@ -79,7 +83,7 @@ export class UserFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      phoneNumber: [''],
+      phoneNumber: ['', [phoneValidator()]],
       specialty: [''],
       professionalLicense: ['']
     });
@@ -196,7 +200,7 @@ export class UserFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.userForm.invalid) {
-      this.markFormGroupTouched(this.userForm);
+      markFormGroupTouched(this.userForm);
       return;
     }
 
@@ -234,13 +238,7 @@ export class UserFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating user:', err);
-        if (err.status === 409) {
-          this.error.set('El email ya está registrado');
-        } else if (err.status === 400) {
-          this.error.set('Datos inválidos. Verifica el formulario');
-        } else {
-          this.error.set(getApiErrorMessage(err));
-        }
+        this.error.set(applyServerErrors(err, this.userForm));
         this.loading.set(false);
       }
     });
@@ -273,11 +271,7 @@ export class UserFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error updating user:', err);
-        if (err.status === 409) {
-          this.error.set('El email ya está registrado');
-        } else {
-          this.error.set(getApiErrorMessage(err));
-        }
+        this.error.set(applyServerErrors(err, this.userForm));
         this.loading.set(false);
       }
     });
@@ -312,23 +306,12 @@ export class UserFormComponent implements OnInit {
     }
   }
 
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
-    });
+  isFieldInvalid(field: string): boolean {
+    return isFieldInvalid(this.userForm, field);
   }
 
-  get nameControl() {
-    return this.userForm.get('name');
-  }
-
-  get emailControl() {
-    return this.userForm.get('email');
-  }
-
-  get passwordControl() {
-    return this.userForm.get('password');
+  getFieldError(field: string): string | null {
+    return getFieldError(this.userForm, field);
   }
 
   getRoleBadgeClass(roleName: string): string {

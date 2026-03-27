@@ -15,6 +15,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-treatment-plan-form',
@@ -27,7 +28,8 @@ import { FormSelectComponent, SelectOption } from '../../../../shared/components
     ServiceSelectComponent,
     ModalComponent,
     DatePickerComponent,
-    FormSelectComponent
+    FormSelectComponent,
+    FormAlertComponent
   ],
   templateUrl: './treatment-plan-form.html',
   styleUrl: './treatment-plan-form.scss'

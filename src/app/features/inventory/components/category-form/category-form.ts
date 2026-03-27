@@ -11,11 +11,12 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-category-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, FormSelectComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, FormSelectComponent, FormAlertComponent],
   templateUrl: './category-form.html',
   styleUrls: ['./category-form.scss']
 })

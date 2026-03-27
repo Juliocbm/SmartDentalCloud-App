@@ -12,11 +12,12 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-treatment-plan-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, CurrencyPipe, EmptyStateComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, CurrencyPipe, EmptyStateComponent, FormAlertComponent],
   templateUrl: './treatment-plan-dashboard.html',
   styleUrl: './treatment-plan-dashboard.scss'
 })

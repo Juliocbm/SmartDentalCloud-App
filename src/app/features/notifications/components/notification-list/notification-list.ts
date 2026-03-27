@@ -6,11 +6,12 @@ import { NotificationsApiService } from '../../services/notifications.service';
 import { AppNotification, NOTIFICATION_TYPE_CONFIG } from '../../models/notification.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-notification-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, EmptyStateComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, EmptyStateComponent, FormAlertComponent],
   templateUrl: './notification-list.html',
   styleUrl: './notification-list.scss'
 })

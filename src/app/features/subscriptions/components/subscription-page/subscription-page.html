@@ -192,12 +192,7 @@
             <label class="form-label">Datos de Tarjeta</label>
             <div id="stripe-card-element" class="stripe-card-input"></div>
           </div>
-          @if (checkoutError()) {
-            <div class="alert alert-error">
-              <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-              <span class="alert-message">{{ checkoutError() }}</span>
-            </div>
-          }
+          <app-form-alert [message]="checkoutError()" [dismissible]="false" />
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline" (click)="closeCheckout()" [disabled]="subscribing()">
@@ -231,12 +226,7 @@
             <label class="form-label">Nueva Tarjeta</label>
             <div id="stripe-payment-method-element" class="stripe-card-input"></div>
           </div>
-          @if (checkoutError()) {
-            <div class="alert alert-error">
-              <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-              <span class="alert-message">{{ checkoutError() }}</span>
-            </div>
-          }
+          <app-form-alert [message]="checkoutError()" [dismissible]="false" />
         </div>
         <div class="modal-footer">
           <button class="btn btn-outline" (click)="closePaymentMethodModal()" [disabled]="updatingPaymentMethod()">

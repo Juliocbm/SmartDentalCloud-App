@@ -1,4 +1,4 @@
-import { Injectable, Injector, inject, signal } from '@angular/core';
+import { Injectable, Injector, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
@@ -40,6 +40,7 @@ export class AuthService {
 
   currentUser = signal<UserInfo | null>(this.getUserFromStorage());
   isAuthenticated = signal<boolean>(this.hasValidToken());
+  mustChangePassword = computed(() => this.currentUser()?.mustChangePassword ?? false);
 
   private tokenCheckInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -109,6 +110,13 @@ export class AuthService {
 
   changePassword(request: ChangePasswordRequest): Observable<ChangePasswordResponse> {
     return this.apiService.post<ChangePasswordResponse>('/auth/change-password', request);
+  }
+
+  /** Actualiza la sesión con tokens limpios post-cambio forzado de contraseña */
+  updateSession(newSession: LoginResponse): void {
+    this.setSession(newSession);
+    this.currentUser.set(newSession.user);
+    this.isAuthenticated.set(true);
   }
 
   forgotPassword(request: ForgotPasswordRequest): Observable<{ message: string }> {
@@ -184,8 +192,28 @@ export class AuthService {
     // para que el interceptor siempre lo encuentre como primera opción
     localStorage.setItem(this.REMEMBER_ME_KEY, 'true');
     localStorage.setItem(this.TOKEN_KEY, accessToken);
+    // Establecer expiración (30 min, igual que login) para que hasValidToken()
+    // retorne true y el check periódico no fuerce logout
+    const expiry = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+    localStorage.setItem(this.TOKEN_EXPIRY_KEY, expiry);
     this.isAuthenticated.set(true);
-    this.currentUser.set(null); // se resolverá al navegar al dashboard
+    // Obtener info del usuario inmediatamente con el nuevo token
+    this.fetchCurrentUser().subscribe({
+      error: () => this.currentUser.set(null)
+    });
+  }
+
+  /**
+   * Obtiene la info del usuario autenticado desde el backend.
+   * Usado post-registro y como red de seguridad cuando currentUser es null pero hay token válido.
+   */
+  fetchCurrentUser(): Observable<UserInfo> {
+    return this.apiService.get<UserInfo>('/auth/me').pipe(
+      tap(user => {
+        this.currentUser.set(user);
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+      })
+    );
   }
 
   private getUserFromStorage(): UserInfo | null {

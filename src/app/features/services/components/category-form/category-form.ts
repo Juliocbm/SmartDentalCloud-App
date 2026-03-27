@@ -7,11 +7,12 @@ import { ServicesService } from '../../services/services.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-category-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, FormAlertComponent],
   templateUrl: './category-form.html',
   styleUrl: './category-form.scss'
 })

@@ -36,7 +36,7 @@
         type="text"
         class="form-input"
         placeholder="Ej: 64000"
-        maxlength="5"
+        appInputFormat="postalCode"
         [ngModel]="formPostalCode()"
         (ngModelChange)="formPostalCode.set($event)"
       />
@@ -62,6 +62,7 @@
         type="tel"
         class="form-input"
         placeholder="(81) 1234-5678"
+        appInputFormat="phone"
         [ngModel]="formPhone()"
         (ngModelChange)="formPhone.set($event)"
       />

@@ -16,6 +16,7 @@ export interface UserInfo {
   email: string;
   roles: string[];
   permissions: string[];
+  mustChangePassword: boolean;
 }
 
 export interface RefreshTokenRequest {
@@ -35,6 +36,7 @@ export interface ChangePasswordRequest {
 export interface ChangePasswordResponse {
   success: boolean;
   message: string;
+  newSession?: LoginResponse;
 }
 
 export interface ForgotPasswordRequest {

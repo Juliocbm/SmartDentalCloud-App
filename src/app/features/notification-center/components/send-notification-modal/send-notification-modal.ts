@@ -14,11 +14,12 @@ import { NotificationTemplate } from '../../../settings/models/notification-temp
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FeatureService } from '../../../../core/services/feature.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-send-notification-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent, PatientAutocompleteComponent, EmptyStateComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, PatientAutocompleteComponent, EmptyStateComponent, FormAlertComponent],
   templateUrl: './send-notification-modal.html',
   styleUrl: './send-notification-modal.scss'
 })

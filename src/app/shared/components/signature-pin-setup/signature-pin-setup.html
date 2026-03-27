@@ -36,7 +36,7 @@
         </button>
       </div>
       @if (pin().length > 0 && !pinValid()) {
-        <span class="form-error">
+        <span class="error-message">
           Debe contener al menos 6 caracteres, una mayúscula, una minúscula y un número
         </span>
       }
@@ -57,7 +57,7 @@
         </button>
       </div>
       @if (confirmPin().length > 0 && !pinsMatch()) {
-        <span class="form-error">Los PINs no coinciden</span>
+        <span class="error-message">Los PINs no coinciden</span>
       }
     </div>
   </div>

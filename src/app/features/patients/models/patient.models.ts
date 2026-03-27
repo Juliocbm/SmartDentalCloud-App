@@ -63,6 +63,21 @@ export interface CreatePatientRequest {
   maritalStatus?: string | null;
   emergencyContactName?: string | null;
   emergencyContactPhone?: string | null;
+  confirmDuplicates?: boolean;
+}
+
+export interface DuplicateWarning {
+  existingPatientId: string;
+  existingPatientName: string;
+  matchField: string;
+  matchValue: string;
+  message: string;
+}
+
+export interface CreatePatientResponse {
+  patient: Patient | null;
+  duplicateWarnings: DuplicateWarning[];
+  requiresConfirmation: boolean;
 }
 
 export interface UpdatePatientRequest {

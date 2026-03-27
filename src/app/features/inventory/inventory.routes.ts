@@ -91,6 +91,7 @@ export const INVENTORY_ROUTES: Routes = [
     children: [
       {
         path: '',
+        canActivate: [permissionGuard(PERMISSIONS.InventoryPurchaseOrders)],
         loadComponent: () => import('./components/purchase-order-list/purchase-order-list').then(m => m.PurchaseOrderListComponent)
       },
       {

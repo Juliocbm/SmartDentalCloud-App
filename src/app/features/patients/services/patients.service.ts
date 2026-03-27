@@ -5,6 +5,7 @@ import { ApiService, QueryParams } from '../../../core/services/api.service';
 import {
   Patient,
   CreatePatientRequest,
+  CreatePatientResponse,
   UpdatePatientRequest,
   UpdateMedicalHistoryRequest,
   UpdateTaxInfoRequest,
@@ -57,8 +58,8 @@ export class PatientsService {
     return this.api.get<Patient>(`${this.baseUrl}/${id}`);
   }
 
-  create(data: CreatePatientRequest): Observable<Patient> {
-    return this.api.post<Patient>(this.baseUrl, data);
+  create(data: CreatePatientRequest): Observable<CreatePatientResponse> {
+    return this.api.post<CreatePatientResponse>(this.baseUrl, data);
   }
 
   update(id: string, data: UpdatePatientRequest): Observable<void> {

@@ -14,11 +14,12 @@ import { PurchaseOrderItemModalComponent, PurchaseOrderItemFormData } from './pu
 import { Product } from '../../models/product.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-purchase-order-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, LocationAutocompleteComponent, SupplierAutocompleteComponent, PurchaseOrderItemModalComponent, DatePickerComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, LocationAutocompleteComponent, SupplierAutocompleteComponent, PurchaseOrderItemModalComponent, DatePickerComponent, FormAlertComponent],
   templateUrl: './purchase-order-form.html',
   styleUrls: ['./purchase-order-form.scss']
 })

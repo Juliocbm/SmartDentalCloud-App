@@ -36,10 +36,7 @@
       <p>Cargando datos del inventario...</p>
     </div>
   } @else if (error()) {
-    <div class="alert alert-error">
-      <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-      <span class="alert-message">{{ error() }}</span>
-    </div>
+    <app-form-alert [message]="error()" [dismissible]="false" />
   } @else {
     <!-- KPI Indicators -->
     <div class="kpi-grid">

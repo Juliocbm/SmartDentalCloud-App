@@ -14,11 +14,12 @@ import { TopProduct, ExpiringProduct, CategoryStockStatus, InventoryActivity, AC
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-inventory-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, EmptyStateComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, EmptyStateComponent, FormAlertComponent],
   templateUrl: './inventory-dashboard.html',
   styleUrls: ['./inventory-dashboard.scss']
 })

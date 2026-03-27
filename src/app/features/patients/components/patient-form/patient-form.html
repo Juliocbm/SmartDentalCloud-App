@@ -36,15 +36,7 @@
     }
 
     <!-- Error Alert -->
-    @if (error()) {
-      <div class="alert alert-error">
-        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-        <span class="alert-message">{{ error() }}</span>
-        <button class="alert-close" (click)="error.set(null)">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    }
+    <app-form-alert [message]="error()" (dismissed)="error.set(null)" />
 
     <!-- Form -->
     @if (!loading() || !isEditMode()) {
@@ -132,8 +124,8 @@
                   id="phoneNumber"
                   class="form-input"
                   formControlName="phoneNumber"
-                  placeholder="10 dígitos"
-                  maxlength="10"
+                  placeholder="(81) 1234-5678"
+                  appInputFormat="phone"
                   [class.input-error]="isFieldInvalid('phoneNumber')"
                 />
               </div>
@@ -172,8 +164,7 @@
                 class="form-input"
                 formControlName="curp"
                 placeholder="Ej: GARC850101HDFRRL09"
-                maxlength="18"
-                (input)="onCurpInput($event)"
+                appInputFormat="curp"
                 [class.input-error]="isFieldInvalid('curp')"
               />
               @if (isFieldInvalid('curp')) {
@@ -249,7 +240,7 @@
                   class="form-input"
                   formControlName="zipCode"
                   placeholder="5 dígitos"
-                  maxlength="5"
+                  appInputFormat="postalCode"
                   [class.input-error]="isFieldInvalid('zipCode')"
                 />
                 @if (isFieldInvalid('zipCode')) {
@@ -295,8 +286,8 @@
                     id="emergencyContactPhone"
                     class="form-input"
                     formControlName="emergencyContactPhone"
-                    placeholder="10 dígitos"
-                    maxlength="10"
+                    placeholder="(81) 1234-5678"
+                    appInputFormat="phone"
                     [class.input-error]="isFieldInvalid('emergencyContactPhone')"
                   />
                 </div>

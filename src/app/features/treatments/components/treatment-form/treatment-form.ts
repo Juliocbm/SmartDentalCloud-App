@@ -16,6 +16,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PatientDiagnosesService } from '../../../patients/services/patient-diagnoses.service';
 import { PatientDiagnosis } from '../../../patients/models/patient-diagnosis.models';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-treatment-form',
@@ -27,7 +28,8 @@ import { PatientDiagnosis } from '../../../patients/models/patient-diagnosis.mod
     PatientAutocompleteComponent,
     ServiceAutocompleteComponent,
     DatePickerComponent,
-    FormSelectComponent
+    FormSelectComponent,
+    FormAlertComponent
   ],
   templateUrl: './treatment-form.html',
   styleUrl: './treatment-form.scss'

@@ -1,5 +1,6 @@
 import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
@@ -73,6 +74,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
         return handle401(authService, req, next);
+      }
+      // Capa 3: Safety net — backend bloqueó por cambio de contraseña pendiente
+      if (error.status === 403 && error.error?.errorCode === 'ERR-4035') {
+        const router = inject(Router);
+        router.navigate(['/force-change-password']);
+        return throwError(() => error);
       }
       return throwError(() => error);
     })

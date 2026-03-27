@@ -27,15 +27,7 @@
 
   <div class="content-card">
     <!-- Error Alert -->
-    @if (error()) {
-      <div class="alert alert-error">
-        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-        <span class="alert-message">{{ error() }}</span>
-        <button class="alert-close" (click)="error.set(null)">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    }
+    <app-form-alert [message]="error()" (dismissed)="error.set(null)" />
 
     <!-- Form -->
     <form [formGroup]="roleForm" class="standard-form">
@@ -56,18 +48,11 @@
           type="text"
           formControlName="name"
           class="form-input"
-          [class.input-error]="nameControl?.invalid && nameControl?.touched"
+          [class.input-error]="isFieldInvalid('name')"
           placeholder="Ej: Auxiliar de Ortodoncia"
         />
-        @if (nameControl?.invalid && nameControl?.touched) {
-          <span class="error-message">
-            @if (nameControl?.errors?.['required']) {
-              El nombre es requerido
-            }
-            @if (nameControl?.errors?.['minlength']) {
-              Mínimo 3 caracteres
-            }
-          </span>
+        @if (isFieldInvalid('name')) {
+          <span class="error-message">{{ getFieldError('name') }}</span>
         }
         <p class="field-hint">
           <i class="fa-solid fa-lightbulb"></i>

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, permissionGuard } from './core/guards/auth.guard';
+import { forceChangePasswordGuard } from './core/guards/force-change-password.guard';
 import { featureGuard } from './core/guards/feature.guard';
 import { featuresLoaderGuard } from './core/guards/features-loader.guard';
 import { PERMISSIONS } from './core/services/permission.service';
@@ -48,9 +49,15 @@ export const routes: Routes = [
     title: 'Acceso Denegado'
   },
   {
+    path: 'force-change-password',
+    loadComponent: () => import('./features/auth/force-change-password/force-change-password').then(m => m.ForceChangePasswordComponent),
+    canActivate: [authGuard],
+    title: 'Cambiar Contraseña'
+  },
+  {
     path: '',
     loadComponent: () => import('./shared/components/layout/layout').then(m => m.LayoutComponent),
-    canActivate: [authGuard, featuresLoaderGuard],
+    canActivate: [authGuard, forceChangePasswordGuard, featuresLoaderGuard],
     children: [
       {
         path: '',

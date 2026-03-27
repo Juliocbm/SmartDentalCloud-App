@@ -23,18 +23,6 @@
   min-height: 100px;
 }
 
-.form-error {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--error-50);
-  border: 1px solid var(--error-200);
-  border-radius: var(--radius-md);
-  color: var(--error-700);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--spacing-md);
-}
 
 .patient-info {
   display: flex;

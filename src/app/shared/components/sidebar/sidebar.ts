@@ -154,7 +154,7 @@ export class SidebarComponent implements OnInit {
           requiredPermission: PERMISSIONS.InventoryView
         },
         { id: 'inventory-suppliers', icon: 'fa-solid fa-truck', label: 'Proveedores', route: '/inventory/suppliers', requiredPermission: PERMISSIONS.InventoryView },
-        { id: 'inventory-orders', icon: 'fa-solid fa-file-invoice', label: 'Órdenes de Compra', route: '/inventory/purchase-orders', requiredPermission: PERMISSIONS.InventoryView }
+        { id: 'inventory-orders', icon: 'fa-solid fa-file-invoice', label: 'Órdenes de Compra', route: '/inventory/purchase-orders', requiredPermission: PERMISSIONS.InventoryPurchaseOrders }
       ]
     },
     {

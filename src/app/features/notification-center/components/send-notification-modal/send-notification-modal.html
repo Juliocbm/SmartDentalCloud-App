@@ -5,12 +5,7 @@
   (closed)="close()">
 
   <div class="send-form">
-    @if (error()) {
-      <div class="form-error">
-        <i class="fa-solid fa-exclamation-circle"></i>
-        {{ error() }}
-      </div>
-    }
+    <app-form-alert [message]="error()" [dismissible]="false" />
 
     <!-- Selector de paciente -->
     <div class="form-group">

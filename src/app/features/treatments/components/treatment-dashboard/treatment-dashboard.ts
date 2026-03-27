@@ -10,11 +10,12 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-treatment-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, LineChartComponent, DateRangePickerComponent, EmptyStateComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, LineChartComponent, DateRangePickerComponent, EmptyStateComponent, FormAlertComponent],
   templateUrl: './treatment-dashboard.html',
   styleUrl: './treatment-dashboard.scss'
 })

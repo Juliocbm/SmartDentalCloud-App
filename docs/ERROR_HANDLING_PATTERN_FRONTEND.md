@@ -1,21 +1,40 @@
 # ERROR_HANDLING_PATTERN — Frontend Angular
 
-Patrón estándar para consumir y mostrar errores de la API en componentes Angular.
+Patron estandar para consumir y mostrar errores de la API en componentes Angular.
 
-> **Backend:** Ver `SmartDentalCloud-Api/docs/ERROR_HANDLING_PATTERN_BACKEND.md` para el formato `ApiErrorResponse` y catálogo de códigos.
+> **Backend:** Ver `SmartDentalCloud-Api/docs/ERROR_HANDLING_PATTERN_BACKEND.md` para el formato `ApiErrorResponse` y catalogo de codigos.
 
 ---
 
-## Archivos del patrón
+## Archivos del patron
 
-| Archivo | Propósito |
+| Archivo | Proposito |
 |---------|-----------|
 | `core/models/api-error.models.ts` | Interfaces: `ApiErrorResponse`, `ParsedApiError`, `ValidationErrorDetail` |
 | `core/utils/api-error.utils.ts` | `extractApiError()`, `getApiErrorMessage()` — parseo de errores HTTP |
-| `core/utils/form-error.utils.ts` | `isFieldInvalid()`, `getFieldError()`, `markFormGroupTouched()` — validación de formularios |
-| `core/interceptors/error.interceptor.ts` | Interceptor funcional: toast automático según status code |
+| `core/utils/form-error.utils.ts` | `isFieldInvalid()`, `getFieldError()`, `markFormGroupTouched()`, `applyServerErrors()` — validacion de formularios |
+| `core/interceptors/error.interceptor.ts` | Interceptor funcional: toast automatico solo para status 0 |
 | `core/services/notification.service.ts` | `NotificationService` — toasts con signals |
 | `shared/components/toast/` | Componente visual de toasts |
+| `shared/components/form-alert/form-alert.ts` | `FormAlertComponent` — banner inline reutilizable para errores/warnings en formularios |
+
+---
+
+## Matriz de decision: Donde mostrar cada error
+
+| Escenario | Donde se muestra | Metodo |
+|---|---|---|
+| Validacion de campo (cliente) | Inline bajo el campo (`<span class="error-message">`) | `isFieldInvalid()` + `getFieldError()` |
+| Validacion de campo (servidor) | Mismo span inline, auto-poblado | `applyServerErrors()` pone `serverError` en el control |
+| Error de API al enviar formulario | Banner inline arriba del form (`<app-form-alert>`) | `applyServerErrors()` retorna el mensaje general |
+| Error de carga de datos (lista/detalle) | `<app-empty-state type="error">` con boton reintentar | `getApiErrorMessage()` |
+| Exito (guardar, crear, eliminar) | Toast auto-dismiss 4s | `notifications.success()` |
+| Error en accion sin formulario (eliminar, toggle) | Toast persistente | `notifications.error(getApiErrorMessage(err))` |
+| Error de red (status 0) | Toast persistente global | `errorInterceptor` (automatico) |
+| Error de auth (401) | Redirect silencioso | `authInterceptor` (automatico) |
+| Confirmacion destructiva | Modal dialog | `notifications.confirm()` |
+
+**Regla simple:** Si hay un formulario visible -> errores inline (banner + campo). Si no hay formulario -> toast. Fallo de carga -> empty state inline.
 
 ---
 
@@ -23,13 +42,14 @@ Patrón estándar para consumir y mostrar errores de la API en componentes Angul
 
 ```
 HttpClient recibe error
-  → authInterceptor (401 → refresh token / redirect)
-  → errorInterceptor
-      → Solo status 0: toast "sin conexión"
-      → Re-lanza el error siempre
-  → Componente .subscribe({ error: ... })
-      → getApiErrorMessage(err) o extractApiError(err)
-      → this.error.set(message) (inline) o notifications.error(message) (toast)
+  -> authInterceptor (401 -> refresh token / redirect)
+  -> errorInterceptor
+      -> Solo status 0: toast "sin conexion"
+      -> Re-lanza el error siempre
+  -> Componente .subscribe({ error: ... })
+      -> applyServerErrors(err, form) (formularios)
+      -> getApiErrorMessage(err) (carga de datos, acciones sin form)
+      -> notifications.error() (acciones sin formulario visible)
 ```
 
 ---
@@ -38,36 +58,29 @@ HttpClient recibe error
 
 | Status | Interceptor | Componente |
 |--------|-------------|------------|
-| 0 | Toast error persistente (sin conexión) | — |
-| 400 | **No toast** | Muestra inline con `getApiErrorMessage()` o `applyServerErrors()` |
+| 0 | Toast error persistente (sin conexion) | — |
+| 400 | **No toast** | Muestra inline con `applyServerErrors()` |
 | 401 | **No toast** | `authInterceptor` maneja refresh/redirect |
-| 403 | **No toast** | Componente muestra toast o inline según contexto |
+| 403 | **No toast** | Componente muestra toast o inline segun contexto |
 | 404 | **No toast** | Muestra inline |
-| 409 | **No toast** | Componente muestra toast o inline según contexto |
-| 500+ | **No toast** | Componente muestra toast o inline según contexto |
-
-**Regla:** El interceptor SOLO muestra toast para errores de conexión (status 0) — donde ningún
-componente puede actuar. Para todos los demás errores, el componente es el único responsable
-del feedback al usuario. Esto evita toasts duplicados y permite mensajes con contexto específico.
+| 409 | **No toast** | Componente muestra inline via `applyServerErrors()` |
+| 500+ | **No toast** | Componente muestra inline o toast segun contexto |
 
 **IMPORTANTE:** No agregar toasts al interceptor para 400/403/404/409/500+. Los componentes
-ya manejan estos errores. Agregar toast en el interceptor causaría notificaciones duplicadas.
+ya manejan estos errores. Agregar toast en el interceptor causaria notificaciones duplicadas.
 
 ---
 
 ## Sistema de Toasts (NotificationService)
 
-| Tipo | Duración | Comportamiento |
+| Tipo | Duracion | Comportamiento |
 |------|----------|----------------|
 | `success` | 4s auto-dismiss | Desaparece solo |
 | `info` | 4s auto-dismiss | Desaparece solo |
 | `warning` | 5s auto-dismiss | Desaparece solo |
 | `error` | **Persistente** (duration=0) | El usuario debe cerrar manualmente |
 
-Todos los toasts tienen animación de entrada (slide-in) y salida (slide-out). El botón ✕ siempre está disponible para cierre manual.
-
 ```typescript
-// El interceptor usa esto automáticamente, no llamar directamente para errores HTTP
 this.notifications.success('Paciente creado exitosamente');
 this.notifications.error('Mensaje persistente hasta que el usuario cierre');
 this.notifications.warning('Advertencia auto-dismiss 5s');
@@ -75,69 +88,80 @@ this.notifications.warning('Advertencia auto-dismiss 5s');
 
 ---
 
-## Inline Error Alerts — HTML Estándar
+## FormAlertComponent — Banner inline reutilizable
 
-**Clase única:** `alert-error` (NO usar `alert-danger`).
+Componente compartido que reemplaza el HTML duplicado de banners de error.
+Ubicacion: `shared/components/form-alert/form-alert.ts`
 
-### Variante A: Dismissible (formularios, modales)
+### Inputs y Outputs
 
-Para errores que el usuario puede corregir y reintentar.
+| Propiedad | Tipo | Default | Descripcion |
+|-----------|------|---------|-------------|
+| `message` | `InputSignal<string \| null>` | `null` | Texto a mostrar. No renderiza nada si es null/empty |
+| `type` | `InputSignal<'error' \| 'warning' \| 'success' \| 'info'>` | `'error'` | Variante visual |
+| `dismissible` | `InputSignal<boolean>` | `true` | Muestra boton de cerrar |
+| `dismissed` | `OutputEmitterRef<void>` | — | Emite cuando el usuario cierra el banner |
 
-```html
-@if (error()) {
-  <div class="alert alert-error">
-    <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-    <span class="alert-message">{{ error() }}</span>
-    <button class="alert-close" (click)="error.set(null)">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
-  </div>
-}
-```
-
-### Variante B: No dismissible (dashboards, listas, auth)
-
-Para errores de carga de página donde no hay acción correctiva inline.
+### Uso
 
 ```html
-@if (error()) {
-  <div class="alert alert-error">
-    <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-    <span class="alert-message">{{ error() }}</span>
-  </div>
-}
+<!-- Formularios (dismissible) -->
+<app-form-alert [message]="error()" (dismissed)="error.set(null)" />
+
+<!-- Dashboards, listas, auth (no dismissible) -->
+<app-form-alert [message]="error()" [dismissible]="false" />
+
+<!-- Warning -->
+<app-form-alert [message]="warning()" type="warning" [dismissible]="false" />
 ```
 
-**Reglas del HTML:**
-- Siempre usar `alert-error` (nunca `alert-danger`)
-- Siempre usar `fa-circle-exclamation` como icono (nunca `fa-exclamation-circle` o `fa-triangle-exclamation`)
-- Siempre usar sub-clases `.alert-icon` y `.alert-message`
-- Close button con `.alert-close` solo en formularios/modales
+**NO** usar HTML raw de `.alert .alert-error`. Siempre usar `<app-form-alert>`.
 
 ---
 
-## Uso en componentes
+## Patron canonico: Formulario completo
 
-### Caso 1: Mensaje simple (banner/alert)
+Archivo de referencia gold standard: `features/patients/components/patient-form/patient-form.ts`
 
-El caso más común. Usa `getApiErrorMessage()` que retorna un `string` listo para mostrar.
+### TypeScript
 
 ```typescript
-import { getApiErrorMessage } from '@core/utils/api-error.utils';
+import { isFieldInvalid, getFieldError, markFormGroupTouched, applyServerErrors } from '@core/utils/form-error.utils';
+import { FormAlertComponent } from '@shared/components/form-alert/form-alert';
 
-@Component({ ... })
+@Component({
+  imports: [/* ..., */ FormAlertComponent],
+  // ...
+})
 export class ExampleFormComponent {
   error = signal<string | null>(null);
   loading = signal(false);
 
+  // Wrapper methods — delegan a las utilidades compartidas
+  isFieldInvalid(field: string): boolean {
+    return isFieldInvalid(this.form, field);
+  }
+
+  getFieldError(field: string): string | null {
+    return getFieldError(this.form, field);
+  }
+
   onSubmit(): void {
+    if (this.form.invalid) {
+      markFormGroupTouched(this.form);
+      return;
+    }
+
     this.loading.set(true);
     this.error.set(null);
 
     this.service.create(data).subscribe({
-      next: () => this.router.navigate(['/list']),
+      next: () => {
+        this.notifications.success('Recurso creado exitosamente');
+        this.router.navigate(['/list']);
+      },
       error: (err) => {
-        this.error.set(getApiErrorMessage(err));
+        this.error.set(applyServerErrors(err, this.form));
         this.loading.set(false);
       }
     });
@@ -145,61 +169,46 @@ export class ExampleFormComponent {
 }
 ```
 
-### Caso 2: Acceso a errores por campo (validación avanzada)
+### HTML
 
-Cuando se necesitan los errores individuales por campo, usar `extractApiError()`.
+```html
+<!-- Banner de error (arriba del form) -->
+<app-form-alert [message]="error()" (dismissed)="error.set(null)" />
 
-```typescript
-import { extractApiError } from '@core/utils/api-error.utils';
-
-error: (err) => {
-  const apiError = extractApiError(err);
-
-  // apiError.message → string concatenado para banner
-  // apiError.isValidation → true si hay errores de validación
-  // apiError.validationErrors → [{property, message}] detalle por campo
-  // apiError.formErrors → {fieldName: [messages]} agrupado por campo
-  // apiError.errorCode → 'ERR-4001' para lógica condicional
-
-  this.error.set(apiError.message);
-  this.loading.set(false);
-}
-```
-
-### Caso 3: Lógica condicional por tipo de error
-
-```typescript
-import { extractApiError } from '@core/utils/api-error.utils';
-
-error: (err) => {
-  const apiError = extractApiError(err);
-
-  if (apiError.errorCode === 'ERR-4091') {
-    this.error.set('Ya existe un registro con esos datos.');
-  } else {
-    this.error.set(apiError.message);
-  }
-
-  this.loading.set(false);
-}
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label class="form-label">Email <span class="required">*</span></label>
+    <input
+      type="email"
+      class="form-input"
+      formControlName="email"
+      [class.input-error]="isFieldInvalid('email')"
+    />
+    @if (isFieldInvalid('email')) {
+      <span class="error-message">{{ getFieldError('email') }}</span>
+    }
+  </div>
+</form>
 ```
 
 ---
 
-## Validación de formularios (form-error.utils.ts)
+## Validacion de formularios (form-error.utils.ts)
 
-Utilidades compartidas para validación client-side en formularios.
+### isFieldInvalid / getFieldError
+
+Utilidades compartidas para validacion client-side Y server-side en formularios.
 
 ```typescript
 import { isFieldInvalid, getFieldError, markFormGroupTouched } from '@core/utils/form-error.utils';
 
-// Verificar si un campo es inválido
-isFieldInvalid(this.form, 'email')   // → boolean
+// Verificar si un campo es invalido y ha sido tocado
+isFieldInvalid(this.form, 'email')   // -> boolean
 
 // Obtener mensaje de error del campo
-getFieldError(this.form, 'email')    // → 'Email inválido' | null
+getFieldError(this.form, 'email')    // -> 'Email invalido' | null
 
-// Con mensajes custom para validators específicos
+// Con mensajes custom para validators especificos
 getFieldError(this.form, 'amount', {
   min: () => 'El monto debe ser mayor a $0',
   max: () => `No puede exceder el saldo pendiente`
@@ -212,129 +221,12 @@ if (this.form.invalid) {
 }
 ```
 
-Mensajes default cubiertos: `required`, `minlength`, `maxlength`, `email`, `pattern`, `min`, `max`.
+Mensajes default cubiertos: `required`, `minlength`, `maxlength`, `email`, `pattern`, `min`, `max`, `serverError`, `curp`, `rfc`, `phone`, `postalCode`.
 
----
+### applyServerErrors
 
-## Interfaces
-
-### `ParsedApiError`
-
-```typescript
-interface ParsedApiError {
-  message: string;                        // Mensaje en español del backend
-  errorCode: string | null;               // 'ERR-4001', 'ERR-4041', etc.
-  statusCode: number;                     // 400, 404, 500, etc.
-  validationErrors: ValidationErrorDetail[]; // [{property, message}]
-  formErrors: Record<string, string[]>;   // {fieldName: [messages]}
-  isValidation: boolean;                  // true si hay validationErrors
-}
-```
-
-### `ValidationErrorDetail`
-
-```typescript
-interface ValidationErrorDetail {
-  property: string;        // Nombre del campo (camelCase)
-  message: string;         // Mensaje de error en español
-  attemptedValue?: unknown; // Valor que se intentó enviar
-}
-```
-
----
-
-## Reglas
-
-### Siempre usar las utilidades del patrón
-
-```typescript
-// ✅ Correcto
-import { getApiErrorMessage } from '@core/utils/api-error.utils';
-error: (err) => this.error.set(getApiErrorMessage(err))
-
-// ✅ Correcto — cuando se necesita detalle
-import { extractApiError } from '@core/utils/api-error.utils';
-error: (err) => {
-  const parsed = extractApiError(err);
-  this.error.set(parsed.message);
-}
-
-// ❌ Incorrecto — parseo manual, frágil, inconsistente
-error: (err) => this.error.set(err.error?.message || 'Error')
-
-// ❌ Incorrecto — acceso directo sin tipado
-error: (err) => console.log(err.error.validationErrors)
-```
-
-### Siempre limpiar el error antes de un nuevo request
-
-```typescript
-// ✅ Correcto
-onSubmit(): void {
-  this.loading.set(true);
-  this.error.set(null);       // Limpiar error previo
-  this.service.create(data).subscribe({ ... });
-}
-
-// ❌ Incorrecto — el error anterior persiste si el nuevo request tiene éxito
-onSubmit(): void {
-  this.loading.set(true);
-  this.service.create(data).subscribe({ ... });
-}
-```
-
-### Siempre resetear loading en el error callback
-
-```typescript
-// ✅ Correcto
-error: (err) => {
-  this.error.set(getApiErrorMessage(err));
-  this.loading.set(false);    // Siempre resetear
-}
-
-// ❌ Incorrecto — el botón queda deshabilitado eternamente
-error: (err) => {
-  this.error.set(getApiErrorMessage(err));
-  // loading nunca se resetea
-}
-```
-
-### No duplicar toasts que el interceptor ya maneja
-
-```typescript
-// ✅ Correcto — para 400 mostrar inline, el interceptor NO muestra toast
-error: (err) => {
-  this.error.set(getApiErrorMessage(err));
-}
-
-// ❌ Incorrecto — duplica el toast que el interceptor ya muestra para 403/500
-error: (err) => {
-  this.notificationService.error(getApiErrorMessage(err)); // Duplicado
-}
-```
-
-### Usar form-error.utils.ts para validación client-side
-
-```typescript
-// ✅ Correcto — utilidad compartida
-import { isFieldInvalid, getFieldError } from '@core/utils/form-error.utils';
-
-// En template: [class.input-error]="isFieldInvalid(form, 'email')"
-// En template: {{ getFieldError(form, 'email') }}
-
-// ❌ Incorrecto — implementar isFieldInvalid/getFieldError dentro del componente
-isFieldInvalid(field: string): boolean {
-  const f = this.form.get(field);
-  return !!(f && f.invalid && f.touched);
-}
-```
-
----
-
-## Integración de errores del servidor en FormGroup (applyServerErrors)
-
-Cuando el backend retorna `formErrors` (validación server-side), se pueden aplicar directamente
-al `FormGroup` para que `getFieldError()` / `isFieldInvalid()` los muestren automáticamente.
+Cuando el backend retorna `formErrors` (validacion server-side), se aplican directamente
+al `FormGroup` para que `getFieldError()` / `isFieldInvalid()` los muestren automaticamente.
 
 ```typescript
 import { applyServerErrors } from '@core/utils/form-error.utils';
@@ -349,12 +241,204 @@ error: (err) => {
 **Comportamiento:**
 1. Limpia errores `serverError` previos de todos los controles
 2. Extrae `formErrors` del backend (`{fieldName: [messages]}`)
-3. Aplica `serverError` como error de validación en cada control que coincida
+3. Aplica `serverError` como error de validacion en cada control que coincida
 4. Marca los controles afectados como `touched`
 5. Retorna el `message` general del backend para el banner inline
 
-El error `serverError` ya está incluido en `DEFAULT_ERROR_MESSAGES` de `getFieldError()`,
-por lo que se muestra automáticamente en los templates existentes.
+**Este es el patron preferido para TODOS los formularios.** No usar `getApiErrorMessage()` para errores de submit en formularios, ni hacer chequeos manuales de `err.status`.
+
+---
+
+## Clases CSS estandar
+
+| Clase | Elemento | Proposito |
+|-------|----------|-----------|
+| `.input-error` | `<input>`, `<select>`, `<textarea>` | Borde rojo en campo invalido |
+| `.error-message` | `<span>` debajo del campo | Texto de error de campo |
+| `.alert .alert-error` | Contenedor del banner | Usado internamente por `FormAlertComponent` |
+
+**NO** usar: `.form-error`, `[class.error]` para validacion de formularios, `.alert-danger`.
+
+---
+
+## Uso en componentes — por caso
+
+### Caso 1: Formulario con submit (patron preferido)
+
+Usa `applyServerErrors()` — maneja banner + errores por campo automaticamente.
+
+```typescript
+error: (err) => {
+  this.error.set(applyServerErrors(err, this.form));
+  this.loading.set(false);
+}
+```
+
+### Caso 2: Carga de datos (listas, detalles)
+
+Sin formulario, usa `getApiErrorMessage()` para el banner o empty state.
+
+```typescript
+error: (err) => {
+  this.error.set(getApiErrorMessage(err));
+  this.loading.set(false);
+}
+```
+
+### Caso 3: Accion sin formulario visible (eliminar, toggle, exportar)
+
+Usa toast porque no hay formulario donde mostrar el error inline.
+
+```typescript
+this.service.delete(id).subscribe({
+  next: () => this.notifications.success('Eliminado exitosamente'),
+  error: (err) => this.notifications.error(getApiErrorMessage(err))
+});
+```
+
+### Caso 4: Logica condicional por errorCode
+
+Solo cuando se necesita comportamiento especial (ej: conflicto de concurrencia).
+
+```typescript
+import { extractApiError } from '@core/utils/api-error.utils';
+
+error: (err) => {
+  const apiError = extractApiError(err);
+  if (apiError.errorCode === 'ERR-4091') {
+    this.handleConcurrencyConflict();
+    return;
+  }
+  this.error.set(applyServerErrors(err, this.form));
+  this.loading.set(false);
+}
+```
+
+---
+
+## Interfaces
+
+### `ParsedApiError`
+
+```typescript
+interface ParsedApiError {
+  message: string;                        // Mensaje en espanol del backend
+  errorCode: string | null;               // 'ERR-4001', 'ERR-4091', etc.
+  statusCode: number;                     // 400, 404, 500, etc.
+  validationErrors: ValidationErrorDetail[]; // [{property, message}]
+  formErrors: Record<string, string[]>;   // {fieldName: [messages]}
+  isValidation: boolean;                  // true si hay validationErrors
+}
+```
+
+### `ValidationErrorDetail`
+
+```typescript
+interface ValidationErrorDetail {
+  property: string;        // Nombre del campo (camelCase)
+  message: string;         // Mensaje de error en espanol
+  attemptedValue?: unknown; // Valor que se intento enviar
+}
+```
+
+---
+
+## Reglas
+
+### Siempre usar applyServerErrors() para errores de submit en formularios
+
+```typescript
+// Correcto — maneja banner + errores por campo automaticamente
+error: (err) => {
+  this.error.set(applyServerErrors(err, this.form));
+  this.loading.set(false);
+}
+
+// Incorrecto — pierde mapeo de errores a campos, duplica mensajes del servidor
+error: (err) => {
+  if (err.status === 409) {
+    this.error.set('El email ya esta registrado');
+  } else {
+    this.error.set(getApiErrorMessage(err));
+  }
+}
+```
+
+### Siempre usar wrapper methods para validacion en templates
+
+```typescript
+// Correcto — wrapper methods que delegan a utilidades compartidas
+isFieldInvalid(field: string): boolean {
+  return isFieldInvalid(this.form, field);
+}
+getFieldError(field: string): string | null {
+  return getFieldError(this.form, field);
+}
+
+// Incorrecto — getters por campo, verbose, no usa mensajes centralizados
+get emailControl() { return this.form.get('email'); }
+// Template: emailControl?.invalid && emailControl?.touched
+// Template: @if (emailControl?.errors?.['required']) { El email es requerido }
+```
+
+### Siempre usar FormAlertComponent para banners
+
+```html
+<!-- Correcto -->
+<app-form-alert [message]="error()" (dismissed)="error.set(null)" />
+
+<!-- Incorrecto — HTML duplicado -->
+@if (error()) {
+  <div class="alert alert-error">
+    <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+    <span class="alert-message">{{ error() }}</span>
+    <button class="alert-close" (click)="error.set(null)">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+}
+```
+
+### Siempre limpiar el error antes de un nuevo request
+
+```typescript
+// Correcto
+onSubmit(): void {
+  this.loading.set(true);
+  this.error.set(null);       // Limpiar error previo
+  this.service.create(data).subscribe({ ... });
+}
+```
+
+### Siempre resetear loading en el error callback
+
+```typescript
+// Correcto
+error: (err) => {
+  this.error.set(applyServerErrors(err, this.form));
+  this.loading.set(false);    // Siempre resetear
+}
+```
+
+### No duplicar toasts que el interceptor ya maneja
+
+El interceptor solo muestra toast para status 0 (sin conexion). Para todos los demas status,
+el componente es responsable. No agregar toasts al interceptor.
+
+### Usar markFormGroupTouched de la utilidad compartida
+
+```typescript
+// Correcto — import compartido
+import { markFormGroupTouched } from '@core/utils/form-error.utils';
+markFormGroupTouched(this.form);
+
+// Incorrecto — copia local privada
+private markFormGroupTouched(formGroup: FormGroup): void {
+  Object.keys(formGroup.controls).forEach(key => {
+    formGroup.get(key)?.markAsTouched();
+  });
+}
+```
 
 ---
 
@@ -362,32 +446,12 @@ por lo que se muestra automáticamente en los templates existentes.
 
 Todo `.subscribe({ error })` debe proveer feedback al usuario. Excepciones permitidas:
 
-| Excepción | Motivo |
+| Excepcion | Motivo |
 |-----------|--------|
-| Carga de work schedule / schedule exceptions | Degradación graceful — la UI funciona sin ellos |
-| Clinic settings en prescripción | Non-blocking con fallbacks explícitos |
-| SMTP config 404 en settings | Intencional — "no config" es estado válido |
-
-Para todo lo demás:
-```typescript
-// ✅ Operaciones de guardado — SIEMPRE notificar error
-error: (err) => {
-  this.notifications.error(getApiErrorMessage(err, 'Error al guardar'));
-  this.saving.set(false);
-}
-
-// ✅ Carga de datos — notificar si la UI queda vacía sin explicación
-error: (err) => {
-  this.notifications.error(getApiErrorMessage(err, 'Error al cargar datos'));
-  this.loading.set(false);
-}
-
-// ❌ NUNCA — silencioso sin feedback
-error: () => {
-  this.loading.set(false);
-}
-```
+| Carga de work schedule / schedule exceptions | Degradacion graceful — la UI funciona sin ellos |
+| Clinic settings en prescripcion | Non-blocking con fallbacks explicitos |
+| SMTP config 404 en settings | Intencional — "no config" es estado valido |
 
 ---
 
-**Última actualización:** Febrero 25, 2026
+**Ultima actualizacion:** Marzo 27, 2026

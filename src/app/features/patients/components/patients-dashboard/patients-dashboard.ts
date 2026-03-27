@@ -20,6 +20,7 @@ import {
   PATIENT_ALERT_CONFIG
 } from '../../models/patients-analytics.models';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 interface DashboardMetric {
   label: string;
@@ -35,7 +36,7 @@ interface DashboardMetric {
 @Component({
   selector: 'app-patients-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, EmptyStateComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, EmptyStateComponent, FormAlertComponent],
   templateUrl: './patients-dashboard.html',
   styleUrls: ['./patients-dashboard.scss']
 })
@@ -239,6 +240,7 @@ export class PatientsDashboardComponent implements OnInit {
   getBirthdayLabel(days: number): string {
     if (days === 0) return '¡Hoy!';
     if (days === 1) return 'Mañana';
+    if (days < 0) return `Hace ${Math.abs(days)} días`;
     return `En ${days} días`;
   }
 

@@ -15,10 +15,7 @@
   </app-page-header>
 
   @if (error()) {
-    <div class="alert alert-error">
-      <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-      <span class="alert-message">{{ error() }}</span>
-    </div>
+    <app-form-alert [message]="error()" [dismissible]="false" />
   } @else if (loading()) {
     <div class="loading-container">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>

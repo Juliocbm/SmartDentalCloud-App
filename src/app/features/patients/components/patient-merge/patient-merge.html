@@ -136,10 +136,7 @@
       </div>
 
       @if (primaryPatient() && duplicatePatient() && primaryPatient()!.id === duplicatePatient()!.id) {
-        <div class="alert alert-error">
-          <i class="fa-solid fa-exclamation-triangle"></i>
-          No puedes fusionar un paciente consigo mismo.
-        </div>
+        <app-form-alert [message]="'No puedes fusionar un paciente consigo mismo.'" [dismissible]="false" />
       }
 
       <div class="form-actions">
@@ -232,12 +229,7 @@
             </div>
           </div>
 
-          @if (mergeError()) {
-            <div class="alert alert-error">
-              <i class="fa-solid fa-exclamation-circle"></i>
-              {{ mergeError() }}
-            </div>
-          }
+          <app-form-alert [message]="mergeError()" [dismissible]="false" />
 
           <div class="form-actions">
             <button class="btn btn-outline" (click)="goBackToStep1()" [disabled]="merging()">

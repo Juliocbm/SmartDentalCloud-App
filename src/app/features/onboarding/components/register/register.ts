@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
@@ -6,12 +6,13 @@ import { OnboardingService } from '../../services/onboarding.service';
 import { RegisterTenantRequest, SubscriptionPlanDto } from '../../models/onboarding.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, FormSelectComponent],
+  imports: [CommonModule, FormsModule, RouterModule, FormSelectComponent, FormAlertComponent],
   templateUrl: './register.html',
   styleUrl: './register.scss'
 })
@@ -50,6 +51,17 @@ export class RegisterComponent implements OnInit {
   confirmPassword = signal('');
   // F-ON-001: Aceptación de términos y condiciones (requerimiento legal para SaaS)
   termsAccepted = signal(false);
+
+  // Validaciones de contraseña (deben coincidir con RegisterTenantCommandValidator del backend)
+  hasMinLength = computed(() => this.adminPassword().length >= 8);
+  hasUppercase = computed(() => /[A-Z]/.test(this.adminPassword()));
+  hasLowercase = computed(() => /[a-z]/.test(this.adminPassword()));
+  hasNumber    = computed(() => /[0-9]/.test(this.adminPassword()));
+  hasSpecial   = computed(() => /[\W_]/.test(this.adminPassword()));
+  passwordValid = computed(() =>
+    this.hasMinLength() && this.hasUppercase() && this.hasLowercase()
+    && this.hasNumber() && this.hasSpecial()
+  );
 
   // Form fields - Step 3 (Plan selection)
   plans = signal<SubscriptionPlanDto[]>([]);
@@ -106,7 +118,7 @@ export class RegisterComponent implements OnInit {
   canProceedStep2(): boolean {
     return this.adminName().trim().length > 0
       && this.adminEmail().trim().length > 0
-      && this.adminPassword().length >= 8
+      && this.passwordValid()
       && this.adminPassword() === this.confirmPassword()
       && this.termsAccepted(); // F-ON-001: términos y condiciones obligatorios
   }

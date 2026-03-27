@@ -37,12 +37,7 @@
         </div>
       </div>
 
-      @if (error()) {
-        <div class="alert alert-error">
-          <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-          <span class="alert-message">{{ error() }}</span>
-        </div>
-      }
+      <app-form-alert [message]="error()" [dismissible]="false" />
 
       <!-- Step 1: Tenant Info -->
       @if (currentStep() === 1) {
@@ -102,14 +97,39 @@
             <label class="form-label">Contraseña <span class="required">*</span></label>
             <input type="password" class="form-input" placeholder="Mínimo 8 caracteres"
               [ngModel]="adminPassword()" (ngModelChange)="adminPassword.set($event)" />
-            <span class="form-hint">Debe incluir mayúscula, minúscula, número y carácter especial</span>
+            @if (adminPassword().length > 0) {
+              <div class="password-rules">
+                <span class="rule" [class.valid]="hasMinLength()" [class.invalid]="!hasMinLength()">
+                  <i class="fa-solid" [class.fa-check]="hasMinLength()" [class.fa-xmark]="!hasMinLength()"></i>
+                  Mínimo 8 caracteres
+                </span>
+                <span class="rule" [class.valid]="hasUppercase()" [class.invalid]="!hasUppercase()">
+                  <i class="fa-solid" [class.fa-check]="hasUppercase()" [class.fa-xmark]="!hasUppercase()"></i>
+                  Al menos una mayúscula
+                </span>
+                <span class="rule" [class.valid]="hasLowercase()" [class.invalid]="!hasLowercase()">
+                  <i class="fa-solid" [class.fa-check]="hasLowercase()" [class.fa-xmark]="!hasLowercase()"></i>
+                  Al menos una minúscula
+                </span>
+                <span class="rule" [class.valid]="hasNumber()" [class.invalid]="!hasNumber()">
+                  <i class="fa-solid" [class.fa-check]="hasNumber()" [class.fa-xmark]="!hasNumber()"></i>
+                  Al menos un número
+                </span>
+                <span class="rule" [class.valid]="hasSpecial()" [class.invalid]="!hasSpecial()">
+                  <i class="fa-solid" [class.fa-check]="hasSpecial()" [class.fa-xmark]="!hasSpecial()"></i>
+                  Al menos un carácter especial
+                </span>
+              </div>
+            } @else {
+              <span class="form-hint">Debe incluir mayúscula, minúscula, número y carácter especial</span>
+            }
           </div>
           <div class="form-group">
             <label class="form-label">Confirmar Contraseña <span class="required">*</span></label>
             <input type="password" class="form-input" placeholder="Repite la contraseña"
               [ngModel]="confirmPassword()" (ngModelChange)="confirmPassword.set($event)" />
             @if (confirmPassword() && adminPassword() !== confirmPassword()) {
-              <span class="form-error">Las contraseñas no coinciden</span>
+              <span class="error-message">Las contraseñas no coinciden</span>
             }
           </div>
           <!-- F-ON-001: Términos y condiciones — requerimiento legal SaaS -->

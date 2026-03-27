@@ -5,12 +5,14 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NavigationStateService } from '../../../core/services/navigation-state.service';
 import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle';
+import { FormAlertComponent } from '../../../shared/components/form-alert/form-alert';
 import { getApiErrorMessage } from '../../../core/utils/api-error.utils';
+import { markFormGroupTouched, isFieldInvalid, getFieldError } from '../../../core/utils/form-error.utils';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, ThemeToggleComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ThemeToggleComponent, FormAlertComponent],
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
 })
@@ -40,7 +42,7 @@ export class LoginComponent {
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
-      this.markFormGroupTouched(this.loginForm);
+      markFormGroupTouched(this.loginForm);
       return;
     }
 
@@ -53,11 +55,15 @@ export class LoginComponent {
     };
 
     this.authService.login(credentials, this.rememberMe()).subscribe({
-      next: () => {
-        const returnUrl = this.route.snapshot.queryParams['returnUrl']
-          || this.navigationState.getState()?.url
-          || '/dashboard';
-        this.router.navigateByUrl(returnUrl);
+      next: (response) => {
+        if (response.user.mustChangePassword) {
+          this.router.navigate(['/force-change-password']);
+        } else {
+          const returnUrl = this.route.snapshot.queryParams['returnUrl']
+            || this.navigationState.getState()?.url
+            || '/dashboard';
+          this.router.navigateByUrl(returnUrl);
+        }
       },
       error: (err) => {
         this.loading.set(false);
@@ -74,18 +80,11 @@ export class LoginComponent {
     this.showPassword.update(value => !value);
   }
 
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
-    });
+  isFieldInvalid(field: string): boolean {
+    return isFieldInvalid(this.loginForm, field);
   }
 
-  get emailControl() {
-    return this.loginForm.get('email');
-  }
-
-  get passwordControl() {
-    return this.loginForm.get('password');
+  getFieldError(field: string): string | null {
+    return getFieldError(this.loginForm, field);
   }
 }

@@ -45,10 +45,7 @@
       <p>Cargando datos de citas...</p>
     </div>
   } @else if (error()) {
-    <div class="alert alert-error">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      <span>{{ error() }}</span>
-    </div>
+    <app-form-alert [message]="error()" [dismissible]="false" />
   } @else {
     <!-- KPI Indicators -->
     <div class="kpi-grid">

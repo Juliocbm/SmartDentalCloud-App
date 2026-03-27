@@ -44,15 +44,7 @@
     }
 
     <!-- Error Alert -->
-    @if (error()) {
-      <div class="alert alert-error">
-        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-        <span class="alert-message">{{ error() }}</span>
-        <button class="alert-close" (click)="error.set(null)">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    }
+    <app-form-alert [message]="error()" (dismissed)="error.set(null)" />
 
     <!-- Form -->
     @if (!loading() || !isEditMode()) {
@@ -73,14 +65,11 @@
               type="text"
               formControlName="name"
               class="form-input"
-              [class.input-error]="nameControl?.invalid && nameControl?.touched"
+              [class.input-error]="isFieldInvalid('name')"
               placeholder="Ej: Dr. Juan Pérez"
             />
-            @if (nameControl?.invalid && nameControl?.touched) {
-              <span class="error-message">
-                @if (nameControl?.errors?.['required']) { El nombre es requerido }
-                @if (nameControl?.errors?.['minlength']) { Mínimo 3 caracteres }
-              </span>
+            @if (isFieldInvalid('name')) {
+              <span class="error-message">{{ getFieldError('name') }}</span>
             }
           </div>
 
@@ -91,14 +80,11 @@
               type="email"
               formControlName="email"
               class="form-input"
-              [class.input-error]="emailControl?.invalid && emailControl?.touched"
+              [class.input-error]="isFieldInvalid('email')"
               placeholder="ejemplo@clinica.com"
             />
-            @if (emailControl?.invalid && emailControl?.touched) {
-              <span class="error-message">
-                @if (emailControl?.errors?.['required']) { El email es requerido }
-                @if (emailControl?.errors?.['email']) { Email inválido }
-              </span>
+            @if (isFieldInvalid('email')) {
+              <span class="error-message">{{ getFieldError('email') }}</span>
             }
           </div>
 
@@ -109,7 +95,8 @@
               type="tel"
               formControlName="phoneNumber"
               class="form-input"
-              placeholder="555-1234"
+              placeholder="(81) 1234-5678"
+              appInputFormat="phone"
             />
           </div>
         </div>
@@ -124,7 +111,7 @@
                   [type]="showPassword() ? 'text' : 'password'"
                   formControlName="password"
                   class="form-input"
-                  [class.input-error]="passwordControl?.invalid && passwordControl?.touched"
+                  [class.input-error]="isFieldInvalid('password')"
                   placeholder="Mínimo 8 caracteres"
                 />
                 <button
@@ -136,11 +123,8 @@
                   <i class="fa-solid" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
                 </button>
               </div>
-              @if (passwordControl?.invalid && passwordControl?.touched) {
-                <span class="error-message">
-                  @if (passwordControl?.errors?.['required']) { La contraseña es requerida }
-                  @if (passwordControl?.errors?.['minlength']) { Mínimo 8 caracteres }
-                </span>
+              @if (isFieldInvalid('password')) {
+                <span class="error-message">{{ getFieldError('password') }}</span>
               }
               <p class="field-hint">
                 <i class="fa-solid fa-lightbulb"></i>

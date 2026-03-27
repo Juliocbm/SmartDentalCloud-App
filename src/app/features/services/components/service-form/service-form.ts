@@ -10,6 +10,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import type { SelectOption } from '../../../../shared/components/form-select/form-select';
 import { SatClaveAutocompleteComponent, SatClaveItem } from '../../../../shared/components/sat-clave-autocomplete/sat-clave-autocomplete';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-service-form',
@@ -18,7 +19,8 @@ import { SatClaveAutocompleteComponent, SatClaveItem } from '../../../../shared/
     CommonModule,
     ReactiveFormsModule,
     PageHeaderComponent,
-    SatClaveAutocompleteComponent
+    SatClaveAutocompleteComponent,
+    FormAlertComponent
   ],
   templateUrl: './service-form.html',
   styleUrl: './service-form.scss'

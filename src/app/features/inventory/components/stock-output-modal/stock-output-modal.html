@@ -5,15 +5,7 @@
   [size]="'md'"
   (closed)="onCancel()">
 
-  @if (error()) {
-    <div class="alert alert-error">
-      <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-      <span class="alert-message">{{ error() }}</span>
-      <button class="alert-close" (click)="error.set(null)" type="button">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-  }
+  <app-form-alert [message]="error()" (dismissed)="error.set(null)" />
 
   <div class="product-info-card">
     <div class="info-row">

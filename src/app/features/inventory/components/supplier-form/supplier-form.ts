@@ -7,12 +7,16 @@ import { SuppliersService } from '../../services/suppliers.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PAYMENT_TERMS } from '../../models/supplier.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { isFieldInvalid, getFieldError } from '../../../../core/utils/form-error.utils';
+import { rfcValidator, phoneValidator } from '../../../../core/validators/mx-validators';
+import { InputFormatDirective } from '../../../../shared/directives/input-format.directive';
 import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-supplier-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, FormSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, FormSelectComponent, InputFormatDirective, FormAlertComponent],
   templateUrl: './supplier-form.html',
   styleUrls: ['./supplier-form.scss']
 })
@@ -50,9 +54,9 @@ export class SupplierFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
       contactName: ['', [Validators.maxLength(200)]],
       email: ['', [Validators.email, Validators.maxLength(200)]],
-      phone: ['', [Validators.maxLength(50)]],
+      phone: ['', [phoneValidator()]],
       address: ['', [Validators.maxLength(500)]],
-      taxId: ['', [Validators.maxLength(50)]],
+      taxId: ['', [rfcValidator()]],
       paymentTerms: [''],
       notes: ['', [Validators.maxLength(1000)]],
       isActive: [true]
@@ -134,13 +138,16 @@ export class SupplierFormComponent implements OnInit {
     this.router.navigate(['/inventory/suppliers']);
   }
 
-  hasError(field: string, error: string): boolean {
-    const control = this.supplierForm.get(field);
-    return !!(control && control.hasError(error) && (control.dirty || control.touched));
+  isFieldInvalid(field: string): boolean {
+    return isFieldInvalid(this.supplierForm, field);
   }
 
-  isFieldInvalid(field: string): boolean {
+  getFieldError(field: string): string {
+    return getFieldError(this.supplierForm, field) || '';
+  }
+
+  hasError(field: string, error: string): boolean {
     const control = this.supplierForm.get(field);
-    return !!(control && control.invalid && (control.dirty || control.touched));
+    return !!control && control.touched && control.hasError(error);
   }
 }

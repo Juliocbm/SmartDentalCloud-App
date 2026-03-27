@@ -4,12 +4,13 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle';
+import { FormAlertComponent } from '../../../shared/components/form-alert/form-alert';
 import { getApiErrorMessage } from '../../../core/utils/api-error.utils';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ThemeToggleComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ThemeToggleComponent, FormAlertComponent],
   templateUrl: './reset-password.html',
   styleUrl: './reset-password.scss'
 })

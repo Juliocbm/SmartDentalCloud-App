@@ -24,11 +24,12 @@ import {
 } from '../../models/appointments-analytics.models';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-appointments-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, DateRangePickerComponent, EmptyStateComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, DateRangePickerComponent, EmptyStateComponent, FormAlertComponent],
   templateUrl: './appointments-dashboard.html',
   styleUrls: ['./appointments-dashboard.scss']
 })

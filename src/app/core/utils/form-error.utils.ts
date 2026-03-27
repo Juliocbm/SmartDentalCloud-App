@@ -1,10 +1,12 @@
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { extractApiError } from './api-error.utils';
+import { MX_ERROR_MESSAGES } from '../validators/mx-validators';
 
 /**
  * Default error messages for common Angular validators.
- * Covers: required, minlength, maxlength, email, pattern, min, max, serverError.
+ * Covers: required, minlength, maxlength, email, pattern, min, max, serverError,
+ * plus Mexican document validators (curp, rfc, phone, postalCode).
  */
 const DEFAULT_ERROR_MESSAGES: Record<string, (errors: any) => string> = {
   required: () => 'Este campo es requerido',
@@ -15,6 +17,7 @@ const DEFAULT_ERROR_MESSAGES: Record<string, (errors: any) => string> = {
   min: (e) => `El valor mínimo es ${e.min}`,
   max: (e) => `El valor máximo es ${e.max}`,
   serverError: (e) => e.message || 'Error del servidor',
+  ...MX_ERROR_MESSAGES,
 };
 
 /**

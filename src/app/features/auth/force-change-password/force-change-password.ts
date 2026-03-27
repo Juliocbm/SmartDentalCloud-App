@@ -1,24 +1,22 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { PageHeaderComponent } from '../../../shared/components/page-header/page-header';
+import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle';
 import { FormAlertComponent } from '../../../shared/components/form-alert/form-alert';
 import { getApiErrorMessage } from '../../../core/utils/api-error.utils';
 
 @Component({
-  selector: 'app-change-password',
+  selector: 'app-force-change-password',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, FormAlertComponent],
-  templateUrl: './change-password.html',
-  styleUrl: './change-password.scss'
+  imports: [CommonModule, FormsModule, ThemeToggleComponent, FormAlertComponent],
+  templateUrl: './force-change-password.html',
+  styleUrl: './force-change-password.scss'
 })
-export class ChangePasswordComponent {
+export class ForceChangePasswordComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
-  private notifications = inject(NotificationService);
 
   currentPassword = signal('');
   newPassword = signal('');
@@ -37,8 +35,8 @@ export class ChangePasswordComponent {
   }
 
   isFormValid(): boolean {
-    return this.currentPassword().length > 0 &&
-      this.newPassword().length >= 6 &&
+    return this.currentPassword().length >= 1 &&
+      this.newPassword().length >= 8 &&
       this.newPassword() === this.confirmPassword();
   }
 
@@ -59,21 +57,27 @@ export class ChangePasswordComponent {
     }).subscribe({
       next: (result) => {
         if (result.success) {
-          this.notifications.success('Contraseña actualizada exitosamente');
+          // Si el backend envió tokens limpios, actualizar la sesión
+          if (result.newSession) {
+            this.authService.updateSession(result.newSession);
+          }
           this.router.navigate(['/dashboard']);
         } else {
           this.errorMessage.set(result.message || 'Error al cambiar la contraseña.');
+          this.loading.set(false);
         }
-        this.loading.set(false);
       },
       error: (err) => {
-        this.errorMessage.set(getApiErrorMessage(err, 'Error al cambiar la contraseña. Verifica tu contraseña actual.'));
+        this.errorMessage.set(getApiErrorMessage(err, 'Error al cambiar la contraseña.'));
         this.loading.set(false);
       }
     });
   }
 
-  goBack(): void {
-    this.router.navigate(['/dashboard']);
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {},
+      error: () => this.authService.handleLogout()
+    });
   }
 }

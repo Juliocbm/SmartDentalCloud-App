@@ -20,11 +20,12 @@ import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FeatureService } from '../../../../core/services/feature.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-dentist-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, DateRangePickerComponent, DentistAutocompleteComponent, EmptyStateComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, DateRangePickerComponent, DentistAutocompleteComponent, EmptyStateComponent, FormAlertComponent],
   templateUrl: './dentist-dashboard.html',
   styleUrl: './dentist-dashboard.scss'
 })

@@ -6,12 +6,15 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { PatientsService } from '../../services/patients.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { Patient, CreatePatientRequest, UpdatePatientRequest, MaritalStatus, Gender } from '../../models/patient.models';
+import { Patient, CreatePatientRequest, CreatePatientResponse, UpdatePatientRequest, MaritalStatus, Gender } from '../../models/patient.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { isFieldInvalid, getFieldError, markFormGroupTouched, applyServerErrors } from '../../../../core/utils/form-error.utils';
+import { curpValidator, phoneValidator, postalCodeValidator } from '../../../../core/validators/mx-validators';
+import { InputFormatDirective } from '../../../../shared/directives/input-format.directive';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { CatalogsService, StateDto, MunicipalityDto } from '../../../../core/services/catalogs.service';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 /** Mapa de retrocompatibilidad para valores legacy de Gender almacenados en BD */
 const GENDER_LEGACY_MAP: Record<string, string> = {
@@ -23,7 +26,7 @@ const GENDER_LEGACY_MAP: Record<string, string> = {
 @Component({
   selector: 'app-patient-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, DatePickerComponent, FormSelectComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, DatePickerComponent, FormSelectComponent, InputFormatDirective, FormAlertComponent],
   templateUrl: './patient-form.html',
   styleUrl: './patient-form.scss'
 })
@@ -91,20 +94,20 @@ export class PatientFormComponent implements OnInit {
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       dateOfBirth: [null],
       gender: [''],
-      phoneNumber: ['', [Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [phoneValidator()]],
       email: ['', [Validators.email]],
       address: [''],
       // NOM-024: Identificación oficial
-      curp: ['', [Validators.pattern(/^[A-Z]{4}\d{6}[HM][A-Z]{5}[0-9A-Z]\d$/)]],
+      curp: ['', [curpValidator()]],
       state: ['', [Validators.maxLength(100)]],
       municipality: ['', [Validators.maxLength(100)]],
       locality: ['', [Validators.maxLength(100)]],
-      zipCode: ['', [Validators.pattern(/^\d{5}$/)]],
+      zipCode: ['', [postalCodeValidator()]],
       occupation: ['', [Validators.maxLength(100)]],
       maritalStatus: [''],
       // Contacto de emergencia
       emergencyContactName: ['', [Validators.maxLength(200)]],
-      emergencyContactPhone: ['', [Validators.pattern(/^\d{10}$/)]]
+      emergencyContactPhone: ['', [phoneValidator()]]
     });
   }
 
@@ -209,10 +212,43 @@ export class PatientFormComponent implements OnInit {
 
   private createPatient(data: CreatePatientRequest): void {
     this.patientsService.create(data).subscribe({
-      next: (patient) => {
-        // PAC-BUG-007: toast de éxito en creación
-        this.notifications.success('Paciente creado exitosamente');
-        this.router.navigate(['/patients', patient.id]);
+      next: async (response: CreatePatientResponse) => {
+        if (response.requiresConfirmation) {
+          // Mostrar advertencias de duplicados y pedir confirmación
+          const warningMessages = response.duplicateWarnings
+            .map(w => `\u2022 ${w.message}`)
+            .join('\n');
+
+          const confirmed = await this.notifications.confirm(
+            `Se encontraron posibles duplicados:\n\n${warningMessages}\n\n¿Desea crear el paciente de todas formas?`,
+            {
+              title: 'Posible Duplicado Detectado',
+              confirmText: 'Crear de Todas Formas',
+              cancelText: 'Cancelar',
+              type: 'warning'
+            }
+          );
+
+          if (confirmed) {
+            this.patientsService.create({ ...data, confirmDuplicates: true }).subscribe({
+              next: (confirmedResponse: CreatePatientResponse) => {
+                this.notifications.success('Paciente creado exitosamente');
+                this.router.navigate(['/patients', confirmedResponse.patient!.id]);
+              },
+              error: (err) => {
+                this.logger.error('Error creating patient:', err);
+                this.error.set(applyServerErrors(err, this.patientForm));
+                this.loading.set(false);
+              }
+            });
+          } else {
+            this.loading.set(false);
+          }
+        } else {
+          // PAC-BUG-007: toast de éxito en creación
+          this.notifications.success('Paciente creado exitosamente');
+          this.router.navigate(['/patients', response.patient!.id]);
+        }
       },
       error: (err) => {
         this.logger.error('Error creating patient:', err);
@@ -286,21 +322,7 @@ export class PatientFormComponent implements OnInit {
     return isFieldInvalid(this.patientForm, fieldName);
   }
 
-  onCurpInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    input.value = input.value.toUpperCase();
-    this.patientForm.get('curp')?.setValue(input.value, { emitEvent: false });
-  }
-
   getFieldError(fieldName: string): string {
-    const patternMessages: Record<string, string> = {
-      phoneNumber: 'Formato inválido (10 dígitos)',
-      curp: 'CURP inválido (18 caracteres, ej: GARC850101HDFRRL09)',
-      zipCode: 'Código postal inválido (5 dígitos)',
-      emergencyContactPhone: 'Formato inválido (10 dígitos)'
-    };
-    return getFieldError(this.patientForm, fieldName, {
-      pattern: () => patternMessages[fieldName] || 'Formato inválido'
-    }) || '';
+    return getFieldError(this.patientForm, fieldName) || '';
   }
 }

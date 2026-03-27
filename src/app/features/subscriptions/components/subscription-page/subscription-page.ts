@@ -16,13 +16,14 @@ import { DateFormatService } from '../../../../core/services/date-format.service
 import { OnboardingService } from '../../../onboarding/services/onboarding.service';
 import { environment } from '../../../../../environments/environment';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 declare const Stripe: any;
 
 @Component({
   selector: 'app-subscription-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, FormAlertComponent],
   templateUrl: './subscription-page.html',
   styleUrl: './subscription-page.scss'
 })

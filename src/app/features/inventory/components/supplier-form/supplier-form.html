@@ -29,15 +29,7 @@
 
   <div class="content-card">
     <!-- Error Alert -->
-    @if (error()) {
-      <div class="alert alert-error">
-        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-        <span class="alert-message">{{ error() }}</span>
-        <button class="alert-close" (click)="error.set(null)">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    }
+    <app-form-alert [message]="error()" (dismissed)="error.set(null)" />
 
     <!-- Loading State -->
     @if (loading() && isEditMode()) {
@@ -70,11 +62,8 @@
               placeholder="Ej: PROV-001"
               [class.input-error]="isFieldInvalid('code')"
             />
-            @if (hasError('code', 'required')) {
-              <span class="error-message">El código es requerido</span>
-            }
-            @if (hasError('code', 'maxlength')) {
-              <span class="error-message">Máximo 50 caracteres</span>
+            @if (isFieldInvalid('code')) {
+              <span class="error-message">{{ getFieldError('code') }}</span>
             }
           </div>
 
@@ -89,11 +78,8 @@
               placeholder="Nombre del proveedor"
               [class.input-error]="isFieldInvalid('name')"
             />
-            @if (hasError('name', 'required')) {
-              <span class="error-message">El nombre es requerido</span>
-            }
-            @if (hasError('name', 'minlength')) {
-              <span class="error-message">Mínimo 3 caracteres</span>
+            @if (isFieldInvalid('name')) {
+              <span class="error-message">{{ getFieldError('name') }}</span>
             }
           </div>
 
@@ -106,7 +92,12 @@
               class="form-input"
               formControlName="taxId"
               placeholder="RFC del proveedor"
+              appInputFormat="rfc"
+              [class.input-error]="isFieldInvalid('taxId')"
             />
+            @if (isFieldInvalid('taxId')) {
+              <span class="error-message">{{ getFieldError('taxId') }}</span>
+            }
           </div>
 
           <!-- Condiciones de Pago -->
@@ -144,8 +135,8 @@
               placeholder="email@ejemplo.com"
               [class.input-error]="isFieldInvalid('email')"
             />
-            @if (hasError('email', 'email')) {
-              <span class="error-message">Email inválido</span>
+            @if (isFieldInvalid('email')) {
+              <span class="error-message">{{ getFieldError('email') }}</span>
             }
           </div>
 
@@ -157,8 +148,13 @@
               id="phone"
               class="form-input"
               formControlName="phone"
-              placeholder="Teléfono del proveedor"
+              placeholder="(81) 1234-5678"
+              appInputFormat="phone"
+              [class.input-error]="isFieldInvalid('phone')"
             />
+            @if (isFieldInvalid('phone')) {
+              <span class="error-message">{{ getFieldError('phone') }}</span>
+            }
           </div>
         </div>
 

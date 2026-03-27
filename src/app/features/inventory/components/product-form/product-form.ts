@@ -9,7 +9,9 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { Category } from '../../models/category.models';
 import { PRODUCT_UNITS } from '../../models/product.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { applyServerErrors, markFormGroupTouched, isFieldInvalid, getFieldError } from '../../../../core/utils/form-error.utils';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 interface ProductFormValue {
   code: string;
@@ -32,7 +34,7 @@ interface ProductFormValue {
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, FormSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, FormSelectComponent, FormAlertComponent],
   templateUrl: './product-form.html',
   styleUrls: ['./product-form.scss']
 })
@@ -140,7 +142,7 @@ export class ProductFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.productForm.invalid) {
-      this.markFormGroupTouched(this.productForm);
+      markFormGroupTouched(this.productForm);
       return;
     }
 
@@ -177,13 +179,7 @@ export class ProductFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating product:', err);
-        if (err.status === 409) {
-          this.error.set('Ya existe un producto con ese código');
-        } else if (err.status === 400) {
-          this.error.set('Datos inválidos. Verifica el formulario');
-        } else {
-          this.error.set(getApiErrorMessage(err));
-        }
+        this.error.set(applyServerErrors(err, this.productForm));
         this.loading.set(false);
       }
     });
@@ -214,11 +210,7 @@ export class ProductFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error updating product:', err);
-        if (err.status === 409) {
-          this.error.set('Ya existe un producto con ese código');
-        } else {
-          this.error.set(getApiErrorMessage(err));
-        }
+        this.error.set(applyServerErrors(err, this.productForm));
         this.loading.set(false);
       }
     });
@@ -228,19 +220,11 @@ export class ProductFormComponent implements OnInit {
     this.router.navigate(['/inventory/products']);
   }
 
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
-    });
+  isFieldInvalid(field: string): boolean {
+    return isFieldInvalid(this.productForm, field);
   }
 
-  // Getters para validación en template
-  get codeControl() { return this.productForm.get('code'); }
-  get nameControl() { return this.productForm.get('name'); }
-  get unitControl() { return this.productForm.get('unit'); }
-  get minStockControl() { return this.productForm.get('minStock'); }
-  get reorderPointControl() { return this.productForm.get('reorderPoint'); }
-  get reorderQuantityControl() { return this.productForm.get('reorderQuantity'); }
-  get unitCostControl() { return this.productForm.get('unitCost'); }
+  getFieldError(field: string): string | null {
+    return getFieldError(this.productForm, field);
+  }
 }

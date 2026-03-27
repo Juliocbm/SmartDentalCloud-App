@@ -6,11 +6,12 @@ import { PatientsService } from '../../services/patients.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-clinical-export',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, FormAlertComponent],
   templateUrl: './clinical-export.html',
   styleUrl: './clinical-export.scss'
 })

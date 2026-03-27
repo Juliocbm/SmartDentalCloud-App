@@ -29,15 +29,7 @@
 
   <div class="content-card">
     <!-- Error Alert -->
-    @if (error()) {
-      <div class="alert alert-error">
-        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-        <span class="alert-message">{{ error() }}</span>
-        <button class="alert-close" (click)="error.set(null)">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-    }
+    <app-form-alert [message]="error()" (dismissed)="error.set(null)" />
 
     <!-- Loading State -->
     @if (loading() && isEditMode()) {
@@ -68,13 +60,10 @@
               class="form-input"
               formControlName="code"
               placeholder="Ej: MAT-001"
-              [class.input-error]="codeControl?.invalid && codeControl?.touched"
+              [class.input-error]="isFieldInvalid('code')"
             />
-            @if (codeControl?.invalid && codeControl?.touched) {
-              <span class="error-message">
-                @if (codeControl?.errors?.['required']) { El código es requerido }
-                @if (codeControl?.errors?.['maxlength']) { Máximo 50 caracteres }
-              </span>
+            @if (isFieldInvalid('code')) {
+              <span class="error-message">{{ getFieldError('code') }}</span>
             }
           </div>
 
@@ -87,14 +76,10 @@
               class="form-input"
               formControlName="name"
               placeholder="Nombre del producto"
-              [class.input-error]="nameControl?.invalid && nameControl?.touched"
+              [class.input-error]="isFieldInvalid('name')"
             />
-            @if (nameControl?.invalid && nameControl?.touched) {
-              <span class="error-message">
-                @if (nameControl?.errors?.['required']) { El nombre es requerido }
-                @if (nameControl?.errors?.['minlength']) { Mínimo 3 caracteres }
-                @if (nameControl?.errors?.['maxlength']) { Máximo 200 caracteres }
-              </span>
+            @if (isFieldInvalid('name')) {
+              <span class="error-message">{{ getFieldError('name') }}</span>
             }
           </div>
 
@@ -115,7 +100,7 @@
               formControlName="unit"
               [options]="units"
               [required]="true"
-              [error]="unitControl?.invalid && unitControl?.touched ? 'La unidad es requerida' : null"
+              [error]="isFieldInvalid('unit') ? getFieldError('unit') : null"
               placeholder="Seleccionar unidad"
             ></app-form-select>
           </div>
@@ -154,10 +139,10 @@
               formControlName="minStock"
               min="0"
               step="1"
-              [class.input-error]="minStockControl?.invalid && minStockControl?.touched"
+              [class.input-error]="isFieldInvalid('minStock')"
             />
-            @if (minStockControl?.invalid && minStockControl?.touched) {
-              <span class="error-message">Debe ser ≥ 0</span>
+            @if (isFieldInvalid('minStock')) {
+              <span class="error-message">{{ getFieldError('minStock') }}</span>
             }
             <span class="field-hint">Umbral de alerta crítica</span>
           </div>
@@ -186,10 +171,10 @@
               formControlName="reorderPoint"
               min="0"
               step="1"
-              [class.input-error]="reorderPointControl?.invalid && reorderPointControl?.touched"
+              [class.input-error]="isFieldInvalid('reorderPoint')"
             />
-            @if (reorderPointControl?.invalid && reorderPointControl?.touched) {
-              <span class="error-message">Debe ser ≥ 0</span>
+            @if (isFieldInvalid('reorderPoint')) {
+              <span class="error-message">{{ getFieldError('reorderPoint') }}</span>
             }
             <span class="field-hint">Nivel para reordenar</span>
           </div>
@@ -204,10 +189,10 @@
               formControlName="reorderQuantity"
               min="1"
               step="1"
-              [class.input-error]="reorderQuantityControl?.invalid && reorderQuantityControl?.touched"
+              [class.input-error]="isFieldInvalid('reorderQuantity')"
             />
-            @if (reorderQuantityControl?.invalid && reorderQuantityControl?.touched) {
-              <span class="error-message">Debe ser > 0</span>
+            @if (isFieldInvalid('reorderQuantity')) {
+              <span class="error-message">{{ getFieldError('reorderQuantity') }}</span>
             }
             <span class="field-hint">Cantidad por nueva orden</span>
           </div>
@@ -226,11 +211,11 @@
                 formControlName="unitCost"
                 min="0"
                 step="0.01"
-                [class.input-error]="unitCostControl?.invalid && unitCostControl?.touched"
+                [class.input-error]="isFieldInvalid('unitCost')"
               />
             </div>
-            @if (unitCostControl?.invalid && unitCostControl?.touched) {
-              <span class="error-message">Debe ser ≥ 0</span>
+            @if (isFieldInvalid('unitCost')) {
+              <span class="error-message">{{ getFieldError('unitCost') }}</span>
             }
           </div>
 

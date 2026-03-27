@@ -16,6 +16,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { NavigationStateService } from '../../../../core/services/navigation-state.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
+import { InputFormatDirective } from '../../../../shared/directives/input-format.directive';
 import {
   TenantSettings,
   SmtpConfiguration,
@@ -45,7 +46,7 @@ type SettingsTab = 'general' | 'locations' | 'schedule' | 'dentist-schedule' | '
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent, ConsentTemplateListComponent, NotificationTemplateListComponent, ImageUploadComponent, FormSelectComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, WorkScheduleEditorComponent, DentistScheduleManagerComponent, ScheduleExceptionsManagerComponent, LocationListComponent, ConsentTemplateListComponent, NotificationTemplateListComponent, ImageUploadComponent, FormSelectComponent, InputFormatDirective],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.scss'
 })

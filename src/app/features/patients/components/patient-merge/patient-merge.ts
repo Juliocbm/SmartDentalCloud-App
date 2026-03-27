@@ -9,11 +9,12 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-patient-merge',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, FormAlertComponent],
   templateUrl: './patient-merge.html',
   styleUrl: './patient-merge.scss'
 })

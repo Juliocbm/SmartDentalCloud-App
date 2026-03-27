@@ -10,6 +10,7 @@ import { StockAdjustmentRequest } from '../../models/stock.models';
 import { LocationsService } from '../../../settings/services/locations.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 /**
  * Datos que recibe el modal de ajuste de stock
@@ -30,7 +31,7 @@ export interface StockAdjustmentModalData {
 @Component({
   selector: 'app-stock-adjustment-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent, FormSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, FormSelectComponent, FormAlertComponent],
   templateUrl: './stock-adjustment-modal.html',
   styleUrls: ['./stock-adjustment-modal.scss']
 })

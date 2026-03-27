@@ -138,10 +138,6 @@
   color: var(--text-muted);
 }
 
-.form-error {
-  font-size: var(--font-size-xs);
-  color: var(--error-600);
-}
 
 .subdomain-input {
   display: flex;
@@ -403,6 +399,35 @@
 
   i {
     margin-right: var(--spacing-sm);
+  }
+}
+
+// ===== Password Rules Checklist =====
+.password-rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+  margin-top: var(--spacing-2xs);
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  transition: color 0.2s ease;
+
+  &.valid {
+    color: var(--success-600);
+  }
+
+  &.invalid {
+    color: var(--text-muted);
+  }
+
+  i {
+    width: 14px;
+    text-align: center;
   }
 }
 

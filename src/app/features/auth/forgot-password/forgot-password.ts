@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle';
+import { FormAlertComponent } from '../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ThemeToggleComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ThemeToggleComponent, FormAlertComponent],
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.scss'
 })

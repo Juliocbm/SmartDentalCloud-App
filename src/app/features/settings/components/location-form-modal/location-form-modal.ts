@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { ModalComponent } from '../../../../shared/components/modal/modal';
+import { InputFormatDirective } from '../../../../shared/directives/input-format.directive';
 import { ModalRef, ModalConfig } from '../../../../shared/services/modal.service';
 import { LocationsService } from '../../services/locations.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -30,7 +31,7 @@ interface DoctorOption {
 @Component({
   selector: 'app-location-form-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, InputFormatDirective],
   templateUrl: './location-form-modal.html',
   styleUrl: './location-form-modal.scss'
 })

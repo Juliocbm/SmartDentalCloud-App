@@ -1,115 +1,128 @@
-<div class="login-container">
-  <div class="auth-theme-toggle">
-    <app-theme-toggle />
-  </div>
-  <div class="login-card">
-    <!-- Logo y Header -->
-    <div class="login-header">
-      <i class="fa-solid fa-tooth"></i>
-      <h1>SmartDental</h1>
-      <p>Bienvenido de vuelta</p>
+<div class="login-page">
+  <!-- Panel Izquierdo — Formulario -->
+  <div class="login-left">
+    <div class="login-left__top">
+      <div class="login-brand">
+        <i class="fa-solid fa-tooth"></i>
+        <span>SmartDental</span>
+      </div>
+      <div class="auth-theme-toggle">
+        <app-theme-toggle />
+      </div>
     </div>
 
-    <!-- Mensaje de Error -->
-    @if (errorMessage()) {
-      <div class="alert alert-error">
-        <i class="fa-solid fa-circle-exclamation alert-icon"></i>
-        <span class="alert-message">{{ errorMessage() }}</span>
-      </div>
-    }
+    <div class="login-left__content">
+      <h1 class="login-title">Iniciar sesión</h1>
 
-    <!-- Formulario de Login -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <!-- Email Field -->
-      <div class="form-group">
-        <label for="email" class="form-label">
-          <i class="fa-solid fa-envelope"></i>
-          Correo Electrónico
-        </label>
-        <input
-          type="email"
-          id="email"
-          formControlName="email"
-          class="form-input"
-          placeholder="usuario@ejemplo.com"
-          [class.error]="emailControl?.invalid && emailControl?.touched"
-        />
-        @if (emailControl?.invalid && emailControl?.touched) {
-          <div class="error-message">
-            @if (emailControl?.errors?.['required']) {
-              <span>El correo es requerido</span>
-            }
-            @if (emailControl?.errors?.['email']) {
-              <span>Ingresa un correo válido</span>
-            }
+      <!-- Mensaje de Error -->
+      <app-form-alert [message]="errorMessage()" [dismissible]="false" />
+
+      <!-- Formulario de Login -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Email Field -->
+        <div class="form-group">
+          <div class="input-icon-wrapper">
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              class="form-input"
+              placeholder="nombre@correo.com"
+              [class.input-error]="isFieldInvalid('email')"
+            />
+            <i class="fa-solid fa-envelope input-icon"></i>
           </div>
-        }
-      </div>
-
-      <!-- Password Field -->
-      <div class="form-group">
-        <label for="password" class="form-label">
-          <i class="fa-solid fa-lock"></i>
-          Contraseña
-        </label>
-        <div class="password-input-wrapper">
-          <input
-            [type]="showPassword() ? 'text' : 'password'"
-            id="password"
-            formControlName="password"
-            class="form-input"
-            placeholder="••••••••"
-            [class.error]="passwordControl?.invalid && passwordControl?.touched"
-          />
-          <button
-            type="button"
-            class="toggle-password-btn"
-            (click)="togglePasswordVisibility()"
-            tabindex="-1"
-          >
-            <i class="fa-solid" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
-          </button>
+          @if (isFieldInvalid('email')) {
+            <span class="error-message">{{ getFieldError('email') }}</span>
+          }
         </div>
-        @if (passwordControl?.invalid && passwordControl?.touched) {
-          <div class="error-message">
-            @if (passwordControl?.errors?.['required']) {
-              <span>La contraseña es requerida</span>
-            }
-            @if (passwordControl?.errors?.['minlength']) {
-              <span>Mínimo 6 caracteres</span>
-            }
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <div class="input-icon-wrapper">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              class="form-input"
+              placeholder="Contraseña"
+              [class.input-error]="isFieldInvalid('password')"
+            />
+            <button
+              type="button"
+              class="toggle-password-btn"
+              (click)="togglePasswordVisibility()"
+              tabindex="-1"
+            >
+              <i class="fa-solid" [ngClass]="showPassword() ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
           </div>
-        }
-      </div>
+          @if (isFieldInvalid('password')) {
+            <span class="error-message">{{ getFieldError('password') }}</span>
+          }
+        </div>
 
-      <!-- Recordar / Olvidé mi contraseña -->
-      <div class="form-options">
-        <label class="checkbox-label">
-          <input type="checkbox" [checked]="rememberMe()" (change)="rememberMe.set($any($event.target).checked)" />
-          <span>Recordarme</span>
-        </label>
-        <a routerLink="/forgot-password" class="forgot-password-link">¿Olvidaste tu contraseña?</a>
-      </div>
+        <!-- Recordarme -->
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" [checked]="rememberMe()" (change)="rememberMe.set($any($event.target).checked)" />
+            <span>Recordarme</span>
+          </label>
+        </div>
 
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        class="btn btn-primary btn-block btn-login"
-        [disabled]="loading()"
-      >
-        @if (loading()) {
-          <div class="spinner spinner-sm"></div>
-          <span>Iniciando sesión...</span>
-        } @else {
-          <i class="fa-solid fa-right-to-bracket"></i>
-          <span>Iniciar Sesión</span>
-        }
-      </button>
-    </form>
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn-login"
+          [disabled]="loading()"
+        >
+          @if (loading()) {
+            <div class="spinner spinner-sm"></div>
+            <span>Iniciando sesión...</span>
+          } @else {
+            <span>Continuar</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          }
+        </button>
+      </form>
+
+      <!-- Links secundarios -->
+      <div class="login-links">
+        <a routerLink="/forgot-password" class="login-link">Restablecer contraseña</a>
+      </div>
+    </div>
+
+    <!-- Banner Promocional -->
+    <div class="login-left__bottom">
+      <div class="promo-banner">
+        <div class="promo-banner__icon">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div class="promo-banner__content">
+          <strong>Nuevo: Agenda Inteligente con IA</strong>
+          <p>Optimiza tu agenda dental y reduce ausencias con nuestra última función. Descubre cómo.</p>
+          <a href="#" class="promo-banner__link">Más información</a>
+        </div>
+      </div>
+    </div>
 
     <!-- Footer -->
     <div class="login-footer">
-      <p>© 2026 SmartDental Cloud. Todos los derechos reservados.</p>
+      <p>© 2026 SmartDental Cloud</p>
+    </div>
+  </div>
+
+  <!-- Panel Derecho — Hero -->
+  <div class="login-right">
+    <div class="login-right__overlay">
+      <div class="login-right__content">
+        <h2>Simplifica la gestión de tu clínica dental</h2>
+        <p>Agenda, expedientes, facturación e inventario en una sola plataforma inteligente.</p>
+        <a href="https://smartdentalcloud.com" target="_blank" rel="noopener" class="btn-hero">
+          Más información
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
     </div>
   </div>
 </div>

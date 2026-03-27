@@ -22,11 +22,12 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 import { SatClaveAutocompleteComponent, SatClaveItem } from '../../../../shared/components/sat-clave-autocomplete/sat-clave-autocomplete';
 import { InvoiceFormContextService } from '../../services/invoice-form-context.service';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 @Component({
   selector: 'app-invoice-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent, ServiceSelectComponent, ModalComponent, FormSelectComponent, SatClaveAutocompleteComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, PatientAutocompleteComponent, ServiceSelectComponent, ModalComponent, FormSelectComponent, SatClaveAutocompleteComponent, FormAlertComponent],
   templateUrl: './invoice-form.html',
   styleUrl: './invoice-form.scss'
 })

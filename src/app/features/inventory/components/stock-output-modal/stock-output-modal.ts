@@ -9,6 +9,7 @@ import { LocationsService } from '../../../settings/services/locations.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 export interface StockOutputModalData {
   productId: string;
@@ -22,7 +23,7 @@ export interface StockOutputModalData {
 @Component({
   selector: 'app-stock-output-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent, FormSelectComponent],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, FormSelectComponent, FormAlertComponent],
   templateUrl: './stock-output-modal.html',
   styleUrls: ['./stock-output-modal.scss']
 })

@@ -7,6 +7,8 @@ import { RolesService } from '../../services/roles.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PermissionSelectorComponent } from '../../../../shared/components/permission-selector/permission-selector';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { applyServerErrors, markFormGroupTouched, isFieldInvalid, getFieldError } from '../../../../core/utils/form-error.utils';
+import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
 
 interface RoleFormValue {
   name: string;
@@ -16,7 +18,7 @@ interface RoleFormValue {
 @Component({
   selector: 'app-role-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PermissionSelectorComponent, PageHeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, PermissionSelectorComponent, PageHeaderComponent, FormAlertComponent],
   templateUrl: './role-form.html',
   styleUrls: ['./role-form.scss']
 })
@@ -89,7 +91,7 @@ export class RoleFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.roleForm.invalid) {
-      this.markFormGroupTouched(this.roleForm);
+      markFormGroupTouched(this.roleForm);
       return;
     }
 
@@ -123,11 +125,7 @@ export class RoleFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error creating role:', err);
-        if (err.status === 409) {
-          this.error.set('Ya existe un rol con ese nombre');
-        } else {
-          this.error.set(getApiErrorMessage(err));
-        }
+        this.error.set(applyServerErrors(err, this.roleForm));
         this.loading.set(false);
       }
     });
@@ -161,11 +159,7 @@ export class RoleFormComponent implements OnInit {
       },
       error: (err) => {
         this.logger.error('Error updating role:', err);
-        if (err.status === 409) {
-          this.error.set('Ya existe un rol con ese nombre');
-        } else {
-          this.error.set(getApiErrorMessage(err));
-        }
+        this.error.set(applyServerErrors(err, this.roleForm));
         this.loading.set(false);
       }
     });
@@ -175,18 +169,11 @@ export class RoleFormComponent implements OnInit {
     this.router.navigate(['/users/roles']);
   }
 
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
-    });
+  isFieldInvalid(field: string): boolean {
+    return isFieldInvalid(this.roleForm, field);
   }
 
-  get nameControl() {
-    return this.roleForm.get('name');
-  }
-
-  get descriptionControl() {
-    return this.roleForm.get('description');
+  getFieldError(field: string): string | null {
+    return getFieldError(this.roleForm, field);
   }
 }
