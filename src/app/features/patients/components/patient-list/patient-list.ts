@@ -16,11 +16,15 @@ import { PATIENT_APPOINTMENT_CONTEXT } from '../../../appointments/models/appoin
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { QuotaUsageIndicatorComponent } from '../../../../shared/components/quota-usage-indicator/quota-usage-indicator';
+import { EntitlementService } from '../../../../core/services/entitlement.service';
+import { ModalService } from '../../../../shared/services/modal.service';
+import { QuotaExceededModalComponent, QuotaExceededModalData } from '../../../../shared/components/quota-exceeded-modal/quota-exceeded-modal';
 
 @Component({
   selector: 'app-patient-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, QuotaUsageIndicatorComponent],
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.scss'
 })
@@ -32,6 +36,8 @@ export class PatientListComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   permissionService = inject(PermissionService);
   PERMISSIONS = PERMISSIONS;
+  private entitlementService = inject(EntitlementService);
+  private modalService = inject(ModalService);
   private appointmentContextService = inject(AppointmentFormContextService);
   private searchSubject = new Subject<string>();
 
@@ -233,5 +239,21 @@ export class PatientListComponent implements OnInit, OnDestroy {
       { header: 'Estado', accessor: (p) => p.isActive ? 'Activo' : 'Inactivo' },
       { header: 'Fecha Registro', accessor: (p) => p.createdAt ? new Date(p.createdAt).toLocaleDateString('es-MX') : '' }
     ], 'pacientes');
+  }
+
+  createPatient(): void {
+    const quota = this.entitlementService.getQuota('Quota:Patients');
+    if (quota && quota.limit !== null && quota.currentUsage >= quota.limit) {
+      this.modalService.open<QuotaExceededModalData>(QuotaExceededModalComponent, {
+        data: {
+          planName: this.entitlementService.planName(),
+          resourceType: 'Quota:Patients',
+          currentUsage: quota.currentUsage,
+          limit: quota.limit
+        }
+      });
+      return;
+    }
+    this.router.navigate(['/patients/new']);
   }
 }

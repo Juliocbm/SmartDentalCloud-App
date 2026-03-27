@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DentaCore Enterprise - UI Kit - Typography</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary-fixed-variant": "#26467d",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e2e2e6",
+                        "on-error": "#ffffff",
+                        "surface": "#f9f9fd",
+                        "surface-container-high": "#e7e8eb",
+                        "background": "#f9f9fd",
+                        "inverse-primary": "#adc6ff",
+                        "primary-container": "#0070eb",
+                        "inverse-on-surface": "#f0f0f4",
+                        "outline-variant": "#c1c6d7",
+                        "surface-container-low": "#f3f3f7",
+                        "surface-container": "#edeef1",
+                        "secondary-container": "#a1befd",
+                        "on-secondary-fixed": "#001a41",
+                        "tertiary-container": "#008566",
+                        "tertiary-fixed": "#8ff6d0",
+                        "on-primary-container": "#fefcff",
+                        "on-primary-fixed": "#001a41",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#00513d",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f9f9fd",
+                        "on-surface": "#191c1e",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#2e3133",
+                        "on-background": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#f5fff8",
+                        "on-secondary-container": "#2d4c83",
+                        "outline": "#717786",
+                        "on-tertiary-fixed": "#002117",
+                        "on-primary-fixed-variant": "#004493",
+                        "tertiary": "#006950",
+                        "primary-fixed-dim": "#adc6ff",
+                        "primary": "#0058bc",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "surface-variant": "#e2e2e6",
+                        "tertiary-fixed-dim": "#73d9b5",
+                        "surface-tint": "#005bc1",
+                        "secondary": "#405e96",
+                        "on-surface-variant": "#414755",
+                        "surface-dim": "#d9dadd"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9fd;
+            color: #191c1e;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar -->
+<header class="bg-white/85 dark:bg-slate-900/85 backdrop-blur-md docked full-width top-0 z-50 flex justify-between items-center w-full px-6 py-3 border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm dark:shadow-none">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-blue-700 dark:text-blue-400 font-headline">DentaCore Enterprise</span>
+<nav class="hidden md:flex items-center space-x-6">
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors font-label font-medium text-sm" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors font-label font-medium text-sm" href="#">Patients</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors font-label font-medium text-sm" href="#">Schedule</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors font-label font-medium text-sm" href="#">Inventory</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<span class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-full cursor-pointer transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-full cursor-pointer transition-colors" data-icon="settings">settings</span>
+<span class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-full cursor-pointer transition-colors" data-icon="help_outline">help_outline</span>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label font-semibold text-sm hover:opacity-80 transition-all duration-150">New Appointment</button>
+<img alt="Dr. Julianne Smith" class="w-8 h-8 rounded-full border border-outline-variant/20" data-alt="professional portrait of a female dentist in a modern clinical setting with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAB3lEDYgqnBnaTf-oRtEPb_6_4rUNwCSOXH7RDJxVAbk-hVlRprVY_LNdlIfeq_izJnawJubPnTZtJ6C91e3FDpb4-ZcoKx2w-DbfD-Jj8FYS5Jb7gNzDWGi0-mV-htCEacSxAFQHbrgiJaeY47M-R9RSFcTUbanwDOyDZ953Y8NwoQEyiJR9ZN9rS2Yq6fVZxQs-wKanh8F8Bfp_BlRF2OJwbOS1R-R2d0wB2DyJVTu0yERoBH9fPeQpmz96gky9c38dGhXPDElI"/>
+</div>
+</header>
+<main class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="bg-slate-50 dark:bg-slate-950 h-screen w-64 flex-shrink-0 sticky top-0 left-0 flex flex-col h-full p-4 space-y-2 border-r border-slate-200/30 dark:border-slate-800/30">
+<div class="px-2 py-4 mb-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" data-icon="dentistry">dentistry</span>
+</div>
+<div>
+<h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 font-headline">City Dental Care</h2>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-label">Premium Practice</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-transform duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="clinical_notes">clinical_notes</span>
+<span class="font-label text-sm">Clinical Chart</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-transform duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="settings_accessibility">settings_accessibility</span>
+<span class="font-label text-sm">Radiology</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-transform duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="assignment">assignment</span>
+<span class="font-label text-sm">Treatment Plans</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-transform duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="payments">payments</span>
+<span class="font-label text-sm">Billing</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-transform duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="insights">insights</span>
+<span class="font-label text-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:translate-x-1 transition-transform duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="groups">groups</span>
+<span class="font-label text-sm">Staff Portal</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-slate-200/50 dark:border-slate-800/50 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="contact_support">contact_support</span>
+<span class="font-label text-sm">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="inventory_2">inventory_2</span>
+<span class="font-label text-sm">Archive</span>
+</a>
+</div>
+<button class="mt-4 w-full bg-error text-on-error py-2 rounded-lg font-label font-medium text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-base" data-icon="emergency">emergency</span>
+                Emergency Entry
+            </button>
+</aside>
+<!-- Content Canvas -->
+<section class="flex-1 p-10 bg-surface">
+<div class="max-w-5xl mx-auto">
+<header class="mb-12">
+<h1 class="font-headline text-4xl font-extrabold tracking-tight text-on-surface mb-2">UI Kit - Typography</h1>
+<p class="font-body text-on-surface-variant max-w-2xl leading-relaxed">
+                        The typography system for DentaCore Enterprise balances editorial precision with clinical clarity. 
+                        We leverage <span class="font-semibold">Manrope</span> for display states and <span class="font-semibold">Inter</span> for data-heavy interactions.
+                    </p>
+</header>
+<div class="grid grid-cols-1 gap-16">
+<!-- Heading Styles -->
+<div class="space-y-8">
+<div class="flex items-baseline justify-between border-b border-outline-variant/10 pb-4">
+<h2 class="font-headline text-sm font-bold uppercase tracking-widest text-primary">Heading Styles (Manrope)</h2>
+<span class="text-xs text-outline font-label">Tonal Layer: Surface-Container-Lowest</span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-8 space-y-10 shadow-sm border border-outline-variant/5">
+<div class="flex flex-wrap items-end gap-6 group">
+<h1 class="font-headline text-6xl font-extrabold tracking-tighter">H1 Headline</h1>
+<span class="text-[10px] font-mono bg-slate-100 px-2 py-1 rounded text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Manrope 800 / 60px / -2%</span>
+</div>
+<div class="flex flex-wrap items-end gap-6 group">
+<h2 class="font-headline text-5xl font-bold tracking-tight">H2 Headline</h2>
+<span class="text-[10px] font-mono bg-slate-100 px-2 py-1 rounded text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Manrope 700 / 48px / -1.5%</span>
+</div>
+<div class="flex flex-wrap items-end gap-6 group">
+<h3 class="font-headline text-4xl font-bold">H3 Headline</h3>
+<span class="text-[10px] font-mono bg-slate-100 px-2 py-1 rounded text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Manrope 700 / 36px</span>
+</div>
+<div class="flex flex-wrap items-end gap-6 group">
+<h4 class="font-headline text-2xl font-semibold">H4 Headline</h4>
+<span class="text-[10px] font-mono bg-slate-100 px-2 py-1 rounded text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Manrope 600 / 24px</span>
+</div>
+<div class="flex flex-wrap items-end gap-6 group">
+<h5 class="font-headline text-xl font-semibold">H5 Headline</h5>
+<span class="text-[10px] font-mono bg-slate-100 px-2 py-1 rounded text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Manrope 600 / 20px</span>
+</div>
+<div class="flex flex-wrap items-end gap-6 group">
+<h6 class="font-headline text-lg font-medium">H6 Headline</h6>
+<span class="text-[10px] font-mono bg-slate-100 px-2 py-1 rounded text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Manrope 500 / 18px</span>
+</div>
+</div>
+</div>
+<!-- Body Text Variations & Paragraphs -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+<!-- Weight Variations -->
+<div class="space-y-8">
+<div class="flex items-baseline justify-between border-b border-outline-variant/10 pb-4">
+<h2 class="font-headline text-sm font-bold uppercase tracking-widest text-primary">Body Weights (Inter)</h2>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-8 space-y-6 shadow-sm border border-outline-variant/5">
+<div class="space-y-1">
+<p class="font-body text-base font-normal">Body Regular — The baseline for long-form content.</p>
+<span class="text-[9px] font-mono text-outline">Inter 400 / 16px</span>
+</div>
+<div class="space-y-1">
+<p class="font-body text-base font-medium">Body Medium — Used for emphasis in tables.</p>
+<span class="text-[9px] font-mono text-outline">Inter 500 / 16px</span>
+</div>
+<div class="space-y-1">
+<p class="font-body text-base font-semibold">Body Semibold — Primary interaction labels.</p>
+<span class="text-[9px] font-mono text-outline">Inter 600 / 16px</span>
+</div>
+<div class="space-y-1">
+<p class="font-body text-base font-bold text-on-surface">Body Bold — High-level clinical urgency.</p>
+<span class="text-[9px] font-mono text-outline">Inter 700 / 16px</span>
+</div>
+</div>
+<div class="flex items-baseline justify-between border-b border-outline-variant/10 pb-4 mt-8">
+<h2 class="font-headline text-sm font-bold uppercase tracking-widest text-primary">Labels &amp; Utility</h2>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-8 space-y-8 shadow-sm border border-outline-variant/5">
+<div class="space-y-1">
+<span class="text-xs font-label uppercase tracking-[0.1em] text-on-surface-variant font-bold">Overline Text</span>
+<p class="text-[9px] font-mono text-outline">Inter 700 / 12px / 10% Letter Spacing</p>
+</div>
+<div class="space-y-1">
+<p class="text-sm text-on-surface-variant font-label">Caption Text — Used for metadata and fine print details.</p>
+<p class="text-[9px] font-mono text-outline">Inter 400 / 14px</p>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-outline font-label">Micro-caption — Supplementary help text under inputs.</p>
+<p class="text-[9px] font-mono text-outline">Inter 400 / 12px</p>
+</div>
+</div>
+</div>
+<!-- Paragraph Layout -->
+<div class="space-y-8">
+<div class="flex items-baseline justify-between border-b border-outline-variant/10 pb-4">
+<h2 class="font-headline text-sm font-bold uppercase tracking-widest text-primary">Paragraph Layout</h2>
+</div>
+<div class="bg-surface-container-low rounded-xl p-10 shadow-sm border border-outline-variant/10">
+<h3 class="font-headline text-2xl font-bold mb-6 text-on-surface">The Anatomy of Precision</h3>
+<div class="space-y-6">
+<p class="font-body text-base leading-relaxed text-on-surface-variant">
+                                        Precision in dentistry requires a clear view. In our interface, we achieve this through 
+                                        the <span class="bg-primary/10 text-primary font-medium px-1 rounded">Editorial Paragraph pattern</span>. 
+                                        By utilizing a 1.625 line-height (leading-relaxed), we ensure that dense clinical notes 
+                                        remain scannable during high-pressure procedures.
+                                    </p>
+<p class="font-body text-base leading-relaxed text-on-surface-variant">
+                                        Unlike legacy systems that compress data into tight rows, DentaCore embraces negative space. 
+                                        A standard paragraph gutter is defined as 1.5rem (24px), providing the necessary separation 
+                                        to prevent visual fatigue during 10-hour surgical shifts.
+                                    </p>
+<ul class="space-y-3 pt-2">
+<li class="flex items-start gap-3 text-sm font-body text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Max line length of 65 characters for optimal readability.</span>
+</li>
+<li class="flex items-start gap-3 text-sm font-body text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Hanging punctuation to maintain structural integrity.</span>
+</li>
+<li class="flex items-start gap-3 text-sm font-body text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Variable weights to guide the eye toward critical diagnostic data.</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- Asymmetric Visual Hierarchy Example -->
+<div class="space-y-8">
+<div class="flex items-baseline justify-between border-b border-outline-variant/10 pb-4">
+<h2 class="font-headline text-sm font-bold uppercase tracking-widest text-primary">Hierarchy in Context</h2>
+</div>
+<div class="bg-white rounded-2xl p-1 overflow-hidden shadow-lg border border-outline-variant/10">
+<div class="grid grid-cols-1 md:grid-cols-3">
+<div class="p-10 col-span-2">
+<span class="text-xs font-bold uppercase tracking-widest text-primary mb-4 block">Patient Spotlight</span>
+<h2 class="font-headline text-5xl font-extrabold tracking-tighter text-on-surface mb-6">Julianne Smith, DDS</h2>
+<p class="font-body text-lg text-on-surface-variant leading-relaxed mb-8 max-w-xl">
+                                        "The Clinical Curator system has transformed how our residents interact with complex odontograms. 
+                                        By reducing the 'visual noise' of standard medical UI, our error rates in treatment planning have dropped by 14%."
+                                    </p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="format_quote" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+</div>
+<div>
+<p class="font-headline font-bold text-on-surface">Chief Medical Officer</p>
+<p class="font-label text-sm text-outline">Metropolitan Dental Institute</p>
+</div>
+</div>
+</div>
+<div class="bg-slate-50 p-10 flex flex-col justify-center">
+<div class="space-y-6">
+<div class="p-4 bg-white rounded-xl shadow-sm border border-outline-variant/5">
+<p class="text-[10px] font-bold uppercase text-outline mb-1">Active Cases</p>
+<p class="font-headline text-3xl font-bold text-primary">2,481</p>
+</div>
+<div class="p-4 bg-white rounded-xl shadow-sm border border-outline-variant/5">
+<p class="text-[10px] font-bold uppercase text-outline mb-1">System Health</p>
+<p class="font-headline text-3xl font-bold text-tertiary">99.9%</p>
+</div>
+<div class="p-4 bg-white rounded-xl shadow-sm border border-outline-variant/5">
+<p class="text-[10px] font-bold uppercase text-outline mb-1">Cloud Sync</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-blue-500" data-icon="cloud_done">cloud_done</span>
+<p class="font-label text-sm font-semibold">Ready</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer class="mt-20 pt-10 border-t border-outline-variant/20 flex justify-between items-center pb-10">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500">DC</div>
+<div>
+<p class="text-xs font-bold text-on-surface">DentaCore Style Guide</p>
+<p class="text-[10px] text-outline">v2.4.0 • Enterprise Edition</p>
+</div>
+</div>
+<div class="flex gap-6">
+<span class="text-[10px] font-mono text-outline uppercase tracking-tighter">Manrope Display</span>
+<span class="text-[10px] font-mono text-outline uppercase tracking-tighter">Inter Interface</span>
+</div>
+</footer>
+</div>
+</section>
+</main>
+</body></html>

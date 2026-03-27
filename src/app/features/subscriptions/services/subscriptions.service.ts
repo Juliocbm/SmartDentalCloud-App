@@ -82,4 +82,8 @@ export class SubscriptionsService {
   getFeatures(): Observable<SubscriptionFeaturesDto> {
     return this.api.get<SubscriptionFeaturesDto>('/subscriptions/features');
   }
+
+  getEntitlements(): Observable<import('../../../core/services/entitlement.service').TenantEntitlementSummary> {
+    return this.api.get('/subscriptions/entitlements');
+  }
 }

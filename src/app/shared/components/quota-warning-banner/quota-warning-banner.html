@@ -1,0 +1,15 @@
+@for (warning of warnings; track warning.key) {
+  <div class="quota-warning" [class.quota-warning--critical]="warning.usagePercent >= 95">
+    <div class="quota-warning__content">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>
+        <strong>{{ warning.label }}:</strong>
+        {{ warning.currentUsage }} de {{ warning.limit }} utilizados
+        ({{ warning.usagePercent }}%)
+      </span>
+    </div>
+    <a routerLink="/subscription" class="quota-warning__cta">
+      Ampliar plan <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+}

@@ -1,38 +1,14 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { ApiService } from './api.service';
+import { Injectable, inject, computed } from '@angular/core';
+import { EntitlementService } from './entitlement.service';
 
 export type PlanFeature =
   | 'Patients' | 'Appointments' | 'ClinicalRecords' | 'Odontogram'
-  | 'BasicInvoicing' | 'Prescriptions' | 'ConsultationNotes'
+  | 'BasicInvoicing' | 'Prescriptions' | 'ConsultationNotes' | 'InformedConsents'
   | 'Periodontogram' | 'Cephalometry' | 'TreatmentPlans'
   | 'Inventory' | 'PurchaseOrders' | 'AdvancedReports' | 'CfdiTimbrado'
-  | 'MultiLocation' | 'CustomDomain' | 'ApiAccess' | 'AuditLog';
-
-export interface FeatureAccessInfo {
-  planName: string;
-  features: PlanFeature[];
-}
-
-const CORE_FEATURES: PlanFeature[] = [
-  'Patients', 'Appointments', 'ClinicalRecords', 'Odontogram',
-  'BasicInvoicing', 'Prescriptions', 'ConsultationNotes'
-];
-
-const ADVANCED_FEATURES: PlanFeature[] = [
-  'Periodontogram', 'Cephalometry', 'TreatmentPlans',
-  'Inventory', 'PurchaseOrders', 'AdvancedReports', 'CfdiTimbrado',
-  'MultiLocation'
-];
-
-const ENTERPRISE_FEATURES: PlanFeature[] = [
-  'CustomDomain', 'ApiAccess', 'AuditLog'
-];
-
-const PLAN_FEATURES_MAP: Record<string, PlanFeature[]> = {
-  'Básico': [...CORE_FEATURES],
-  'Profesional': [...CORE_FEATURES, ...ADVANCED_FEATURES],
-  'Empresarial': [...CORE_FEATURES, ...ADVANCED_FEATURES, ...ENTERPRISE_FEATURES]
-};
+  | 'WhatsAppMessaging' | 'DataExport'
+  | 'MultiLocation' | 'CustomDomain' | 'ApiAccess' | 'AuditLog'
+  | 'DigitalSignatures' | 'CustomBranding';
 
 const FEATURE_LABELS: Record<PlanFeature, string> = {
   'Patients': 'Gestión de Pacientes',
@@ -42,6 +18,7 @@ const FEATURE_LABELS: Record<PlanFeature, string> = {
   'BasicInvoicing': 'Facturación Básica',
   'Prescriptions': 'Recetas Médicas',
   'ConsultationNotes': 'Notas de Consulta',
+  'InformedConsents': 'Consentimientos Informados',
   'Periodontogram': 'Periodontograma',
   'Cephalometry': 'Cefalometría',
   'TreatmentPlans': 'Planes de Tratamiento',
@@ -49,33 +26,31 @@ const FEATURE_LABELS: Record<PlanFeature, string> = {
   'PurchaseOrders': 'Órdenes de Compra',
   'AdvancedReports': 'Reportes Avanzados',
   'CfdiTimbrado': 'Timbrado CFDI',
+  'WhatsAppMessaging': 'Mensajería WhatsApp',
+  'DataExport': 'Exportación de Datos',
   'MultiLocation': 'Multi-sucursal',
   'CustomDomain': 'Dominio Personalizado',
   'ApiAccess': 'API Access',
-  'AuditLog': 'Auditoría'
+  'AuditLog': 'Auditoría',
+  'DigitalSignatures': 'Firmas Digitales',
+  'CustomBranding': 'Marca Personalizada'
 };
 
+/**
+ * Wrapper sobre EntitlementService para backward compatibility.
+ * Los guards, sidebar y componentes existentes siguen usando FeatureService.
+ * Internamente delega a EntitlementService que carga features desde el backend.
+ */
 @Injectable({ providedIn: 'root' })
 export class FeatureService {
-  private api = inject(ApiService);
+  private entitlementService = inject(EntitlementService);
 
-  private _planName = signal<string>('');
-  private _features = signal<PlanFeature[]>([]);
-  private _loaded = signal(false);
-
-  readonly planName = this._planName.asReadonly();
-  readonly features = this._features.asReadonly();
-  readonly loaded = this._loaded.asReadonly();
-
-  loadFromPlanName(planName: string): void {
-    this._planName.set(planName);
-    const features = PLAN_FEATURES_MAP[planName] ?? [...CORE_FEATURES];
-    this._features.set(features);
-    this._loaded.set(true);
-  }
+  readonly planName = this.entitlementService.planName;
+  readonly features = computed(() => this.entitlementService.enabledFeatures() as PlanFeature[]);
+  readonly loaded = this.entitlementService.loaded;
 
   hasFeature(feature: PlanFeature): boolean {
-    return this._features().includes(feature);
+    return this.entitlementService.hasFeature(feature);
   }
 
   getFeatureLabel(feature: PlanFeature): string {
@@ -83,15 +58,10 @@ export class FeatureService {
   }
 
   getMinimumPlan(feature: PlanFeature): string {
-    if (CORE_FEATURES.includes(feature)) return 'Básico';
-    if (ADVANCED_FEATURES.includes(feature)) return 'Profesional';
-    if (ENTERPRISE_FEATURES.includes(feature)) return 'Empresarial';
-    return 'Empresarial';
+    return this.entitlementService.getMinimumPlanForFeature(feature);
   }
 
   reset(): void {
-    this._planName.set('');
-    this._features.set([]);
-    this._loaded.set(false);
+    this.entitlementService.reset();
   }
 }

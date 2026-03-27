@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#324242",
+              "on-secondary-fixed-variant": "#4e5f5e",
+              "inverse-surface": "#0b0f10",
+              "secondary-dim": "#465656",
+              "surface-tint": "#2e5ea9",
+              "tertiary": "#685781",
+              "surface-container-high": "#e3e9ed",
+              "primary-fixed": "#80abfc",
+              "surface-variant": "#dce4e8",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#eaeff2",
+              "error-container": "#fa746f",
+              "outline": "#747c80",
+              "surface-bright": "#f7f9fb",
+              "secondary-fixed": "#d4e6e5",
+              "primary-dim": "#1e529c",
+              "background": "#f7f9fb",
+              "secondary-container": "#d4e6e5",
+              "on-primary-fixed-variant": "#003370",
+              "tertiary-dim": "#5c4c74",
+              "surface-container-highest": "#dce4e8",
+              "on-tertiary-fixed-variant": "#5d4d76",
+              "on-surface-variant": "#596064",
+              "primary-container": "#80abfc",
+              "secondary-fixed-dim": "#c6d8d7",
+              "on-tertiary-container": "#53436c",
+              "on-background": "#2c3437",
+              "tertiary-fixed": "#e3ceff",
+              "inverse-primary": "#80abfc",
+              "on-tertiary-fixed": "#403158",
+              "tertiary-container": "#e3ceff",
+              "inverse-on-surface": "#9a9d9f",
+              "outline-variant": "#acb3b7",
+              "on-primary": "#f9f8ff",
+              "primary": "#2e5ea9",
+              "error": "#a83836",
+              "error-dim": "#67040d",
+              "on-primary-fixed": "#00102b",
+              "on-surface": "#2c3437",
+              "tertiary-fixed-dim": "#d5c1f1",
+              "surface-container-low": "#f0f4f7",
+              "on-secondary": "#eafdfc",
+              "surface-dim": "#d4dbdf",
+              "on-error": "#fff7f6",
+              "on-error-container": "#6e0a12",
+              "secondary": "#526262",
+              "on-primary-container": "#002b5f",
+              "on-secondary-container": "#445554",
+              "on-tertiary": "#fef7ff",
+              "primary-fixed-dim": "#729eed",
+              "surface": "#f7f9fb"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .btn-primary-gradient {
+        background: linear-gradient(135deg, #2e5ea9 0%, #80abfc 100%);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-white/85 dark:bg-slate-950/85 backdrop-blur-md shadow-[0_12px_32px_-4px_rgba(25,28,30,0.04)]">
+<div class="flex items-center justify-between px-6 h-16 w-full">
+<div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-100 font-headline">DentiCare Precision</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-blue-700 dark:text-blue-400 border-b-2 border-blue-600 pb-1 font-headline font-semibold text-sm tracking-tight" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors font-headline font-semibold text-sm tracking-tight" href="#">Patients</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors font-headline font-semibold text-sm tracking-tight" href="#">Schedule</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors font-headline font-semibold text-sm tracking-tight" href="#">Analytics</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-600">contrast</span>
+</button>
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-600">settings</span>
+</button>
+</div>
+<img alt="Dr. Julianne Smith" class="w-8 h-8 rounded-full border border-outline-variant/20" data-alt="Portrait of a professional female dentist in a clinical setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmy833ilMToib2t-WeYwwc3UNZGDuyNh0Fx2mUwUl00Aue_CdQWWvqcV4clglOkVKrUpoqQrcCZgmjit8co6ku7594gK7VcBZXx5Mi0Bc3GW03pBm1aI5PiYa3vUH6mAbawQIt-BplDOPg7h-8EjTN_M2qBHClQJgiWysL9tIIEDaMRR1G9_hORp4zWZZTloJpHqfuzckRjOQwANdFPYw7bHc8DKd-WWyDhRuMCaXHE0tjfr51I6NYDBx5AgQW9718iGHTY4H1doc"/>
+</div>
+</div>
+<div class="bg-slate-100 dark:bg-slate-800 h-[1px] w-full self-end"></div>
+</header>
+<main class="pt-24 pb-20 px-6 max-w-7xl mx-auto">
+<!-- Hero Section -->
+<section class="mb-16">
+<h1 class="font-headline text-5xl font-extrabold tracking-tight text-on-background mb-4">UI Kit: Foundations</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">A specialized system of precision primitives designed for high-end clinical environments. Focused on minimalist aesthetics and tactile feedback.</p>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+<!-- Sidebar Documentation -->
+<div class="lg:col-span-3 space-y-8">
+<div>
+<h3 class="font-headline font-bold text-sm uppercase tracking-widest text-primary mb-4">Categories</h3>
+<ul class="space-y-2">
+<li><a class="flex items-center gap-3 px-4 py-2 bg-surface-container-low text-primary rounded-xl font-medium" href="#buttons">Action Buttons</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="#tags">Status Tags</a></li>
+<li><a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-all" href="#pagination">Navigation</a></li>
+</ul>
+</div>
+<div class="p-6 bg-primary-container/20 rounded-2xl">
+<h4 class="font-headline font-bold text-on-primary-container mb-2">Design Rule #1</h4>
+<p class="text-sm text-on-primary-container/80 leading-relaxed">Boundaries are defined through tonal shifts, never 1px solid borders. Use whitespace as a functional element.</p>
+</div>
+</div>
+<!-- Content Area -->
+<div class="lg:col-span-9 space-y-20">
+<!-- Buttons Section -->
+<section class="space-y-12" id="buttons">
+<div>
+<h2 class="font-headline text-3xl font-bold mb-2">Interactive Triggers</h2>
+<div class="h-1 w-12 bg-primary rounded-full mb-8"></div>
+</div>
+<!-- Primary Tier -->
+<div class="space-y-6">
+<h3 class="font-label text-sm font-bold uppercase tracking-widest text-on-surface-variant">Tier 01: Primary Action</h3>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+<div class="space-y-3">
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Default</span>
+<button class="w-full btn-primary-gradient text-on-primary px-6 py-3 rounded-lg font-semibold text-sm transition-all hover:scale-[1.02] active:scale-95">Confirm Plan</button>
+</div>
+<div class="space-y-3">
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Hover</span>
+<button class="w-full btn-primary-gradient text-on-primary px-6 py-3 rounded-lg font-semibold text-sm brightness-110 shadow-lg shadow-primary/20">Confirm Plan</button>
+</div>
+<div class="space-y-3">
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Active</span>
+<button class="w-full btn-primary-gradient text-on-primary px-6 py-3 rounded-lg font-semibold text-sm scale-95 opacity-90">Confirm Plan</button>
+</div>
+<div class="space-y-3">
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Disabled</span>
+<button class="w-full bg-surface-container-highest text-outline cursor-not-allowed px-6 py-3 rounded-lg font-semibold text-sm" disabled="">Confirm Plan</button>
+</div>
+</div>
+</div>
+<!-- Secondary Tier -->
+<div class="space-y-6">
+<h3 class="font-label text-sm font-bold uppercase tracking-widest text-on-surface-variant">Tier 02: Secondary Focus</h3>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+<div class="space-y-3">
+<button class="w-full bg-surface-container-highest text-on-surface px-6 py-3 rounded-lg font-semibold text-sm transition-all hover:bg-surface-variant active:scale-95">Save Draft</button>
+</div>
+<div class="space-y-3">
+<button class="w-full bg-surface-variant text-on-surface px-6 py-3 rounded-lg font-semibold text-sm">Save Draft</button>
+</div>
+<div class="space-y-3">
+<button class="w-full bg-surface-container-highest/80 text-on-surface px-6 py-3 rounded-lg font-semibold text-sm opacity-80">Save Draft</button>
+</div>
+<div class="space-y-3">
+<button class="w-full bg-surface-container/50 text-outline-variant/50 cursor-not-allowed px-6 py-3 rounded-lg font-semibold text-sm" disabled="">Save Draft</button>
+</div>
+</div>
+</div>
+<!-- Outline / Ghost -->
+<div class="space-y-6">
+<h3 class="font-label text-sm font-bold uppercase tracking-widest text-on-surface-variant">Tier 03: Ghost &amp; Outline</h3>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+<div class="space-y-3">
+<button class="w-full border-2 border-outline-variant/20 text-primary px-6 py-3 rounded-lg font-semibold text-sm transition-all hover:bg-primary/5 active:scale-95">View Chart</button>
+</div>
+<div class="space-y-3">
+<button class="w-full text-on-surface-variant hover:text-primary px-6 py-3 rounded-lg font-semibold text-sm transition-all hover:bg-surface-container active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+                                    Add Procedure
+                                </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Tags Section -->
+<section class="space-y-12" id="tags">
+<div>
+<h2 class="font-headline text-3xl font-bold mb-2">Semantic Markers</h2>
+<div class="h-1 w-12 bg-tertiary rounded-full mb-8"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+<!-- Status Chips -->
+<div class="space-y-6">
+<h3 class="font-label text-sm font-bold uppercase tracking-widest text-on-surface-variant">Lifecycle Status</h3>
+<div class="flex flex-wrap gap-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-container/20 text-on-primary-container font-medium text-xs rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                    Confirmed
+                                </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-container/30 text-on-secondary-container font-medium text-xs rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                    Pending
+                                </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-tertiary-container/30 text-on-tertiary-container font-medium text-xs rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                    In Review
+                                </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 bg-error-container/20 text-on-error-container font-medium text-xs rounded-full">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                                    Cancelled
+                                </span>
+</div>
+</div>
+<!-- Priority Tags -->
+<div class="space-y-6">
+<h3 class="font-label text-sm font-bold uppercase tracking-widest text-on-surface-variant">Clinical Priority</h3>
+<div class="flex flex-wrap gap-4">
+<span class="px-2.5 py-1 bg-on-surface text-surface text-[10px] font-black uppercase tracking-widest rounded-md">Urgent</span>
+<span class="px-2.5 py-1 bg-surface-container-high text-on-surface-variant text-[10px] font-bold uppercase tracking-widest rounded-md">Routine</span>
+<span class="px-2.5 py-1 bg-primary text-white text-[10px] font-bold uppercase tracking-widest rounded-md">Follow-up</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Pagination Section -->
+<section class="space-y-12" id="pagination">
+<div>
+<h2 class="font-headline text-3xl font-bold mb-2">Navigation Flow</h2>
+<div class="h-1 w-12 bg-secondary rounded-full mb-8"></div>
+</div>
+<div class="p-10 bg-surface-container-low rounded-3xl flex flex-col items-center gap-10">
+<!-- Standard Pagination -->
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-white hover:shadow-sm transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-on-primary shadow-lg shadow-primary/20 font-bold text-sm">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-white hover:shadow-sm transition-all font-medium text-sm">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-white hover:shadow-sm transition-all font-medium text-sm">3</button>
+<span class="text-outline-variant px-2">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-white hover:shadow-sm transition-all font-medium text-sm">12</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-on-surface-variant hover:bg-white hover:shadow-sm transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<!-- Minimal Load More -->
+<div class="flex flex-col items-center gap-4 w-full max-w-sm">
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-1/3 h-full bg-primary rounded-full"></div>
+</div>
+<p class="text-[11px] font-medium text-outline uppercase tracking-widest">Showing 24 of 72 Patients</p>
+<button class="px-8 py-2.5 bg-white text-on-surface font-semibold text-sm rounded-full shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all active:translate-y-0">Load More</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- SideNavBar -->
+<aside class="hidden lg:flex flex-col h-screen w-64 fixed left-0 top-0 bg-slate-50 dark:bg-slate-900 p-4 gap-2 z-40 pt-20">
+<div class="mb-6 px-2">
+<div class="font-headline font-extrabold text-blue-700 dark:text-blue-500 text-lg">North Star Dental</div>
+<div class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Precision Care Unit</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-300 rounded-xl shadow-sm font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">dentistry</span>
+                Clinical Chart
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">biotech</span>
+                Imaging
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+                Treatment Plan
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+                Billing
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+                Messages
+            </a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-200 dark:border-slate-800 space-y-1">
+<button class="w-full btn-primary-gradient text-white py-3 rounded-xl font-bold text-xs uppercase tracking-widest mb-4 active:opacity-80 transition-opacity">New Appointment</button>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                Sign Out
+            </a>
+</div>
+</aside>
+</body></html>

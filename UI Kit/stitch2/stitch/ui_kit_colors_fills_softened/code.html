@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#324242",
+              "on-secondary-fixed-variant": "#4e5f5e",
+              "inverse-surface": "#0b0f10",
+              "secondary-dim": "#465656",
+              "surface-tint": "#2e5ea9",
+              "tertiary": "#685781",
+              "surface-container-high": "#e3e9ed",
+              "primary-fixed": "#80abfc",
+              "surface-variant": "#dce4e8",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#eaeff2",
+              "error-container": "#fa746f",
+              "outline": "#747c80",
+              "surface-bright": "#f7f9fb",
+              "secondary-fixed": "#d4e6e5",
+              "primary-dim": "#1e529c",
+              "background": "#f7f9fb",
+              "secondary-container": "#d4e6e5",
+              "on-primary-fixed-variant": "#003370",
+              "tertiary-dim": "#5c4c74",
+              "surface-container-highest": "#dce4e8",
+              "on-tertiary-fixed-variant": "#5d4d76",
+              "on-surface-variant": "#596064",
+              "primary-container": "#80abfc",
+              "secondary-fixed-dim": "#c6d8d7",
+              "on-tertiary-container": "#53436c",
+              "on-background": "#2c3437",
+              "tertiary-fixed": "#e3ceff",
+              "inverse-primary": "#80abfc",
+              "on-tertiary-fixed": "#403158",
+              "tertiary-container": "#e3ceff",
+              "inverse-on-surface": "#9a9d9f",
+              "outline-variant": "#acb3b7",
+              "on-primary": "#f9f8ff",
+              "primary": "#2e5ea9",
+              "error": "#a83836",
+              "error-dim": "#67040d",
+              "on-primary-fixed": "#00102b",
+              "on-surface": "#2c3437",
+              "tertiary-fixed-dim": "#d5c1f1",
+              "surface-container-low": "#f0f4f7",
+              "on-secondary": "#eafdfc",
+              "surface-dim": "#d4dbdf",
+              "on-error": "#fff7f6",
+              "on-error-container": "#6e0a12",
+              "secondary": "#526262",
+              "on-primary-container": "#002b5f",
+              "on-secondary-container": "#445554",
+              "on-tertiary": "#fef7ff",
+              "primary-fixed-dim": "#729eed",
+              "surface": "#f7f9fb"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .clinical-shadow {
+            box-shadow: 0 12px 40px rgba(44, 52, 55, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body antialiased">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 w-full z-50 bg-white/85 dark:bg-slate-950/85 backdrop-blur-md shadow-[0_12px_32px_-4px_rgba(25,28,30,0.04)]">
+<div class="flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-100 font-headline">DentiCare Precision</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="font-['Manrope'] font-semibold text-sm tracking-tight text-blue-700 dark:text-blue-400 border-b-2 border-blue-600 pb-1" href="#">Dashboard</a>
+<a class="font-['Manrope'] font-semibold text-sm tracking-tight text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Patients</a>
+<a class="font-['Manrope'] font-semibold text-sm tracking-tight text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Schedule</a>
+<a class="font-['Manrope'] font-semibold text-sm tracking-tight text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">contrast</span>
+</button>
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+</div>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant/20">
+<img alt="Dr. Julianne Smith" data-alt="professional portrait of a smiling female doctor in a white lab coat against a soft studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVxD6wIBAR-l1J3vIGcMpp_9mOkfpYKWylE5gzXL-Wq1HE0QHGH6wT5rVdXiudTEafQq4S75swnappHnG5c1uGuzpev0IMqW33kdv1NeWwePvFvzAVxsGEfkZpR3uDR7hyEDQv4WFRJ0NuyWmAH55P4n0mR8MEo1HbqJjaHhZUJ1PGmAG0Q0WEsBCKQWV3xTkqYjshTsB9l2fD_H6dhwoelTlcYLbC4NUfTZxyLVFjqLs0BTGHzlIH1p8XRoavZ6GtCpnxQsoa8do"/>
+</div>
+</div>
+</div>
+<div class="bg-slate-100 dark:bg-slate-800 h-[1px] w-full"></div>
+</header>
+<main class="pt-24 pb-12 px-6 lg:px-12 max-w-7xl mx-auto">
+<!-- Hero Section -->
+<section class="mb-16">
+<h1 class="font-headline text-5xl font-extrabold tracking-tight text-on-background mb-4">Etheric Dental System</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">
+                Visualizing the "Clinical Sanctuary" through softened blue tones, tonal layering, and an editorial hierarchy that prioritizes clarity over visual noise.
+            </p>
+</section>
+<!-- Core Palette Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-16">
+<!-- Primary Blue -->
+<div class="md:col-span-2 lg:col-span-2 bg-surface-container-lowest rounded-xl clinical-shadow p-6 flex flex-col justify-between aspect-square md:aspect-auto">
+<div>
+<span class="label-sm text-primary font-semibold tracking-widest uppercase text-xs mb-2 block">Primary Clinical</span>
+<h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Ether Blue</h3>
+</div>
+<div class="space-y-4">
+<div class="group cursor-pointer">
+<div class="h-24 w-full bg-primary rounded-lg mb-2 flex items-end p-3 transition-transform group-hover:scale-[1.02]">
+<span class="text-on-primary font-mono text-xs font-medium">#2E5EA9</span>
+</div>
+<p class="text-xs font-medium text-on-surface-variant">Primary</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<div class="h-12 bg-primary-container rounded-lg mb-1 flex items-center justify-center">
+<span class="text-on-primary-container font-mono text-[10px]">#80ABFC</span>
+</div>
+<p class="text-[10px] text-on-surface-variant text-center">Container</p>
+</div>
+<div>
+<div class="h-12 bg-primary-dim rounded-lg mb-1 flex items-center justify-center">
+<span class="text-on-primary font-mono text-[10px]">#1E529C</span>
+</div>
+<p class="text-[10px] text-on-surface-variant text-center">Dim</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Health Mint / Secondary -->
+<div class="md:col-span-2 lg:col-span-2 bg-surface-container-lowest rounded-xl clinical-shadow p-6 flex flex-col justify-between">
+<div>
+<span class="label-sm text-secondary font-semibold tracking-widest uppercase text-xs mb-2 block">Secondary Wellness</span>
+<h3 class="text-2xl font-headline font-bold text-on-surface mb-6">Health Mint</h3>
+</div>
+<div class="space-y-4">
+<div class="group cursor-pointer">
+<div class="h-24 w-full bg-secondary rounded-lg mb-2 flex items-end p-3 transition-transform group-hover:scale-[1.02]">
+<span class="text-on-secondary font-mono text-xs font-medium">#526262</span>
+</div>
+<p class="text-xs font-medium text-on-surface-variant">Secondary</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<div class="h-12 bg-secondary-container rounded-lg mb-1 flex items-center justify-center">
+<span class="text-on-secondary-container font-mono text-[10px]">#D4E6E5</span>
+</div>
+<p class="text-[10px] text-on-surface-variant text-center">Container</p>
+</div>
+<div>
+<div class="h-12 bg-secondary-dim rounded-lg mb-1 flex items-center justify-center">
+<span class="text-on-secondary font-mono text-[10px]">#465656</span>
+</div>
+<p class="text-[10px] text-on-surface-variant text-center">Dim</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Identity Theme Variations -->
+<div class="md:col-span-4 lg:col-span-2 bg-surface-container-low rounded-xl p-6">
+<h3 class="text-lg font-headline font-bold text-on-surface mb-4">Identity Themes</h3>
+<div class="space-y-3">
+<!-- Soleado -->
+<div class="flex items-center justify-between p-3 bg-tertiary-container rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container">light_mode</span>
+<span class="text-sm font-semibold text-on-tertiary-container font-headline">Soleado (Sunny)</span>
+</div>
+<span class="text-[10px] font-mono text-on-tertiary-container">#E3CEFF</span>
+</div>
+<!-- Rosa -->
+<div class="flex items-center justify-between p-3 bg-tertiary rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-white">spa</span>
+<span class="text-sm font-semibold text-white font-headline">Rosa (Rose)</span>
+</div>
+<span class="text-[10px] font-mono text-white/80">#685781</span>
+</div>
+<!-- High Contrast -->
+<div class="flex items-center justify-between p-3 bg-inverse-surface rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-inverse-on-surface">contrast</span>
+<span class="text-sm font-semibold text-inverse-on-surface font-headline">High Contrast</span>
+</div>
+<span class="text-[10px] font-mono text-inverse-on-surface">#0B0F10</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Grayscale & Surfaces -->
+<section class="mb-16">
+<div class="flex items-end justify-between mb-8">
+<div>
+<h2 class="text-3xl font-headline font-bold text-on-surface mb-2">Surface Architecture</h2>
+<p class="text-on-surface-variant">The core of the "No-Line" rule: creating depth through tonal shifts.</p>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+<div class="space-y-2">
+<div class="h-20 bg-background rounded-lg border border-outline-variant/10 flex items-center justify-center">
+<span class="text-[10px] font-mono text-on-surface">#F7F9FB</span>
+</div>
+<p class="text-xs font-bold text-center">Surface</p>
+</div>
+<div class="space-y-2">
+<div class="h-20 bg-surface-container-low rounded-lg flex items-center justify-center">
+<span class="text-[10px] font-mono text-on-surface">#F0F4F7</span>
+</div>
+<p class="text-xs font-bold text-center">Container Low</p>
+</div>
+<div class="space-y-2">
+<div class="h-20 bg-surface-container rounded-lg flex items-center justify-center">
+<span class="text-[10px] font-mono text-on-surface">#EAEFF2</span>
+</div>
+<p class="text-xs font-bold text-center">Container</p>
+</div>
+<div class="space-y-2">
+<div class="h-20 bg-surface-container-high rounded-lg flex items-center justify-center">
+<span class="text-[10px] font-mono text-on-surface">#E3E9ED</span>
+</div>
+<p class="text-xs font-bold text-center">Container High</p>
+</div>
+<div class="space-y-2">
+<div class="h-20 bg-surface-container-highest rounded-lg flex items-center justify-center">
+<span class="text-[10px] font-mono text-on-surface">#DCE4E8</span>
+</div>
+<p class="text-xs font-bold text-center">Highest</p>
+</div>
+<div class="space-y-2">
+<div class="h-20 bg-outline rounded-lg flex items-center justify-center">
+<span class="text-[10px] font-mono text-white">#747C80</span>
+</div>
+<p class="text-xs font-bold text-center">Outline</p>
+</div>
+</div>
+</section>
+<!-- Functional Colors & UI Components -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+<!-- Functional States -->
+<section>
+<h2 class="text-2xl font-headline font-bold text-on-surface mb-6">Functional States</h2>
+<div class="bg-surface-container-lowest rounded-xl clinical-shadow p-8 space-y-8">
+<!-- Error / Alert -->
+<div class="flex items-center gap-6">
+<div class="h-16 w-16 bg-error rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-on-error text-3xl">emergency</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Alert Red</h4>
+<p class="text-sm text-on-surface-variant mb-2">Used for critical clinical alerts and errors.</p>
+<div class="flex gap-2">
+<span class="px-2 py-1 bg-error-container text-on-error-container text-[10px] font-mono rounded">#FA746F</span>
+<span class="px-2 py-1 bg-error text-on-error text-[10px] font-mono rounded">#A83836</span>
+</div>
+</div>
+</div>
+<!-- Amber / Attention -->
+<div class="flex items-center gap-6">
+<div class="h-16 w-16 bg-tertiary-fixed rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-3xl" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Soft Amber</h4>
+<p class="text-sm text-on-surface-variant mb-2">Attention needed but not critical.</p>
+<div class="flex gap-2">
+<span class="px-2 py-1 bg-tertiary-container text-on-tertiary-container text-[10px] font-mono rounded">#E3CEFF</span>
+<span class="px-2 py-1 bg-tertiary text-on-tertiary text-[10px] font-mono rounded">#685781</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Component Application -->
+<section>
+<h2 class="text-2xl font-headline font-bold text-on-surface mb-6">Component Synthesis</h2>
+<div class="space-y-6">
+<!-- Patient Card Example -->
+<div class="bg-surface-container-lowest rounded-xl clinical-shadow p-5 flex items-center justify-between group hover:translate-y-[-2px] transition-all">
+<div class="flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-primary-container/20 flex items-center justify-center overflow-hidden">
+<img alt="Patient Sarah" data-alt="close up portrait of a calm woman with soft natural lighting and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABe4nzgpHywM58gz0lDut5Ea_zVHRZ15Wsv-H1Jibj2Deym5xX3r9LvejlmKYe0tqn8TWy2jvnj57GReUqKah_InrY27lJtOOjO9XQUayeSswqOyTu8lkiDoYPxBvUdO7botq23zS0nTLSzLH8-h_0i1WHwdkkxJ2Gw5F-_EkV4RRyrwk8t-zGY9uZRXVjA35-AA1uF-YGmgpqOkW_42KQLqqXLYhT17A9Czz5yZwBVdGmPkLwtHmI_D73Yy4xILYRluhvfAFTX2w"/>
+</div>
+<div>
+<h5 class="font-bold text-on-surface font-headline">Sarah J. Miller</h5>
+<p class="text-xs text-on-surface-variant">Annual Cleaning • 2:30 PM</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-full uppercase tracking-wider">Confirmed</span>
+<span class="text-[10px] text-outline">Chair 04</span>
+</div>
+</div>
+<!-- CTA Synthesis -->
+<div class="grid grid-cols-2 gap-4">
+<button class="h-12 rounded-lg bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+                            New Appointment
+                        </button>
+<button class="h-12 rounded-lg bg-surface-container-highest text-on-surface font-headline font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm">print</span>
+                            Print Chart
+                        </button>
+</div>
+<!-- Input Synthesis -->
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+<input class="w-full h-12 pl-12 pr-4 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary-fixed/40 text-sm placeholder:text-outline/60 clinical-shadow" placeholder="Search patient database..." type="text"/>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Side Navigation Shell (Hidden on mobile) -->
+<aside class="hidden xl:flex flex-col h-full w-64 fixed left-0 top-0 bg-slate-50 dark:bg-slate-900 p-4 gap-2 z-40">
+<div class="mb-8 p-4">
+<div class="flex items-center gap-3 mb-2">
+<div class="h-8 w-8 bg-blue-700 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">dentistry</span>
+</div>
+<h2 class="font-['Manrope'] font-extrabold text-blue-700 dark:text-blue-500 leading-none">North Star Dental</h2>
+</div>
+<p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold ml-11">Precision Care Unit</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-300 rounded-xl shadow-sm font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-blue-600">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">dentistry</span>
+                Clinical Chart
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">biotech</span>
+                Imaging
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">assignment</span>
+                Treatment Plan
+            </a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-200 dark:border-slate-800 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-['Inter'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Sign Out
+            </a>
+</div>
+</aside>
+</body></html>

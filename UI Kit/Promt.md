@@ -1,0 +1,2 @@
+Necesito un UI Kit(paleta de colores, typogrphy, fills, forms, icon fonts, forms elements, button, tag, pagination, ... etc), para una SAAS de gestion de consultorios dentales, necesito que sea un kit completo con el que pueda dar la identidad completa a la saas, conistencia global del saas, alta mantenibilidad y alta escalabilidad, un producto nivel enterprise, Quiero una UI moderna y minimalista, la imagenes que te comparti no son punto de partida, solo es un ejemplo de un kit que encontre
+

@@ -6,6 +6,7 @@
     [icon]="'fa-users'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      <app-quota-usage-indicator quotaKey="Quota:Users" />
       @if (permissionService.hasPermission(PERMISSIONS.RolesView)) {
         <a class="btn btn-outline" routerLink="/users/roles">
           <i class="fa-solid fa-key"></i>
@@ -13,10 +14,10 @@
         </a>
       }
       @if (permissionService.hasPermission(PERMISSIONS.UsersCreate)) {
-        <a class="btn btn-outline btn-success" routerLink="/users/new">
+        <button class="btn btn-outline btn-success" (click)="createUser()">
           <i class="fa-solid fa-user-plus"></i>
           Nuevo Usuario
-        </a>
+        </button>
       }
     </div>
   </app-page-header>

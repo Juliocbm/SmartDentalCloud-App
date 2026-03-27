@@ -6,6 +6,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { SubscriptionsService, PAYMENT_PROVIDERS, PaymentProviderType, ChangePlanResult } from '../../services/subscriptions.service';
 import { FeatureService } from '../../../../core/services/feature.service';
+import { EntitlementService } from '../../../../core/services/entitlement.service';
 import {
   SubscriptionInfo,
   SUBSCRIPTION_STATUS_CONFIG,
@@ -32,6 +33,7 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
   private notifications = inject(NotificationService);
 
   private featureService = inject(FeatureService);
+  private entitlementService = inject(EntitlementService);
 
   loading = signal(true);
   subscription = signal<SubscriptionInfo | null>(null);
@@ -224,7 +226,7 @@ export class SubscriptionPageComponent implements OnInit, OnDestroy {
         this.changingPlan.set(false);
         this.closeChangePlanConfirm();
         this.notifications.success(result.message);
-        this.featureService.loadFromPlanName(result.newPlanName);
+        this.entitlementService.reload();
         this.loadSubscription();
       },
       error: (err) => {

@@ -41,11 +41,18 @@ export class UserProfileCacheService {
     }
   }
 
-  refresh(): void {
+  /**
+   * Limpia el cache sin recargar. Usado en logout para evitar datos stale entre usuarios.
+   */
+  reset(): void {
     this.loaded = false;
-    this.cacheBuster = Date.now();
     this.revokeBlobUrl();
     this.profilePictureUrl.set(null);
+  }
+
+  refresh(): void {
+    this.reset();
+    this.cacheBuster = Date.now();
     this.loadProfilePicture();
   }
 }

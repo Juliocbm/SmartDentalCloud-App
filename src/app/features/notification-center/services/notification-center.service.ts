@@ -22,7 +22,9 @@ export class NotificationCenterService {
     notificationType?: string,
     from?: string,
     to?: string,
-    search?: string
+    search?: string,
+    sortBy?: string,
+    sortDirection?: string
   ): Observable<PaginatedResult<NotificationQueueItem>> {
     const params: QueryParams = { pageNumber, pageSize };
     if (channel) params['channel'] = channel;
@@ -31,6 +33,8 @@ export class NotificationCenterService {
     if (from) params['from'] = from;
     if (to) params['to'] = to;
     if (search) params['search'] = search;
+    if (sortBy) params['orderBy'] = sortBy;
+    if (sortDirection) params['sortDirection'] = sortDirection;
     return this.api.get<PaginatedResult<NotificationQueueItem>>(`${this.baseUrl}/queue`, params);
   }
 

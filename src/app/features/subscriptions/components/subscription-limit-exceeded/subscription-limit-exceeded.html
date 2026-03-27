@@ -12,30 +12,47 @@
 
     <!-- Usage bars -->
     <div class="usage-section">
-      @if (patientLimit() > 0) {
+      <!-- Nuevo formato: quota individual -->
+      @if (isQuotaFormat() && limitValue() > 0) {
         <div class="usage-item">
           <div class="usage-header">
-            <span><i class="fa-solid fa-users"></i> Pacientes</span>
-            <span class="usage-count">{{ currentPatients() }} / {{ patientLimit() }}</span>
+            <span><i class="fa-solid" [class]="resourceIcon()"></i> {{ resourceLabel() }}</span>
+            <span class="usage-count">{{ currentUsage() }} / {{ limitValue() }}</span>
           </div>
           <div class="usage-bar">
-            <div class="usage-fill" [class.exceeded]="currentPatients() >= patientLimit()"
-              [style.width.%]="(currentPatients() / patientLimit()) * 100"></div>
+            <div class="usage-fill exceeded"
+              [style.width.%]="usagePercent()"></div>
           </div>
         </div>
       }
 
-      @if (userLimit() > 0) {
-        <div class="usage-item">
-          <div class="usage-header">
-            <span><i class="fa-solid fa-user-doctor"></i> Usuarios</span>
-            <span class="usage-count">{{ currentUsers() }} / {{ userLimit() }}</span>
+      <!-- Legacy format: pacientes y usuarios -->
+      @if (!isQuotaFormat()) {
+        @if (patientLimit() > 0) {
+          <div class="usage-item">
+            <div class="usage-header">
+              <span><i class="fa-solid fa-users"></i> Pacientes</span>
+              <span class="usage-count">{{ currentPatients() }} / {{ patientLimit() }}</span>
+            </div>
+            <div class="usage-bar">
+              <div class="usage-fill" [class.exceeded]="currentPatients() >= patientLimit()"
+                [style.width.%]="(currentPatients() / patientLimit()) * 100"></div>
+            </div>
           </div>
-          <div class="usage-bar">
-            <div class="usage-fill" [class.exceeded]="currentUsers() >= userLimit()"
-              [style.width.%]="(currentUsers() / userLimit()) * 100"></div>
+        }
+
+        @if (userLimit() > 0) {
+          <div class="usage-item">
+            <div class="usage-header">
+              <span><i class="fa-solid fa-user-doctor"></i> Usuarios</span>
+              <span class="usage-count">{{ currentUsers() }} / {{ userLimit() }}</span>
+            </div>
+            <div class="usage-bar">
+              <div class="usage-fill" [class.exceeded]="currentUsers() >= userLimit()"
+                [style.width.%]="(currentUsers() / userLimit()) * 100"></div>
+            </div>
           </div>
-        </div>
+        }
       }
     </div>
 

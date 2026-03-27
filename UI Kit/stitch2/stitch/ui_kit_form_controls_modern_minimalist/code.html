@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#324242",
+              "on-secondary-fixed-variant": "#4e5f5e",
+              "inverse-surface": "#0b0f10",
+              "secondary-dim": "#465656",
+              "surface-tint": "#2e5ea9",
+              "tertiary": "#685781",
+              "surface-container-high": "#e3e9ed",
+              "primary-fixed": "#80abfc",
+              "surface-variant": "#dce4e8",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#eaeff2",
+              "error-container": "#fa746f",
+              "outline": "#747c80",
+              "surface-bright": "#f7f9fb",
+              "secondary-fixed": "#d4e6e5",
+              "primary-dim": "#1e529c",
+              "background": "#f7f9fb",
+              "secondary-container": "#d4e6e5",
+              "on-primary-fixed-variant": "#003370",
+              "tertiary-dim": "#5c4c74",
+              "surface-container-highest": "#dce4e8",
+              "on-tertiary-fixed-variant": "#5d4d76",
+              "on-surface-variant": "#596064",
+              "primary-container": "#80abfc",
+              "secondary-fixed-dim": "#c6d8d7",
+              "on-tertiary-container": "#53436c",
+              "on-background": "#2c3437",
+              "tertiary-fixed": "#e3ceff",
+              "inverse-primary": "#80abfc",
+              "on-tertiary-fixed": "#403158",
+              "tertiary-container": "#e3ceff",
+              "inverse-on-surface": "#9a9d9f",
+              "outline-variant": "#acb3b7",
+              "on-primary": "#f9f8ff",
+              "primary": "#2e5ea9",
+              "error": "#a83836",
+              "error-dim": "#67040d",
+              "on-primary-fixed": "#00102b",
+              "on-surface": "#2c3437",
+              "tertiary-fixed-dim": "#d5c1f1",
+              "surface-container-low": "#f0f4f7",
+              "on-secondary": "#eafdfc",
+              "surface-dim": "#d4dbdf",
+              "on-error": "#fff7f6",
+              "on-error-container": "#6e0a12",
+              "secondary": "#526262",
+              "on-primary-container": "#002b5f",
+              "on-secondary-container": "#445554",
+              "on-tertiary": "#fef7ff",
+              "primary-fixed-dim": "#729eed",
+              "surface": "#f7f9fb"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="text-on-background selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/85 dark:bg-slate-950/85 backdrop-blur-md shadow-[0_12px_32px_-4px_rgba(25,28,30,0.04)]">
+<div class="flex items-center justify-between px-6 h-16 w-full max-w-[1600px] mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-100">DentiCare Precision</span>
+<div class="hidden md:flex gap-6 items-center font-['Manrope'] font-semibold text-sm tracking-tight">
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Patients</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Schedule</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Analytics</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 p-1 bg-surface-container rounded-lg">
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">contrast</span>
+</button>
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200 relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+</div>
+<img alt="Dr. Julianne Smith" class="w-10 h-10 rounded-full border-2 border-primary/20 object-cover" data-alt="professional portrait of a confident female dentist in a clean clinic environment with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsGbKrAub3SRnuZL0VaIYWBQlv1sDKXKafX0Vclgg0gpwgBAlF2rxCfKA88O1Sxd-uQI8Y9Hmk-hAx-g34m3bEBweH-O2hHDXfWv6x6pE6FKkkpC1xPyWovXUJE1oDQBsfJTgeQPwFgP3quoVuZrJFiRhwE3on2x6lcsrzK-5ua3j3IXARj2EEbclnGaa99-96dHJRdL32TkH52RbjesIe3nacLtN0Pg7Qlun7Pqtk0y4mOslflOkR_DGcJMUAMbLfi2z7LpRr0e4"/>
+</div>
+</div>
+<div class="bg-slate-100 dark:bg-slate-800 h-[1px] w-full self-end"></div>
+</nav>
+<main class="pt-24 pb-20 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+<!-- Sidebar Navigation (Simulation) -->
+<aside class="hidden lg:flex lg:col-span-3 flex-col gap-2">
+<div class="p-4 mb-4">
+<h3 class="font-headline font-extrabold text-primary text-lg">Precision Care Unit</h3>
+<p class="text-xs text-on-surface-variant font-medium">System UI Kit v1.0</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-300 rounded-xl shadow-sm font-medium transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-medium transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">dentistry</span>
+<span>Clinical Chart</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-medium transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">biotech</span>
+<span>Imaging</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-xl font-medium transition-transform duration-200 hover:translate-x-1" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span>Treatment Plan</span>
+</a>
+</nav>
+<div class="mt-auto p-4 bg-primary/5 rounded-2xl border border-primary/10">
+<p class="text-xs text-primary font-bold uppercase tracking-wider mb-2">System Status</p>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+<span class="text-sm font-medium text-on-surface">Cloud Sync Active</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<section class="lg:col-span-9 space-y-12">
+<header class="space-y-2">
+<h1 class="text-4xl font-headline font-extrabold tracking-tight text-on-background">Clinical Form Controls</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl">Precision-engineered primitives designed for high-density medical environments. Focus on clarity, reduced eye strain, and tactile feedback.</p>
+</header>
+<!-- Bento Grid Section: Inputs & Selectors -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Text Inputs Card -->
+<div class="bg-surface-container-low p-8 rounded-[2rem] space-y-8">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-headline font-bold">Text Interaction</h2>
+<span class="material-symbols-outlined text-primary-fixed-dim">edit_note</span>
+</div>
+<div class="space-y-6">
+<!-- Default -->
+<div class="space-y-2">
+<label class="text-xs font-label font-bold uppercase tracking-widest text-on-surface-variant px-1">Patient Name</label>
+<input class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-fixed/40 transition-all placeholder:text-outline-variant text-on-surface" placeholder="Johnathan Doe" type="text"/>
+</div>
+<!-- Active/Focused -->
+<div class="space-y-2">
+<label class="text-xs font-label font-bold uppercase tracking-widest text-primary px-1">Active State</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none rounded-xl px-4 py-3 ring-2 ring-primary-fixed/40 transition-all text-on-surface font-medium" type="text" value="Clinical Analysis"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-sm">check_circle</span>
+</div>
+</div>
+<!-- Error State -->
+<div class="space-y-2">
+<label class="text-xs font-label font-bold uppercase tracking-widest text-error px-1">Social Security Number</label>
+<input class="w-full bg-error-container/10 border-none rounded-xl px-4 py-3 ring-1 ring-error transition-all text-error font-medium" type="text" value="999-00-XXXX"/>
+<p class="text-[10px] font-medium text-error flex items-center gap-1 px-1">
+<span class="material-symbols-outlined text-xs">error</span>
+                                Invalid format. Please check the clinical record.
+                            </p>
+</div>
+</div>
+</div>
+<!-- Selection & Toggles Card -->
+<div class="bg-surface-container-low p-8 rounded-[2rem] space-y-8">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-headline font-bold">Selection &amp; Logic</h2>
+<span class="material-symbols-outlined text-primary-fixed-dim">checklist</span>
+</div>
+<div class="space-y-8">
+<!-- Dropdown -->
+<div class="space-y-2">
+<label class="text-xs font-label font-bold uppercase tracking-widest text-on-surface-variant px-1">Department</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-lowest border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-fixed/40 transition-all text-on-surface font-medium pr-10">
+<option>Orthodontics</option>
+<option>Periodontics</option>
+<option>Oral Surgery</option>
+</select>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Checkboxes -->
+<div class="space-y-4">
+<p class="text-xs font-label font-bold uppercase tracking-widest text-on-surface-variant px-1">Consultation Requisites</p>
+<div class="flex flex-col gap-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-5 h-5 rounded-md border-none bg-surface-container-highest text-primary focus:ring-primary/20 transition-all" type="checkbox"/>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Digital X-Ray Completed</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded-md border-none bg-surface-container-highest text-primary focus:ring-primary/20 transition-all" type="checkbox"/>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Anesthesia Clearance</span>
+</label>
+</div>
+</div>
+<!-- Radio & Switches -->
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant/10">
+<div class="space-y-3">
+<p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Urgency</p>
+<div class="flex items-center gap-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-4 h-4 border-none bg-surface-container-highest text-primary focus:ring-primary/20" name="urgency" type="radio"/>
+<span class="text-sm font-medium">Routine</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="w-4 h-4 border-none bg-surface-container-highest text-primary focus:ring-primary/20" name="urgency" type="radio"/>
+<span class="text-sm font-medium">Stat</span>
+</label>
+</div>
+</div>
+<div class="space-y-3">
+<p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Telemetry</p>
+<button class="relative w-12 h-6 bg-primary rounded-full transition-colors flex items-center">
+<span class="absolute right-1 w-4 h-4 bg-white rounded-full shadow-sm"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Scheduling Calendar Card (Asymmetric Layout) -->
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-[2rem] grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-1 space-y-6">
+<div>
+<h2 class="text-2xl font-headline font-extrabold text-on-background">Treatment Scheduler</h2>
+<p class="text-sm text-on-surface-variant mt-2">Precision time-blocking for surgical procedures and follow-ups.</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm space-y-4">
+<div class="flex items-center justify-between pb-4 border-b border-outline-variant/10">
+<span class="text-sm font-bold">Selected Date</span>
+<span class="text-primary font-bold">Oct 24, 2023</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-3 bg-primary/5 rounded-xl border border-primary/10">
+<div class="w-2 h-10 bg-primary rounded-full"></div>
+<div>
+<p class="text-xs font-bold text-primary uppercase">Current Slot</p>
+<p class="text-sm font-semibold text-on-surface">09:30 AM — Root Canal</p>
+</div>
+</div>
+</div>
+<button class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-bold shadow-lg shadow-primary/20 active:scale-95 transition-all">
+                                Confirm Appointment
+                            </button>
+</div>
+</div>
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/5">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-bold text-lg">October 2023</h3>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-2 mb-4">
+<span class="text-center text-[10px] font-bold text-outline-variant uppercase">Sun</span>
+<span class="text-center text-[10px] font-bold text-outline-variant uppercase">Mon</span>
+<span class="text-center text-[10px] font-bold text-outline-variant uppercase">Tue</span>
+<span class="text-center text-[10px] font-bold text-outline-variant uppercase">Wed</span>
+<span class="text-center text-[10px] font-bold text-outline-variant uppercase">Thu</span>
+<span class="text-center text-[10px] font-bold text-outline-variant uppercase">Fri</span>
+<span class="text-center text-[10px] font-bold text-outline-variant uppercase">Sat</span>
+</div>
+<div class="grid grid-cols-7 gap-2">
+<!-- Empty states -->
+<div class="h-12 flex items-center justify-center text-outline-variant/30 text-sm">27</div>
+<div class="h-12 flex items-center justify-center text-outline-variant/30 text-sm">28</div>
+<div class="h-12 flex items-center justify-center text-outline-variant/30 text-sm">29</div>
+<div class="h-12 flex items-center justify-center text-outline-variant/30 text-sm">30</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">1</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">2</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">3</div>
+<!-- More days -->
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">4</div>
+<div class="h-12 flex flex-col items-center justify-center font-medium text-sm bg-primary text-white rounded-xl shadow-md cursor-pointer relative">
+                                5
+                                <span class="absolute bottom-1 w-1 h-1 bg-white rounded-full"></span>
+</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">6</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">7</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">8</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm bg-tertiary/10 text-tertiary rounded-xl cursor-not-allowed">9</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">10</div>
+<!-- ... rest of month simulation -->
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">11</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">12</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">13</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">14</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">15</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">16</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">17</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">18</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">19</div>
+<div class="h-12 flex flex-col items-center justify-center font-medium text-sm bg-secondary-container text-on-secondary-container rounded-xl cursor-pointer relative">
+                                20
+                                <span class="absolute bottom-1 w-1 h-1 bg-secondary rounded-full"></span>
+</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">21</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">22</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">23</div>
+<div class="h-12 flex items-center justify-center font-medium text-sm hover:bg-primary/5 rounded-xl transition-colors cursor-pointer">24</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Precision Detail Section: Glassmorphic Details -->
+<div class="relative overflow-hidden rounded-[2.5rem] bg-slate-900 p-12 text-white">
+<div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/20 to-transparent pointer-events-none"></div>
+<img alt="Close up of dental tech" class="absolute top-0 left-0 w-full h-full object-cover opacity-20 mix-blend-overlay" data-alt="high-tech dental laboratory equipment with glowing blue lights and macro crystalline structures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOn8hIZiy_3-Jwt3mZ-7J7b3rpukKUdPGNk9up8eANiJG5ns6rQXe_V-eGh3I8g1Xb8UuyjlNyJ5BLBO0k2coo15FoKucuLcnkKXiPjwq2Tz-9LBbbCJvu3Vo4aRShitEhOZ3OOHIq1LRvRi3s_teZkchCbrT3VIY_fsGK387Aj8E1c-Lc4mKb0MRfGyjVYtDfbP4xZWTZ7hzjivgKK5b0aOVJwK_3rtMTNfKVKe1liqIzt8U8sctgIkdaDxL4GRV4zyUYad1tUQ8"/>
+<div class="relative z-10 max-w-xl space-y-6">
+<span class="inline-block px-4 py-1.5 bg-primary/20 backdrop-blur-md rounded-full border border-primary/30 text-xs font-bold tracking-widest uppercase">System Integration</span>
+<h2 class="text-3xl font-headline font-extrabold leading-tight">Universal Accessibility &amp; Precision Inputs</h2>
+<p class="text-slate-300">Our form system adapts to the environment. Whether on a high-resolution surgical monitor or a handheld tablet, the "Clinical Ether" design system ensures data integrity and user focus.</p>
+<div class="flex gap-4">
+<button class="px-6 py-3 bg-white text-slate-900 rounded-xl font-bold hover:bg-slate-100 transition-colors">Documentation</button>
+<button class="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl font-bold hover:bg-white/20 transition-colors">API Keys</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation for Mobile -->
+<nav class="fixed bottom-0 left-0 right-0 md:hidden bg-white/95 backdrop-blur-lg border-t border-slate-100 z-50">
+<div class="flex items-center justify-around h-20 px-4">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-bold">Overview</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">dentistry</span>
+<span class="text-[10px] font-bold">Chart</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">schedule</span>
+<span class="text-[10px] font-bold">Schedule</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</div>
+</nav>
+</body></html>

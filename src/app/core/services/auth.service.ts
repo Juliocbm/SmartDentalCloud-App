@@ -1,8 +1,12 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, Injector, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { LoggingService } from './logging.service';
+import { EntitlementService } from './entitlement.service';
+import { FavoritesService } from './favorites.service';
+import { AlertsCountService } from './alerts-count.service';
+import { UserProfileCacheService } from './user-profile-cache.service';
 import {
   LoginRequest,
   LoginResponse,
@@ -22,6 +26,10 @@ export class AuthService {
   private apiService = inject(ApiService);
   private router = inject(Router);
   private logger = inject(LoggingService);
+  private injector = inject(Injector);
+  private entitlementService = inject(EntitlementService);
+  private favoritesService = inject(FavoritesService);
+  private alertsCountService = inject(AlertsCountService);
 
   private readonly TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
@@ -217,6 +225,14 @@ export class AuthService {
     this.clearSession();
     this.currentUser.set(null);
     this.isAuthenticated.set(false);
+
+    // Resetear caches de servicios con estado independiente
+    // (PermissionService y FeatureService auto-cascadean via computed signals)
+    this.entitlementService.reset();
+    this.injector.get(UserProfileCacheService).reset();  // lazy inject — evita DI circular
+    this.favoritesService.reset();
+    this.alertsCountService.reset();
+
     this.router.navigate(['/login']);
   }
 

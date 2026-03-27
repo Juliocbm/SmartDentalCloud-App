@@ -12,6 +12,7 @@ import { WhatsAppTemplate } from '../../../messaging/models/messaging.models';
 import { NotificationTemplateService } from '../../../settings/services/notification-template.service';
 import { NotificationTemplate } from '../../../settings/models/notification-template.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { FeatureService } from '../../../../core/services/feature.service';
 
 @Component({
   selector: 'app-send-notification-modal',
@@ -27,6 +28,9 @@ export class SendNotificationModalComponent implements ModalComponentBase<unknow
   private service = inject(NotificationCenterService);
   private messagingService = inject(MessagingService);
   private notificationTemplateService = inject(NotificationTemplateService);
+  featureService = inject(FeatureService);
+
+  hasWhatsApp = computed(() => this.featureService.hasFeature('WhatsAppMessaging'));
 
   // Selección de paciente
   selectedPatient = signal<PatientSearchResult | null>(null);

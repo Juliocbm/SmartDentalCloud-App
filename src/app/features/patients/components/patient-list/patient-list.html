@@ -8,6 +8,7 @@
     [defaultBackRoute]="'/dashboard'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      <app-quota-usage-indicator quotaKey="Quota:Patients" />
       @if (permissionService.hasPermission(PERMISSIONS.PatientsExport)) {
         <button class="btn btn-outline" (click)="exportToCsv()">
           <i class="fa-solid fa-file-csv"></i>
@@ -15,7 +16,7 @@
         </button>
       }
       @if (permissionService.hasPermission(PERMISSIONS.PatientsCreate)) {
-        <button class="btn btn-outline btn-success" routerLink="/patients/new">
+        <button class="btn btn-outline btn-success" (click)="createPatient()">
           <i class="fa-solid fa-plus"></i>
           Nuevo Paciente
         </button>

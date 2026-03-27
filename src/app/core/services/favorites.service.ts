@@ -17,6 +17,10 @@ export class FavoritesService {
 
   hasFavorites = computed(() => this.favoriteIds().length > 0);
 
+  reset(): void {
+    this.favoriteIds.set([]);
+  }
+
   loadFavorites(): void {
     this.apiService.get<string[]>('/favorites').subscribe({
       next: (ids) => this.favoriteIds.set(ids),

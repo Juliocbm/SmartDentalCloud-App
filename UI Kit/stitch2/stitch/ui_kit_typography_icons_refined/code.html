@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DentiCare Precision UI Kit</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-secondary-fixed": "#324242",
+              "on-secondary-fixed-variant": "#4e5f5e",
+              "inverse-surface": "#0b0f10",
+              "secondary-dim": "#465656",
+              "surface-tint": "#2e5ea9",
+              "tertiary": "#685781",
+              "surface-container-high": "#e3e9ed",
+              "primary-fixed": "#80abfc",
+              "surface-variant": "#dce4e8",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#eaeff2",
+              "error-container": "#fa746f",
+              "outline": "#747c80",
+              "surface-bright": "#f7f9fb",
+              "secondary-fixed": "#d4e6e5",
+              "primary-dim": "#1e529c",
+              "background": "#f7f9fb",
+              "secondary-container": "#d4e6e5",
+              "on-primary-fixed-variant": "#003370",
+              "tertiary-dim": "#5c4c74",
+              "surface-container-highest": "#dce4e8",
+              "on-tertiary-fixed-variant": "#5d4d76",
+              "on-surface-variant": "#596064",
+              "primary-container": "#80abfc",
+              "secondary-fixed-dim": "#c6d8d7",
+              "on-tertiary-container": "#53436c",
+              "on-background": "#2c3437",
+              "tertiary-fixed": "#e3ceff",
+              "inverse-primary": "#80abfc",
+              "on-tertiary-fixed": "#403158",
+              "tertiary-container": "#e3ceff",
+              "inverse-on-surface": "#9a9d9f",
+              "outline-variant": "#acb3b7",
+              "on-primary": "#f9f8ff",
+              "primary": "#2e5ea9",
+              "error": "#a83836",
+              "error-dim": "#67040d",
+              "on-primary-fixed": "#00102b",
+              "on-surface": "#2c3437",
+              "tertiary-fixed-dim": "#d5c1f1",
+              "surface-container-low": "#f0f4f7",
+              "on-secondary": "#eafdfc",
+              "surface-dim": "#d4dbdf",
+              "on-error": "#fff7f6",
+              "on-error-container": "#6e0a12",
+              "secondary": "#526262",
+              "on-primary-container": "#002b5f",
+              "on-secondary-container": "#445554",
+              "on-tertiary": "#fef7ff",
+              "primary-fixed-dim": "#729eed",
+              "surface": "#f7f9fb"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 24px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            color: #2c3437;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased">
+<!-- TopNavBar Implementation -->
+<nav class="fixed top-0 w-full z-50 bg-white/85 dark:bg-slate-950/85 backdrop-blur-md shadow-[0_12px_32px_-4px_rgba(25,28,30,0.04)]">
+<div class="flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-slate-900 dark:text-slate-100 font-headline">DentiCare Precision</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-['Manrope'] font-semibold text-sm tracking-tight text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Dashboard</a>
+<a class="font-['Manrope'] font-semibold text-sm tracking-tight text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Patients</a>
+<a class="font-['Manrope'] font-semibold text-sm tracking-tight text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Schedule</a>
+<a class="font-['Manrope'] font-semibold text-sm tracking-tight text-blue-700 dark:text-blue-400 border-b-2 border-blue-600 pb-1" href="#">Analytics</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-600">contrast</span>
+</button>
+<button class="p-2 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-600">settings</span>
+</button>
+</div>
+<img alt="Dr. Julianne Smith" class="w-8 h-8 rounded-full border border-outline-variant/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_zDR5h9C6oXTgTiQKcOwF03yn2ij79tlFmUjs4Ba6uQXPzXtRFJl2URvWxifxgieHetPWrmSdC0Mxl5j4w2dqxXZZmoM_rVkqWm6vyXdO7DgEpq-50g1-pWgB7LJmFo_rqrzsIj3T8u5GgEdZU9Buivq67ksDt2TO_4905G9cjSQW9WaoW5ExkTqah4gyNPnyARrWkZxA8zHmJwc3TNvJtvc35hRXB6i1RWZALGCbeVBIAW7dloR4YTgHbTqYPzl02DgDvO-k-rU"/>
+</div>
+</div>
+<div class="bg-slate-100 dark:bg-slate-800 h-[1px] w-full self-end"></div>
+</nav>
+<main class="pt-24 pb-20 px-6 max-w-7xl mx-auto space-y-16">
+<!-- Typography Section: Manrope Editorial -->
+<section>
+<div class="mb-10">
+<h2 class="font-headline font-extrabold text-4xl tracking-tighter text-primary">Manrope</h2>
+<p class="font-body text-on-surface-variant text-lg">Our Editorial Voice for clinical authority and moments of impact.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+<div class="space-y-8 p-8 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10">
+<div>
+<span class="label-sm font-label uppercase tracking-widest text-outline mb-2 block">Display Large</span>
+<h1 class="font-headline font-extrabold text-[3.5rem] leading-[1.1] tracking-[-0.02em]">Precision Care.</h1>
+<p class="text-sm text-outline mt-2 italic">3.5rem / 56px • ExtraBold • -0.02em tracking</p>
+</div>
+<div>
+<span class="label-sm font-label uppercase tracking-widest text-outline mb-2 block">Title Large</span>
+<h2 class="font-headline font-bold text-3xl tracking-tight">Patient Records System</h2>
+<p class="text-sm text-outline mt-2 italic">1.875rem / 30px • Bold • Tight tracking</p>
+</div>
+</div>
+<div class="space-y-6">
+<div class="flex items-center gap-6 p-4 rounded-lg bg-surface-container-low">
+<span class="text-4xl font-headline font-extrabold w-16 text-center">Aa</span>
+<div>
+<p class="font-headline font-bold text-xl">Headlines &amp; Brand</p>
+<p class="font-body text-sm text-on-surface-variant">Manrope's geometric clarity ensures professional authority.</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-6 rounded-lg bg-white border border-outline-variant/10">
+<span class="block font-headline font-bold text-2xl">700</span>
+<span class="text-xs text-outline font-label uppercase">Bold weight</span>
+</div>
+<div class="p-6 rounded-lg bg-white border border-outline-variant/10">
+<span class="block font-headline font-extrabold text-2xl">800</span>
+<span class="text-xs text-outline font-label uppercase">Extra Bold</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Typography Section: Inter Functional -->
+<section>
+<div class="mb-10">
+<h2 class="font-headline font-extrabold text-4xl tracking-tighter text-primary">Inter</h2>
+<p class="font-body text-on-surface-variant text-lg">Our Workhorse for data-heavy charting and functional clarity.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 bg-surface-container-low rounded-xl p-8">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/20">
+<th class="pb-4 font-label text-xs uppercase tracking-widest text-outline">Category</th>
+<th class="pb-4 font-label text-xs uppercase tracking-widest text-outline">Example</th>
+<th class="pb-4 font-label text-xs uppercase tracking-widest text-outline">Details</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr>
+<td class="py-6 font-body font-semibold">Body Large</td>
+<td class="py-6 font-body text-lg">Advanced radiographic analysis.</td>
+<td class="py-6 font-label text-sm text-outline">1.125rem / 28px</td>
+</tr>
+<tr>
+<td class="py-6 font-body font-medium">Body Medium</td>
+<td class="py-6 font-body text-base">Standard clinical note for procedure #204.</td>
+<td class="py-6 font-label text-sm text-outline">1rem / 24px</td>
+</tr>
+<tr>
+<td class="py-6 font-body font-medium">Body Small</td>
+<td class="py-6 font-body text-sm text-on-surface-variant">Next appointment scheduled for Oct 24, 2024.</td>
+<td class="py-6 font-label text-sm text-outline">0.875rem / 20px</td>
+</tr>
+<tr>
+<td class="py-6 font-label font-bold uppercase tracking-wider">Label XS</td>
+<td class="py-6 font-label text-xs uppercase tracking-widest text-primary">URGENT FOLLOW-UP</td>
+<td class="py-6 font-label text-sm text-outline">0.75rem / 16px</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="space-y-6">
+<div class="p-8 bg-primary rounded-xl text-on-primary">
+<p class="font-body text-sm mb-4">Functional Clarity</p>
+<p class="font-body text-2xl font-medium leading-snug">Inter was designed for screens. Tall x-heights make dental charts readable at a glance.</p>
+</div>
+<div class="p-8 bg-surface-container-highest rounded-xl">
+<div class="flex justify-between items-end mb-4">
+<span class="text-4xl font-body font-semibold">Aa</span>
+<span class="font-label text-xs uppercase text-outline">Inter Font Family</span>
+</div>
+<p class="font-body text-sm text-on-surface-variant">Optimal for scheduling tables, billing records, and patient histories.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Iconography Section -->
+<section>
+<div class="mb-10 flex justify-between items-end">
+<div>
+<h2 class="font-headline font-extrabold text-4xl tracking-tighter text-primary">Clinical Iconography</h2>
+<p class="font-body text-on-surface-variant text-lg">Minimalist 24px stroke-based icons for a soft, sanctuary feel.</p>
+</div>
+<div class="hidden md:block">
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-headline font-semibold text-sm shadow-sm hover:opacity-90 transition-opacity">
+                        Download SVG Set
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6">
+<!-- Dental Specific Icons -->
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="dentistry">dentistry</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">dentistry</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">biotech</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="health_and_safety">health_and_safety</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">health_and_safety</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="radiology">radiology</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">radiology</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="clean_hands">clean_hands</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">clean_hands</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">medication</span>
+</div>
+<!-- Navigation & App Icons -->
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">dashboard</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">assignment</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">payments</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">chat_bubble</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">schedule</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 p-6 rounded-xl flex flex-col items-center gap-4 transition-transform hover:translate-y-[-4px] duration-200">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+</div>
+<span class="font-label text-xs font-semibold text-on-surface-variant">analytics</span>
+</div>
+</div>
+</section>
+<!-- Color Palette Snippet (Contextual usage) -->
+<section class="bg-surface-container rounded-3xl p-12 overflow-hidden relative">
+<div class="absolute top-0 right-0 p-12 opacity-10">
+<span class="material-symbols-outlined text-[120px]" data-icon="dentistry">dentistry</span>
+</div>
+<div class="relative z-10 max-w-2xl">
+<h3 class="font-headline font-extrabold text-3xl mb-4">Softened Clinical Blue</h3>
+<p class="font-body text-on-surface-variant mb-8">Our core palette uses tonal layering instead of harsh borders. We pair deep clinical blues with warm neutrals to evoke trust and calm.</p>
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center gap-3 bg-white p-3 pr-6 rounded-full shadow-sm">
+<div class="w-8 h-8 rounded-full bg-primary"></div>
+<span class="font-label font-bold text-sm">Primary</span>
+</div>
+<div class="flex items-center gap-3 bg-white p-3 pr-6 rounded-full shadow-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container"></div>
+<span class="font-label font-bold text-sm">Container</span>
+</div>
+<div class="flex items-center gap-3 bg-white p-3 pr-6 rounded-full shadow-sm">
+<div class="w-8 h-8 rounded-full bg-tertiary"></div>
+<span class="font-label font-bold text-sm">Tertiary</span>
+</div>
+<div class="flex items-center gap-3 bg-white p-3 pr-6 rounded-full shadow-sm">
+<div class="w-8 h-8 rounded-full bg-surface-container-high"></div>
+<span class="font-label font-bold text-sm">Neutral</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- SideNavBar (Mobile Bottom Bar representation for this page) -->
+<div class="md:hidden fixed bottom-0 w-full bg-slate-50 dark:bg-slate-900 flex justify-around p-4 border-t border-outline-variant/10 z-50">
+<div class="flex flex-col items-center text-blue-700">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-medium font-body mt-1">Overview</span>
+</div>
+<div class="flex flex-col items-center text-slate-600">
+<span class="material-symbols-outlined" data-icon="dentistry">dentistry</span>
+<span class="text-[10px] font-medium font-body mt-1">Clinical</span>
+</div>
+<div class="flex flex-col items-center text-slate-600">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+<span class="text-[10px] font-medium font-body mt-1">Imaging</span>
+</div>
+<div class="flex flex-col items-center text-slate-600">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-[10px] font-medium font-body mt-1">Billing</span>
+</div>
+</div>
+</body></html>

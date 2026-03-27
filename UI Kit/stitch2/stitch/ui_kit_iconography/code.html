@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DentaCore Enterprise - UI Kit: Iconography</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary-fixed-variant": "#26467d",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e2e2e6",
+                        "on-error": "#ffffff",
+                        "surface": "#f9f9fd",
+                        "surface-container-high": "#e7e8eb",
+                        "background": "#f9f9fd",
+                        "inverse-primary": "#adc6ff",
+                        "primary-container": "#0070eb",
+                        "inverse-on-surface": "#f0f0f4",
+                        "outline-variant": "#c1c6d7",
+                        "surface-container-low": "#f3f3f7",
+                        "surface-container": "#edeef1",
+                        "secondary-container": "#a1befd",
+                        "on-secondary-fixed": "#001a41",
+                        "tertiary-container": "#008566",
+                        "tertiary-fixed": "#8ff6d0",
+                        "on-primary-container": "#fefcff",
+                        "on-primary-fixed": "#001a41",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#00513d",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#f9f9fd",
+                        "on-surface": "#191c1e",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#2e3133",
+                        "on-background": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#f5fff8",
+                        "on-secondary-container": "#2d4c83",
+                        "outline": "#717786",
+                        "on-tertiary-fixed": "#002117",
+                        "on-primary-fixed-variant": "#004493",
+                        "tertiary": "#006950",
+                        "primary-fixed-dim": "#adc6ff",
+                        "primary": "#0058bc",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "surface-variant": "#e2e2e6",
+                        "tertiary-fixed-dim": "#73d9b5",
+                        "surface-tint": "#005bc1",
+                        "secondary": "#405e96",
+                        "on-surface-variant": "#414755",
+                        "surface-dim": "#d9dadd"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .icon-solid {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-thin {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- Top Navigation Bar (Shared Component) -->
+<header class="bg-white/85 dark:bg-slate-900/85 backdrop-blur-md sticky top-0 z-50 shadow-sm flex justify-between items-center w-full px-6 py-3 border-b border-slate-200/50">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-blue-700">DentaCore Enterprise</span>
+<nav class="hidden md:flex items-center space-x-6">
+<a class="text-slate-500 hover:text-blue-600 font-medium transition-colors" href="#">Dashboard</a>
+<a class="text-slate-500 hover:text-blue-600 font-medium transition-colors" href="#">Patients</a>
+<a class="text-slate-500 hover:text-blue-600 font-medium transition-colors" href="#">Schedule</a>
+<a class="text-slate-500 hover:text-blue-600 font-medium transition-colors" href="#">Inventory</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 mr-4">
+<span class="material-symbols-outlined text-slate-500 hover:bg-slate-50 p-2 rounded-full cursor-pointer transition-colors">notifications</span>
+<span class="material-symbols-outlined text-slate-500 hover:bg-slate-50 p-2 rounded-full cursor-pointer transition-colors">settings</span>
+<span class="material-symbols-outlined text-slate-500 hover:bg-slate-50 p-2 rounded-full cursor-pointer transition-colors">help_outline</span>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-5 py-2 rounded-lg font-semibold text-sm shadow-md active:opacity-80 transition-all">New Appointment</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20">
+<img alt="Dr. Julianne Smith" data-alt="professional portrait of a female dentist in white clinical coat with a friendly expression in a bright modern office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeArPbbg62-LT_8Ejypbg1rk8kwczyns1xar3cV2zzOG2VBD7u_tFU4ND0PXa9cziRauQzUOf9Ybp6EOmol0lu63Lm6IZybYOAn1usarUG2Du9nNNhLVCW1PydCc57P88c7vzIhNSUgpvg7zLeH_02WytgWIAxnr2n3kI8FZEWXcRrazMQiAMineZsW7ULOik73Xn4_aQRkKM9MscrvDx-BP2sVJ4XE_ph--FmuNzGWzsBwspR9_jRdqRhvjeIRjcqyJXFTGtTUYQ"/>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- Side Navigation Bar (Shared Component) -->
+<aside class="h-screen w-64 flex-shrink-0 sticky top-0 left-0 bg-slate-50 border-r border-slate-200/30 flex flex-col p-4 space-y-2">
+<div class="flex items-center gap-3 px-2 py-4 mb-4">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">dentistry</span>
+</div>
+<div>
+<h2 class="text-lg font-bold text-slate-900 leading-none">City Dental Care</h2>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mt-1">Premium Practice</p>
+</div>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">clinical_notes</span>
+<span class="text-sm font-medium">Clinical Chart</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">settings_accessibility</span>
+<span class="text-sm font-medium">Radiology</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+<span class="text-sm font-medium">Treatment Plans</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span class="text-sm font-medium">Billing</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+<span class="text-sm font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 hover:translate-x-1 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+<span class="text-sm font-medium">Staff Portal</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-slate-200/50 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">contact_support</span>
+<span class="text-sm font-medium">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-200/50 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span class="text-sm font-medium">Archive</span>
+</a>
+</div>
+<button class="mt-6 w-full py-3 bg-error/10 text-error rounded-xl font-bold text-sm hover:bg-error/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">emergency</span>
+                Emergency Entry
+            </button>
+</aside>
+<!-- Main Content Area: UI Kit Sheet -->
+<main class="flex-1 p-12 max-w-7xl mx-auto">
+<header class="mb-12">
+<p class="text-primary font-bold tracking-widest text-xs uppercase mb-2">System Assets • Sheet 03</p>
+<h1 class="text-5xl font-extrabold font-headline text-on-surface tracking-tight mb-4">UI Kit - Iconography</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">
+                    A comprehensive set of clinical and administrative icons designed for precision and clarity. Our iconography system uses medical blue strokes and minimal line art to reduce cognitive load in dense data environments.
+                </p>
+</header>
+<!-- Section 1: Dental Themed Icon Grid -->
+<section class="mb-20">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-bold font-headline">Clinical &amp; Dental Set</h2>
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-[10px] font-bold text-outline uppercase tracking-wider">40 Items</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6">
+<!-- Icon Card Component -->
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">dentistry</span>
+<span class="text-[10px] font-medium opacity-60">dentistry</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">mop</span>
+<span class="text-[10px] font-medium opacity-60">molar</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">clean_hands</span>
+<span class="text-[10px] font-medium opacity-60">hygiene</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">calendar_today</span>
+<span class="text-[10px] font-medium opacity-60">schedule</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">person_search</span>
+<span class="text-[10px] font-medium opacity-60">patients</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">bar_chart_4_bars</span>
+<span class="text-[10px] font-medium opacity-60">analytics</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">receipt_long</span>
+<span class="text-[10px] font-medium opacity-60">billing</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">prescriptions</span>
+<span class="text-[10px] font-medium opacity-60">rx</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">radiology</span>
+<span class="text-[10px] font-medium opacity-60">radiology</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">medication</span>
+<span class="text-[10px] font-medium opacity-60">supplies</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">biotech</span>
+<span class="text-[10px] font-medium opacity-60">lab</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">health_metrics</span>
+<span class="text-[10px] font-medium opacity-60">charts</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">history_edu</span>
+<span class="text-[10px] font-medium opacity-60">consent</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">payments</span>
+<span class="text-[10px] font-medium opacity-60">payments</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">vaccines</span>
+<span class="text-[10px] font-medium opacity-60">anesthesia</span>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-xl border-ghost group hover:bg-primary-container hover:text-white transition-all duration-300">
+<span class="material-symbols-outlined text-3xl mb-3 text-primary group-hover:text-white">personal_injury</span>
+<span class="text-[10px] font-medium opacity-60">surgery</span>
+</div>
+</div>
+</section>
+<!-- Section 2: Icon Styles & Sizing -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+<!-- Icon Styles -->
+<section>
+<h2 class="text-2xl font-bold font-headline mb-8">Icon Styles</h2>
+<div class="bg-surface-container p-8 rounded-2xl flex flex-col gap-6">
+<!-- Outline Style -->
+<div class="flex items-center gap-10">
+<div class="w-32">
+<span class="text-sm font-bold text-outline uppercase tracking-wider">Outline</span>
+</div>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-3xl text-primary">dentistry</span>
+<span class="material-symbols-outlined text-3xl text-primary">mop</span>
+<span class="material-symbols-outlined text-3xl text-primary">calendar_today</span>
+</div>
+<div class="flex-1 text-right">
+<span class="text-xs text-on-surface-variant font-medium">Stroke-based, light weight (400)</span>
+</div>
+</div>
+<div class="h-px bg-outline-variant/20"></div>
+<!-- Solid Style -->
+<div class="flex items-center gap-10">
+<div class="w-32">
+<span class="text-sm font-bold text-outline uppercase tracking-wider">Solid</span>
+</div>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-3xl text-primary icon-solid">dentistry</span>
+<span class="material-symbols-outlined text-3xl text-primary icon-solid">mop</span>
+<span class="material-symbols-outlined text-3xl text-primary icon-solid">calendar_today</span>
+</div>
+<div class="flex-1 text-right">
+<span class="text-xs text-on-surface-variant font-medium">Filled, high visual weight</span>
+</div>
+</div>
+<div class="h-px bg-outline-variant/20"></div>
+<!-- Tonal Style -->
+<div class="flex items-center gap-10">
+<div class="w-32">
+<span class="text-sm font-bold text-outline uppercase tracking-wider">Tonal</span>
+</div>
+<div class="flex gap-6">
+<div class="bg-primary/10 p-2 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl text-primary">dentistry</span>
+</div>
+<div class="bg-primary/10 p-2 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl text-primary">mop</span>
+</div>
+<div class="bg-primary/10 p-2 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl text-primary">calendar_today</span>
+</div>
+</div>
+<div class="flex-1 text-right">
+<span class="text-xs text-on-surface-variant font-medium">Container-based, subtle emphasis</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Sizing Guide -->
+<section>
+<h2 class="text-2xl font-bold font-headline mb-8">Sizing Guide</h2>
+<div class="bg-surface-container-low p-8 rounded-2xl flex flex-col justify-between h-[300px]">
+<div class="flex items-end gap-12">
+<div class="flex flex-col items-center gap-4">
+<div class="w-12 h-12 flex items-center justify-center bg-white rounded shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-on-surface">dentistry</span>
+</div>
+<span class="text-xs font-bold font-label">16px</span>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="w-14 h-14 flex items-center justify-center bg-white rounded shadow-sm">
+<span class="material-symbols-outlined text-[24px] text-on-surface">dentistry</span>
+</div>
+<span class="text-xs font-bold font-label">24px</span>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="w-16 h-16 flex items-center justify-center bg-white rounded shadow-sm">
+<span class="material-symbols-outlined text-[32px] text-on-surface">dentistry</span>
+</div>
+<span class="text-xs font-bold font-label">32px</span>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="w-20 h-20 flex items-center justify-center bg-white rounded shadow-sm">
+<span class="material-symbols-outlined text-[48px] text-on-surface">dentistry</span>
+</div>
+<span class="text-xs font-bold font-label">48px</span>
+</div>
+</div>
+<div class="mt-8 space-y-2">
+<div class="flex items-center gap-4">
+<span class="w-2 h-2 bg-primary rounded-full"></span>
+<p class="text-xs text-on-surface-variant italic">16px: Inline labels, table status, tight data views.</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-2 h-2 bg-primary rounded-full"></span>
+<p class="text-xs text-on-surface-variant italic">24px: Standard navigation, form inputs, toolbars.</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="w-2 h-2 bg-primary rounded-full"></span>
+<p class="text-xs text-on-surface-variant italic">48px: Empty states, feature highlights, dashboard cards.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Bento Grid: Usage Showcase -->
+<section class="mt-20">
+<h2 class="text-2xl font-bold font-headline mb-8">Implementation Examples</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Example 1: Action Menu -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl border border-slate-100/50 flex flex-col gap-4">
+<h3 class="font-bold text-sm text-outline uppercase tracking-widest">Patient Actions</h3>
+<ul class="space-y-1">
+<li class="flex items-center gap-3 p-3 hover:bg-surface-container-low rounded-xl cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-primary text-xl">edit_note</span>
+<span class="text-sm font-medium">Update History</span>
+</li>
+<li class="flex items-center gap-3 p-3 hover:bg-surface-container-low rounded-xl cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-primary text-xl">folder_shared</span>
+<span class="text-sm font-medium">Share Records</span>
+</li>
+<li class="flex items-center gap-3 p-3 hover:bg-surface-container-low rounded-xl cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-error text-xl">delete_sweep</span>
+<span class="text-sm font-medium text-error">Archive Patient</span>
+</li>
+</ul>
+</div>
+<!-- Example 2: Status Indicator -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl border border-slate-100/50 flex flex-col items-center justify-center text-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined text-6xl text-tertiary">check_circle</span>
+<div class="absolute -top-1 -right-1 w-4 h-4 bg-tertiary-fixed border-2 border-white rounded-full"></div>
+</div>
+<div>
+<p class="font-bold text-lg leading-tight">Billing Synchronized</p>
+<p class="text-xs text-on-surface-variant mt-1">Last synced 2m ago via Enterprise Bridge</p>
+</div>
+</div>
+<!-- Example 3: Tab Navigation -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl border border-slate-100/50 flex flex-col gap-6">
+<h3 class="font-bold text-sm text-outline uppercase tracking-widest">View Mode</h3>
+<div class="flex p-1 bg-surface-container-low rounded-xl">
+<button class="flex-1 flex items-center justify-center gap-2 py-2 bg-white rounded-lg shadow-sm text-sm font-semibold text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+                                Grid
+                            </button>
+<button class="flex-1 flex items-center justify-center gap-2 py-2 text-on-surface-variant text-sm font-medium">
+<span class="material-symbols-outlined text-lg">list</span>
+                                List
+                            </button>
+</div>
+<p class="text-[10px] text-center text-on-surface-variant">Switching between high-level and detailed data views.</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer Meta -->
+<footer class="mt-12 py-8 bg-surface-container-low text-center">
+<div class="flex flex-col items-center gap-2">
+<span class="text-2xl font-bold tracking-tight text-blue-700">DentaCore</span>
+<p class="text-sm text-on-surface-variant font-medium">Dental Enterprise Design System v2.4.0</p>
+<p class="text-xs text-outline mt-4 italic">© 2024 DentaCore Systems. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

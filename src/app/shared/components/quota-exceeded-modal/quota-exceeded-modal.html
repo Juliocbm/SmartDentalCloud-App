@@ -1,0 +1,40 @@
+<app-modal
+  title="Límite de plan alcanzado"
+  icon="fa-triangle-exclamation"
+  size="sm"
+  (closed)="close()">
+
+  <div class="quota-modal-content">
+    <p class="quota-modal__message">
+      Tu plan <strong>{{ modalData?.planName }}</strong> no permite agregar más recursos.
+      Actualiza a un plan superior para seguir creciendo.
+    </p>
+
+    <div class="quota-modal__usage">
+      <div class="quota-modal__usage-header">
+        <span class="quota-modal__resource">
+          <i class="fa-solid" [class]="resourceIcon"></i>
+          {{ resourceLabel }}
+        </span>
+        <span class="quota-modal__count">{{ modalData?.currentUsage }} / {{ modalData?.limit }}</span>
+      </div>
+      <div class="quota-modal__bar">
+        <div class="quota-modal__fill" [style.width.%]="usagePercent"></div>
+      </div>
+    </div>
+
+    <div class="quota-modal__info">
+      <i class="fa-solid fa-arrow-up-right-dots"></i>
+      <span>Mejora tu plan para aumentar tus límites y seguir creciendo.</span>
+    </div>
+  </div>
+
+  <div modal-footer>
+    <div class="quota-modal__actions">
+      <button class="btn btn-outline" (click)="close()">Cerrar</button>
+      <button class="btn btn-primary" (click)="goToSubscription()">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> Actualizar Plan
+      </button>
+    </div>
+  </div>
+</app-modal>

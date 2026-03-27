@@ -1,0 +1,14 @@
+@if (quota(); as q) {
+  @if (q.limit !== null) {
+    <div class="quota-indicator"
+         [class.quota-indicator--warning]="q.isNearLimit && q.usagePercent < 95"
+         [class.quota-indicator--critical]="q.usagePercent >= 95">
+      <i class="fa-solid" [ngClass]="icon()"></i>
+      <span class="quota-indicator__label">{{ label() }}:</span>
+      <span class="quota-indicator__count">{{ q.currentUsage }} / {{ q.limit }}</span>
+      <div class="quota-indicator__bar">
+        <div class="quota-indicator__fill" [style.width.%]="q.usagePercent"></div>
+      </div>
+    </div>
+  }
+}

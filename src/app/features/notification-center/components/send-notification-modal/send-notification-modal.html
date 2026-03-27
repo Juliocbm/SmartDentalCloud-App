@@ -55,8 +55,8 @@
         (ngModelChange)="onChannelChange($event)"
         [disabled]="sending()">
         <option value="Email">Email</option>
-        <option value="WhatsApp">WhatsApp</option>
-        <option value="SMS">SMS</option>
+        <option value="WhatsApp" [disabled]="!hasWhatsApp()">WhatsApp{{ !hasWhatsApp() ? ' (Plan Profesional)' : '' }}</option>
+        <option value="SMS" [disabled]="!hasWhatsApp()">SMS{{ !hasWhatsApp() ? ' (Plan Profesional)' : '' }}</option>
       </select>
     </div>
 

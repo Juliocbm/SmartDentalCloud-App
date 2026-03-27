@@ -198,9 +198,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.logger.error('Error during logout:', error);
-        // Aún así limpiar sesión local
-        localStorage.clear();
-        window.location.href = '/login';
+        // Aún así hacer cleanup completo y redirigir al login
+        this.authService.handleLogout();
       }
     });
   }

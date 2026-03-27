@@ -1,33 +1,21 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
-import { of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-import { FeatureService } from '../services/feature.service';
-import { SubscriptionsService } from '../../features/subscriptions/services/subscriptions.service';
+import { EntitlementService } from '../services/entitlement.service';
 
 /**
- * Guard que garantiza que las features del plan estén cargadas
- * en FeatureService ANTES de que los child guards las evalúen.
+ * Guard que garantiza que los entitlements (features + quotas) estén cargados
+ * ANTES de que los child guards los evalúen.
  * Siempre retorna true — su rol es data loading, no access control.
  */
-export const featuresLoaderGuard: CanActivateFn = () => {
+export const featuresLoaderGuard: CanActivateFn = async () => {
   const authService = inject(AuthService);
-  const featureService = inject(FeatureService);
-  const subscriptionsService = inject(SubscriptionsService);
+  const entitlementService = inject(EntitlementService);
 
-  if (!authService.isAuthenticated() || featureService.loaded()) {
+  if (!authService.isAuthenticated() || entitlementService.loaded()) {
     return true;
   }
 
-  return subscriptionsService.getCurrent().pipe(
-    map(sub => {
-      featureService.loadFromPlanName(sub.planName);
-      return true as const;
-    }),
-    catchError(() => {
-      featureService.loadFromPlanName('');
-      return of(true as const);
-    })
-  );
+  await entitlementService.loadEntitlements();
+  return true;
 };

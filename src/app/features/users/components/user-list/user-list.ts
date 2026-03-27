@@ -12,11 +12,16 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { QuotaUsageIndicatorComponent } from '../../../../shared/components/quota-usage-indicator/quota-usage-indicator';
+import { EntitlementService } from '../../../../core/services/entitlement.service';
+import { ModalService } from '../../../../shared/services/modal.service';
+import { QuotaExceededModalComponent, QuotaExceededModalData } from '../../../../shared/components/quota-exceeded-modal/quota-exceeded-modal';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, QuotaUsageIndicatorComponent],
   templateUrl: './user-list.html',
   styleUrls: ['./user-list.scss']
 })
@@ -25,6 +30,9 @@ export class UserListComponent implements OnInit, OnDestroy {
   private rolesService = inject(RolesService);
   private notifications = inject(NotificationService);
   private logger = inject(LoggingService);
+  private router = inject(Router);
+  private entitlementService = inject(EntitlementService);
+  private modalService = inject(ModalService);
   private searchSubject = new Subject<string>();
   permissionService = inject(PermissionService);
   PERMISSIONS = PERMISSIONS;
@@ -234,5 +242,21 @@ export class UserListComponent implements OnInit, OnDestroy {
       'Asistente': 'fa-user-nurse'
     };
     return iconMap[roleName] || 'fa-user';
+  }
+
+  createUser(): void {
+    const quota = this.entitlementService.getQuota('Quota:Users');
+    if (quota && quota.limit !== null && quota.currentUsage >= quota.limit) {
+      this.modalService.open<QuotaExceededModalData>(QuotaExceededModalComponent, {
+        data: {
+          planName: this.entitlementService.planName(),
+          resourceType: 'Quota:Users',
+          currentUsage: quota.currentUsage,
+          limit: quota.limit
+        }
+      });
+      return;
+    }
+    this.router.navigate(['/users/new']);
   }
 }

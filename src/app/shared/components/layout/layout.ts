@@ -8,8 +8,7 @@ import { ModalService } from '../../services/modal.service';
 import { LocationsService } from '../../../features/settings/services/locations.service';
 import { SidebarStateService } from '../../../core/services/sidebar-state.service';
 import { NavigationStateService } from '../../../core/services/navigation-state.service';
-import { FeatureService } from '../../../core/services/feature.service';
-import { SubscriptionsService } from '../../../features/subscriptions/services/subscriptions.service';
+import { EntitlementService } from '../../../core/services/entitlement.service';
 
 @Component({
   selector: 'app-layout',
@@ -23,8 +22,7 @@ export class LayoutComponent implements OnInit {
   private modalService = inject(ModalService);
   private locationsService = inject(LocationsService);
   private navigationState = inject(NavigationStateService);
-  private featureService = inject(FeatureService);
-  private subscriptionsService = inject(SubscriptionsService);
+  private entitlementService = inject(EntitlementService);
   sidebarState = inject(SidebarStateService);
 
   constructor() {
@@ -40,15 +38,8 @@ export class LayoutComponent implements OnInit {
   ngOnInit(): void {
     this.locationsService.getSummaries().subscribe();
     this.navigationState.startTracking();
-    if (!this.featureService.loaded()) {
-      this.loadFeatures();
+    if (!this.entitlementService.loaded()) {
+      this.entitlementService.loadEntitlements();
     }
-  }
-
-  private loadFeatures(): void {
-    this.subscriptionsService.getCurrent().subscribe({
-      next: (sub) => this.featureService.loadFromPlanName(sub.planName),
-      error: () => this.featureService.loadFromPlanName('')
-    });
   }
 }

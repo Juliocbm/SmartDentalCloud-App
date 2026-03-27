@@ -56,6 +56,11 @@ export class AlertsCountService {
       });
   }
 
+  reset(): void {
+    this.criticalCount.set(0);
+    this.warningCount.set(0);
+  }
+
   /**
    * Refresca manualmente el contador de alertas
    */
