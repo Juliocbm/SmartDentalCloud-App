@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -20,11 +20,12 @@ import { QuotaUsageIndicatorComponent } from '../../../../shared/components/quot
 import { EntitlementService } from '../../../../core/services/entitlement.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { QuotaExceededModalComponent, QuotaExceededModalData } from '../../../../shared/components/quota-exceeded-modal/quota-exceeded-modal';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-patient-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, QuotaUsageIndicatorComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, QuotaUsageIndicatorComponent, EmptyStateComponent],
   templateUrl: './patient-list.html',
   styleUrl: './patient-list.scss'
 })
@@ -52,6 +53,7 @@ export class PatientListComponent implements OnInit, OnDestroy {
   
   searchTerm = signal('');
   filterStatus = signal<'all' | 'active' | 'inactive'>('all');
+  hasActiveFilters = computed(() => !!this.searchTerm() || this.filterStatus() !== 'all');
   // PAC-BUG-010: estado de ordenamiento de la tabla
   sortColumn = signal<string>('lastName');
   sortDirection = signal<'asc' | 'desc'>('asc');

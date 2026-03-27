@@ -246,16 +246,20 @@
         </div>
 
         @if (!featureService.hasFeature('AdvancedReports')) {
-          <div class="empty-state upgrade">
-            <i class="fa-solid fa-lock"></i>
-            <p>Reportes Avanzados requiere el plan <strong>Profesional</strong></p>
-            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
-          </div>
+          <app-empty-state
+            type="informative"
+            icon="fa-lock"
+            description="Reportes Avanzados requiere el plan Profesional"
+            [showAction]="true"
+            actionLabel="Mejorar Plan"
+            actionType="link"
+            actionRoute="/subscription"
+            actionStyleClass="btn btn-sm btn-primary" />
         } @else if (revenueChartData().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-chart-bar"></i>
-            <p>No hay datos de ingresos este mes</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-chart-bar"
+            description="No hay datos de ingresos este mes" />
         } @else {
           <app-bar-chart
             [data]="revenueChartData()"
@@ -275,16 +279,20 @@
         </div>
 
         @if (!featureService.hasFeature('AdvancedReports')) {
-          <div class="empty-state upgrade">
-            <i class="fa-solid fa-lock"></i>
-            <p>Reportes Avanzados requiere el plan <strong>Profesional</strong></p>
-            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
-          </div>
+          <app-empty-state
+            type="informative"
+            icon="fa-lock"
+            description="Reportes Avanzados requiere el plan Profesional"
+            [showAction]="true"
+            actionLabel="Mejorar Plan"
+            actionType="link"
+            actionRoute="/subscription"
+            actionStyleClass="btn btn-sm btn-primary" />
         } @else if (appointmentsChartData().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-calendar-check"></i>
-            <p>No hay datos de citas este mes</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-calendar-check"
+            description="No hay datos de citas este mes" />
         } @else {
           <app-bar-chart
             [data]="appointmentsChartData()"
@@ -310,16 +318,20 @@
         </div>
 
         @if (!featureService.hasFeature('AdvancedReports')) {
-          <div class="empty-state upgrade">
-            <i class="fa-solid fa-lock"></i>
-            <p>Reportes Avanzados requiere el plan <strong>Profesional</strong></p>
-            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
-          </div>
+          <app-empty-state
+            type="informative"
+            icon="fa-lock"
+            description="Reportes Avanzados requiere el plan Profesional"
+            [showAction]="true"
+            actionLabel="Mejorar Plan"
+            actionType="link"
+            actionRoute="/subscription"
+            actionStyleClass="btn btn-sm btn-primary" />
         } @else if (topByRevenue().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-dollar-sign"></i>
-            <p>No hay datos de ingresos este mes</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-dollar-sign"
+            description="No hay datos de ingresos este mes" />
         } @else {
           <div class="dash-list">
             @for (dentist of topByRevenue(); track dentist.dentistId; let idx = $index) {
@@ -351,16 +363,20 @@
         </div>
 
         @if (!featureService.hasFeature('AdvancedReports')) {
-          <div class="empty-state upgrade">
-            <i class="fa-solid fa-lock"></i>
-            <p>Reportes Avanzados requiere el plan <strong>Profesional</strong></p>
-            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
-          </div>
+          <app-empty-state
+            type="informative"
+            icon="fa-lock"
+            description="Reportes Avanzados requiere el plan Profesional"
+            [showAction]="true"
+            actionLabel="Mejorar Plan"
+            actionType="link"
+            actionRoute="/subscription"
+            actionStyleClass="btn btn-sm btn-primary" />
         } @else if (topByTreatments().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-tooth"></i>
-            <p>No hay datos de tratamientos este mes</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-tooth"
+            description="No hay datos de tratamientos este mes" />
         } @else {
           <div class="dash-list">
             @for (dentist of topByTreatments(); track dentist.dentistId; let idx = $index) {
@@ -392,10 +408,10 @@
         </div>
 
         @if (teamList().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-user-doctor"></i>
-            <p>No hay dentistas registrados</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-user-doctor"
+            description="No hay dentistas registrados" />
         } @else {
           <div class="dash-list">
             @for (d of teamList(); track d.id) {

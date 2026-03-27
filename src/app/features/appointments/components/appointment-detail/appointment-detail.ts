@@ -21,11 +21,12 @@ import { PermissionService, PERMISSIONS } from '../../../../core/services/permis
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { InvoiceFormContextService } from '../../../invoices/services/invoice-form-context.service';
 import { APPOINTMENT_INVOICE_CONTEXT } from '../../../invoices/models/invoice-form-context.model';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, AllergyAlertBannerComponent, PatientClinicalSummaryComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, AllergyAlertBannerComponent, PatientClinicalSummaryComponent, EmptyStateComponent],
   templateUrl: './appointment-detail.html',
   styleUrls: ['./appointment-detail.scss']
 })

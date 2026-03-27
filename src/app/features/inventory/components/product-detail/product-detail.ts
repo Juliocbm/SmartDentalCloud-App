@@ -15,11 +15,12 @@ import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stoc
 import { StockOutputModalComponent, StockOutputModalData } from '../stock-output-modal/stock-output-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, EmptyStateComponent],
   templateUrl: './product-detail.html',
   styleUrls: ['./product-detail.scss']
 })

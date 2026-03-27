@@ -31,11 +31,12 @@ import { PermissionService, PERMISSIONS } from '../../../../core/services/permis
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
 import { InvoiceFormContextService } from '../../../invoices/services/invoice-form-context.service';
 import { PLAN_INVOICE_CONTEXT } from '../../../invoices/models/invoice-form-context.model';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-treatment-plan-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, AuditInfoComponent, ModalComponent, SendEmailModalComponent, ServiceSelectComponent, DatePickerComponent, FormSelectComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PageHeaderComponent, AuditInfoComponent, ModalComponent, SendEmailModalComponent, ServiceSelectComponent, DatePickerComponent, FormSelectComponent, EmptyStateComponent],
   templateUrl: './treatment-plan-detail.html',
   styleUrl: './treatment-plan-detail.scss'
 })

@@ -14,6 +14,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 interface ReceiveItem {
   id: string;
@@ -29,7 +30,7 @@ interface ReceiveItem {
 @Component({
   selector: 'app-purchase-order-receive',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './purchase-order-receive.html',
   styleUrls: ['./purchase-order-receive.scss']
 })

@@ -13,11 +13,12 @@ import {
   DEFAULT_AUDIT_ACTION_CONFIG
 } from '../../models/audit-log.models';
 import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-audit-log-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, DateRangePickerComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, DateRangePickerComponent, EmptyStateComponent],
   templateUrl: './audit-log-list.html',
   styleUrl: './audit-log-list.scss'
 })

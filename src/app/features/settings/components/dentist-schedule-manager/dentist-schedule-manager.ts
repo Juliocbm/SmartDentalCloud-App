@@ -6,11 +6,12 @@ import { LocationAutocompleteComponent } from '../../../../shared/components/loc
 import { LocationSummary } from '../../../settings/models/location.models';
 import { LocationsService } from '../../services/locations.service';
 import { WorkScheduleEditorComponent } from '../work-schedule-editor/work-schedule-editor';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-dentist-schedule-manager',
   standalone: true,
-  imports: [CommonModule, DentistAutocompleteComponent, LocationAutocompleteComponent, WorkScheduleEditorComponent],
+  imports: [CommonModule, DentistAutocompleteComponent, LocationAutocompleteComponent, WorkScheduleEditorComponent, EmptyStateComponent],
   templateUrl: './dentist-schedule-manager.html',
   styleUrl: './dentist-schedule-manager.scss'
 })

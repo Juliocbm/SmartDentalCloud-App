@@ -68,11 +68,12 @@ import { PatientLedgerComponent } from '../patient-ledger/patient-ledger';
 import { SendWhatsAppModalComponent, SendWhatsAppModalData } from '../../../messaging/components/send-whatsapp-modal/send-whatsapp-modal';
 import { AppointmentFormContextService } from '../../../appointments/services/appointment-form-context.service';
 import { PATIENT_APPOINTMENT_CONTEXT } from '../../../appointments/models/appointment-form-context.model';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, OdontogramHistoryListComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent, PatientClinicalSummaryComponent, SignaturePadComponent, SignatureModalComponent, SignaturePinSetupComponent, ConsentPrintViewComponent, FormSelectComponent, PatientLedgerComponent],
+  imports: [CommonModule, RouterModule, FormsModule, OdontogramHistoryListComponent, PerioHistoryListComponent, CephHistoryListComponent, PageHeaderComponent, AuditInfoComponent, PatientClinicalSummaryComponent, SignaturePadComponent, SignatureModalComponent, SignaturePinSetupComponent, ConsentPrintViewComponent, FormSelectComponent, PatientLedgerComponent, EmptyStateComponent],
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss'
 })

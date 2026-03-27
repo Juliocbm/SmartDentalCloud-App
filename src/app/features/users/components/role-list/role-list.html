@@ -27,27 +27,30 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadRoles()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadRoles()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && roles().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-shield-halved"></i>
-      <h3>No hay roles configurados</h3>
-      <p>Crea el primer rol personalizado para tu consultorio</p>
-      <a routerLink="/users/roles/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Crear Primer Rol
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-shield-halved"
+      title="No hay roles configurados"
+      description="Crea el primer rol personalizado para tu consultorio"
+      [showAction]="true"
+      actionLabel="Crear Primer Rol"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/users/roles/new">
+    </app-empty-state>
   }
 
   <!-- Roles Grid -->

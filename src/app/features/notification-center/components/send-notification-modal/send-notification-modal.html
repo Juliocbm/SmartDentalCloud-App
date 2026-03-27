@@ -80,10 +80,13 @@
               <p class="template-card__preview">{{ tpl.preview }}</p>
             </button>
           } @empty {
-            <div class="empty-state-small">
-              <i class="fa-solid fa-inbox"></i>
-              <p>No hay templates disponibles para este canal</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin templates"
+              description="No hay templates disponibles para este canal"
+              icon="fa-inbox"
+              size="sm"
+            />
           }
         </div>
 

@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { AppointmentsService } from '../../services/appointments.service';
 import { AppointmentListItem, AppointmentStatus, AppointmentStatusConfig } from '../../models/appointment.models';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { LocationsService } from '../../../settings/services/locations.service';
@@ -20,7 +21,7 @@ import { DaySchedule } from '../../../settings/models/work-schedule.models';
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, DateRangePickerComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, DateRangePickerComponent, EmptyStateComponent],
   templateUrl: './appointment-list.html',
   styleUrls: ['./appointment-list.scss']
 })

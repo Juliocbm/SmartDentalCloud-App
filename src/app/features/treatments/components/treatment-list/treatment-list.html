@@ -58,41 +58,44 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <h3>Error al cargar tratamientos</h3>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadTreatments()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar tratamientos"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadTreatments()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredTreatments().length === 0 && treatments().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-tooth"></i>
-      <h3>No hay tratamientos registrados</h3>
-      <p>Comienza registrando tu primer tratamiento</p>
-      <a class="btn btn-outline btn-success" routerLink="/treatments/new">
-        <i class="fa-solid fa-plus"></i>
-        Registrar Tratamiento
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-tooth"
+      title="No hay tratamientos registrados"
+      description="Comienza registrando tu primer tratamiento"
+      [showAction]="true"
+      actionLabel="Registrar Tratamiento"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/treatments/new">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredTreatments().length === 0 && treatments().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron tratamientos con los filtros aplicados</p>
-      <a routerLink="/treatments/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Tratamiento
-      </a>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron tratamientos con los filtros aplicados"
+      [showAction]="true"
+      actionLabel="Nuevo Tratamiento"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/treatments/new">
+    </app-empty-state>
   }
 
   <!-- Treatments Table -->

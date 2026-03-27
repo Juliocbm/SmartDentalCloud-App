@@ -35,15 +35,18 @@
   }
 
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <h3>Error al cargar el proveedor</h3>
-      <p>{{ error() }}</p>
-      <button (click)="goBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar el proveedor"
+      [description]="error()!"
+      icon="fa-exclamation-triangle"
+      [showAction]="true"
+      actionLabel="Volver"
+      actionIcon="fa-arrow-left"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="goBack()"
+    />
   }
 
   @if (!loading() && !error() && supplier(); as sup) {

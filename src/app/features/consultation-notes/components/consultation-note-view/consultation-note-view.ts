@@ -13,13 +13,14 @@ import { AppointmentsService } from '../../../appointments/services/appointments
 import { PatientDiagnosesService } from '../../../patients/services/patient-diagnoses.service';
 import { Cie10AutocompleteComponent } from '../../../../shared/components/cie10-autocomplete/cie10-autocomplete';
 import { Cie10Code } from '../../../../core/services/cie10.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 type ViewMode = 'loading' | 'view' | 'edit' | 'create' | 'error';
 
 @Component({
   selector: 'app-consultation-note-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, PageHeaderComponent, Cie10AutocompleteComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, PageHeaderComponent, Cie10AutocompleteComponent, EmptyStateComponent],
   templateUrl: './consultation-note-view.html',
   styleUrl: './consultation-note-view.scss'
 })

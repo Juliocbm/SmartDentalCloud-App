@@ -5,6 +5,7 @@ import { ModalComponentBase, ModalRef, ModalConfig } from '../../../../shared/se
 import { TreatmentsService } from '../../../treatments/services/treatments.service';
 import { UnbilledTreatment } from '../../../treatments/models/treatment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 export interface UnbilledTreatmentsModalData {
   patientId: string;
@@ -16,7 +17,7 @@ export interface UnbilledTreatmentsModalData {
 @Component({
   selector: 'app-unbilled-treatments-modal',
   standalone: true,
-  imports: [CommonModule, ModalComponent],
+  imports: [CommonModule, ModalComponent, EmptyStateComponent],
   templateUrl: './unbilled-treatments-modal.html',
   styleUrl: './unbilled-treatments-modal.scss'
 })

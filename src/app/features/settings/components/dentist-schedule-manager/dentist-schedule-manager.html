@@ -53,10 +53,11 @@
         />
       </div>
     } @else {
-      <div class="empty-state select-prompt">
-        <i class="fa-solid fa-hand-pointer"></i>
-        <h3>Selecciona un dentista</h3>
-        <p>Elige un dentista del listado para configurar su horario individual</p>
-      </div>
+      <app-empty-state
+        type="informative"
+        title="Selecciona un dentista"
+        description="Elige un dentista del listado para configurar su horario individual"
+        icon="fa-hand-pointer"
+      />
     }
 </div>

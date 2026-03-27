@@ -66,15 +66,18 @@
       <p>Cargando cita...</p>
     </div>
   } @else if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h2>Error al cargar la cita</h2>
-      <p>{{ error() }}</p>
-      <button (click)="onBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar la cita"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      [showAction]="true"
+      actionLabel="Volver"
+      actionIcon="fa-arrow-left"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="onBack()"
+    />
   } @else if (appointment(); as apt) {
 
     <!-- Terminal status banner -->

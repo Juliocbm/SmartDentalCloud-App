@@ -77,41 +77,44 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <h3>Error al cargar planes</h3>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadPlans()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar planes"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadPlans()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredPlans().length === 0 && plans().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-clipboard-list"></i>
-      <h3>No hay planes de tratamiento</h3>
-      <p>Comienza creando el primer plan de tratamiento para un paciente</p>
-      <a class="btn btn-outline btn-success" routerLink="/treatment-plans/new">
-        <i class="fa-solid fa-plus"></i>
-        Crear Plan
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-clipboard-list"
+      title="No hay planes de tratamiento"
+      description="Comienza creando el primer plan de tratamiento para un paciente"
+      [showAction]="true"
+      actionLabel="Crear Plan"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/treatment-plans/new">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredPlans().length === 0 && plans().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron planes de tratamiento con los filtros aplicados</p>
-      <a routerLink="/treatment-plans/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Plan
-      </a>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron planes de tratamiento con los filtros aplicados"
+      [showAction]="true"
+      actionLabel="Nuevo Plan"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/treatment-plans/new">
+    </app-empty-state>
   }
 
   <!-- Plans Table -->

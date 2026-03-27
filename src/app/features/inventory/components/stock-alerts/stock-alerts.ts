@@ -16,11 +16,12 @@ import { LocationsService } from '../../../settings/services/locations.service';
 import { StockAdjustmentModalComponent, StockAdjustmentModalData } from '../stock-adjustment-modal/stock-adjustment-modal';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-stock-alerts',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, LocationAutocompleteComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, LocationAutocompleteComponent, EmptyStateComponent],
   templateUrl: './stock-alerts.html',
   styleUrls: ['./stock-alerts.scss']
 })

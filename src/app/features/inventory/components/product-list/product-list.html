@@ -77,40 +77,43 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadData()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadData()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredProducts().length === 0 && products().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-box-open"></i>
-      <h3>No hay productos registrados</h3>
-      <p>Comienza agregando el primer producto al inventario</p>
-      <a class="btn btn-outline btn-success" routerLink="/inventory/products/new">
-        <i class="fa-solid fa-plus"></i>
-        Agregar Primer Producto
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-box-open"
+      title="No hay productos registrados"
+      description="Comienza agregando el primer producto al inventario"
+      [showAction]="true"
+      actionLabel="Agregar Primer Producto"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/inventory/products/new">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredProducts().length === 0 && products().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron productos con los filtros aplicados</p>
-      <a routerLink="/inventory/products/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Producto
-      </a>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron productos con los filtros aplicados"
+      [showAction]="true"
+      actionLabel="Nuevo Producto"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/inventory/products/new">
+    </app-empty-state>
   }
 
   <!-- Products Table -->

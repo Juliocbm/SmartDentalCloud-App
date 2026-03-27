@@ -16,11 +16,12 @@
       {{ error() }}
     </div>
   } @else if (treatments().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-check-circle empty-state__icon"></i>
-      <p class="empty-state__title">Sin tratamientos pendientes</p>
-      <p class="empty-state__text">Todos los tratamientos completados de este paciente ya han sido facturados.</p>
-    </div>
+    <app-empty-state
+      type="success"
+      title="Sin tratamientos pendientes"
+      description="Todos los tratamientos completados de este paciente ya han sido facturados."
+      icon="fa-check-circle"
+    />
   } @else {
     <!-- Select all -->
     <div class="select-all-bar">

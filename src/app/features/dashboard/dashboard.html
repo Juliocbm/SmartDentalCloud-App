@@ -220,10 +220,10 @@
         </div>
 
         @if (upcomingAppointments().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-calendar-check"></i>
-            <p>No hay citas programadas próximamente</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-calendar-check"
+            description="No hay citas programadas próximamente" />
         } @else {
           <div class="dash-list">
             @for (apt of upcomingAppointments(); track apt.id) {
@@ -261,16 +261,19 @@
         </div>
 
         @if (!featureService.hasFeature('TreatmentPlans')) {
-          <div class="empty-state upgrade">
-            <i class="fa-solid fa-lock"></i>
-            <p>Planes de Tratamiento requiere el plan <strong>Profesional</strong></p>
-            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
-          </div>
+          <app-empty-state
+            type="informative"
+            icon="fa-lock"
+            description="Planes de Tratamiento requiere el plan Profesional"
+            [showAction]="true"
+            actionLabel="Mejorar Plan"
+            actionType="link"
+            actionRoute="/subscription"
+            actionStyleClass="btn btn-sm btn-primary" />
         } @else if (pendingPlans().length === 0) {
-          <div class="empty-state success">
-            <i class="fa-solid fa-circle-check"></i>
-            <p>No hay planes pendientes de aprobación</p>
-          </div>
+          <app-empty-state
+            type="success"
+            description="No hay planes pendientes de aprobación" />
         } @else {
           <div class="dash-list">
             @for (plan of pendingPlans(); track plan.id) {
@@ -304,16 +307,19 @@
         </div>
 
         @if (!featureService.hasFeature('Inventory')) {
-          <div class="empty-state upgrade">
-            <i class="fa-solid fa-lock"></i>
-            <p>Inventario requiere el plan <strong>Profesional</strong></p>
-            <a routerLink="/subscription" class="btn btn-sm btn-primary">Mejorar Plan</a>
-          </div>
+          <app-empty-state
+            type="informative"
+            icon="fa-lock"
+            description="Inventario requiere el plan Profesional"
+            [showAction]="true"
+            actionLabel="Mejorar Plan"
+            actionType="link"
+            actionRoute="/subscription"
+            actionStyleClass="btn btn-sm btn-primary" />
         } @else if (lowStockItems().length === 0) {
-          <div class="empty-state success">
-            <i class="fa-solid fa-circle-check"></i>
-            <p>No hay alertas de inventario</p>
-          </div>
+          <app-empty-state
+            type="success"
+            description="No hay alertas de inventario" />
         } @else {
         <div class="dash-list">
           @for (item of lowStockItems().slice(0, 5); track item.productId) {

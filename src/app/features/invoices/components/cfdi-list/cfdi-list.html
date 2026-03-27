@@ -35,11 +35,12 @@
 
   <!-- Empty State -->
   @if (!loading() && filteredCfdis().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-file-signature"></i>
-      <h3>No hay comprobantes</h3>
-      <p>Los CFDIs se generan desde el detalle de cada factura.</p>
-    </div>
+    <app-empty-state
+      type="empty"
+      title="No hay comprobantes"
+      description="Los CFDIs se generan desde el detalle de cada factura."
+      icon="fa-file-signature"
+    />
   }
 
   <!-- Table -->

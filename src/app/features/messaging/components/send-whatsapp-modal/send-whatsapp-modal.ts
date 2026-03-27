@@ -7,6 +7,7 @@ import { MessagingService } from '../../services/messaging.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { WhatsAppTemplate } from '../../models/messaging.models';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 export interface SendWhatsAppModalData {
   patientId: string;
@@ -17,7 +18,7 @@ export interface SendWhatsAppModalData {
 @Component({
   selector: 'app-send-whatsapp-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, EmptyStateComponent],
   templateUrl: './send-whatsapp-modal.html',
   styleUrl: './send-whatsapp-modal.scss'
 })

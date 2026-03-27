@@ -24,15 +24,18 @@
       <p>{{ creating() ? 'Creando análisis...' : 'Cargando análisis...' }}</p>
     </div>
   } @else if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h3>Error</h3>
-      <p>{{ error() }}</p>
-      <button class="btn btn-outline" (click)="goBack()">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      [showAction]="true"
+      actionLabel="Volver"
+      actionIcon="fa-arrow-left"
+      actionType="button"
+      actionStyleClass="btn btn-outline"
+      (actionClick)="goBack()"
+    />
   } @else if (analysis()) {
     <ceph-tracer
       [analysisId]="analysis()!.id"

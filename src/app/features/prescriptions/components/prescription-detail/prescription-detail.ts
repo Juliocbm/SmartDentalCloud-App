@@ -17,11 +17,12 @@ import { PatientsService } from '../../../patients/services/patients.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-prescription-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, ModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, ModalComponent, EmptyStateComponent],
   templateUrl: './prescription-detail.html',
   styleUrl: './prescription-detail.scss'
 })

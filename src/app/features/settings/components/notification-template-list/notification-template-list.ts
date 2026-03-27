@@ -12,13 +12,14 @@ import {
   NotificationTemplateFormModalComponent,
   NotificationTemplateFormModalData,
 } from '../notification-template-form-modal/notification-template-form-modal';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 type ChannelTab = 'Email' | 'SMS' | 'WhatsApp';
 
 @Component({
   selector: 'app-notification-template-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './notification-template-list.html',
   styleUrl: './notification-template-list.scss'
 })

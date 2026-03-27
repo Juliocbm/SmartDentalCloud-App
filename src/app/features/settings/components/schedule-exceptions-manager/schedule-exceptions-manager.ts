@@ -23,11 +23,12 @@ import { generateTimeOptions } from '../../models/work-schedule.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { FormSelectComponent, SelectOption } from '../../../../shared/components/form-select/form-select';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-schedule-exceptions-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ModalComponent, LocationAutocompleteComponent, DentistAutocompleteComponent, DatePickerComponent, FormSelectComponent],
+  imports: [CommonModule, FormsModule, RouterModule, ModalComponent, LocationAutocompleteComponent, DentistAutocompleteComponent, DatePickerComponent, FormSelectComponent, EmptyStateComponent],
   templateUrl: './schedule-exceptions-manager.html',
   styleUrl: './schedule-exceptions-manager.scss'
 })

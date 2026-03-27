@@ -5,11 +5,12 @@ import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/componen
 import { NotificationsApiService } from '../../services/notifications.service';
 import { AppNotification, NOTIFICATION_TYPE_CONFIG } from '../../models/notification.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-notification-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './notification-list.html',
   styleUrl: './notification-list.scss'
 })

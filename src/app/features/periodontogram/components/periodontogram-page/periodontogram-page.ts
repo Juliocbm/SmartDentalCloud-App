@@ -8,11 +8,12 @@ import { Periodontogram, PERIO_STATUS_CONFIG, CreatePeriodontogramRequest } from
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-periodontogram-page',
   standalone: true,
-  imports: [CommonModule, PageHeaderComponent, PeriodontogramFormComponent],
+  imports: [CommonModule, PageHeaderComponent, PeriodontogramFormComponent, EmptyStateComponent],
   templateUrl: './periodontogram-page.html',
   styleUrl: './periodontogram-page.scss'
 })

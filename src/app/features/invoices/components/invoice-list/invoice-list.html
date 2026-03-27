@@ -58,40 +58,43 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadInvoices()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadInvoices()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredInvoices().length === 0 && invoices().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-file-invoice"></i>
-      <h3>No hay facturas registradas</h3>
-      <p>Comienza creando tu primera factura</p>
-      <a class="btn btn-outline btn-success" routerLink="/invoices/new">
-        <i class="fa-solid fa-plus"></i>
-        Crear Primera Factura
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-file-invoice"
+      title="No hay facturas registradas"
+      description="Comienza creando tu primera factura"
+      [showAction]="true"
+      actionLabel="Crear Primera Factura"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/invoices/new">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredInvoices().length === 0 && invoices().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron facturas con los filtros aplicados</p>
-      <a routerLink="/invoices/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nueva Factura
-      </a>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron facturas con los filtros aplicados"
+      [showAction]="true"
+      actionLabel="Nueva Factura"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/invoices/new">
+    </app-empty-state>
   }
 
   <!-- Invoices Table -->

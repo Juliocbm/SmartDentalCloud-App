@@ -25,13 +25,17 @@
       <p>Cargando plantillas...</p>
     </div>
   } @else if (templates().length === 0) {
-    <div class="empty-state-sm">
-      <i class="fa-solid fa-file-circle-plus"></i>
-      <p>No hay plantillas de consentimiento configuradas.</p>
-      <button class="btn btn-outline btn-sm" (click)="openTemplateModal()">
-        <i class="fa-solid fa-plus"></i> Crear primera plantilla
-      </button>
-    </div>
+    <app-empty-state
+      type="empty"
+      size="sm"
+      icon="fa-file-circle-plus"
+      description="No hay plantillas de consentimiento configuradas."
+      [showAction]="true"
+      actionLabel="Crear primera plantilla"
+      actionIcon="fa-plus"
+      actionStyleClass="btn btn-outline btn-sm"
+      (actionClick)="openTemplateModal()"
+    />
   } @else {
     <div class="template-grid">
       @for (t of templates(); track t.id) {

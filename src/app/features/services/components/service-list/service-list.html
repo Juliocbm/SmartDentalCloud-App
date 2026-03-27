@@ -62,40 +62,43 @@
 
   <!-- Error -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadServices()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadServices()">
+    </app-empty-state>
   }
 
   <!-- Empty -->
   @if (!loading() && !error() && allServices().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-briefcase-medical"></i>
-      <h3>No hay servicios registrados</h3>
-      <p>Comienza registrando tu primer servicio dental</p>
-      <a class="btn btn-outline btn-success" routerLink="/services/new">
-        <i class="fa-solid fa-plus"></i>
-        Registrar Servicio
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-briefcase-medical"
+      title="No hay servicios registrados"
+      description="Comienza registrando tu primer servicio dental"
+      [showAction]="true"
+      actionLabel="Registrar Servicio"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/services/new">
+    </app-empty-state>
   }
 
   <!-- No results -->
   @if (!loading() && !error() && filteredServices().length === 0 && allServices().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron servicios con los filtros aplicados</p>
-      <a routerLink="/services/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Servicio
-      </a>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron servicios con los filtros aplicados"
+      [showAction]="true"
+      actionLabel="Nuevo Servicio"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/services/new">
+    </app-empty-state>
   }
 
   <!-- Table -->

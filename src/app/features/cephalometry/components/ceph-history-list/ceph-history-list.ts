@@ -9,11 +9,12 @@ import {
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-ceph-history-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './ceph-history-list.html',
   styleUrl: './ceph-history-list.scss'
 })

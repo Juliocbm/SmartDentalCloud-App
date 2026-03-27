@@ -12,11 +12,12 @@ import { DateFormatService } from '../../../../core/services/date-format.service
 import { ModalService } from '../../../../shared/services/modal.service';
 import { PerioComparisonModalComponent, PerioComparisonModalData } from '../perio-comparison-modal/perio-comparison-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-perio-history-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './perio-history-list.html',
   styleUrl: './perio-history-list.scss'
 })

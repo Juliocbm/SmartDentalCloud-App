@@ -6,11 +6,12 @@ import { ReportsService } from '../../services/reports.service';
 import { DentistProductivity, TopService, BillingConversion } from '../../models/report.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-billing-reports',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, DateRangePickerComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, DateRangePickerComponent, EmptyStateComponent],
   templateUrl: './billing-reports.html',
   styleUrl: './billing-reports.scss'
 })

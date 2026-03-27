@@ -7,11 +7,12 @@ import { ReportsService } from '../../services/reports.service';
 import { AppointmentOccupancy } from '../../models/report.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-appointment-occupancy',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DateRangePickerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DateRangePickerComponent, EmptyStateComponent],
   templateUrl: './appointment-occupancy.html',
   styleUrl: './appointment-occupancy.scss'
 })

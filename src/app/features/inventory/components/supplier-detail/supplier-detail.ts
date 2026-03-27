@@ -13,11 +13,12 @@ import { AuditInfoComponent } from '../../../../shared/components/audit-info/aud
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { forkJoin } from 'rxjs';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-supplier-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, EmptyStateComponent],
   templateUrl: './supplier-detail.html',
   styleUrls: ['./supplier-detail.scss']
 })

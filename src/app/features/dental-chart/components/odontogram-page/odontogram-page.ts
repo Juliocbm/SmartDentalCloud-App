@@ -12,11 +12,12 @@ import {
 import { NotificationService } from '../../../../core/services/notification.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-odontogram-page',
   standalone: true,
-  imports: [CommonModule, PageHeaderComponent, OdontogramComponent],
+  imports: [CommonModule, PageHeaderComponent, OdontogramComponent, EmptyStateComponent],
   templateUrl: './odontogram-page.html',
   styleUrl: './odontogram-page.scss'
 })

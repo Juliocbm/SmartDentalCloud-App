@@ -118,9 +118,11 @@
   </div>
 
 } @else {
-  <div class="empty-state empty-state-sm">
-    <i class="fa-solid fa-chart-bar"></i>
-    <h3>Sin datos estadísticos</h3>
-    <p>Ingrese mediciones en las tablas para ver el resumen periodontal</p>
-  </div>
+  <app-empty-state
+    type="empty"
+    title="Sin datos estadísticos"
+    description="Ingrese mediciones en las tablas para ver el resumen periodontal"
+    icon="fa-chart-bar"
+    size="sm"
+  />
 }

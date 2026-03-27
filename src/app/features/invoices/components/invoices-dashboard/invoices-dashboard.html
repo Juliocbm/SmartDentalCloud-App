@@ -138,10 +138,10 @@
           </h2>
         </div>
         @if (statusChartData().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-chart-pie"></i>
-            <p>No hay datos de facturas</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-chart-pie"
+            description="No hay datos de facturas" />
         } @else {
           <app-pie-chart
             [data]="statusChartData()"
@@ -168,10 +168,9 @@
         </div>
 
         @if (accountsReceivable().totalCount === 0) {
-          <div class="empty-state success">
-            <i class="fa-solid fa-circle-check"></i>
-            <p>No hay cuentas pendientes de cobro</p>
-          </div>
+          <app-empty-state
+            type="success"
+            description="No hay cuentas pendientes de cobro" />
         } @else {
           <div class="ar-headline">
             <span class="ar-headline__value">{{ formatCurrency(accountsReceivable().totalBalance) }}</span>
@@ -205,10 +204,10 @@
         </div>
 
         @if (recentInvoices().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-file-invoice"></i>
-            <p>No hay facturas registradas</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-file-invoice"
+            description="No hay facturas registradas" />
         } @else {
           <div class="dash-list">
             @for (invoice of recentInvoices(); track invoice.id) {

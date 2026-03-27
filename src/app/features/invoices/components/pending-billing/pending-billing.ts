@@ -8,11 +8,12 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { PermissionService } from '../../../../core/services/permission.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-pending-billing',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './pending-billing.html',
   styleUrl: './pending-billing.scss'
 })

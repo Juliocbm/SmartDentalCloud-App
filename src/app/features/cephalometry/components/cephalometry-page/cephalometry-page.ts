@@ -12,11 +12,12 @@ import {
 import { NotificationService } from '../../../../core/services/notification.service';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-cephalometry-page',
   standalone: true,
-  imports: [CommonModule, PageHeaderComponent, CephTracerComponent],
+  imports: [CommonModule, PageHeaderComponent, CephTracerComponent, EmptyStateComponent],
   templateUrl: './cephalometry-page.html',
   styleUrl: './cephalometry-page.scss'
 })

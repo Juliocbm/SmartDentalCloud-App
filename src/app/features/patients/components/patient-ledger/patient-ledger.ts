@@ -6,11 +6,12 @@ import { PatientLedger, LedgerEntry } from '../../models/patient-dashboard.model
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-patient-ledger',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, EmptyStateComponent],
   templateUrl: './patient-ledger.html',
   styleUrl: './patient-ledger.scss'
 })

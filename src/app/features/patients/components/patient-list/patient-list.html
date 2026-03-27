@@ -60,27 +60,38 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadPatients()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadPatients()">
+    </app-empty-state>
   }
 
-  <!-- Empty State -->
-  @if (!loading() && !error() && patients().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-user-plus"></i>
-      <h3>No hay pacientes registrados</h3>
-      <p>Comienza agregando tu primer paciente</p>
-      <button class="btn btn-outline btn-success" routerLink="/patients/new">
-        <i class="fa-solid fa-plus"></i>
-        Crear Primer Paciente
-      </button>
-    </div>
+  <!-- Empty State: Sin registros -->
+  @if (!loading() && !error() && patients().length === 0 && !hasActiveFilters()) {
+    <app-empty-state
+      type="empty"
+      icon="fa-user-plus"
+      title="No hay pacientes registrados"
+      description="Comienza agregando tu primer paciente"
+      [showAction]="true"
+      actionLabel="Crear Primer Paciente"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/patients/new">
+    </app-empty-state>
+  }
+
+  <!-- Empty State: Filtros sin coincidencias -->
+  @if (!loading() && !error() && patients().length === 0 && hasActiveFilters()) {
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron pacientes con los filtros aplicados">
+    </app-empty-state>
   }
 
   <!-- Patients Table -->

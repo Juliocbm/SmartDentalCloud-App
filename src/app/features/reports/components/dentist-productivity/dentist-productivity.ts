@@ -7,11 +7,12 @@ import { ReportsService } from '../../services/reports.service';
 import { DentistProductivity } from '../../models/report.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-dentist-productivity',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DateRangePickerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DateRangePickerComponent, EmptyStateComponent],
   templateUrl: './dentist-productivity.html',
   styleUrl: './dentist-productivity.scss'
 })

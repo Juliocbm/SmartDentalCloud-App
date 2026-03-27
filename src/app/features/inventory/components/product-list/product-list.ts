@@ -14,6 +14,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 /**
  * Componente para listar productos de inventario
@@ -21,7 +22,7 @@ import { PermissionService, PERMISSIONS } from '../../../../core/services/permis
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.scss']
 })

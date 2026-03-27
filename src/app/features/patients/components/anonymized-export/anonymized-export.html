@@ -90,10 +90,11 @@
       </div>
 
       @if (exportResult()!.totalRecords === 0) {
-        <div class="empty-state">
-          <i class="fa-solid fa-database fa-3x"></i>
-          <p>No se encontraron registros en el período seleccionado</p>
-        </div>
+        <app-empty-state
+          type="empty"
+          description="No se encontraron registros en el período seleccionado"
+          icon="fa-database"
+        />
       } @else {
         <div class="table-responsive">
           <table class="data-table">

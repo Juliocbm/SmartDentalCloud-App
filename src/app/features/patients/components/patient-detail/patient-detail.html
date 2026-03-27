@@ -65,15 +65,18 @@
       <p>Cargando información del paciente...</p>
     </div>
   } @else if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h2>Error al cargar el paciente</h2>
-      <p>{{ error() }}</p>
-      <button (click)="goBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar el paciente"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      [showAction]="true"
+      actionLabel="Volver"
+      actionIcon="fa-arrow-left"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="goBack()"
+    />
   } @else if (patient(); as pat) {
 
     <div class="patient-layout">
@@ -546,17 +549,18 @@
               </div>
             }
           } @else {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-heartbeat"></i>
-              <h3>Sin Historia Médica</h3>
-              <p>Este paciente no tiene información médica registrada</p>
-              @if (permissionService.hasPermission('patients.edit')) {
-              <button class="btn btn-outline btn-success" (click)="toggleEditMedical()">
-                <i class="fa-solid fa-plus"></i>
-                Agregar Historia Médica
-              </button>
-              }
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin Historia Médica"
+              description="Este paciente no tiene información médica registrada"
+              icon="fa-heartbeat"
+              size="sm"
+              [showAction]="permissionService.hasPermission('patients.edit')"
+              actionLabel="Agregar Historia Médica"
+              actionIcon="fa-plus"
+              actionType="button"
+              (actionClick)="toggleEditMedical()"
+            />
           }
         </div>
       }
@@ -590,11 +594,13 @@
               <span>Cargando alergias...</span>
             </div>
           } @else if (allergies().length === 0) {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-shield-virus"></i>
-              <h3>Sin Alergias Registradas</h3>
-              <p>No se han registrado alergias para este paciente</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin Alergias Registradas"
+              description="No se han registrado alergias para este paciente"
+              icon="fa-shield-virus"
+              size="sm"
+            />
           } @else {
             <div class="medical-list">
               @for (allergy of allergies(); track allergy.id) {
@@ -678,11 +684,13 @@
               <span>Cargando consentimientos...</span>
             </div>
           } @else if (consents().length === 0) {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-file-signature"></i>
-              <h3>Sin Consentimientos</h3>
-              <p>No se han registrado consentimientos informados para este paciente</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin Consentimientos"
+              description="No se han registrado consentimientos informados para este paciente"
+              icon="fa-file-signature"
+              size="sm"
+            />
           } @else {
             <div class="medical-list">
               @for (consent of consents(); track consent.id) {
@@ -849,11 +857,13 @@
               <span>Cargando diagnósticos...</span>
             </div>
           } @else if (diagnoses().length === 0) {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-clipboard-list"></i>
-              <h3>Sin Diagnósticos Registrados</h3>
-              <p>No se han registrado diagnósticos para este paciente</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin Diagnósticos Registrados"
+              description="No se han registrado diagnósticos para este paciente"
+              icon="fa-clipboard-list"
+              size="sm"
+            />
           } @else {
             <div class="medical-list">
               @for (diagnosis of diagnoses(); track diagnosis.id) {
@@ -1022,15 +1032,18 @@
 
           <!-- Empty state -->
           @if (!radioImagesLoading() && radioImages().length === 0) {
-            <div class="empty-state">
-              <i class="fa-solid fa-image fa-3x"></i>
-              <p>No hay radiografías registradas</p>
-              @if (permissionService.hasPermission('attached_files.upload')) {
-              <button class="btn btn-outline btn-sm" (click)="openRadioUploadModal()">
-                <i class="fa-solid fa-upload"></i> Subir primera radiografía
-              </button>
-              }
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin radiografías"
+              description="No hay radiografías registradas"
+              icon="fa-image"
+              [showAction]="permissionService.hasPermission('attached_files.upload')"
+              actionLabel="Subir primera radiografía"
+              actionIcon="fa-upload"
+              actionType="button"
+              actionStyleClass="btn btn-outline btn-sm"
+              (actionClick)="openRadioUploadModal()"
+            />
           }
         </div>
 
@@ -1225,17 +1238,18 @@
                 </div>
               </div>
             } @else {
-              <div class="empty-state empty-state-sm">
-                <i class="fa-solid fa-file-invoice"></i>
-                <h3>Sin Datos Fiscales</h3>
-                <p>Este paciente no tiene información fiscal registrada. Es necesaria para generar CFDI.</p>
-                @if (permissionService.hasPermission('patients.edit')) {
-                <button class="btn btn-outline btn-success" (click)="toggleEditTax()">
-                  <i class="fa-solid fa-plus"></i>
-                  Agregar Datos Fiscales
-                </button>
-                }
-              </div>
+              <app-empty-state
+                type="empty"
+                title="Sin Datos Fiscales"
+                description="Este paciente no tiene información fiscal registrada. Es necesaria para generar CFDI."
+                icon="fa-file-invoice"
+                size="sm"
+                [showAction]="permissionService.hasPermission('patients.edit')"
+                actionLabel="Agregar Datos Fiscales"
+                actionIcon="fa-plus"
+                actionType="button"
+                (actionClick)="toggleEditTax()"
+              />
             }
           }
         </div>
@@ -1341,11 +1355,13 @@
               </div>
             }
           } @else {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-wallet"></i>
-              <h3>Sin información financiera</h3>
-              <p>No se encontró resumen financiero para este paciente</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin información financiera"
+              description="No se encontró resumen financiero para este paciente"
+              icon="fa-wallet"
+              size="sm"
+            />
           }
         </div>
       }
@@ -1462,18 +1478,22 @@
             }
 
             @if ((!hist.appointments || hist.appointments.length === 0) && (!hist.treatments || hist.treatments.length === 0) && (!hist.invoices || hist.invoices.length === 0)) {
-              <div class="empty-state empty-state-sm">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-                <h3>Sin Historial</h3>
-                <p>Este paciente aún no tiene interacciones registradas</p>
-              </div>
+              <app-empty-state
+                type="empty"
+                title="Sin Historial"
+                description="Este paciente aún no tiene interacciones registradas"
+                icon="fa-clock-rotate-left"
+                size="sm"
+              />
             }
           } @else {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-clock-rotate-left"></i>
-              <h3>Sin Historial</h3>
-              <p>No se pudo cargar el historial del paciente</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin Historial"
+              description="No se pudo cargar el historial del paciente"
+              icon="fa-clock-rotate-left"
+              size="sm"
+            />
           }
         </div>
       }
@@ -1502,11 +1522,13 @@
               <span>Cargando historial de cambios...</span>
             </div>
           } @else if (changeHistory().length === 0) {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-list-check"></i>
-              <h3>Sin Cambios Registrados</h3>
-              <p>No se han registrado cambios auditados para este paciente</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin Cambios Registrados"
+              description="No se han registrado cambios auditados para este paciente"
+              icon="fa-list-check"
+              size="sm"
+            />
           } @else {
             <div class="changes-timeline">
               @for (entry of changeHistory(); track entry.id) {
@@ -1677,30 +1699,35 @@
 
           <!-- Empty (filter active, no matches) -->
           @if (!filesLoading() && files().length > 0 && filteredFiles().length === 0) {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-filter"></i>
-              <h3>Sin resultados</h3>
-              <p>No hay archivos en la categoría seleccionada</p>
-              <button class="btn btn-outline btn-sm" (click)="filterCategory.set('')">
-                <i class="fa-solid fa-xmark"></i>
-                Limpiar filtro
-              </button>
-            </div>
+            <app-empty-state
+              type="no-results"
+              title="Sin resultados"
+              description="No hay archivos en la categoría seleccionada"
+              icon="fa-filter"
+              size="sm"
+              [showAction]="true"
+              actionLabel="Limpiar filtro"
+              actionIcon="fa-xmark"
+              actionType="button"
+              actionStyleClass="btn btn-outline btn-sm"
+              (actionClick)="filterCategory.set('')"
+            />
           }
 
           <!-- Empty (no files at all) -->
           @if (!filesLoading() && files().length === 0) {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-folder-open"></i>
-              <h3>Sin Archivos</h3>
-              <p>Este paciente no tiene archivos adjuntos</p>
-              @if (permissionService.hasPermission('attached_files.upload')) {
-              <button class="btn btn-outline btn-success" (click)="openFileUploadModal()">
-                <i class="fa-solid fa-upload"></i>
-                Subir Primer Archivo
-              </button>
-              }
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin Archivos"
+              description="Este paciente no tiene archivos adjuntos"
+              icon="fa-folder-open"
+              size="sm"
+              [showAction]="permissionService.hasPermission('attached_files.upload')"
+              actionLabel="Subir Primer Archivo"
+              actionIcon="fa-upload"
+              actionType="button"
+              (actionClick)="openFileUploadModal()"
+            />
           }
         </div>
       }

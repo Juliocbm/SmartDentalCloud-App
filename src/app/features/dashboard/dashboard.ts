@@ -11,11 +11,12 @@ import { LoggingService } from '../../core/services/logging.service';
 import { PermissionService, PERMISSIONS } from '../../core/services/permission.service';
 import { DateFormatService } from '../../core/services/date-format.service';
 import { FeatureService } from '../../core/services/feature.service';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, LocationAutocompleteComponent, DateRangePickerComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, LocationAutocompleteComponent, DateRangePickerComponent, EmptyStateComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })

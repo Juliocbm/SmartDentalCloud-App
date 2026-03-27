@@ -25,23 +25,31 @@
       <span>Cargando periodontogramas...</span>
     </div>
   } @else if (error()) {
-    <div class="empty-state empty-state-sm">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-outline btn-sm" (click)="loadList()">
-        <i class="fa-solid fa-rotate"></i> Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      size="sm"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-rotate"
+      actionType="button"
+      actionStyleClass="btn btn-outline btn-sm"
+      (actionClick)="loadList()"
+    />
   } @else if (items().length === 0) {
-    <div class="empty-state empty-state-sm">
-      <i class="fa-solid fa-chart-line"></i>
-      <h3>Sin Periodontogramas</h3>
-      <p>Este paciente no tiene periodontogramas registrados</p>
-      <button class="btn btn-outline btn-success" (click)="createNew()">
-        <i class="fa-solid fa-plus"></i>
-        Crear Primer Periodontograma
-      </button>
-    </div>
+    <app-empty-state
+      type="empty"
+      title="Sin Periodontogramas"
+      description="Este paciente no tiene periodontogramas registrados"
+      icon="fa-chart-line"
+      size="sm"
+      [showAction]="true"
+      actionLabel="Crear Primer Periodontograma"
+      actionIcon="fa-plus"
+      actionType="button"
+      (actionClick)="createNew()"
+    />
   } @else {
     <div class="perio-cards">
       @for (item of items(); track item.id) {

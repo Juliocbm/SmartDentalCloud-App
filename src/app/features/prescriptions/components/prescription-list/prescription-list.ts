@@ -15,11 +15,12 @@ import { SendEmailModalComponent } from '../../../../shared/components/send-emai
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { DateFormatService } from '../../../../core/services/date-format.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-prescription-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, SendEmailModalComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, SendEmailModalComponent, EmptyStateComponent],
   templateUrl: './prescription-list.html',
   styleUrl: './prescription-list.scss'
 })

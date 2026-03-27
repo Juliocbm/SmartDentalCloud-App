@@ -145,24 +145,6 @@
   }
 }
 
-.empty-state-small {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-xl) 0;
-  color: var(--text-tertiary);
-
-  i {
-    font-size: var(--font-size-2xl);
-  }
-
-  p {
-    font-size: var(--font-size-sm);
-    margin: 0;
-  }
-}
-
 // ─── Paso 2: parámetros y vista previa ───────────────────────────────────────
 
 .template-step {

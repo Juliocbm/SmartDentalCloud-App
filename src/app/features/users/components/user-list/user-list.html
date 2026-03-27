@@ -69,40 +69,43 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadData()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadData()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredUsers().length === 0 && users().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-user-plus"></i>
-      <h3>No hay usuarios registrados</h3>
-      <p>Comienza creando el primer usuario del sistema</p>
-      <a class="btn btn-outline btn-success" routerLink="/users/new">
-        <i class="fa-solid fa-plus"></i>
-        Crear Primer Usuario
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-user-plus"
+      title="No hay usuarios registrados"
+      description="Comienza creando el primer usuario del sistema"
+      [showAction]="true"
+      actionLabel="Crear Primer Usuario"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/users/new">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredUsers().length === 0 && users().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron usuarios con los filtros aplicados</p>
-      <a routerLink="/users/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Usuario
-      </a>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron usuarios con los filtros aplicados"
+      [showAction]="true"
+      actionLabel="Nuevo Usuario"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/users/new">
+    </app-empty-state>
   }
 
   <!-- Users Table -->

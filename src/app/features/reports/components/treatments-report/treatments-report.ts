@@ -7,11 +7,12 @@ import { ReportsService } from '../../services/reports.service';
 import { TreatmentsSummary } from '../../models/report.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-treatments-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DateRangePickerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, DateRangePickerComponent, EmptyStateComponent],
   templateUrl: './treatments-report.html',
   styleUrl: './treatments-report.scss'
 })

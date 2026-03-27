@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 export interface AnonymizedExportDto {
   generatedAt: string;
@@ -27,7 +28,7 @@ export interface AnonymizedPatientRecord {
 @Component({
   selector: 'app-anonymized-export',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './anonymized-export.html',
   styleUrl: './anonymized-export.scss'
 })

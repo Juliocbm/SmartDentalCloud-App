@@ -28,14 +28,17 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadReport()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      icon="fa-exclamation-triangle"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadReport()"
+    />
   }
 
   @if (!loading() && !error() && report(); as r) {

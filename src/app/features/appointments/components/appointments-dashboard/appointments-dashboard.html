@@ -151,10 +151,12 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (upcomingAppointments().length === 0) {
-          <div class="empty-state success">
-            <i class="fa-solid fa-calendar-check"></i>
-            <p>No hay más citas programadas hoy</p>
-          </div>
+          <app-empty-state
+            type="success"
+            icon="fa-calendar-check"
+            description="No hay más citas programadas hoy"
+            size="sm">
+          </app-empty-state>
         } @else {
           <div class="upcoming-appointments-list">
             @for (apt of upcomingAppointments(); track apt.id) {
@@ -192,10 +194,11 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (pendingConfirmations().length === 0) {
-          <div class="empty-state success">
-            <i class="fa-solid fa-circle-check"></i>
-            <p>Todas las citas están confirmadas</p>
-          </div>
+          <app-empty-state
+            type="success"
+            description="Todas las citas están confirmadas"
+            size="sm">
+          </app-empty-state>
         } @else {
           <div class="dash-list">
             @for (pending of pendingConfirmations(); track pending.id) {
@@ -240,10 +243,12 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (frequentPatients().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-users"></i>
-            <p>No hay datos de pacientes frecuentes</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-users"
+            description="No hay datos de pacientes frecuentes"
+            size="sm">
+          </app-empty-state>
         } @else {
           <div class="dash-list">
             @for (patient of frequentPatients(); track patient.patientId) {
@@ -285,10 +290,12 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (statusChartData().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-chart-pie"></i>
-            <p>No hay datos de citas en el período</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-chart-pie"
+            description="No hay datos de citas en el período"
+            size="sm">
+          </app-empty-state>
         } @else {
           <app-pie-chart
             [data]="statusChartData()"
@@ -313,10 +320,12 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (weekdayChartData().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-chart-bar"></i>
-            <p>No hay datos suficientes</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-chart-bar"
+            description="No hay datos suficientes"
+            size="sm">
+          </app-empty-state>
         } @else {
           <app-bar-chart
             [data]="weekdayChartData()"
@@ -340,10 +349,12 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (recentActivity().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-history"></i>
-            <p>No hay actividad reciente</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-history"
+            description="No hay actividad reciente"
+            size="sm">
+          </app-empty-state>
         } @else {
           <div class="dash-list">
             @for (activity of recentActivity(); track activity.id) {

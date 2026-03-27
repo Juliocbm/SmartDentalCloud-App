@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { ConsultationNotesService } from '../../services/consultation-notes.service';
 import { Appointment } from '../../../appointments/models/appointment.models';
 import { LoggingService } from '../../../../core/services/logging.service';
@@ -14,7 +15,7 @@ import { DateFormatService } from '../../../../core/services/date-format.service
 @Component({
   selector: 'app-consultation-note-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './consultation-note-list.html',
   styleUrl: './consultation-note-list.scss'
 })

@@ -14,11 +14,12 @@
       <p>Cargando datos de la cita...</p>
     </div>
   } @else if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h3>Error</h3>
-      <p>{{ error() }}</p>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+    />
   } @else if (appointment(); as apt) {
 
     <!-- Stepper -->

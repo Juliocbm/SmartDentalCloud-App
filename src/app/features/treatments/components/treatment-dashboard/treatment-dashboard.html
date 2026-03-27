@@ -127,10 +127,10 @@
         </div>
 
         @if (activeTreatments().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-check-circle"></i>
-            <p>No hay tratamientos activos en este período</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-check-circle"
+            description="No hay tratamientos activos en este período" />
         } @else {
           <div class="dash-list">
             @for (tx of activeTreatments().slice(0, 8); track tx.id) {
@@ -163,10 +163,10 @@
         </div>
 
         @if (recentTreatments().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-tooth"></i>
-            <p>No hay tratamientos registrados en este período</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-tooth"
+            description="No hay tratamientos registrados en este período" />
         } @else {
           <div class="dash-list">
             @for (tx of recentTreatments(); track tx.id) {
@@ -197,10 +197,10 @@
         </div>
 
         @if (statusChartData().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-chart-pie"></i>
-            <p>No hay datos suficientes en este período</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-chart-pie"
+            description="No hay datos suficientes en este período" />
         } @else {
           <app-pie-chart
             [data]="statusChartData()"
@@ -221,10 +221,10 @@
         </div>
 
         @if (timelineLabels().length === 0 || timelineDatasets().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-chart-line"></i>
-            <p>No hay datos suficientes para mostrar la tendencia</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-chart-line"
+            description="No hay datos suficientes para mostrar la tendencia" />
         } @else {
           <app-line-chart
             [labels]="timelineLabels()"

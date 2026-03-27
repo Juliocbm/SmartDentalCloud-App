@@ -44,15 +44,18 @@
       <p>Cargando usuario...</p>
     </div>
   } @else if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h3>Error al cargar el usuario</h3>
-      <p>{{ error() }}</p>
-      <button (click)="goBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar el usuario"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      [showAction]="true"
+      actionLabel="Volver"
+      actionIcon="fa-arrow-left"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="goBack()"
+    />
   } @else if (user(); as currentUser) {
 
     <!-- NOM-024: Alerta de perfil profesional incompleto -->

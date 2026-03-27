@@ -101,15 +101,18 @@
   }
 
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h3>Error al cargar el tratamiento</h3>
-      <p>{{ error() }}</p>
-      <button (click)="goBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver a Tratamientos
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar el tratamiento"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      [showAction]="true"
+      actionLabel="Volver a Tratamientos"
+      actionIcon="fa-arrow-left"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="goBack()"
+    />
   }
 
   @if (!loading() && !error() && treatment(); as t) {
@@ -409,11 +412,13 @@
           }
 
           @if (!followUpsLoading() && followUps().length === 0) {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-clipboard-check"></i>
-              <h3>Sin seguimientos</h3>
-              <p>No hay seguimientos registrados</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin seguimientos"
+              description="No hay seguimientos registrados"
+              icon="fa-clipboard-check"
+              size="sm"
+            />
           }
         </div>
       }
@@ -491,11 +496,13 @@
           }
 
           @if (!materialsLoading() && materials().length === 0) {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-boxes-stacked"></i>
-              <h3>Sin materiales</h3>
-              <p>No hay materiales registrados</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin materiales"
+              description="No hay materiales registrados"
+              icon="fa-boxes-stacked"
+              size="sm"
+            />
           }
         </div>
       }
@@ -557,11 +564,13 @@
           }
 
           @if (!sessionsLoading() && sessions().length === 0) {
-            <div class="empty-state empty-state-sm">
-              <i class="fa-solid fa-layer-group"></i>
-              <h3>Sin sesiones</h3>
-              <p>No hay sesiones registradas</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin sesiones"
+              description="No hay sesiones registradas"
+              icon="fa-layer-group"
+              size="sm"
+            />
           }
         </div>
       }

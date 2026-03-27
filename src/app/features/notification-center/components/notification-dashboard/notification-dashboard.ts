@@ -21,11 +21,12 @@ import {
 } from '../../models/notification-center.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-notification-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './notification-dashboard.html',
   styleUrl: './notification-dashboard.scss'
 })

@@ -92,21 +92,18 @@
       <p>Cargando plan de tratamiento...</p>
     </div>
   } @else if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h2>Error al cargar el plan</h2>
-      <p>{{ error() }}</p>
-      <div class="empty-state-actions">
-        <button (click)="retryLoad()" class="btn btn-secondary">
-          <i class="fa-solid fa-arrows-rotate"></i>
-          Reintentar
-        </button>
-        <button (click)="goBack()" class="btn btn-outline">
-          <i class="fa-solid fa-arrow-left"></i>
-          Volver a Planes
-        </button>
-      </div>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar el plan"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="retryLoad()"
+    />
   } @else if (plan(); as p) {
 
     <!-- Status banners for terminal states -->

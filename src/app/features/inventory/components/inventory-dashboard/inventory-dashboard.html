@@ -139,10 +139,10 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (categoryDistribution().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-folder-open"></i>
-            <p>No hay categorías registradas</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-folder-open"
+            description="No hay categorías registradas" />
         } @else {
           <app-pie-chart
             [data]="categoryChartData()"
@@ -167,10 +167,9 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (topProducts().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-inbox"></i>
-            <p>No hay datos de uso</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            description="No hay datos de uso" />
         } @else {
           <app-bar-chart
             [data]="topProductsChartData()"
@@ -202,10 +201,9 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (expiringProducts().length === 0) {
-          <div class="empty-state success">
-            <i class="fa-solid fa-circle-check"></i>
-            <p>No hay productos próximos a vencer</p>
-          </div>
+          <app-empty-state
+            type="success"
+            description="No hay productos próximos a vencer" />
         } @else {
           <div class="dash-list">
             @for (product of expiringProducts(); track product.id) {
@@ -249,10 +247,9 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (topProducts().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-inbox"></i>
-            <p>No hay datos de productos utilizados</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            description="No hay datos de productos utilizados" />
         } @else {
           <div class="dash-list">
             @for (product of topProducts(); track product.id) {
@@ -290,10 +287,10 @@
             <i class="fa-solid fa-spinner fa-spin"></i>
           </div>
         } @else if (recentActivity().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-history"></i>
-            <p>No hay actividad reciente</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-history"
+            description="No hay actividad reciente" />
         } @else {
           <div class="dash-list">
             @for (activity of recentActivity(); track activity.id) {

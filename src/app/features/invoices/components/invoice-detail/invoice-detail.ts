@@ -21,11 +21,12 @@ import { PermissionService, PERMISSIONS } from '../../../../core/services/permis
 import { FormSelectComponent } from '../../../../shared/components/form-select/form-select';
 import { ModalComponent } from '../../../../shared/components/modal/modal';
 import { CfdiLookupModalComponent } from '../../../../shared/components/cfdi-lookup-modal/cfdi-lookup-modal';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-invoice-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, FormSelectComponent, ModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, AuditInfoComponent, SendEmailModalComponent, FormSelectComponent, ModalComponent, EmptyStateComponent],
   templateUrl: './invoice-detail.html',
   styleUrl: './invoice-detail.scss'
 })

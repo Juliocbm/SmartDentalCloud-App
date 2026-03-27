@@ -1,0 +1,29 @@
+<div class="empty-state" [class.empty-state-sm]="size === 'sm'">
+  <i [class]="'fa-solid ' + resolvedIcon"></i>
+  @if (resolvedTitle) {
+    <h3>{{ resolvedTitle }}</h3>
+  }
+  @if (description) {
+    <p>{{ description }}</p>
+  }
+
+  @if (showAction) {
+    @if (actionType === 'link' && actionRoute) {
+      <a [class]="actionStyleClass" [routerLink]="actionRoute">
+        @if (actionIcon) {
+          <i [class]="'fa-solid ' + actionIcon"></i>
+        }
+        {{ actionLabel }}
+      </a>
+    } @else {
+      <button [class]="actionStyleClass" (click)="actionClick.emit()">
+        @if (actionIcon) {
+          <i [class]="'fa-solid ' + actionIcon"></i>
+        }
+        {{ actionLabel }}
+      </button>
+    }
+  }
+
+  <ng-content></ng-content>
+</div>

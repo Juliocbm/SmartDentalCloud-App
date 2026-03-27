@@ -143,10 +143,10 @@
           <span class="dash-section-header__badge">{{ alertsCount() }}</span>
         </div>
         @if (alerts().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-check-circle"></i>
-            <p>No hay alertas pendientes</p>
-          </div>
+          <app-empty-state
+            type="success"
+            icon="fa-check-circle"
+            description="No hay alertas pendientes" />
         } @else {
           <div class="dash-list">
             @for (alert of alerts(); track alert.id) {
@@ -179,10 +179,10 @@
           </div>
         </div>
         @if (recentPatients().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-user-plus"></i>
-            <p>No hay pacientes recientes</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-user-plus"
+            description="No hay pacientes recientes" />
         } @else {
           <div class="dash-list">
             @for (patient of recentPatients(); track patient.id) {
@@ -220,10 +220,10 @@
           <span class="dash-section-header__badge">{{ birthdays().length }}</span>
         </div>
         @if (birthdays().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-calendar"></i>
-            <p>No hay cumpleaños este mes</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-calendar"
+            description="No hay cumpleaños este mes" />
         } @else {
           <div class="dash-list">
             @for (birthday of birthdays(); track birthday.id) {

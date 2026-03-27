@@ -65,21 +65,18 @@
   }
 
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <h3>Error al cargar la receta</h3>
-      <p>{{ error() }}</p>
-      <div class="empty-state__actions">
-        <button (click)="goBack()" class="btn btn-secondary">
-          <i class="fa-solid fa-arrow-left"></i>
-          Volver
-        </button>
-        <button (click)="retryLoad()" class="btn btn-primary">
-          <i class="fa-solid fa-rotate-right"></i>
-          Reintentar
-        </button>
-      </div>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar la receta"
+      [description]="error()!"
+      icon="fa-exclamation-triangle"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-rotate-right"
+      actionType="button"
+      actionStyleClass="btn btn-primary"
+      (actionClick)="retryLoad()"
+    />
   }
 
   @if (!loading() && !error() && prescription(); as rx) {

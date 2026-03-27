@@ -25,11 +25,12 @@
       <p>Cargando notificaciones...</p>
     </div>
   } @else if (notifications().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-bell-slash"></i>
-      <h3>Sin notificaciones</h3>
-      <p>No tienes notificaciones por el momento.</p>
-    </div>
+    <app-empty-state
+      type="informative"
+      icon="fa-bell-slash"
+      title="Sin notificaciones"
+      description="No tienes notificaciones por el momento.">
+    </app-empty-state>
   } @else {
     <div class="notification-list">
       @for (notif of notifications(); track notif.id) {

@@ -64,40 +64,41 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadData()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadData()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredDentists().length === 0 && dentists().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-user-doctor"></i>
-      <h3>No hay dentistas registrados</h3>
-      <p>Comienza agregando el primer dentista del consultorio</p>
-      <button class="btn btn-outline btn-success" (click)="navigateToNewDentist()">
-        <i class="fa-solid fa-plus"></i>
-        Agregar Primer Dentista
-      </button>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-user-doctor"
+      title="No hay dentistas registrados"
+      description="Comienza agregando el primer dentista del consultorio"
+      [showAction]="true"
+      actionLabel="Agregar Primer Dentista"
+      actionIcon="fa-plus"
+      (actionClick)="navigateToNewDentist()">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredDentists().length === 0 && dentists().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron dentistas con los filtros aplicados</p>
-      <button class="btn btn-outline btn-success" (click)="navigateToNewDentist()">
-        <i class="fa-solid fa-plus"></i>
-        Nuevo Dentista
-      </button>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron dentistas con los filtros aplicados"
+      [showAction]="true"
+      actionLabel="Nuevo Dentista"
+      actionIcon="fa-plus"
+      (actionClick)="navigateToNewDentist()">
+    </app-empty-state>
   }
 
   <!-- Dentists Table -->

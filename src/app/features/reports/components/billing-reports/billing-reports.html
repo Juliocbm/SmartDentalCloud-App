@@ -22,11 +22,12 @@
       <p>Cargando reportes...</p>
     </div>
   } @else if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h3>Error al cargar datos</h3>
-      <p>{{ error() }}</p>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar datos"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+    />
   } @else {
     <!-- Billing Conversion KPIs -->
     @if (conversion(); as conv) {
@@ -180,11 +181,12 @@
     }
 
     @if (!productivity().length && !topServices().length && !conversion()) {
-      <div class="empty-state">
-        <i class="fa-solid fa-chart-bar"></i>
-        <h3>Sin datos</h3>
-        <p>No hay datos de producción para el período seleccionado.</p>
-      </div>
+      <app-empty-state
+        type="empty"
+        title="Sin datos"
+        description="No hay datos de producción para el período seleccionado."
+        icon="fa-chart-bar"
+      />
     }
   }
 </div>

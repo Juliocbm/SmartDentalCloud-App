@@ -26,15 +26,16 @@
 
   <!-- Empty State -->
   @if (!loading() && exceptions().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-calendar-check"></i>
-      <h3>No hay excepciones configuradas</h3>
-      <p>Agrega días festivos, vacaciones o bloqueos para gestionar excepciones al horario regular</p>
-      <button class="btn btn-outline btn-success" (click)="openCreateModal()">
-        <i class="fa-solid fa-plus"></i>
-        Nueva Excepción
-      </button>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-calendar-check"
+      title="No hay excepciones configuradas"
+      description="Agrega días festivos, vacaciones o bloqueos para gestionar excepciones al horario regular"
+      [showAction]="true"
+      actionLabel="Nueva Excepción"
+      actionIcon="fa-plus"
+      (actionClick)="openCreateModal()"
+    />
   }
 
   <!-- Table -->

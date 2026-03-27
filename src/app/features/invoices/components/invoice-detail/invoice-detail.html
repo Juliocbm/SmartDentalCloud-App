@@ -49,15 +49,18 @@
   }
 
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <h3>Error al cargar la factura</h3>
-      <p>{{ error() }}</p>
-      <button (click)="goBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver a Facturas
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar la factura"
+      [description]="error()!"
+      icon="fa-exclamation-triangle"
+      [showAction]="true"
+      actionLabel="Volver a Facturas"
+      actionIcon="fa-arrow-left"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="goBack()"
+    />
   }
 
   @if (!loading() && !error() && invoice(); as inv) {

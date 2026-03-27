@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
 import { User, Role } from '../../models/user.models';
@@ -20,7 +21,7 @@ import { PermissionService, PERMISSIONS } from '../../../../core/services/permis
 @Component({
   selector: 'app-dentist-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './dentist-list.html',
   styleUrls: ['./dentist-list.scss']
 })

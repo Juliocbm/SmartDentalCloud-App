@@ -101,32 +101,31 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadQueue()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadQueue()" />
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && allItems().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-bell-slash"></i>
-      <h3>No hay notificaciones</h3>
-      <p>No se han registrado notificaciones en el sistema</p>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-bell-slash"
+      title="No hay notificaciones"
+      description="No se han registrado notificaciones en el sistema" />
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredItems().length === 0 && allItems().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron notificaciones con los filtros aplicados</p>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron notificaciones con los filtros aplicados" />
   }
 
   <!-- Table -->

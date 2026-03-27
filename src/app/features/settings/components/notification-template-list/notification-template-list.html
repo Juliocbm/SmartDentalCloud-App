@@ -48,25 +48,32 @@
       <p>Cargando plantillas...</p>
     </div>
   } @else if (filteredTemplates().length === 0) {
-    <div class="empty-state-sm">
-      @if (activeTab() === 'WhatsApp') {
-        <i class="fa-brands fa-whatsapp"></i>
-        <p>No hay templates de WhatsApp. Usa el botón "Sincronizar desde Twilio" para importarlos.</p>
-        <button class="btn btn-outline btn-sm" (click)="syncWhatsApp()" [disabled]="syncing()">
-          @if (syncing()) {
-            <i class="fa-solid fa-spinner fa-spin"></i> Sincronizando...
-          } @else {
-            <i class="fa-brands fa-whatsapp"></i> Sincronizar desde Twilio
-          }
-        </button>
-      } @else {
-        <i class="fa-solid fa-file-circle-plus"></i>
-        <p>No hay plantillas de {{ activeTab() }} configuradas.</p>
-        <button class="btn btn-outline btn-sm" (click)="openModal()">
-          <i class="fa-solid fa-plus"></i> Crear primera plantilla
-        </button>
-      }
-    </div>
+    @if (activeTab() === 'WhatsApp') {
+      <app-empty-state
+        type="empty"
+        size="sm"
+        icon="fa-brands fa-whatsapp"
+        description="No hay templates de WhatsApp. Usa el botón &quot;Sincronizar desde Twilio&quot; para importarlos."
+        [showAction]="true"
+        actionLabel="Sincronizar desde Twilio"
+        actionIcon="fa-brands fa-whatsapp"
+        actionStyleClass="btn btn-outline btn-sm"
+        [attr.disabled]="syncing() || null"
+        (actionClick)="syncWhatsApp()"
+      />
+    } @else {
+      <app-empty-state
+        type="empty"
+        size="sm"
+        icon="fa-file-circle-plus"
+        [description]="'No hay plantillas de ' + activeTab() + ' configuradas.'"
+        [showAction]="true"
+        actionLabel="Crear primera plantilla"
+        actionIcon="fa-plus"
+        actionStyleClass="btn btn-outline btn-sm"
+        (actionClick)="openModal()"
+      />
+    }
   } @else {
     <div class="template-grid">
       @for (t of filteredTemplates(); track t.id) {

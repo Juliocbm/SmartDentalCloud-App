@@ -23,15 +23,18 @@
   }
 
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <h3>Error al cargar la orden</h3>
-      <p>{{ error() }}</p>
-      <button (click)="goBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar la orden"
+      [description]="error()!"
+      icon="fa-exclamation-triangle"
+      [showAction]="true"
+      actionLabel="Volver"
+      actionIcon="fa-arrow-left"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="goBack()"
+    />
   }
 
   @if (!loading() && !error() && order(); as po) {
@@ -133,11 +136,13 @@
             </table>
           </div>
         } @else {
-          <div class="empty-state empty-state-sm">
-            <i class="fa-solid fa-boxes-stacked"></i>
-            <h3>Sin items</h3>
-            <p>Esta orden no tiene items para recibir</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            title="Sin items"
+            description="Esta orden no tiene items para recibir"
+            icon="fa-boxes-stacked"
+            size="sm"
+          />
         }
       </div>
 

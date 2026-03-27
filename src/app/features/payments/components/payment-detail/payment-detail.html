@@ -72,14 +72,18 @@
       <p>Cargando información del pago...</p>
     </div>
   } @else if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h2>Error</h2>
-      <p>{{ error() }}</p>
-      <button (click)="goBack()" class="btn btn-secondary">
-        <i class="fa-solid fa-arrow-left"></i> Volver
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      [showAction]="true"
+      actionLabel="Volver"
+      actionIcon="fa-arrow-left"
+      actionType="button"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="goBack()"
+    />
   } @else if (payment(); as pay) {
     <div class="detail-body">
       <div class="info-section">

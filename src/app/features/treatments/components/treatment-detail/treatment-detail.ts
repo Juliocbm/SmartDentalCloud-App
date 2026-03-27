@@ -25,11 +25,12 @@ import { PermissionService, PERMISSIONS } from '../../../../core/services/permis
 import { NavigationStateService } from '../../../../core/services/navigation-state.service';
 import { InvoiceFormContextService } from '../../../invoices/services/invoice-form-context.service';
 import { TREATMENT_INVOICE_CONTEXT } from '../../../invoices/models/invoice-form-context.model';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-treatment-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, AllergyAlertBannerComponent, PatientClinicalSummaryComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, AuditInfoComponent, AllergyAlertBannerComponent, PatientClinicalSummaryComponent, EmptyStateComponent],
   templateUrl: './treatment-detail.html',
   styleUrl: './treatment-detail.scss'
 })

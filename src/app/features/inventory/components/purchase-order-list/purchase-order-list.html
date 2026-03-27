@@ -54,40 +54,43 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadData()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadData()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredOrders().length === 0 && orders().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-file-invoice"></i>
-      <h3>No hay órdenes de compra registradas</h3>
-      <p>Comienza creando la primera orden de compra</p>
-      <a class="btn btn-outline btn-success" routerLink="/inventory/purchase-orders/new">
-        <i class="fa-solid fa-plus"></i>
-        Crear Primera Orden
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-file-invoice"
+      title="No hay órdenes de compra registradas"
+      description="Comienza creando la primera orden de compra"
+      [showAction]="true"
+      actionLabel="Crear Primera Orden"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/inventory/purchase-orders/new">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredOrders().length === 0 && orders().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron órdenes de compra con los filtros aplicados</p>
-      <a routerLink="/inventory/purchase-orders/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Nueva Orden
-      </a>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron órdenes de compra con los filtros aplicados"
+      [showAction]="true"
+      actionLabel="Nueva Orden"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/inventory/purchase-orders/new">
+    </app-empty-state>
   }
 
   <!-- Orders Table -->

@@ -8,11 +8,12 @@ import { AccountsReceivableItem, AccountsReceivableSummary } from '../../models/
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-accounts-receivable',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './accounts-receivable.html',
   styleUrl: './accounts-receivable.scss'
 })

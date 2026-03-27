@@ -42,15 +42,18 @@
   }
 
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h3>Error al cargar el servicio</h3>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" routerLink="/services">
-        <i class="fa-solid fa-arrow-left"></i>
-        Volver a Servicios
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar el servicio"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      [showAction]="true"
+      actionLabel="Volver a Servicios"
+      actionIcon="fa-arrow-left"
+      actionType="link"
+      actionRoute="/services"
+      actionStyleClass="btn btn-secondary"
+    />
   }
 
   @if (!loading() && !error() && service(); as svc) {
@@ -239,10 +242,13 @@
           }
 
           @if (!loadingStats() && !statistics()) {
-            <div class="empty-state-small">
-              <i class="fa-solid fa-chart-line"></i>
-              <p>No hay estadísticas disponibles</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin estadísticas"
+              description="No hay estadísticas disponibles"
+              icon="fa-chart-line"
+              size="sm"
+            />
           }
         }
       </div>
@@ -305,10 +311,13 @@
           }
 
           @if (!loadingHistory() && priceHistory().length === 0) {
-            <div class="empty-state-small">
-              <i class="fa-solid fa-history"></i>
-              <p>No hay cambios de precio registrados</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin cambios de precio"
+              description="No hay cambios de precio registrados"
+              icon="fa-history"
+              size="sm"
+            />
           }
         }
       </div>
@@ -379,10 +388,13 @@
           }
 
           @if (!loadingTreatments() && linkedTreatments().length === 0) {
-            <div class="empty-state-small">
-              <i class="fa-solid fa-tooth"></i>
-              <p>No hay tratamientos vinculados a este servicio</p>
-            </div>
+            <app-empty-state
+              type="empty"
+              title="Sin tratamientos vinculados"
+              description="No hay tratamientos vinculados a este servicio"
+              icon="fa-tooth"
+              size="sm"
+            />
           }
         }
       </div>

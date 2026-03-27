@@ -100,14 +100,15 @@
 
   <!-- Error -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadData()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadData()">
+    </app-empty-state>
   }
 
   <!-- Table -->
@@ -160,12 +161,20 @@
     </div>
   }
 
-  <!-- Empty -->
-  @if (!loading() && !error() && filteredItems().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-check-circle"></i>
-      <h3>Sin cuentas por cobrar</h3>
-      <p>No se encontraron facturas pendientes con los filtros seleccionados.</p>
-    </div>
+  <!-- Empty State: Sin cuentas por cobrar -->
+  @if (!loading() && !error() && filteredItems().length === 0 && items().length === 0) {
+    <app-empty-state
+      type="success"
+      title="Sin cuentas por cobrar"
+      description="No hay facturas pendientes de cobro.">
+    </app-empty-state>
+  }
+
+  <!-- Empty State: Filtros sin coincidencias -->
+  @if (!loading() && !error() && filteredItems().length === 0 && items().length > 0) {
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron facturas pendientes con los filtros aplicados">
+    </app-empty-state>
   }
 </div>

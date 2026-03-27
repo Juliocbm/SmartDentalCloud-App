@@ -28,17 +28,19 @@
       <p>Cargando tratamientos pendientes...</p>
     </div>
   } @else if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <h3>Error al cargar datos</h3>
-      <p>{{ error() }}</p>
-    </div>
+    <app-empty-state
+      type="error"
+      title="Error al cargar datos"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+    />
   } @else if (items().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-check-circle empty-state__icon--success"></i>
-      <h3>Todo facturado</h3>
-      <p>No hay tratamientos completados pendientes de facturar.</p>
-    </div>
+    <app-empty-state
+      type="success"
+      title="Todo facturado"
+      description="No hay tratamientos completados pendientes de facturar."
+      icon="fa-check-circle"
+    />
   } @else {
     <!-- KPI Cards -->
     <div class="kpi-row">

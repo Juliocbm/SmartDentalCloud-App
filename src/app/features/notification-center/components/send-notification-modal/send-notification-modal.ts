@@ -13,11 +13,12 @@ import { NotificationTemplateService } from '../../../settings/services/notifica
 import { NotificationTemplate } from '../../../settings/models/notification-template.models';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FeatureService } from '../../../../core/services/feature.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-send-notification-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent, PatientAutocompleteComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, PatientAutocompleteComponent, EmptyStateComponent],
   templateUrl: './send-notification-modal.html',
   styleUrl: './send-notification-modal.scss'
 })

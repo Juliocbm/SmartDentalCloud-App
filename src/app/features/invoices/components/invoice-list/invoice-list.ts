@@ -14,11 +14,12 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-invoice-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, SendEmailModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, SendEmailModalComponent, EmptyStateComponent],
   templateUrl: './invoice-list.html',
   styleUrl: './invoice-list.scss'
 })

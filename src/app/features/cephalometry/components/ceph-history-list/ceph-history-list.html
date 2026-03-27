@@ -17,23 +17,31 @@
       <span>Cargando análisis cefalométricos...</span>
     </div>
   } @else if (error()) {
-    <div class="empty-state empty-state-sm">
-      <i class="fa-solid fa-exclamation-circle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-outline btn-sm" (click)="loadList()">
-        <i class="fa-solid fa-rotate"></i> Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      icon="fa-exclamation-circle"
+      size="sm"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-rotate"
+      actionType="button"
+      actionStyleClass="btn btn-outline btn-sm"
+      (actionClick)="loadList()"
+    />
   } @else if (items().length === 0) {
-    <div class="empty-state empty-state-sm">
-      <i class="fa-solid fa-head-side"></i>
-      <h3>Sin Análisis Cefalométricos</h3>
-      <p>Este paciente no tiene análisis cefalométricos registrados</p>
-      <button class="btn btn-outline btn-success" (click)="createNew()">
-        <i class="fa-solid fa-plus"></i>
-        Crear Primer Análisis
-      </button>
-    </div>
+    <app-empty-state
+      type="empty"
+      title="Sin Análisis Cefalométricos"
+      description="Este paciente no tiene análisis cefalométricos registrados"
+      icon="fa-head-side"
+      size="sm"
+      [showAction]="true"
+      actionLabel="Crear Primer Análisis"
+      actionIcon="fa-plus"
+      actionType="button"
+      (actionClick)="createNew()"
+    />
   } @else {
     <div class="ceph-cards">
       @for (item of items(); track item.id) {

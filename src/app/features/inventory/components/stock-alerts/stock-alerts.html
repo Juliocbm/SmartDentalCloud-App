@@ -147,36 +147,39 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadData()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadData()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredAlerts().length === 0 && alerts().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-circle-check"></i>
-      <h3>¡Todo en orden!</h3>
-      <p>No hay alertas de stock en este momento</p>
-      <a class="btn btn-outline" routerLink="/inventory/products">
-        <i class="fa-solid fa-box"></i>
-        Ver Productos
-      </a>
-    </div>
+    <app-empty-state
+      type="success"
+      icon="fa-circle-check"
+      title="¡Todo en orden!"
+      description="No hay alertas de stock en este momento"
+      [showAction]="true"
+      actionLabel="Ver Productos"
+      actionIcon="fa-box"
+      actionType="link"
+      actionRoute="/inventory/products"
+      actionStyleClass="btn btn-outline">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredAlerts().length === 0 && alerts().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron alertas con los filtros aplicados</p>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron alertas con los filtros aplicados">
+    </app-empty-state>
   }
 
   <!-- Alerts Table -->

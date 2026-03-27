@@ -13,11 +13,12 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { CsvExportService } from '../../../../shared/services/csv-export.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-treatment-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './treatment-list.html',
   styleUrl: './treatment-list.scss'
 })

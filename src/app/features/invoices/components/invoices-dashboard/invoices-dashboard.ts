@@ -10,6 +10,7 @@ import { LoggingService } from '../../../../core/services/logging.service';
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 interface AgingBucket {
   label: string;
@@ -21,7 +22,7 @@ interface AgingBucket {
 @Component({
   selector: 'app-invoices-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, DateRangePickerComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, DateRangePickerComponent, EmptyStateComponent],
   templateUrl: './invoices-dashboard.html',
   styleUrl: './invoices-dashboard.scss'
 })

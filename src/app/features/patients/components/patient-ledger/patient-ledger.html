@@ -4,17 +4,19 @@
     <p>Cargando libro mayor...</p>
   </div>
 } @else if (error()) {
-  <div class="empty-state">
-    <i class="fa-solid fa-exclamation-circle"></i>
-    <h3>Error al cargar datos</h3>
-    <p>{{ error() }}</p>
-  </div>
+  <app-empty-state
+    type="error"
+    title="Error al cargar datos"
+    [description]="error()!"
+    icon="fa-exclamation-circle"
+  />
 } @else if (!hasData()) {
-  <div class="empty-state">
-    <i class="fa-solid fa-book-open"></i>
-    <h3>Sin movimientos</h3>
-    <p>No hay cargos, facturas ni pagos registrados para este paciente.</p>
-  </div>
+  <app-empty-state
+    type="empty"
+    title="Sin movimientos"
+    description="No hay cargos, facturas ni pagos registrados para este paciente."
+    icon="fa-book-open"
+  />
 } @else if (ledger(); as l) {
   <!-- KPI Summary -->
   <div class="ledger-kpis">

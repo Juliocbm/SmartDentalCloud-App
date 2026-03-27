@@ -28,23 +28,25 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadReport()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadReport()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && data().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-chart-simple"></i>
-      <h3>Sin datos</h3>
-      <p>No hay datos de servicios en el período seleccionado</p>
-    </div>
+    <app-empty-state
+      type="informative"
+      icon="fa-chart-simple"
+      title="Sin datos"
+      description="No hay datos de servicios en el período seleccionado">
+    </app-empty-state>
   }
 
   <!-- Ranking Table -->

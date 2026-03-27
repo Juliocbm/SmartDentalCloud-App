@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { PieChartComponent, BarChartComponent, ChartDataItem } from '../../../../shared/components/charts';
 import { DateRangePickerComponent, DateRange } from '../../../../shared/components/date-range-picker/date-range-picker';
 import { AppointmentsService } from '../../services/appointments.service';
@@ -27,7 +28,7 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 @Component({
   selector: 'app-appointments-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, DateRangePickerComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, DateRangePickerComponent, EmptyStateComponent],
   templateUrl: './appointments-dashboard.html',
   styleUrls: ['./appointments-dashboard.scss']
 })

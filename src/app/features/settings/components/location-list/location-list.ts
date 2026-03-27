@@ -8,11 +8,12 @@ import { LocationFormModalComponent, LocationFormModalData } from '../location-f
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { FeatureService } from '../../../../core/services/feature.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-location-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './location-list.html',
   styleUrl: './location-list.scss'
 })

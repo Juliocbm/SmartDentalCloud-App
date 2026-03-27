@@ -67,36 +67,38 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadAppointments()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadAppointments()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredAppointments().length === 0 && appointments().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-calendar-xmark"></i>
-      <h3>No hay citas</h3>
-      <p>No se encontraron citas para la fecha seleccionada</p>
-      <a routerLink="/appointments/new" class="btn btn-outline btn-success">
-        <i class="fa-solid fa-plus"></i>
-        Crear Primera Cita
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-calendar-xmark"
+      title="No hay citas"
+      description="No se encontraron citas para la fecha seleccionada"
+      [showAction]="true"
+      actionLabel="Crear Primera Cita"
+      actionIcon="fa-plus"
+      actionType="link"
+      actionRoute="/appointments/new">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredAppointments().length === 0 && appointments().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron citas con los filtros aplicados</p>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron citas con los filtros aplicados">
+    </app-empty-state>
   }
 
   <!-- Appointments Table -->

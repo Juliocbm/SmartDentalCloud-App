@@ -19,6 +19,7 @@ import {
   PatientTypeData,
   PATIENT_ALERT_CONFIG
 } from '../../models/patients-analytics.models';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 interface DashboardMetric {
   label: string;
@@ -34,7 +35,7 @@ interface DashboardMetric {
 @Component({
   selector: 'app-patients-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, EmptyStateComponent],
   templateUrl: './patients-dashboard.html',
   styleUrls: ['./patients-dashboard.scss']
 })

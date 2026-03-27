@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { UsersService } from '../../services/users.service';
 import { RolesService } from '../../services/roles.service';
 import { User, Role } from '../../models/user.models';
@@ -21,7 +22,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, QuotaUsageIndicatorComponent],
+  imports: [CommonModule, RouterLink, FormsModule, PageHeaderComponent, QuotaUsageIndicatorComponent, EmptyStateComponent],
   templateUrl: './user-list.html',
   styleUrls: ['./user-list.scss']
 })

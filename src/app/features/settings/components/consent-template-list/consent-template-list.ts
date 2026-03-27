@@ -6,11 +6,12 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
 import { ModalService } from '../../../../shared/services/modal.service';
 import { ConsentTemplateFormModalComponent, ConsentTemplateFormModalData } from '../consent-template-form-modal/consent-template-form-modal';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-consent-template-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './consent-template-list.html',
   styleUrl: './consent-template-list.scss'
 })

@@ -122,10 +122,9 @@
         </div>
 
         @if (pendingApprovalPlans().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-circle-check"></i>
-            <p>No hay planes pendientes de aprobación</p>
-          </div>
+          <app-empty-state
+            type="success"
+            description="No hay planes pendientes de aprobación" />
         } @else {
           <div class="dash-list">
             @for (plan of pendingApprovalPlans().slice(0, 8); track plan.id) {
@@ -155,10 +154,10 @@
         </div>
 
         @if (activePlans().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-clipboard-list"></i>
-            <p>No hay planes activos</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-clipboard-list"
+            description="No hay planes activos" />
         } @else {
           <div class="dash-list">
             @for (plan of activePlans().slice(0, 8); track plan.id) {
@@ -192,10 +191,10 @@
         </div>
 
         @if (recentPlans().length === 0) {
-          <div class="empty-state">
-            <i class="fa-solid fa-clipboard-list"></i>
-            <p>No hay planes registrados</p>
-          </div>
+          <app-empty-state
+            type="empty"
+            icon="fa-clipboard-list"
+            description="No hay planes registrados" />
         } @else {
           <div class="dash-list">
             @for (plan of recentPlans(); track plan.id) {

@@ -22,13 +22,14 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 export type CheckoutStep = 'summary' | 'billing' | 'payment' | 'confirm';
 
 @Component({
   selector: 'app-appointment-checkout',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './appointment-checkout.html',
   styleUrl: './appointment-checkout.scss'
 })

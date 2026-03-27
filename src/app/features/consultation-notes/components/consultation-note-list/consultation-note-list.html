@@ -31,37 +31,39 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <h3>Error al cargar</h3>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadAppointments()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadAppointments()">
+    </app-empty-state>
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && filteredAppointments().length === 0 && appointments().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-notes-medical"></i>
-      <h3>No hay citas completadas</h3>
-      <p>Las notas de consulta se crean a partir de citas completadas</p>
-      <a class="btn btn-outline" routerLink="/appointments">
-        <i class="fa-solid fa-calendar"></i>
-        Ir a Citas
-      </a>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-notes-medical"
+      title="No hay citas completadas"
+      description="Las notas de consulta se crean a partir de citas completadas"
+      [showAction]="true"
+      actionLabel="Ir a Citas"
+      actionIcon="fa-calendar"
+      actionType="link"
+      actionRoute="/appointments"
+      actionStyleClass="btn btn-outline">
+    </app-empty-state>
   }
 
   <!-- No Results State -->
   @if (!loading() && !error() && filteredAppointments().length === 0 && appointments().length > 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-filter-circle-xmark"></i>
-      <h3>Sin resultados</h3>
-      <p>No se encontraron notas de consulta con los filtros aplicados</p>
-    </div>
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron notas de consulta con los filtros aplicados">
+    </app-empty-state>
   }
 
   <!-- Appointments Table -->

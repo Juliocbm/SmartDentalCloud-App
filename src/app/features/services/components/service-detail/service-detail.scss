@@ -190,23 +190,6 @@
   }
 }
 
-.empty-state-small {
-  text-align: center;
-  padding: var(--spacing-2xl);
-  color: var(--text-tertiary);
-
-  i {
-    font-size: var(--font-size-3xl);
-    margin-bottom: var(--spacing-md);
-    opacity: 0.5;
-  }
-
-  p {
-    margin: 0;
-    font-size: var(--font-size-sm);
-  }
-}
-
 // ===== Compact Table =====
 
 .table-compact {

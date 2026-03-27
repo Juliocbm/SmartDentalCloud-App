@@ -59,23 +59,38 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadLogs()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadLogs()">
+    </app-empty-state>
   }
 
-  <!-- Empty State -->
-  @if (!loading() && !error() && logs().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-shield-halved"></i>
-      <h3>Sin registros</h3>
-      <p>No hay registros de auditoría para los filtros seleccionados.</p>
-    </div>
+  <!-- Empty State: Sin registros -->
+  @if (!loading() && !error() && logs().length === 0 && !hasActiveFilters()) {
+    <app-empty-state
+      type="empty"
+      icon="fa-shield-halved"
+      title="Sin registros de auditoría"
+      description="No hay actividad registrada en el sistema aún.">
+    </app-empty-state>
+  }
+
+  <!-- Empty State: Filtros sin coincidencias -->
+  @if (!loading() && !error() && logs().length === 0 && hasActiveFilters()) {
+    <app-empty-state
+      type="no-results"
+      description="No se encontraron registros de auditoría con los filtros aplicados"
+      [showAction]="true"
+      actionLabel="Limpiar filtros"
+      actionIcon="fa-filter-circle-xmark"
+      actionStyleClass="btn btn-outline"
+      (actionClick)="clearFilters()">
+    </app-empty-state>
   }
 
   <!-- Table -->

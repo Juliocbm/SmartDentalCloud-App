@@ -4,11 +4,12 @@ import {
   EditableTooth,
   RISK_LEVEL_CONFIG
 } from '../../models/periodontogram.models';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-perio-statistics-panel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './perio-statistics-panel.html',
   styleUrl: './perio-statistics-panel.scss'
 })

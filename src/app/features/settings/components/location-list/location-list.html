@@ -34,27 +34,29 @@
 
   <!-- Error State -->
   @if (error()) {
-    <div class="empty-state">
-      <i class="fa-solid fa-exclamation-triangle"></i>
-      <p>{{ error() }}</p>
-      <button class="btn btn-secondary" (click)="loadLocations()">
-        <i class="fa-solid fa-arrows-rotate"></i>
-        Reintentar
-      </button>
-    </div>
+    <app-empty-state
+      type="error"
+      [description]="error()!"
+      [showAction]="true"
+      actionLabel="Reintentar"
+      actionIcon="fa-arrows-rotate"
+      actionStyleClass="btn btn-secondary"
+      (actionClick)="loadLocations()"
+    />
   }
 
   <!-- Empty State -->
   @if (!loading() && !error() && locations().length === 0) {
-    <div class="empty-state">
-      <i class="fa-solid fa-location-dot"></i>
-      <h3>No hay sucursales</h3>
-      <p>Comienza creando tu primera sucursal</p>
-      <button class="btn btn-outline btn-success" (click)="openCreateModal()">
-        <i class="fa-solid fa-plus"></i>
-        Nueva Sucursal
-      </button>
-    </div>
+    <app-empty-state
+      type="empty"
+      icon="fa-location-dot"
+      title="No hay sucursales"
+      description="Comienza creando tu primera sucursal"
+      [showAction]="true"
+      actionLabel="Nueva Sucursal"
+      actionIcon="fa-plus"
+      (actionClick)="openCreateModal()"
+    />
   }
 
   <!-- Table -->

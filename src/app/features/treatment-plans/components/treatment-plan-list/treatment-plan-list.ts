@@ -18,11 +18,12 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoggingService } from '../../../../core/services/logging.service';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { PermissionService, PERMISSIONS } from '../../../../core/services/permission.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-treatment-plan-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, SendEmailModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, PageHeaderComponent, SendEmailModalComponent, EmptyStateComponent],
   templateUrl: './treatment-plan-list.html',
   styleUrl: './treatment-plan-list.scss'
 })

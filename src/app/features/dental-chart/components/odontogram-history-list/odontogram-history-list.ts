@@ -14,11 +14,12 @@ import {
   OdontogramComparisonModalData
 } from '../odontogram-comparison-modal/odontogram-comparison-modal';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 
 @Component({
   selector: 'app-odontogram-history-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmptyStateComponent],
   templateUrl: './odontogram-history-list.html',
   styleUrl: './odontogram-history-list.scss'
 })
