@@ -57,7 +57,6 @@
         [showAction]="true"
         actionLabel="Sincronizar desde Twilio"
         actionIcon="fa-brands fa-whatsapp"
-        actionStyleClass="btn btn-outline btn-sm"
         [attr.disabled]="syncing() || null"
         (actionClick)="syncWhatsApp()"
       />
@@ -70,7 +69,6 @@
         [showAction]="true"
         actionLabel="Crear primera plantilla"
         actionIcon="fa-plus"
-        actionStyleClass="btn btn-outline btn-sm"
         (actionClick)="openModal()"
       />
     }

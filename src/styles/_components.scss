@@ -1996,20 +1996,25 @@ select.form-input {
     line-height: var(--line-height-normal);
   }
 
-  // Botón de acción — estilo ghost/outline por defecto dentro del empty state
+  // Botón de acción dentro del empty state
   .btn {
-    margin-top: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
   }
 
-  .btn-primary {
+  // Estilo ghost por defecto para CTAs de empty state
+  .btn-es-action {
+    padding: 6px 14px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
     background: transparent;
-    border-color: var(--primary-500);
-    color: var(--primary-500);
+    border: 1px solid var(--es-accent, var(--primary-400));
+    color: var(--es-accent, var(--primary-500));
+    border-radius: var(--radius-md);
+    transition: var(--transition-base);
 
     &:hover:not(:disabled) {
-      background: var(--primary-50);
-      border-color: var(--primary-600);
-      color: var(--primary-600);
+      background: var(--es-icon-bg, var(--primary-50));
+      border-color: var(--es-accent, var(--primary-500));
       transform: translateY(-1px);
       box-shadow: var(--shadow-sm);
     }
@@ -2033,6 +2038,71 @@ select.form-input {
 
   p {
     font-size: var(--font-size-xs);
+  }
+}
+
+// ===== EMPTY STATE — VARIANTES POR TIPO =====
+// Cada modificador define CSS custom properties consumidas por el selector compartido.
+// Usa tokens semánticos existentes → compatible con los 5 temas.
+
+.empty-state--empty {
+  --es-accent: var(--primary-500);
+  --es-icon-bg: var(--primary-bg);
+  --es-icon-color: var(--primary-text);
+}
+
+.empty-state--no-results {
+  --es-accent: var(--warning-500);
+  --es-icon-bg: var(--warning-bg);
+  --es-icon-color: var(--warning-text);
+}
+
+.empty-state--error {
+  --es-accent: var(--error-500);
+  --es-icon-bg: var(--error-bg);
+  --es-icon-color: var(--error-text);
+}
+
+.empty-state--success {
+  --es-accent: var(--success-500);
+  --es-icon-bg: var(--success-bg);
+  --es-icon-color: var(--success-text);
+}
+
+.empty-state--informative {
+  --es-accent: var(--info-500);
+  --es-icon-bg: var(--info-bg);
+  --es-icon-color: var(--info-text);
+}
+
+// Tratamiento visual compartido para todas las variantes tipadas
+.empty-state--empty,
+.empty-state--no-results,
+.empty-state--error,
+.empty-state--success,
+.empty-state--informative {
+  border-top: 3px solid var(--es-accent);
+  box-shadow: var(--shadow-sm);
+
+  > i {
+    background: var(--es-icon-bg);
+    color: var(--es-icon-color);
+  }
+}
+
+// SM + tipo: más sutil dentro de cards que ya tienen sombra
+.empty-state-sm.empty-state--empty,
+.empty-state-sm.empty-state--no-results,
+.empty-state-sm.empty-state--error,
+.empty-state-sm.empty-state--success,
+.empty-state-sm.empty-state--informative {
+  border-top-width: 2px;
+  box-shadow: none;
+
+  > i {
+    width: 40px;
+    height: 40px;
+    font-size: 0.875rem;
   }
 }
 

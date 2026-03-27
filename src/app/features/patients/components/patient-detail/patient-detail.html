@@ -74,7 +74,6 @@
       actionLabel="Volver"
       actionIcon="fa-arrow-left"
       actionType="button"
-      actionStyleClass="btn btn-secondary"
       (actionClick)="goBack()"
     />
   } @else if (patient(); as pat) {
@@ -1041,7 +1040,6 @@
               actionLabel="Subir primera radiografía"
               actionIcon="fa-upload"
               actionType="button"
-              actionStyleClass="btn btn-outline btn-sm"
               (actionClick)="openRadioUploadModal()"
             />
           }
@@ -1709,7 +1707,6 @@
               actionLabel="Limpiar filtro"
               actionIcon="fa-xmark"
               actionType="button"
-              actionStyleClass="btn btn-outline btn-sm"
               (actionClick)="filterCategory.set('')"
             />
           }

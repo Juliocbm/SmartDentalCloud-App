@@ -196,10 +196,35 @@
   }
 }
 
-/// Cuando empty-state está dentro de section-card, asegurar que ocupe el espacio
+/// Cuando empty-state está dentro de section-card, eliminar caja anidada
+/// para que el contenido se alinee con los items normales (dash-list, etc.)
+/// El botón se ancla al fondo para que cards con textos de diferente largo
+/// mantengan los botones alineados entre sí.
 .section-card {
-  .empty-state {
-    min-height: 200px; // Altura mínima para que no se vea comprimido
+  // El host element de Angular debe crecer para llenar el card
+  > app-empty-state {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  > .empty-state,
+  > app-empty-state > .empty-state {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
+    border-top: none;
+    min-height: 180px;
+    flex: 1;
+    justify-content: flex-start;
+    padding-top: var(--spacing-2xl);
+
+    // Botón anclado al fondo del card
+    .btn {
+      margin-top: auto;
+    }
   }
 }
 

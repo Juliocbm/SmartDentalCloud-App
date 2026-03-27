@@ -42,7 +42,7 @@ export class EmptyStateComponent {
   @Input() actionIcon: string = '';
   @Input() actionType: 'link' | 'button' = 'button';
   @Input() actionRoute: string = '';
-  @Input() actionStyleClass: string = 'btn btn-outline btn-success';
+  @Input() actionStyleClass: string = 'btn btn-es-action';
 
   @Output() actionClick = new EventEmitter<void>();
 

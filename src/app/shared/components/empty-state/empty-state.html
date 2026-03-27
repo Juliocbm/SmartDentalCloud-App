@@ -1,4 +1,10 @@
-<div class="empty-state" [class.empty-state-sm]="size === 'sm'">
+<div class="empty-state"
+     [class.empty-state-sm]="size === 'sm'"
+     [class.empty-state--empty]="type === 'empty'"
+     [class.empty-state--no-results]="type === 'no-results'"
+     [class.empty-state--error]="type === 'error'"
+     [class.empty-state--success]="type === 'success'"
+     [class.empty-state--informative]="type === 'informative'">
   <i [class]="'fa-solid ' + resolvedIcon"></i>
   @if (resolvedTitle) {
     <h3>{{ resolvedTitle }}</h3>
