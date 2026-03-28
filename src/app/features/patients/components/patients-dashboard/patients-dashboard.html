@@ -1,4 +1,4 @@
-<div class="page-container container-wide">
+<div class="page-container container-wide" [ngClass]="prefs.getLayoutClass()">
   <app-page-header
     [title]="'Pacientes'"
     [subtitle]="'Panel de control del módulo de pacientes'"
@@ -13,6 +13,7 @@
         <i class="fa-solid fa-list"></i>
         Ver Todos
       </a>
+      <app-dashboard-config-panel [config]="widgetConfig" />
     </div>
   </app-page-header>
 
@@ -37,6 +38,7 @@
     <app-form-alert [message]="error()" [dismissible]="false" />
   } @else {
     <!-- KPI Indicators -->
+    @if (prefs.isVisible('patients', 'kpis')) {
     <div class="kpi-grid">
       <a class="kpi-card kpi-card--primary" [routerLink]="['/patients']">
         <div class="kpi-card__header">
@@ -91,155 +93,166 @@
         </div>
       </a>
     </div>
+    }
 
     <!-- Gráficos -->
     <div class="analytics-grid">
-      <!-- Distribución por edad -->
-      <section class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-chart-bar"></i>
-            Distribución por Edad
-          </h2>
-        </div>
-        <div class="chart-container">
-          <app-bar-chart
-            [data]="ageChartData()"
-            [horizontal]="true"
-            height="280px">
-          </app-bar-chart>
-        </div>
-      </section>
-
-      <!-- Nuevos pacientes por mes -->
-      <section class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-chart-line"></i>
-            Nuevos Pacientes por Mes
-          </h2>
-        </div>
-        <div class="chart-container">
-          <app-bar-chart
-            [data]="newPatientsChartData()"
-            height="280px">
-          </app-bar-chart>
-        </div>
-      </section>
+      @for (widgetId of orderedChartWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('age-distribution') {
+            <section class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-chart-bar"></i>
+                  Distribución por Edad
+                </h2>
+              </div>
+              <div class="chart-container">
+                <app-bar-chart
+                  [data]="ageChartData()"
+                  [horizontal]="true"
+                  height="280px">
+                </app-bar-chart>
+              </div>
+            </section>
+          }
+          @case ('monthly-new') {
+            <section class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-chart-line"></i>
+                  Nuevos Pacientes por Mes
+                </h2>
+              </div>
+              <div class="chart-container">
+                <app-bar-chart
+                  [data]="newPatientsChartData()"
+                  height="280px">
+                </app-bar-chart>
+              </div>
+            </section>
+          }
+        }
+      }
     </div>
 
     <!-- Grid: Alertas, Pacientes Recientes, Cumpleaños (4-4-4) -->
     <div class="analytics-grid cols-3">
-      <!-- Alertas -->
-      <section class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-bell"></i>
-            Alertas
-          </h2>
-          <span class="dash-section-header__badge">{{ alertsCount() }}</span>
-        </div>
-        @if (alerts().length === 0) {
-          <app-empty-state
-            type="success"
-            icon="fa-check-circle"
-            description="No hay alertas pendientes" />
-        } @else {
-          <div class="dash-list">
-            @for (alert of alerts(); track alert.id) {
-              <div class="dash-item" [ngClass]="getAlertSeverityClass(alert.severity)">
-                <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="getAlertLeadingClass(alert.severity)">
-                  <i [class]="getAlertConfig(alert.type).icon"></i>
-                </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ alert.patientName }}</span>
-                  <span class="dash-item__subtitle">{{ alert.message }}</span>
-                </div>
-                <button class="btn btn--sm btn--ghost" (click)="viewPatient(alert.patientId)">
-                  <i class="fa-solid fa-arrow-right"></i>
-                </button>
+      @for (widgetId of orderedListWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('alerts') {
+            <section class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-bell"></i>
+                  Alertas
+                </h2>
+                <span class="dash-section-header__badge">{{ alertsCount() }}</span>
               </div>
-            }
-          </div>
-        }
-      </section>
-
-      <!-- Pacientes recientes -->
-      <section class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-user-clock"></i>
-            Pacientes Recientes
-          </h2>
-          <div class="dash-section-header__actions">
-            <button class="btn btn--sm btn--ghost" (click)="viewAllPatients()">Ver todos</button>
-          </div>
-        </div>
-        @if (recentPatients().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-user-plus"
-            description="No hay pacientes recientes" />
-        } @else {
-          <div class="dash-list">
-            @for (patient of recentPatients(); track patient.id) {
-              <div class="dash-item" (click)="viewPatient(patient.id)">
-                <div class="dash-item__leading dash-item__leading--avatar">
-                  <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ patient.fullName }}</span>
-                  <span class="dash-item__subtitle">{{ patient.email || patient.phone || 'Sin contacto' }}</span>
-                </div>
-                <div class="dash-item__trailing">
-                  @if (patient.nextAppointment) {
-                    <span class="dash-item__meta" style="color: var(--success-600)">
-                      <i class="fa-solid fa-calendar-check"></i>
-                      {{ formatDate(patient.nextAppointment) }}
-                    </span>
-                  } @else {
-                    <span class="dash-item__meta" style="font-style: italic">Sin cita programada</span>
+              @if (alerts().length === 0) {
+                <app-empty-state
+                  type="success"
+                  icon="fa-check-circle"
+                  description="No hay alertas pendientes" />
+              } @else {
+                <div class="dash-list">
+                  @for (alert of alerts(); track alert.id) {
+                    <div class="dash-item" [ngClass]="getAlertSeverityClass(alert.severity)">
+                      <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="getAlertLeadingClass(alert.severity)">
+                        <i [class]="getAlertConfig(alert.type).icon"></i>
+                      </div>
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ alert.patientName }}</span>
+                        <span class="dash-item__subtitle">{{ alert.message }}</span>
+                      </div>
+                      <button class="btn btn--sm btn--ghost" (click)="viewPatient(alert.patientId)">
+                        <i class="fa-solid fa-arrow-right"></i>
+                      </button>
+                    </div>
                   }
                 </div>
+              }
+            </section>
+          }
+          @case ('recent-patients') {
+            <section class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-user-clock"></i>
+                  Pacientes Recientes
+                </h2>
+                <div class="dash-section-header__actions">
+                  <button class="btn btn--sm btn--ghost" (click)="viewAllPatients()">Ver todos</button>
+                </div>
               </div>
-            }
-          </div>
-        }
-      </section>
-
-      <!-- Cumpleaños del mes -->
-      <section class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-cake-candles"></i>
-            Cumpleaños del Mes
-          </h2>
-          <span class="dash-section-header__badge">{{ birthdays().length }}</span>
-        </div>
-        @if (birthdays().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-calendar"
-            description="No hay cumpleaños este mes" />
-        } @else {
-          <div class="dash-list">
-            @for (birthday of birthdays(); track birthday.id) {
-              <div class="dash-item" [class.dash-item--highlight]="birthday.daysUntilBirthday === 0" (click)="viewPatient(birthday.id)">
-                <div class="dash-item__leading dash-item__leading--warning">
+              @if (recentPatients().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-user-plus"
+                  description="No hay pacientes recientes" />
+              } @else {
+                <div class="dash-list">
+                  @for (patient of recentPatients(); track patient.id) {
+                    <div class="dash-item" (click)="viewPatient(patient.id)">
+                      <div class="dash-item__leading dash-item__leading--avatar">
+                        <i class="fa-solid fa-user"></i>
+                      </div>
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ patient.fullName }}</span>
+                        <span class="dash-item__subtitle">{{ patient.email || patient.phone || 'Sin contacto' }}</span>
+                      </div>
+                      <div class="dash-item__trailing">
+                        @if (patient.nextAppointment) {
+                          <span class="dash-item__meta" style="color: var(--success-600)">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            {{ formatDate(patient.nextAppointment) }}
+                          </span>
+                        } @else {
+                          <span class="dash-item__meta" style="font-style: italic">Sin cita programada</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </section>
+          }
+          @case ('birthdays') {
+            <section class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
                   <i class="fa-solid fa-cake-candles"></i>
-                </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ birthday.fullName }}</span>
-                  <span class="dash-item__subtitle">Cumple {{ birthday.age }} años</span>
-                </div>
-                <span class="dash-item__meta" [style.color]="birthday.daysUntilBirthday === 0 ? 'var(--success-600)' : null" [style.font-weight]="birthday.daysUntilBirthday === 0 ? '600' : null">
-                  {{ getBirthdayLabel(birthday.daysUntilBirthday) }}
-                </span>
+                  Cumpleaños del Mes
+                </h2>
+                <span class="dash-section-header__badge">{{ birthdays().length }}</span>
               </div>
-            }
-          </div>
+              @if (birthdays().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-calendar"
+                  description="No hay cumpleaños este mes" />
+              } @else {
+                <div class="dash-list">
+                  @for (birthday of birthdays(); track birthday.id) {
+                    <div class="dash-item" [class.dash-item--highlight]="birthday.daysUntilBirthday === 0" (click)="viewPatient(birthday.id)">
+                      <div class="dash-item__leading dash-item__leading--warning">
+                        <i class="fa-solid fa-cake-candles"></i>
+                      </div>
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ birthday.fullName }}</span>
+                        <span class="dash-item__subtitle">Cumple {{ birthday.age }} años</span>
+                      </div>
+                      <span class="dash-item__meta" [style.color]="birthday.daysUntilBirthday === 0 ? 'var(--success-600)' : null" [style.font-weight]="birthday.daysUntilBirthday === 0 ? '600' : null">
+                        {{ getBirthdayLabel(birthday.daysUntilBirthday) }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              }
+            </section>
+          }
         }
-      </section>
+      }
     </div>
   }
 </div>

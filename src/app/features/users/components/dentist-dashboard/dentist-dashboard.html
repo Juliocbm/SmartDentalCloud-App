@@ -1,4 +1,4 @@
-<div class="page-container container-wide">
+<div class="page-container container-wide" [ngClass]="prefs.getLayoutClass()">
   <app-page-header
     [title]="'Dentistas'"
     [subtitle]="'Panel de control del equipo de dentistas'"
@@ -26,6 +26,7 @@
           Reporte Productividad
         </a>
       }
+      <app-dashboard-config-panel [config]="widgetConfig" />
     </div>
   </app-page-header>
 
@@ -51,6 +52,7 @@
     <app-form-alert [message]="error()" [dismissible]="false" />
   } @else {
     <!-- KPI Cards (8) -->
+    @if (prefs.isVisible('dentists', 'kpis')) {
     <div class="kpi-grid">
       <div class="kpi-card kpi-card--primary">
         <div class="kpi-card__header">
@@ -166,9 +168,10 @@
         </div>
       }
     </div>
+    }
 
     <!-- Métricas Individuales del Dentista Seleccionado -->
-    @if (selectedDentistMetrics() && featureService.hasFeature('AdvancedReports')) {
+    @if (prefs.isVisible('dentists', 'individual-metrics') && selectedDentistMetrics() && featureService.hasFeature('AdvancedReports')) {
       <div class="individual-dentist-section">
         <div class="dash-section-header">
           <div class="dash-section-header__info">
@@ -233,199 +236,209 @@
 
     <!-- Charts Grid (2 columnas) -->
     <div class="analytics-grid">
-      <!-- Ingresos por Dentista -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-chart-bar"></i>
-            Ingresos por Dentista
-          </h2>
-        </div>
+      @for (widgetId of orderedChartWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('revenue-chart') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-chart-bar"></i>
+                  Ingresos por Dentista
+                </h2>
+              </div>
 
-        @if (!featureService.hasFeature('AdvancedReports')) {
-          <app-empty-state
-            type="informative"
-            icon="fa-lock"
-            description="Reportes Avanzados requiere el plan Profesional"
-            [showAction]="true"
-            actionLabel="Mejorar Plan"
-            actionType="link"
-            actionRoute="/subscription" />
-        } @else if (revenueChartData().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-chart-bar"
-            description="No hay datos de ingresos este mes" />
-        } @else {
-          <app-bar-chart
-            [data]="revenueChartData()"
-            [horizontal]="true"
-            [height]="'280px'"
-          />
+              @if (!featureService.hasFeature('AdvancedReports')) {
+                <app-empty-state
+                  type="informative"
+                  icon="fa-lock"
+                  description="Reportes Avanzados requiere el plan Profesional"
+                  [showAction]="true"
+                  actionLabel="Mejorar Plan"
+                  actionType="link"
+                  actionRoute="/subscription" />
+              } @else if (revenueChartData().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-chart-bar"
+                  description="No hay datos de ingresos este mes" />
+              } @else {
+                <app-bar-chart
+                  [data]="revenueChartData()"
+                  [horizontal]="true"
+                  [height]="'280px'"
+                />
+              }
+            </div>
+          }
+          @case ('appointments-chart') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-calendar-check"></i>
+                  Citas Completadas por Dentista
+                </h2>
+              </div>
+
+              @if (!featureService.hasFeature('AdvancedReports')) {
+                <app-empty-state
+                  type="informative"
+                  icon="fa-lock"
+                  description="Reportes Avanzados requiere el plan Profesional"
+                  [showAction]="true"
+                  actionLabel="Mejorar Plan"
+                  actionType="link"
+                  actionRoute="/subscription" />
+              } @else if (appointmentsChartData().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-calendar-check"
+                  description="No hay datos de citas este mes" />
+              } @else {
+                <app-bar-chart
+                  [data]="appointmentsChartData()"
+                  [horizontal]="false"
+                  [height]="'280px'"
+                />
+              }
+            </div>
+          }
         }
-      </div>
-
-      <!-- Citas por Dentista -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-calendar-check"></i>
-            Citas Completadas por Dentista
-          </h2>
-        </div>
-
-        @if (!featureService.hasFeature('AdvancedReports')) {
-          <app-empty-state
-            type="informative"
-            icon="fa-lock"
-            description="Reportes Avanzados requiere el plan Profesional"
-            [showAction]="true"
-            actionLabel="Mejorar Plan"
-            actionType="link"
-            actionRoute="/subscription" />
-        } @else if (appointmentsChartData().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-calendar-check"
-            description="No hay datos de citas este mes" />
-        } @else {
-          <app-bar-chart
-            [data]="appointmentsChartData()"
-            [horizontal]="false"
-            [height]="'280px'"
-          />
-        }
-      </div>
+      }
     </div>
 
     <!-- Sections Grid (3 columnas) -->
     <div class="analytics-grid cols-3">
-      <!-- Top por Ingresos -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-ranking-star"></i>
-            Top por Ingresos
-          </h2>
-          @if (featureService.hasFeature('AdvancedReports') && topByRevenue().length > 0) {
-            <span class="dash-section-header__badge">{{ topByRevenue().length }}</span>
+      @for (widgetId of orderedRankingWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('top-revenue') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-ranking-star"></i>
+                  Top por Ingresos
+                </h2>
+                @if (featureService.hasFeature('AdvancedReports') && topByRevenue().length > 0) {
+                  <span class="dash-section-header__badge">{{ topByRevenue().length }}</span>
+                }
+              </div>
+
+              @if (!featureService.hasFeature('AdvancedReports')) {
+                <app-empty-state
+                  type="informative"
+                  icon="fa-lock"
+                  description="Reportes Avanzados requiere el plan Profesional"
+                  [showAction]="true"
+                  actionLabel="Mejorar Plan"
+                  actionType="link"
+                  actionRoute="/subscription" />
+              } @else if (topByRevenue().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-dollar-sign"
+                  description="No hay datos de ingresos este mes" />
+              } @else {
+                <div class="dash-list">
+                  @for (dentist of topByRevenue(); track dentist.dentistId; let idx = $index) {
+                    <a [routerLink]="['/users', dentist.dentistId]" class="dash-item">
+                      <div class="dash-item__leading dash-item__leading--rank">
+                        {{ idx + 1 }}
+                      </div>
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ dentist.dentistName }}</span>
+                        <span class="dash-item__subtitle">{{ dentist.subtitle }}</span>
+                      </div>
+                      <span class="dash-item__value" style="color: var(--success-600)">{{ formatCurrency(dentist.value) }}</span>
+                    </a>
+                  }
+                </div>
+              }
+            </div>
           }
-        </div>
+          @case ('top-treatments') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-trophy"></i>
+                  Top por Tratamientos
+                </h2>
+                @if (featureService.hasFeature('AdvancedReports') && topByTreatments().length > 0) {
+                  <span class="dash-section-header__badge">{{ topByTreatments().length }}</span>
+                }
+              </div>
 
-        @if (!featureService.hasFeature('AdvancedReports')) {
-          <app-empty-state
-            type="informative"
-            icon="fa-lock"
-            description="Reportes Avanzados requiere el plan Profesional"
-            [showAction]="true"
-            actionLabel="Mejorar Plan"
-            actionType="link"
-            actionRoute="/subscription" />
-        } @else if (topByRevenue().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-dollar-sign"
-            description="No hay datos de ingresos este mes" />
-        } @else {
-          <div class="dash-list">
-            @for (dentist of topByRevenue(); track dentist.dentistId; let idx = $index) {
-              <a [routerLink]="['/users', dentist.dentistId]" class="dash-item">
-                <div class="dash-item__leading dash-item__leading--rank">
-                  {{ idx + 1 }}
+              @if (!featureService.hasFeature('AdvancedReports')) {
+                <app-empty-state
+                  type="informative"
+                  icon="fa-lock"
+                  description="Reportes Avanzados requiere el plan Profesional"
+                  [showAction]="true"
+                  actionLabel="Mejorar Plan"
+                  actionType="link"
+                  actionRoute="/subscription" />
+              } @else if (topByTreatments().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-tooth"
+                  description="No hay datos de tratamientos este mes" />
+              } @else {
+                <div class="dash-list">
+                  @for (dentist of topByTreatments(); track dentist.dentistId; let idx = $index) {
+                    <a [routerLink]="['/users', dentist.dentistId]" class="dash-item">
+                      <div class="dash-item__leading dash-item__leading--rank">
+                        {{ idx + 1 }}
+                      </div>
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ dentist.dentistName }}</span>
+                        <span class="dash-item__subtitle">{{ dentist.subtitle }}</span>
+                      </div>
+                      <span class="dash-item__value" style="color: var(--primary-600)">{{ dentist.value }}</span>
+                    </a>
+                  }
                 </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ dentist.dentistName }}</span>
-                  <span class="dash-item__subtitle">{{ dentist.subtitle }}</span>
-                </div>
-                <span class="dash-item__value" style="color: var(--success-600)">{{ formatCurrency(dentist.value) }}</span>
-              </a>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Top por Tratamientos -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-trophy"></i>
-            Top por Tratamientos
-          </h2>
-          @if (featureService.hasFeature('AdvancedReports') && topByTreatments().length > 0) {
-            <span class="dash-section-header__badge">{{ topByTreatments().length }}</span>
+              }
+            </div>
           }
-        </div>
+          @case ('team-list') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-users"></i>
+                  Equipo de Dentistas
+                </h2>
+                @if (teamList().length > 0) {
+                  <span class="dash-section-header__badge">{{ teamList().length }}</span>
+                }
+              </div>
 
-        @if (!featureService.hasFeature('AdvancedReports')) {
-          <app-empty-state
-            type="informative"
-            icon="fa-lock"
-            description="Reportes Avanzados requiere el plan Profesional"
-            [showAction]="true"
-            actionLabel="Mejorar Plan"
-            actionType="link"
-            actionRoute="/subscription" />
-        } @else if (topByTreatments().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-tooth"
-            description="No hay datos de tratamientos este mes" />
-        } @else {
-          <div class="dash-list">
-            @for (dentist of topByTreatments(); track dentist.dentistId; let idx = $index) {
-              <a [routerLink]="['/users', dentist.dentistId]" class="dash-item">
-                <div class="dash-item__leading dash-item__leading--rank">
-                  {{ idx + 1 }}
+              @if (teamList().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-user-doctor"
+                  description="No hay dentistas registrados" />
+              } @else {
+                <div class="dash-list">
+                  @for (d of teamList(); track d.id) {
+                    <a [routerLink]="['/users', d.id]" class="dash-item">
+                      <div class="dash-item__leading dash-item__leading--avatar">
+                        <i class="fa-solid fa-user-doctor"></i>
+                      </div>
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ d.name }}</span>
+                        <span class="dash-item__subtitle">
+                          {{ d.specialty }} · {{ d.appointmentsThisMonth }} citas
+                        </span>
+                      </div>
+                      <span class="status-badge" [class.badge-active]="d.isActive" [class.badge-inactive]="!d.isActive">
+                        {{ d.isActive ? 'Activo' : 'Inactivo' }}
+                      </span>
+                    </a>
+                  }
                 </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ dentist.dentistName }}</span>
-                  <span class="dash-item__subtitle">{{ dentist.subtitle }}</span>
-                </div>
-                <span class="dash-item__value" style="color: var(--primary-600)">{{ dentist.value }}</span>
-              </a>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Equipo de Dentistas -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-users"></i>
-            Equipo de Dentistas
-          </h2>
-          @if (teamList().length > 0) {
-            <span class="dash-section-header__badge">{{ teamList().length }}</span>
+              }
+            </div>
           }
-        </div>
-
-        @if (teamList().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-user-doctor"
-            description="No hay dentistas registrados" />
-        } @else {
-          <div class="dash-list">
-            @for (d of teamList(); track d.id) {
-              <a [routerLink]="['/users', d.id]" class="dash-item">
-                <div class="dash-item__leading dash-item__leading--avatar">
-                  <i class="fa-solid fa-user-doctor"></i>
-                </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ d.name }}</span>
-                  <span class="dash-item__subtitle">
-                    {{ d.specialty }} · {{ d.appointmentsThisMonth }} citas
-                  </span>
-                </div>
-                <span class="status-badge" [class.badge-active]="d.isActive" [class.badge-inactive]="!d.isActive">
-                  {{ d.isActive ? 'Activo' : 'Inactivo' }}
-                </span>
-              </a>
-            }
-          </div>
         }
-      </div>
+      }
     </div>
   }
 </div>

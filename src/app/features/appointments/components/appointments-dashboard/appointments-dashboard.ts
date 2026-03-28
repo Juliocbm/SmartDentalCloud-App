@@ -25,15 +25,27 @@ import {
 import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
+import { DashboardConfigPanelComponent } from '../../../../shared/components/dashboard-config-panel/dashboard-config-panel';
+import { DashboardPreferencesService } from '../../../../core/services/dashboard-preferences.service';
+import { APPOINTMENTS_DASHBOARD_WIDGETS } from './config/appointments-dashboard.widgets';
 
 @Component({
   selector: 'app-appointments-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, DateRangePickerComponent, EmptyStateComponent, FormAlertComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, DateRangePickerComponent, EmptyStateComponent, FormAlertComponent, DashboardConfigPanelComponent],
   templateUrl: './appointments-dashboard.html',
   styleUrls: ['./appointments-dashboard.scss']
 })
 export class AppointmentsDashboardComponent implements OnInit {
+  readonly prefs = inject(DashboardPreferencesService);
+  readonly widgetConfig = APPOINTMENTS_DASHBOARD_WIDGETS;
+  readonly orderedListWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('appointments', this.widgetConfig, 'lists')
+  );
+  readonly orderedChartWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('appointments', this.widgetConfig, 'charts')
+  );
+
   private appointmentsService = inject(AppointmentsService);
   private analyticsService = inject(AppointmentsAnalyticsService);
   private logger = inject(LoggingService);

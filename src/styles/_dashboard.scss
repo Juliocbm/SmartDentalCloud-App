@@ -907,3 +907,34 @@
     padding: var(--spacing-lg);
   }
 }
+
+// ===== Layout Presets =====
+
+/// Preset compacto: máxima densidad de información
+.dashboard-layout--compact {
+  --kpi-grid-min-col: 160px;
+  --kpi-grid-gap: var(--spacing-md);
+  --kpi-card-padding: 0.625rem 0.75rem;
+  --kpi-value-size: 1.125rem;
+  --analytics-grid-gap: var(--spacing-md);
+  --section-card-padding: 0.875rem;
+  --list-max-height: 200px;
+  --list-item-padding: var(--spacing-sm);
+  --list-item-gap: var(--spacing-xs);
+  --quick-action-gap: 0.5rem;
+  --quick-action-padding: 0.625rem;
+}
+
+/// Preset detallado: más espacio, listas más largas, analytics en 2 columnas
+.dashboard-layout--detailed {
+  --kpi-grid-min-col: 250px;
+  --kpi-grid-gap: var(--spacing-xl);
+  --kpi-card-padding: 1.125rem 1.25rem;
+  --kpi-value-size: 1.75rem;
+  --analytics-grid-columns-3: repeat(2, minmax(0, 1fr));
+  --analytics-grid-gap: var(--spacing-xl);
+  --section-card-padding: 1.5rem;
+  --list-max-height: 400px;
+  --quick-action-gap: 1rem;
+  --quick-action-padding: 1rem;
+}

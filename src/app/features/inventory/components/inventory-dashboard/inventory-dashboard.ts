@@ -15,15 +15,27 @@ import { ROUTES } from '../../../../core/constants/routes.constants';
 import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
+import { DashboardConfigPanelComponent } from '../../../../shared/components/dashboard-config-panel/dashboard-config-panel';
+import { DashboardPreferencesService } from '../../../../core/services/dashboard-preferences.service';
+import { INVENTORY_DASHBOARD_WIDGETS } from './config/inventory-dashboard.widgets';
 
 @Component({
   selector: 'app-inventory-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, EmptyStateComponent, FormAlertComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, BarChartComponent, LocationAutocompleteComponent, EmptyStateComponent, FormAlertComponent, DashboardConfigPanelComponent],
   templateUrl: './inventory-dashboard.html',
   styleUrls: ['./inventory-dashboard.scss']
 })
 export class InventoryDashboardComponent implements OnInit {
+  readonly prefs = inject(DashboardPreferencesService);
+  readonly widgetConfig = INVENTORY_DASHBOARD_WIDGETS;
+  readonly orderedChartWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('inventory', this.widgetConfig, 'charts')
+  );
+  readonly orderedListWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('inventory', this.widgetConfig, 'lists')
+  );
+
   private productsService = inject(ProductsService);
   private alertsService = inject(AlertsCountService);
   private analyticsService = inject(InventoryAnalyticsService);

@@ -12,11 +12,14 @@ import { PermissionService, PERMISSIONS } from '../../core/services/permission.s
 import { DateFormatService } from '../../core/services/date-format.service';
 import { FeatureService } from '../../core/services/feature.service';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state';
+import { DashboardConfigPanelComponent } from '../../shared/components/dashboard-config-panel/dashboard-config-panel';
+import { DashboardPreferencesService } from '../../core/services/dashboard-preferences.service';
+import { MAIN_DASHBOARD_WIDGETS } from './config/dashboard.widgets';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent, LocationAutocompleteComponent, DateRangePickerComponent, EmptyStateComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, LocationAutocompleteComponent, DateRangePickerComponent, EmptyStateComponent, DashboardConfigPanelComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -25,7 +28,12 @@ export class DashboardComponent implements OnInit {
   private logger = inject(LoggingService);
   permissionService = inject(PermissionService);
   featureService = inject(FeatureService);
+  readonly prefs = inject(DashboardPreferencesService);
   PERMISSIONS = PERMISSIONS;
+  readonly widgetConfig = MAIN_DASHBOARD_WIDGETS;
+  readonly orderedWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('main', this.widgetConfig)
+  );
 
   loading = signal(true);
   data = signal<DashboardData | null>(null);

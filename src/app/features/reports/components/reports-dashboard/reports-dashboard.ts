@@ -1,16 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PageHeaderComponent, BreadcrumbItem } from '../../../../shared/components/page-header/page-header';
+import { DashboardConfigPanelComponent } from '../../../../shared/components/dashboard-config-panel/dashboard-config-panel';
+import { DashboardPreferencesService } from '../../../../core/services/dashboard-preferences.service';
+import { REPORTS_DASHBOARD_WIDGETS } from './config/reports-dashboard.widgets';
 
 @Component({
   selector: 'app-reports-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, PageHeaderComponent],
+  imports: [CommonModule, RouterModule, PageHeaderComponent, DashboardConfigPanelComponent],
   templateUrl: './reports-dashboard.html',
   styleUrl: './reports-dashboard.scss'
 })
 export class ReportsDashboardComponent {
+  readonly prefs = inject(DashboardPreferencesService);
+  readonly widgetConfig = REPORTS_DASHBOARD_WIDGETS;
+
   breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fa-home' },
     { label: 'Reportes' }

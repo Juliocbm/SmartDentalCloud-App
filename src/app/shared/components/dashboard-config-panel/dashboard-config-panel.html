@@ -1,0 +1,86 @@
+<div class="dashboard-config">
+  <button class="btn btn-outline btn-sm" (click)="toggle()" [class.active]="open()">
+    <i class="fa-solid fa-sliders"></i>
+    Configurar
+  </button>
+
+  @if (open()) {
+    <div class="dashboard-config__panel">
+      <div class="dashboard-config__header">
+        <span class="dashboard-config__title">Personalizar vista</span>
+      </div>
+      <div class="dashboard-config__presets">
+        <span class="dashboard-config__presets-label">Densidad</span>
+        <div class="dashboard-config__presets-options">
+          <button class="dashboard-config__preset-btn"
+            [class.active]="currentLayout() === 'compact'"
+            (click)="setLayout('compact')">
+            <i class="fa-solid fa-compress"></i> Compacto
+          </button>
+          <button class="dashboard-config__preset-btn"
+            [class.active]="currentLayout() === 'balanced'"
+            (click)="setLayout('balanced')">
+            <i class="fa-solid fa-equals"></i> Equilibrado
+          </button>
+          <button class="dashboard-config__preset-btn"
+            [class.active]="currentLayout() === 'detailed'"
+            (click)="setLayout('detailed')">
+            <i class="fa-solid fa-expand"></i> Detallado
+          </button>
+        </div>
+      </div>
+
+      @if (orderedWidgetGroups().fixed.length > 0) {
+        <div class="dashboard-config__list">
+          @for (widget of orderedWidgetGroups().fixed; track widget.id) {
+            <label class="dashboard-config__item">
+              <span class="dashboard-config__item-label">
+                <i class="fa-solid" [ngClass]="widget.icon"></i>
+                {{ widget.label }}
+              </span>
+              <span class="toggle">
+                <input type="checkbox"
+                  [checked]="prefsService.isVisible(config().dashboardId, widget.id)"
+                  (change)="prefsService.toggle(config().dashboardId, widget.id)" />
+                <span class="toggle-slider"></span>
+              </span>
+            </label>
+          }
+        </div>
+      }
+
+      @for (entry of orderedWidgetGroups().groups | keyvalue; track entry.key) {
+        @if (orderedWidgetGroups().groups.size > 1) {
+          <div class="dashboard-config__group-separator"></div>
+        }
+        <div class="dashboard-config__list"
+             cdkDropList
+             [cdkDropListData]="entry.value"
+             (cdkDropListDropped)="onDrop($event, entry.key)">
+          @for (widget of entry.value; track widget.id) {
+            <label class="dashboard-config__item dashboard-config__item--draggable" cdkDrag>
+              <span class="dashboard-config__drag-handle" cdkDragHandle>
+                <i class="fa-solid fa-grip-vertical"></i>
+              </span>
+              <span class="dashboard-config__item-label">
+                <i class="fa-solid" [ngClass]="widget.icon"></i>
+                {{ widget.label }}
+              </span>
+              <span class="toggle">
+                <input type="checkbox"
+                  [checked]="prefsService.isVisible(config().dashboardId, widget.id)"
+                  (change)="prefsService.toggle(config().dashboardId, widget.id)" />
+                <span class="toggle-slider"></span>
+              </span>
+            </label>
+          }
+        </div>
+      }
+
+      <button class="dashboard-config__reset" (click)="resetAll()">
+        <i class="fa-solid fa-rotate-left"></i>
+        Restaurar defaults
+      </button>
+    </div>
+  }
+</div>

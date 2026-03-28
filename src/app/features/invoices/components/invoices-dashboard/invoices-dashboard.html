@@ -1,4 +1,4 @@
-<div class="page-container container-wide">
+<div class="page-container container-wide" [ngClass]="prefs.getLayoutClass()">
   <app-page-header
     [title]="'Facturación'"
     [subtitle]="'Panel de control del módulo de facturación'"
@@ -18,6 +18,7 @@
         <i class="fa-solid fa-list"></i>
         Ver Todas
       </a>
+      <app-dashboard-config-panel [config]="widgetConfig" />
     </div>
   </app-page-header>
 
@@ -43,6 +44,7 @@
     <app-form-alert [message]="error()" [dismissible]="false" />
   } @else {
     <!-- KPI Indicators -->
+    @if (prefs.isVisible('invoices', 'kpis')) {
     <div class="kpi-grid">
       <a class="kpi-card kpi-card--primary" routerLink="/invoices/list">
         <div class="kpi-card__header">
@@ -123,118 +125,124 @@
         </div>
       </a>
     </div>
+    }
 
     <!-- Gráficos + Cuentas por Cobrar + Facturas Recientes -->
     <div class="analytics-grid cols-3">
-      <!-- Distribución por Estado - Pie Chart -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-chart-pie"></i>
-            Facturas por Estado
-          </h2>
-        </div>
-        @if (statusChartData().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-chart-pie"
-            description="No hay datos de facturas" />
-        } @else {
-          <app-pie-chart
-            [data]="statusChartData()"
-            [doughnut]="true"
-            [showLegend]="true"
-            [height]="'280px'"
-          />
-        }
-      </div>
-
-      <!-- Cuentas por Cobrar (Accounts Receivable) -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-hand-holding-dollar"></i>
-            Cuentas por Cobrar
-          </h2>
-          <div class="dash-section-header__actions">
-            <a routerLink="/reports/accounts-receivable" class="btn btn--sm btn--outline">
-              Ver Reporte Completo
-              <i class="fa-solid fa-arrow-right"></i>
-            </a>
-          </div>
-        </div>
-
-        @if (accountsReceivable().totalCount === 0) {
-          <app-empty-state
-            type="success"
-            description="No hay cuentas pendientes de cobro" />
-        } @else {
-          <div class="ar-headline">
-            <span class="ar-headline__value">{{ formatCurrency(accountsReceivable().totalBalance) }}</span>
-            <span class="ar-headline__subtitle">Total Pendiente · {{ accountsReceivable().totalCount }} factura{{ accountsReceivable().totalCount === 1 ? '' : 's' }}</span>
-          </div>
-          <div class="ar-aging-list">
-            @for (bucket of accountsReceivable().buckets; track bucket.label) {
-              <div class="ar-aging-row" [class.ar-aging-row--zero]="bucket.count === 0">
-                <span class="ar-dot" [ngClass]="bucket.cssClass"></span>
-                <span class="ar-aging-row__label">{{ bucket.label }}</span>
-                <span class="ar-aging-row__amount">{{ formatCurrency(bucket.total) }}</span>
+      @for (widgetId of orderedWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('status-chart') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-chart-pie"></i>
+                  Facturas por Estado
+                </h2>
               </div>
-            }
-          </div>
-        }
-      </div>
+              @if (statusChartData().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-chart-pie"
+                  description="No hay datos de facturas" />
+              } @else {
+                <app-pie-chart
+                  [data]="statusChartData()"
+                  [doughnut]="true"
+                  [showLegend]="true"
+                  [height]="'280px'"
+                />
+              }
+            </div>
+          }
+          @case ('accounts-receivable') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-hand-holding-dollar"></i>
+                  Cuentas por Cobrar
+                </h2>
+                <div class="dash-section-header__actions">
+                  <a routerLink="/reports/accounts-receivable" class="btn btn--sm btn--outline">
+                    Ver Reporte Completo
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
 
-      <!-- Facturas Recientes -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            Facturas Recientes
-          </h2>
-          <div class="dash-section-header__actions">
-            <a routerLink="/invoices/list" class="btn btn--sm btn--outline">
-              Ver Todas
-              <i class="fa-solid fa-arrow-right"></i>
-            </a>
-          </div>
-        </div>
+              @if (accountsReceivable().totalCount === 0) {
+                <app-empty-state
+                  type="success"
+                  description="No hay cuentas pendientes de cobro" />
+              } @else {
+                <div class="ar-headline">
+                  <span class="ar-headline__value">{{ formatCurrency(accountsReceivable().totalBalance) }}</span>
+                  <span class="ar-headline__subtitle">Total Pendiente · {{ accountsReceivable().totalCount }} factura{{ accountsReceivable().totalCount === 1 ? '' : 's' }}</span>
+                </div>
+                <div class="ar-aging-list">
+                  @for (bucket of accountsReceivable().buckets; track bucket.label) {
+                    <div class="ar-aging-row" [class.ar-aging-row--zero]="bucket.count === 0">
+                      <span class="ar-dot" [ngClass]="bucket.cssClass"></span>
+                      <span class="ar-aging-row__label">{{ bucket.label }}</span>
+                      <span class="ar-aging-row__amount">{{ formatCurrency(bucket.total) }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+          @case ('recent-invoices') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                  Facturas Recientes
+                </h2>
+                <div class="dash-section-header__actions">
+                  <a routerLink="/invoices/list" class="btn btn--sm btn--outline">
+                    Ver Todas
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
 
-        @if (recentInvoices().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-file-invoice"
-            description="No hay facturas registradas" />
-        } @else {
-          <div class="dash-list">
-            @for (invoice of recentInvoices(); track invoice.id) {
-              <a [routerLink]="['/invoices', invoice.id]" class="dash-item">
-                <div class="dash-item__leading dash-item__leading--avatar">
-                  <i class="fa-solid fa-user"></i>
+              @if (recentInvoices().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-file-invoice"
+                  description="No hay facturas registradas" />
+              } @else {
+                <div class="dash-list">
+                  @for (invoice of recentInvoices(); track invoice.id) {
+                    <a [routerLink]="['/invoices', invoice.id]" class="dash-item">
+                      <div class="dash-item__leading dash-item__leading--avatar">
+                        <i class="fa-solid fa-user"></i>
+                      </div>
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ invoice.patientName }}</span>
+                        <span class="dash-item__subtitle">{{ formatDate(invoice.issuedAt) }}</span>
+                      </div>
+                      <div class="dash-item__trailing">
+                        <div class="invoice-amounts">
+                          <span class="dash-item__value">{{ formatCurrency(invoice.totalAmount) }}</span>
+                          @if (invoice.balance > 0) {
+                            <span class="dash-item__meta" style="color: var(--warning-600)">Saldo: {{ formatCurrency(invoice.balance) }}</span>
+                          } @else {
+                            <span class="dash-item__meta" style="color: var(--success-600)">Pagada</span>
+                          }
+                        </div>
+                        <span [class]="'badge ' + getStatusConfig(invoice.status).class">
+                          <i [class]="'fa-solid ' + getStatusConfig(invoice.status).icon"></i>
+                          {{ getStatusConfig(invoice.status).label }}
+                        </span>
+                      </div>
+                    </a>
+                  }
                 </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ invoice.patientName }}</span>
-                  <span class="dash-item__subtitle">{{ formatDate(invoice.issuedAt) }}</span>
-                </div>
-                <div class="dash-item__trailing">
-                  <div class="invoice-amounts">
-                    <span class="dash-item__value">{{ formatCurrency(invoice.totalAmount) }}</span>
-                    @if (invoice.balance > 0) {
-                      <span class="dash-item__meta" style="color: var(--warning-600)">Saldo: {{ formatCurrency(invoice.balance) }}</span>
-                    } @else {
-                      <span class="dash-item__meta" style="color: var(--success-600)">Pagada</span>
-                    }
-                  </div>
-                  <span [class]="'badge ' + getStatusConfig(invoice.status).class">
-                    <i [class]="'fa-solid ' + getStatusConfig(invoice.status).icon"></i>
-                    {{ getStatusConfig(invoice.status).label }}
-                  </span>
-                </div>
-              </a>
-            }
-          </div>
+              }
+            </div>
+          }
         }
-      </div>
+      }
     </div>
   }
 </div>

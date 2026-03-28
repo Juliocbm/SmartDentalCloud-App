@@ -13,17 +13,25 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
+import { DashboardConfigPanelComponent } from '../../../../shared/components/dashboard-config-panel/dashboard-config-panel';
+import { DashboardPreferencesService } from '../../../../core/services/dashboard-preferences.service';
+import { TREATMENT_PLAN_DASHBOARD_WIDGETS } from './config/treatment-plan-dashboard.widgets';
 
 @Component({
   selector: 'app-treatment-plan-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, CurrencyPipe, EmptyStateComponent, FormAlertComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, CurrencyPipe, EmptyStateComponent, FormAlertComponent, DashboardConfigPanelComponent],
   templateUrl: './treatment-plan-dashboard.html',
   styleUrl: './treatment-plan-dashboard.scss'
 })
 export class TreatmentPlanDashboardComponent implements OnInit {
   private plansService = inject(TreatmentPlansService);
   private logger = inject(LoggingService);
+  readonly prefs = inject(DashboardPreferencesService);
+  readonly widgetConfig = TREATMENT_PLAN_DASHBOARD_WIDGETS;
+  readonly orderedWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('treatment-plans', this.widgetConfig)
+  );
 
   loading = signal(true);
   error = signal<string | null>(null);

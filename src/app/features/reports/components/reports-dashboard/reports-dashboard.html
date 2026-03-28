@@ -1,23 +1,28 @@
-<div class="page-container container-wide">
+<div class="page-container container-wide" [ngClass]="prefs.getLayoutClass()">
   <app-page-header
     [title]="'Reportes'"
     [subtitle]="'Panel de reportes y análisis'"
     [icon]="'fa-chart-bar'"
     [breadcrumbs]="breadcrumbItems">
+    <div actions>
+      <app-dashboard-config-panel [config]="widgetConfig" />
+    </div>
   </app-page-header>
 
-  <div class="reports-grid">
-    @for (report of reports; track report.route) {
-      <a [routerLink]="report.route" class="report-card">
-        <div class="report-icon" [class]="report.color">
-          <i [class]="'fa-solid ' + report.icon"></i>
-        </div>
-        <div class="report-content">
-          <h3>{{ report.title }}</h3>
-          <p>{{ report.description }}</p>
-        </div>
-        <i class="fa-solid fa-chevron-right report-arrow"></i>
-      </a>
-    }
-  </div>
+  @if (prefs.isVisible('reports', 'report-cards')) {
+    <div class="reports-grid">
+      @for (report of reports; track report.route) {
+        <a [routerLink]="report.route" class="report-card">
+          <div class="report-icon" [class]="report.color">
+            <i [class]="'fa-solid ' + report.icon"></i>
+          </div>
+          <div class="report-content">
+            <h3>{{ report.title }}</h3>
+            <p>{{ report.description }}</p>
+          </div>
+          <i class="fa-solid fa-chevron-right report-arrow"></i>
+        </a>
+      }
+    </div>
+  }
 </div>

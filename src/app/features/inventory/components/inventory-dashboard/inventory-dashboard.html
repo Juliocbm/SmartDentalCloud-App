@@ -1,4 +1,4 @@
-<div class="page-container container-wide">
+<div class="page-container container-wide" [ngClass]="prefs.getLayoutClass()">
   <app-page-header
     [title]="'Inventario'"
     [subtitle]="'Panel de control del módulo de inventario'"
@@ -14,6 +14,7 @@
         <i class="fa-solid fa-list"></i>
         Ver Productos
       </a>
+      <app-dashboard-config-panel [config]="widgetConfig" />
     </div>
   </app-page-header>
 
@@ -39,6 +40,7 @@
     <app-form-alert [message]="error()" [dismissible]="false" />
   } @else {
     <!-- KPI Indicators -->
+    @if (prefs.isVisible('inventory', 'kpis')) {
     <div class="kpi-grid">
       <a class="kpi-card kpi-card--primary" [routerLink]="['/inventory/products']">
         <div class="kpi-card__header">
@@ -119,194 +121,210 @@
         </div>
       </a>
     </div>
+    }
 
     <!-- Grid de dos columnas para Gráficos -->
     <div class="analytics-grid">
-      <!-- Distribución por Categorías - Pie Chart -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-chart-pie"></i>
-            Distribución por Categorías
-          </h2>
-        </div>
-        
-        @if (loadingCategories()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (categoryDistribution().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-folder-open"
-            description="No hay categorías registradas" />
-        } @else {
-          <app-pie-chart
-            [data]="categoryChartData()"
-            [doughnut]="true"
-            [showLegend]="true"
-            [height]="'280px'"
-          />
-        }
-      </div>
+      @for (widgetId of orderedChartWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('category-distribution') {
+            <!-- Distribución por Categorías - Pie Chart -->
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-chart-pie"></i>
+                  Distribución por Categorías
+                </h2>
+              </div>
 
-      <!-- Top Productos - Bar Chart -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-ranking-star"></i>
-            Top Productos por Uso
-          </h2>
-        </div>
-        
-        @if (loadingTopProducts()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (topProducts().length === 0) {
-          <app-empty-state
-            type="empty"
-            description="No hay datos de uso" />
-        } @else {
-          <app-bar-chart
-            [data]="topProductsChartData()"
-            [horizontal]="true"
-            [height]="'280px'"
-          />
+              @if (loadingCategories()) {
+                <div class="loading-spinner">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+              } @else if (categoryDistribution().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-folder-open"
+                  description="No hay categorías registradas" />
+              } @else {
+                <app-pie-chart
+                  [data]="categoryChartData()"
+                  [doughnut]="true"
+                  [showLegend]="true"
+                  [height]="'280px'"
+                />
+              }
+            </div>
+          }
+          @case ('top-usage') {
+            <!-- Top Productos - Bar Chart -->
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-ranking-star"></i>
+                  Top Productos por Uso
+                </h2>
+              </div>
+
+              @if (loadingTopProducts()) {
+                <div class="loading-spinner">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+              } @else if (topProducts().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  description="No hay datos de uso" />
+              } @else {
+                <app-bar-chart
+                  [data]="topProductsChartData()"
+                  [horizontal]="true"
+                  [height]="'280px'"
+                />
+              }
+            </div>
+          }
         }
-      </div>
+      }
     </div>
 
     <!-- Grid de 3 columnas: Próximos a Vencer + Productos Más Utilizados + Actividad Reciente -->
     <div class="analytics-grid cols-3">
-      <!-- Productos Próximos a Vencer -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-calendar-xmark"></i>
-            Próximos a Vencer
-          </h2>
-          @if (expiringProducts().length > 0) {
-            <span class="dash-section-header__badge">
-              {{ expiringProducts().length }}
-            </span>
-          }
-        </div>
-
-        @if (loadingExpiring()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (expiringProducts().length === 0) {
-          <app-empty-state
-            type="success"
-            description="No hay productos próximos a vencer" />
-        } @else {
-          <div class="dash-list">
-            @for (product of expiringProducts(); track product.id) {
-              <a 
-                [routerLink]="['/inventory/products', product.id]" 
-                class="dash-item"
-                [ngClass]="'dash-item--urgency-' + product.urgencyLevel">
-                <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="getExpiryLeadingClass(product.urgencyLevel)">
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-                </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ product.name }}</span>
-                  <span class="dash-item__subtitle">
-                    {{ product.expiryDate | date:'dd/MM' }} - 
-                    @if (product.daysToExpire === 0) {
-                      Hoy
-                    } @else if (product.daysToExpire < 0) {
-                      Vencido
-                    } @else {
-                      {{ product.daysToExpire }}d
-                    }
+      @for (widgetId of orderedListWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('expiring-soon') {
+            <!-- Productos Próximos a Vencer -->
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-calendar-xmark"></i>
+                  Próximos a Vencer
+                </h2>
+                @if (expiringProducts().length > 0) {
+                  <span class="dash-section-header__badge">
+                    {{ expiringProducts().length }}
                   </span>
-                </div>
-              </a>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Top 5 Productos Más Usados -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-star"></i>
-            Productos Más Utilizados
-          </h2>
-        </div>
-        
-        @if (loadingTopProducts()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (topProducts().length === 0) {
-          <app-empty-state
-            type="empty"
-            description="No hay datos de productos utilizados" />
-        } @else {
-          <div class="dash-list">
-            @for (product of topProducts(); track product.id) {
-              <a [routerLink]="['/inventory/products', product.id]" class="dash-item">
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ product.name }}</span>
-                  <span class="dash-item__subtitle">{{ product.categoryName }}</span>
-                </div>
-                <div class="dash-item__trailing">
-                  <span class="dash-item__meta">
-                    <i class="fa-solid fa-chart-simple"></i>
-                    {{ product.usageCount }}
-                  </span>
-                  <span class="stock-badge" [ngClass]="'status-' + product.stockStatus">
-                    {{ product.currentStock }}
-                  </span>
-                </div>
-              </a>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Timeline de Actividad Reciente -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            Actividad Reciente
-          </h2>
-        </div>
-        
-        @if (loadingActivity()) {
-          <div class="loading-spinner">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-          </div>
-        } @else if (recentActivity().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-history"
-            description="No hay actividad reciente" />
-        } @else {
-          <div class="dash-list">
-            @for (activity of recentActivity(); track activity.id) {
-              <div class="dash-item">
-                <div class="dash-item__leading" [ngClass]="getActivityColor(activity.type)">
-                  <i class="fa-solid" [ngClass]="getActivityIcon(activity.type)"></i>
-                </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ activity.description }}</span>
-                  <span class="dash-item__subtitle">
-                    <i class="fa-solid fa-clock"></i>
-                    {{ activity.timestamp | date:'dd/MM HH:mm' }}
-                  </span>
-                </div>
+                }
               </div>
-            }
-          </div>
+
+              @if (loadingExpiring()) {
+                <div class="loading-spinner">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+              } @else if (expiringProducts().length === 0) {
+                <app-empty-state
+                  type="success"
+                  description="No hay productos próximos a vencer" />
+              } @else {
+                <div class="dash-list">
+                  @for (product of expiringProducts(); track product.id) {
+                    <a
+                      [routerLink]="['/inventory/products', product.id]"
+                      class="dash-item"
+                      [ngClass]="'dash-item--urgency-' + product.urgencyLevel">
+                      <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="getExpiryLeadingClass(product.urgencyLevel)">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                      </div>
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ product.name }}</span>
+                        <span class="dash-item__subtitle">
+                          {{ product.expiryDate | date:'dd/MM' }} -
+                          @if (product.daysToExpire === 0) {
+                            Hoy
+                          } @else if (product.daysToExpire < 0) {
+                            Vencido
+                          } @else {
+                            {{ product.daysToExpire }}d
+                          }
+                        </span>
+                      </div>
+                    </a>
+                  }
+                </div>
+              }
+            </div>
+          }
+          @case ('most-used') {
+            <!-- Top 5 Productos Más Usados -->
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-star"></i>
+                  Productos Más Utilizados
+                </h2>
+              </div>
+
+              @if (loadingTopProducts()) {
+                <div class="loading-spinner">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+              } @else if (topProducts().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  description="No hay datos de productos utilizados" />
+              } @else {
+                <div class="dash-list">
+                  @for (product of topProducts(); track product.id) {
+                    <a [routerLink]="['/inventory/products', product.id]" class="dash-item">
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ product.name }}</span>
+                        <span class="dash-item__subtitle">{{ product.categoryName }}</span>
+                      </div>
+                      <div class="dash-item__trailing">
+                        <span class="dash-item__meta">
+                          <i class="fa-solid fa-chart-simple"></i>
+                          {{ product.usageCount }}
+                        </span>
+                        <span class="stock-badge" [ngClass]="'status-' + product.stockStatus">
+                          {{ product.currentStock }}
+                        </span>
+                      </div>
+                    </a>
+                  }
+                </div>
+              }
+            </div>
+          }
+          @case ('recent-activity') {
+            <!-- Timeline de Actividad Reciente -->
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                  Actividad Reciente
+                </h2>
+              </div>
+
+              @if (loadingActivity()) {
+                <div class="loading-spinner">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+              } @else if (recentActivity().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-history"
+                  description="No hay actividad reciente" />
+              } @else {
+                <div class="dash-list">
+                  @for (activity of recentActivity(); track activity.id) {
+                    <div class="dash-item">
+                      <div class="dash-item__leading" [ngClass]="getActivityColor(activity.type)">
+                        <i class="fa-solid" [ngClass]="getActivityIcon(activity.type)"></i>
+                      </div>
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ activity.description }}</span>
+                        <span class="dash-item__subtitle">
+                          <i class="fa-solid fa-clock"></i>
+                          {{ activity.timestamp | date:'dd/MM HH:mm' }}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
         }
-      </div>
+      }
     </div>
   }
 </div>

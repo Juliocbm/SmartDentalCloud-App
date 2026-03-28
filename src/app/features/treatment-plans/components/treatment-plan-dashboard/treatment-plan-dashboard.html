@@ -1,10 +1,11 @@
-<div class="page-container container-wide">
+<div class="page-container container-wide" [ngClass]="prefs.getLayoutClass()">
   <app-page-header
     [title]="'Planes de Tratamiento'"
     [subtitle]="'Panel de control del módulo de planes de tratamiento'"
     [icon]="'fa-clipboard-list'"
     [breadcrumbs]="breadcrumbItems">
     <div actions>
+      <app-dashboard-config-panel [config]="widgetConfig" />
       <a routerLink="/treatment-plans/new" class="btn btn-outline btn-success">
         <i class="fa-solid fa-plus"></i>
         Nuevo Plan
@@ -25,6 +26,7 @@
     <app-form-alert [message]="error()" [dismissible]="false" />
   } @else {
     <!-- KPI Cards -->
+    @if (prefs.isVisible('treatment-plans', 'kpis')) {
     <div class="kpi-grid">
       <div class="kpi-card kpi-card--primary">
         <div class="kpi-card__header">
@@ -105,113 +107,119 @@
         </div>
       </div>
     </div>
+    }
 
     <!-- Content Grid -->
     <div class="analytics-grid">
-      <!-- Pending Approval -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-clock"></i>
-            Pendientes de Aprobación
-          </h2>
-          <span class="dash-section-header__badge">{{ pendingApprovalPlans().length }}</span>
-        </div>
+      @for (widgetId of orderedWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('pending-approval') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-clock"></i>
+                  Pendientes de Aprobación
+                </h2>
+                <span class="dash-section-header__badge">{{ pendingApprovalPlans().length }}</span>
+              </div>
 
-        @if (pendingApprovalPlans().length === 0) {
-          <app-empty-state
-            type="success"
-            description="No hay planes pendientes de aprobación" />
-        } @else {
-          <div class="dash-list">
-            @for (plan of pendingApprovalPlans().slice(0, 8); track plan.id) {
-              <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ plan.title }}</span>
-                  <span class="dash-item__subtitle">{{ plan.patientName }}</span>
+              @if (pendingApprovalPlans().length === 0) {
+                <app-empty-state
+                  type="success"
+                  description="No hay planes pendientes de aprobación" />
+              } @else {
+                <div class="dash-list">
+                  @for (plan of pendingApprovalPlans().slice(0, 8); track plan.id) {
+                    <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ plan.title }}</span>
+                        <span class="dash-item__subtitle">{{ plan.patientName }}</span>
+                      </div>
+                      <div class="dash-item__trailing">
+                        <span class="dash-item__value" style="color: var(--success-600)">{{ plan.totalEstimatedCost | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                        <span class="dash-item__meta">{{ formatDate(plan.createdAt) }}</span>
+                      </div>
+                    </a>
+                  }
                 </div>
-                <div class="dash-item__trailing">
-                  <span class="dash-item__value" style="color: var(--success-600)">{{ plan.totalEstimatedCost | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
-                  <span class="dash-item__meta">{{ formatDate(plan.createdAt) }}</span>
+              }
+            </div>
+          }
+          @case ('active-plans') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-spinner"></i>
+                  Planes Activos
+                </h2>
+                <span class="dash-section-header__badge">{{ activePlans().length }}</span>
+              </div>
+
+              @if (activePlans().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-clipboard-list"
+                  description="No hay planes activos" />
+              } @else {
+                <div class="dash-list">
+                  @for (plan of activePlans().slice(0, 8); track plan.id) {
+                    <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ plan.title }}</span>
+                        <span class="dash-item__subtitle">{{ plan.patientName }}</span>
+                      </div>
+                      <div class="dash-item__trailing">
+                        <div class="progress-indicator">
+                          <div class="progress-bar">
+                            <div class="progress-fill" [style.width.%]="plan.overallProgressPercentage"></div>
+                          </div>
+                          <span class="progress-text">{{ plan.overallProgressPercentage }}%</span>
+                        </div>
+                        <span class="dash-item__meta">{{ plan.completedItems }}/{{ plan.totalItems }}</span>
+                      </div>
+                    </a>
+                  }
                 </div>
-              </a>
-            }
-          </div>
+              }
+            </div>
+          }
+          @case ('recent-plans') {
+            <div class="section-card section-card--full">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                  Planes Recientes
+                </h2>
+              </div>
+
+              @if (recentPlans().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-clipboard-list"
+                  description="No hay planes registrados" />
+              } @else {
+                <div class="dash-list">
+                  @for (plan of recentPlans(); track plan.id) {
+                    <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ plan.title }}</span>
+                        <span class="dash-item__subtitle">{{ plan.patientName }} · {{ plan.planNumber }}</span>
+                      </div>
+                      <div class="dash-item__trailing">
+                        <span [class]="'badge ' + getStatusConfig(plan.status).class">
+                          <i [class]="'fa-solid ' + getStatusConfig(plan.status).icon"></i>
+                          {{ getStatusConfig(plan.status).label }}
+                        </span>
+                        <span class="dash-item__meta">{{ formatDate(plan.createdAt) }}</span>
+                      </div>
+                    </a>
+                  }
+                </div>
+              }
+            </div>
+          }
         }
-      </div>
-
-      <!-- Active Plans -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-spinner"></i>
-            Planes Activos
-          </h2>
-          <span class="dash-section-header__badge">{{ activePlans().length }}</span>
-        </div>
-
-        @if (activePlans().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-clipboard-list"
-            description="No hay planes activos" />
-        } @else {
-          <div class="dash-list">
-            @for (plan of activePlans().slice(0, 8); track plan.id) {
-              <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ plan.title }}</span>
-                  <span class="dash-item__subtitle">{{ plan.patientName }}</span>
-                </div>
-                <div class="dash-item__trailing">
-                  <div class="progress-indicator">
-                    <div class="progress-bar">
-                      <div class="progress-fill" [style.width.%]="plan.overallProgressPercentage"></div>
-                    </div>
-                    <span class="progress-text">{{ plan.overallProgressPercentage }}%</span>
-                  </div>
-                  <span class="dash-item__meta">{{ plan.completedItems }}/{{ plan.totalItems }}</span>
-                </div>
-              </a>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Recent Plans -->
-      <div class="section-card section-card--full">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            Planes Recientes
-          </h2>
-        </div>
-
-        @if (recentPlans().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-clipboard-list"
-            description="No hay planes registrados" />
-        } @else {
-          <div class="dash-list">
-            @for (plan of recentPlans(); track plan.id) {
-              <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ plan.title }}</span>
-                  <span class="dash-item__subtitle">{{ plan.patientName }} · {{ plan.planNumber }}</span>
-                </div>
-                <div class="dash-item__trailing">
-                  <span [class]="'badge ' + getStatusConfig(plan.status).class">
-                    <i [class]="'fa-solid ' + getStatusConfig(plan.status).icon"></i>
-                    {{ getStatusConfig(plan.status).label }}
-                  </span>
-                  <span class="dash-item__meta">{{ formatDate(plan.createdAt) }}</span>
-                </div>
-              </a>
-            }
-          </div>
-        }
-      </div>
+      }
     </div>
   }
 </div>

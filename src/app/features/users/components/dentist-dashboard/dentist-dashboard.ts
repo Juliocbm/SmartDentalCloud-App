@@ -21,11 +21,14 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { FeatureService } from '../../../../core/services/feature.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
+import { DashboardConfigPanelComponent } from '../../../../shared/components/dashboard-config-panel/dashboard-config-panel';
+import { DashboardPreferencesService } from '../../../../core/services/dashboard-preferences.service';
+import { DENTIST_DASHBOARD_WIDGETS } from './config/dentist-dashboard.widgets';
 
 @Component({
   selector: 'app-dentist-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, DateRangePickerComponent, DentistAutocompleteComponent, EmptyStateComponent, FormAlertComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, DateRangePickerComponent, DentistAutocompleteComponent, EmptyStateComponent, FormAlertComponent, DashboardConfigPanelComponent],
   templateUrl: './dentist-dashboard.html',
   styleUrl: './dentist-dashboard.scss'
 })
@@ -33,6 +36,14 @@ export class DentistDashboardComponent implements OnInit {
   private analyticsService = inject(DentistAnalyticsService);
   private logger = inject(LoggingService);
   featureService = inject(FeatureService);
+  readonly prefs = inject(DashboardPreferencesService);
+  readonly widgetConfig = DENTIST_DASHBOARD_WIDGETS;
+  readonly orderedChartWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('dentists', this.widgetConfig, 'charts')
+  );
+  readonly orderedRankingWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('dentists', this.widgetConfig, 'rankings')
+  );
 
   // Date range
   dateRange = signal<DateRange>(this.getDefaultDateRange());

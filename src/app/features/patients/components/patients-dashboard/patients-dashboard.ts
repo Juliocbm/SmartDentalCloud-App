@@ -21,6 +21,9 @@ import {
 } from '../../models/patients-analytics.models';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
+import { DashboardConfigPanelComponent } from '../../../../shared/components/dashboard-config-panel/dashboard-config-panel';
+import { DashboardPreferencesService } from '../../../../core/services/dashboard-preferences.service';
+import { PATIENTS_DASHBOARD_WIDGETS } from './config/patients-dashboard.widgets';
 
 interface DashboardMetric {
   label: string;
@@ -36,7 +39,7 @@ interface DashboardMetric {
 @Component({
   selector: 'app-patients-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, EmptyStateComponent, FormAlertComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, BarChartComponent, EmptyStateComponent, FormAlertComponent, DashboardConfigPanelComponent],
   templateUrl: './patients-dashboard.html',
   styleUrls: ['./patients-dashboard.scss']
 })
@@ -44,6 +47,14 @@ export class PatientsDashboardComponent implements OnInit {
   private analyticsService = inject(PatientsAnalyticsService);
   private router = inject(Router);
   private logger = inject(LoggingService);
+  readonly prefs = inject(DashboardPreferencesService);
+  readonly widgetConfig = PATIENTS_DASHBOARD_WIDGETS;
+  readonly orderedChartWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('patients', this.widgetConfig, 'charts')
+  );
+  readonly orderedListWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('patients', this.widgetConfig, 'lists')
+  );
 
   // Breadcrumbs
   breadcrumbItems: BreadcrumbItem[] = [

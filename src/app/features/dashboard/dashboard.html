@@ -1,4 +1,4 @@
-<div class="page-container container-wide">
+<div class="page-container container-wide" [ngClass]="prefs.getLayoutClass()">
   <app-page-header
     [title]="'Dashboard'"
     [subtitle]="'Panel de control general de la clínica'"
@@ -17,6 +17,7 @@
         <i class="fa-solid fa-sync-alt" [class.fa-spin]="loading()"></i>
         Actualizar
       </button>
+      <app-dashboard-config-panel [config]="widgetConfig" />
     </div>
   </app-page-header>
 
@@ -38,6 +39,7 @@
     </div>
   } @else {
     <!-- KPI Metrics -->
+    @if (prefs.isVisible('main', 'kpis')) {
     <div class="kpi-grid">
       @if (permissionService.hasPermission(PERMISSIONS.AppointmentsView)) {
         <a class="kpi-card kpi-card--primary" routerLink="/appointments">
@@ -179,8 +181,10 @@
         }
       }
     </div>
+    }
 
     <!-- Acciones Rápidas -->
+    @if (prefs.isVisible('main', 'quick-actions')) {
     <div class="section-card quick-actions-wrapper">
       <div class="dash-section-header">
         <h2 class="dash-section-header__title">
@@ -203,144 +207,150 @@
         }
       </div>
     </div>
+    }
 
     <!-- Content Grid: Citas + Planes + Inventario -->
     <div class="analytics-grid cols-3">
-      <!-- Próximas Citas -->
-      @if (permissionService.hasPermission(PERMISSIONS.AppointmentsView)) {
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-calendar-days"></i>
-            Próximas Citas
-          </h2>
-          @if (upcomingAppointments().length > 0) {
-            <span class="dash-section-header__badge">{{ upcomingAppointments().length }}</span>
-          }
-        </div>
+      @for (widgetId of orderedWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('upcoming-appointments') {
+            @if (permissionService.hasPermission(PERMISSIONS.AppointmentsView)) {
+              <div class="section-card">
+                <div class="dash-section-header">
+                  <h2 class="dash-section-header__title">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    Próximas Citas
+                  </h2>
+                  @if (upcomingAppointments().length > 0) {
+                    <span class="dash-section-header__badge">{{ upcomingAppointments().length }}</span>
+                  }
+                </div>
 
-        @if (upcomingAppointments().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-calendar-check"
-            description="No hay citas programadas próximamente" />
-        } @else {
-          <div class="dash-list">
-            @for (apt of upcomingAppointments(); track apt.id) {
-              <a [routerLink]="['/appointments', apt.id]" class="dash-item">
-                <div class="dash-item__leading dash-item__leading--avatar">
-                  {{ apt.patientName.charAt(0) || '?' }}
-                </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ apt.patientName }}</span>
-                  <span class="dash-item__subtitle">
-                    {{ formatDateTime(apt.startAt) }} · {{ apt.reason || 'Consulta' }}
-                  </span>
-                </div>
-                <span class="badge" [ngClass]="getAppointmentStatusClass(apt.status)">
-                  {{ getAppointmentStatusLabel(apt.status) }}
-                </span>
-              </a>
+                @if (upcomingAppointments().length === 0) {
+                  <app-empty-state
+                    type="empty"
+                    icon="fa-calendar-check"
+                    description="No hay citas programadas próximamente" />
+                } @else {
+                  <div class="dash-list">
+                    @for (apt of upcomingAppointments(); track apt.id) {
+                      <a [routerLink]="['/appointments', apt.id]" class="dash-item">
+                        <div class="dash-item__leading dash-item__leading--avatar">
+                          {{ apt.patientName.charAt(0) || '?' }}
+                        </div>
+                        <div class="dash-item__content">
+                          <span class="dash-item__title">{{ apt.patientName }}</span>
+                          <span class="dash-item__subtitle">
+                            {{ formatDateTime(apt.startAt) }} · {{ apt.reason || 'Consulta' }}
+                          </span>
+                        </div>
+                        <span class="badge" [ngClass]="getAppointmentStatusClass(apt.status)">
+                          {{ getAppointmentStatusLabel(apt.status) }}
+                        </span>
+                      </a>
+                    }
+                  </div>
+                }
+              </div>
             }
-          </div>
-        }
-      </div>
-      }
-
-      <!-- Planes Pendientes de Aprobación -->
-      @if (permissionService.hasPermission(PERMISSIONS.TreatmentPlansView)) {
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-clipboard-list"></i>
-            Planes por Aprobar
-          </h2>
-          @if (featureService.hasFeature('TreatmentPlans') && pendingPlans().length > 0) {
-            <span class="dash-section-header__badge">{{ pendingPlans().length }}</span>
           }
-        </div>
+          @case ('pending-plans') {
+            @if (permissionService.hasPermission(PERMISSIONS.TreatmentPlansView)) {
+              <div class="section-card">
+                <div class="dash-section-header">
+                  <h2 class="dash-section-header__title">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    Planes por Aprobar
+                  </h2>
+                  @if (featureService.hasFeature('TreatmentPlans') && pendingPlans().length > 0) {
+                    <span class="dash-section-header__badge">{{ pendingPlans().length }}</span>
+                  }
+                </div>
 
-        @if (!featureService.hasFeature('TreatmentPlans')) {
-          <app-empty-state
-            type="informative"
-            icon="fa-lock"
-            description="Planes de Tratamiento requiere el plan Profesional"
-            [showAction]="true"
-            actionLabel="Mejorar Plan"
-            actionType="link"
-            actionRoute="/subscription" />
-        } @else if (pendingPlans().length === 0) {
-          <app-empty-state
-            type="success"
-            description="No hay planes pendientes de aprobación" />
-        } @else {
-          <div class="dash-list">
-            @for (plan of pendingPlans(); track plan.id) {
-              <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
-                <div class="dash-item__leading dash-item__leading--warning">
-                  <i class="fa-solid fa-clipboard-list"></i>
-                </div>
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ plan.title }}</span>
-                  <span class="dash-item__subtitle">{{ plan.patientName }} · {{ plan.totalItems }} items</span>
-                </div>
-                <span class="dash-item__value" style="color: var(--success-600)">{{ formatCurrency(plan.totalEstimatedCost) }}</span>
-              </a>
+                @if (!featureService.hasFeature('TreatmentPlans')) {
+                  <app-empty-state
+                    type="informative"
+                    icon="fa-lock"
+                    description="Planes de Tratamiento requiere el plan Profesional"
+                    [showAction]="true"
+                    actionLabel="Mejorar Plan"
+                    actionType="link"
+                    actionRoute="/subscription" />
+                } @else if (pendingPlans().length === 0) {
+                  <app-empty-state
+                    type="success"
+                    description="No hay planes pendientes de aprobación" />
+                } @else {
+                  <div class="dash-list">
+                    @for (plan of pendingPlans(); track plan.id) {
+                      <a [routerLink]="['/treatment-plans', plan.id]" class="dash-item">
+                        <div class="dash-item__leading dash-item__leading--warning">
+                          <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <div class="dash-item__content">
+                          <span class="dash-item__title">{{ plan.title }}</span>
+                          <span class="dash-item__subtitle">{{ plan.patientName }} · {{ plan.totalItems }} items</span>
+                        </div>
+                        <span class="dash-item__value" style="color: var(--success-600)">{{ formatCurrency(plan.totalEstimatedCost) }}</span>
+                      </a>
+                    }
+                  </div>
+                }
+              </div>
             }
-          </div>
-        }
-      </div>
-      }
-
-      <!-- Alertas de Inventario -->
-      @if (permissionService.hasPermission(PERMISSIONS.InventoryView)) {
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            Alertas de Inventario
-          </h2>
-          @if (featureService.hasFeature('Inventory')) {
-            <span class="dash-section-header__badge">{{ lowStockItems().length }}</span>
           }
-        </div>
+          @case ('inventory-alerts') {
+            @if (permissionService.hasPermission(PERMISSIONS.InventoryView)) {
+              <div class="section-card">
+                <div class="dash-section-header">
+                  <h2 class="dash-section-header__title">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Alertas de Inventario
+                  </h2>
+                  @if (featureService.hasFeature('Inventory')) {
+                    <span class="dash-section-header__badge">{{ lowStockItems().length }}</span>
+                  }
+                </div>
 
-        @if (!featureService.hasFeature('Inventory')) {
-          <app-empty-state
-            type="informative"
-            icon="fa-lock"
-            description="Inventario requiere el plan Profesional"
-            [showAction]="true"
-            actionLabel="Mejorar Plan"
-            actionType="link"
-            actionRoute="/subscription" />
-        } @else if (lowStockItems().length === 0) {
-          <app-empty-state
-            type="success"
-            description="No hay alertas de inventario" />
-        } @else {
-        <div class="dash-list">
-          @for (item of lowStockItems().slice(0, 5); track item.productId) {
-            <div class="dash-item">
-              <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="item.currentStock === 0 ? 'dash-item__leading--error' : 'dash-item__leading--warning'">
-                <i class="fa-solid" [ngClass]="item.currentStock === 0 ? 'fa-xmark' : 'fa-exclamation'"></i>
+                @if (!featureService.hasFeature('Inventory')) {
+                  <app-empty-state
+                    type="informative"
+                    icon="fa-lock"
+                    description="Inventario requiere el plan Profesional"
+                    [showAction]="true"
+                    actionLabel="Mejorar Plan"
+                    actionType="link"
+                    actionRoute="/subscription" />
+                } @else if (lowStockItems().length === 0) {
+                  <app-empty-state
+                    type="success"
+                    description="No hay alertas de inventario" />
+                } @else {
+                  <div class="dash-list">
+                    @for (item of lowStockItems().slice(0, 5); track item.productId) {
+                      <div class="dash-item">
+                        <div class="dash-item__leading dash-item__leading--urgency" [ngClass]="item.currentStock === 0 ? 'dash-item__leading--error' : 'dash-item__leading--warning'">
+                          <i class="fa-solid" [ngClass]="item.currentStock === 0 ? 'fa-xmark' : 'fa-exclamation'"></i>
+                        </div>
+                        <div class="dash-item__content">
+                          <span class="dash-item__title">{{ item.productName }}</span>
+                          <span class="dash-item__subtitle">{{ item.categoryName || 'Sin categoría' }}</span>
+                        </div>
+                        <div class="stock-levels">
+                          <span class="stock-current" [class.stock-critical]="item.currentStock === 0" [class.stock-warning]="item.currentStock > 0">
+                            {{ item.currentStock }}
+                          </span>
+                          <span class="stock-separator">/</span>
+                          <span class="stock-minimum">{{ item.minimumStock }}</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
-              <div class="dash-item__content">
-                <span class="dash-item__title">{{ item.productName }}</span>
-                <span class="dash-item__subtitle">{{ item.categoryName || 'Sin categoría' }}</span>
-              </div>
-              <div class="stock-levels">
-                <span class="stock-current" [class.stock-critical]="item.currentStock === 0" [class.stock-warning]="item.currentStock > 0">
-                  {{ item.currentStock }}
-                </span>
-                <span class="stock-separator">/</span>
-                <span class="stock-minimum">{{ item.minimumStock }}</span>
-              </div>
-            </div>
+            }
           }
-        </div>
         }
-      </div>
       }
     </div>
   }

@@ -11,17 +11,25 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
+import { DashboardConfigPanelComponent } from '../../../../shared/components/dashboard-config-panel/dashboard-config-panel';
+import { DashboardPreferencesService } from '../../../../core/services/dashboard-preferences.service';
+import { TREATMENT_DASHBOARD_WIDGETS } from './config/treatment-dashboard.widgets';
 
 @Component({
   selector: 'app-treatment-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, LineChartComponent, DateRangePickerComponent, EmptyStateComponent, FormAlertComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, LineChartComponent, DateRangePickerComponent, EmptyStateComponent, FormAlertComponent, DashboardConfigPanelComponent],
   templateUrl: './treatment-dashboard.html',
   styleUrl: './treatment-dashboard.scss'
 })
 export class TreatmentDashboardComponent implements OnInit {
   private treatmentsService = inject(TreatmentsService);
   private logger = inject(LoggingService);
+  readonly prefs = inject(DashboardPreferencesService);
+  readonly widgetConfig = TREATMENT_DASHBOARD_WIDGETS;
+  readonly orderedWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('treatments', this.widgetConfig)
+  );
 
   dateRange = signal<DateRange>(this.getDefaultDateRange());
   loading = signal(true);

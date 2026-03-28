@@ -12,6 +12,9 @@ import { getApiErrorMessage } from '../../../../core/utils/api-error.utils';
 import { DateFormatService } from '../../../../core/services/date-format.service';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { FormAlertComponent } from '../../../../shared/components/form-alert/form-alert';
+import { DashboardConfigPanelComponent } from '../../../../shared/components/dashboard-config-panel/dashboard-config-panel';
+import { DashboardPreferencesService } from '../../../../core/services/dashboard-preferences.service';
+import { INVOICES_DASHBOARD_WIDGETS } from './config/invoices-dashboard.widgets';
 
 interface AgingBucket {
   label: string;
@@ -23,13 +26,18 @@ interface AgingBucket {
 @Component({
   selector: 'app-invoices-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, DateRangePickerComponent, EmptyStateComponent, FormAlertComponent],
+  imports: [CommonModule, RouterLink, PageHeaderComponent, PieChartComponent, DateRangePickerComponent, EmptyStateComponent, FormAlertComponent, DashboardConfigPanelComponent],
   templateUrl: './invoices-dashboard.html',
   styleUrl: './invoices-dashboard.scss'
 })
 export class InvoicesDashboardComponent implements OnInit {
   private invoicesService = inject(InvoicesService);
   private logger = inject(LoggingService);
+  readonly prefs = inject(DashboardPreferencesService);
+  readonly widgetConfig = INVOICES_DASHBOARD_WIDGETS;
+  readonly orderedWidgets = computed(() =>
+    this.prefs.getOrderedVisibleWidgets('invoices', this.widgetConfig)
+  );
 
   dateRange = signal<DateRange>(this.getDefaultDateRange());
   loading = signal(true);

@@ -1,4 +1,4 @@
-<div class="page-container container-wide">
+<div class="page-container container-wide" [ngClass]="prefs.getLayoutClass()">
   <app-page-header
     [title]="'Tratamientos'"
     [subtitle]="'Panel de control del módulo de tratamientos'"
@@ -18,6 +18,7 @@
         <i class="fa-solid fa-list"></i>
         Ver Todos
       </a>
+      <app-dashboard-config-panel [config]="widgetConfig" />
     </div>
   </app-page-header>
 
@@ -30,6 +31,7 @@
     <app-form-alert [message]="error()" [dismissible]="false" />
   } @else {
     <!-- KPI Cards -->
+    @if (prefs.isVisible('treatments', 'kpis')) {
     <div class="kpi-grid">
       <div class="kpi-card kpi-card--primary">
         <div class="kpi-card__header">
@@ -110,126 +112,132 @@
         </div>
       </div>
     </div>
+    }
 
     <!-- Content Grid -->
     <div class="analytics-grid">
-      <!-- Active Treatments -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-spinner"></i>
-            Tratamientos Activos
-          </h2>
-          <span class="dash-section-header__badge">{{ activeTreatments().length }}</span>
-        </div>
+      @for (widgetId of orderedWidgets(); track widgetId) {
+        @switch (widgetId) {
+          @case ('active-treatments') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-spinner"></i>
+                  Tratamientos Activos
+                </h2>
+                <span class="dash-section-header__badge">{{ activeTreatments().length }}</span>
+              </div>
 
-        @if (activeTreatments().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-check-circle"
-            description="No hay tratamientos activos en este período" />
-        } @else {
-          <div class="dash-list">
-            @for (tx of activeTreatments().slice(0, 8); track tx.id) {
-              <a [routerLink]="['/treatments', tx.id]" class="dash-item">
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ tx.serviceName }}</span>
-                  <span class="dash-item__subtitle">{{ tx.patientName }}</span>
-                </div>
-                <div class="dash-item__trailing">
-                  @if (tx.toothNumber) {
-                    <span class="tooth-badge">
-                      <i class="fa-solid fa-tooth"></i> {{ tx.toothNumber }}
-                    </span>
+              @if (activeTreatments().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-check-circle"
+                  description="No hay tratamientos activos en este período" />
+              } @else {
+                <div class="dash-list">
+                  @for (tx of activeTreatments().slice(0, 8); track tx.id) {
+                    <a [routerLink]="['/treatments', tx.id]" class="dash-item">
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ tx.serviceName }}</span>
+                        <span class="dash-item__subtitle">{{ tx.patientName }}</span>
+                      </div>
+                      <div class="dash-item__trailing">
+                        @if (tx.toothNumber) {
+                          <span class="tooth-badge">
+                            <i class="fa-solid fa-tooth"></i> {{ tx.toothNumber }}
+                          </span>
+                        }
+                        <span class="dash-item__meta">{{ formatDate(tx.startDate) }}</span>
+                      </div>
+                    </a>
                   }
-                  <span class="dash-item__meta">{{ formatDate(tx.startDate) }}</span>
                 </div>
-              </a>
-            }
-          </div>
-        }
-      </div>
+              }
+            </div>
+          }
+          @case ('recent-treatments') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                  Tratamientos Recientes
+                </h2>
+              </div>
 
-      <!-- Recent Treatments -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            Tratamientos Recientes
-          </h2>
-        </div>
-
-        @if (recentTreatments().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-tooth"
-            description="No hay tratamientos registrados en este período" />
-        } @else {
-          <div class="dash-list">
-            @for (tx of recentTreatments(); track tx.id) {
-              <a [routerLink]="['/treatments', tx.id]" class="dash-item">
-                <div class="dash-item__content">
-                  <span class="dash-item__title">{{ tx.serviceName }}</span>
-                  <span class="dash-item__subtitle">{{ tx.patientName }}</span>
+              @if (recentTreatments().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-tooth"
+                  description="No hay tratamientos registrados en este período" />
+              } @else {
+                <div class="dash-list">
+                  @for (tx of recentTreatments(); track tx.id) {
+                    <a [routerLink]="['/treatments', tx.id]" class="dash-item">
+                      <div class="dash-item__content">
+                        <span class="dash-item__title">{{ tx.serviceName }}</span>
+                        <span class="dash-item__subtitle">{{ tx.patientName }}</span>
+                      </div>
+                      <div class="dash-item__trailing">
+                        <span [class]="'badge ' + getStatusConfig(tx.status).class">
+                          <i [class]="'fa-solid ' + getStatusConfig(tx.status).icon"></i>
+                          {{ getStatusConfig(tx.status).label }}
+                        </span>
+                      </div>
+                    </a>
+                  }
                 </div>
-                <div class="dash-item__trailing">
-                  <span [class]="'badge ' + getStatusConfig(tx.status).class">
-                    <i [class]="'fa-solid ' + getStatusConfig(tx.status).icon"></i>
-                    {{ getStatusConfig(tx.status).label }}
-                  </span>
-                </div>
-              </a>
-            }
-          </div>
+              }
+            </div>
+          }
+          @case ('status-chart') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-chart-pie"></i>
+                  Distribución por Estado
+                </h2>
+              </div>
+
+              @if (statusChartData().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-chart-pie"
+                  description="No hay datos suficientes en este período" />
+              } @else {
+                <app-pie-chart
+                  [data]="statusChartData()"
+                  [doughnut]="true"
+                  [showLegend]="true"
+                  [height]="'280px'"
+                />
+              }
+            </div>
+          }
+          @case ('monthly-trend') {
+            <div class="section-card">
+              <div class="dash-section-header">
+                <h2 class="dash-section-header__title">
+                  <i class="fa-solid fa-chart-line"></i>
+                  Tratamientos Iniciados/Completados por Mes
+                </h2>
+              </div>
+
+              @if (timelineLabels().length === 0 || timelineDatasets().length === 0) {
+                <app-empty-state
+                  type="empty"
+                  icon="fa-chart-line"
+                  description="No hay datos suficientes para mostrar la tendencia" />
+              } @else {
+                <app-line-chart
+                  [labels]="timelineLabels()"
+                  [datasets]="timelineDatasets()"
+                  [height]="'280px'"
+                />
+              }
+            </div>
+          }
         }
-      </div>
-
-      <!-- Status Distribution (Pie/Donut) -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-chart-pie"></i>
-            Distribución por Estado
-          </h2>
-        </div>
-
-        @if (statusChartData().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-chart-pie"
-            description="No hay datos suficientes en este período" />
-        } @else {
-          <app-pie-chart
-            [data]="statusChartData()"
-            [doughnut]="true"
-            [showLegend]="true"
-            [height]="'280px'"
-          />
-        }
-      </div>
-
-      <!-- Monthly Trend (Line/Area) -->
-      <div class="section-card">
-        <div class="dash-section-header">
-          <h2 class="dash-section-header__title">
-            <i class="fa-solid fa-chart-line"></i>
-            Tratamientos Iniciados/Completados por Mes
-          </h2>
-        </div>
-
-        @if (timelineLabels().length === 0 || timelineDatasets().length === 0) {
-          <app-empty-state
-            type="empty"
-            icon="fa-chart-line"
-            description="No hay datos suficientes para mostrar la tendencia" />
-        } @else {
-          <app-line-chart
-            [labels]="timelineLabels()"
-            [datasets]="timelineDatasets()"
-            [height]="'280px'"
-          />
-        }
-      </div>
+      }
     </div>
   }
 </div>
